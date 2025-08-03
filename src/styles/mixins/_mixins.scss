@@ -1,0 +1,41 @@
+@use 'variables' as *;
+
+@mixin box-inset-shadow {
+    box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.10) inset;
+    -webkit-box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.10) inset;
+    -moz-box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.10) inset;
+};
+
+@mixin box-shadow {
+    box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.10);
+    -webkit-box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.10);
+    -moz-box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.10);
+};
+
+@mixin text-shadow {
+    text-shadow: 0px 0px 2px rgba(0,0,0,0.26);
+};
+
+
+@mixin background-main-container ($blur: true){
+    background-color: $contaier-background;
+    border: 1px solid $border;
+    border-radius: 1em;
+    @if $blur {
+        backdrop-filter: blur($blur-intensity);
+    }
+    
+}
+
+@mixin background-main-container ($blur: true){
+    background-color: $contaier-background;
+    border: 1px solid $border;
+    border-radius: 1em;
+    @if $blur {
+        backdrop-filter: blur($blur-intensity);
+    }
+    
+}
+
+
+

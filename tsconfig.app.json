@@ -1,14 +1,11 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "./out-tsc/app",
-    "types": []
+    "module": "es2020",
+    "types": ["jest"]
   },
-  "files": [
-    "src/main.ts"
-  ],
-  "include": [
-    "src/**/*.d.ts"
+  "include": ["src/**/*.spec.ts", "src/**/*.ts"],
+    "exclude": [
+    "**/*.spec.ts"
   ]
 }

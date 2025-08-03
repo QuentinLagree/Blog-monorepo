@@ -1,0 +1,30 @@
+@use 'mixins/mixins' as *;
+@use "./bases/base-text" as *;
+@use "./bases/base-flex" as *;
+@use "./bases/base-button" as *;
+
+
+
+
+.main__container {
+    width: 100%;
+    height: auto;
+    @include background-main-container();
+    &.ghost {
+        border: none;
+        background: none;
+        backdrop-filter: none;
+    }
+}
+
+.main__container_container {
+    width: 100%;
+    @include background-main-container($blur: true);
+    padding: 2em 3em;
+    &.ghost {
+        backdrop-filter: none;
+        border: none;
+        background: none;
+    }
+
+}

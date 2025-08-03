@@ -26,8 +26,14 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.scss"
+              
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/styles"
+              ]
+            },
             "scripts": [],
             "browser": "src/main.ts"
           },
@@ -77,17 +83,20 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
+            "main": "src/test.ts",
             "polyfills": [
-              "zone.js",
-              "zone.js/testing"
+              "src/polyfills.ts"
             ],
             "tsConfig": "tsconfig.spec.json",
+            "karmaConfig": "karma.conf.js",
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.scss",
+              "src/styles/**.scss",
+              "app//**/**.scss"
             ],
             "scripts": []
           }
@@ -100,6 +109,7 @@
   },
   "schematics": {
     "@schematics/angular:component": {
+      "style": "scss",
       "type": "component"
     },
     "@schematics/angular:directive": {
