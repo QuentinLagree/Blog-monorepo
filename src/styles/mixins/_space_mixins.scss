@@ -1,4 +1,5 @@
-@use '../_variables' as *;
+@use 'variables' as *;
+
 @mixin generate-margins($max: 10) {
   @for $i from 0 through $max {
     .m-#{$i} {

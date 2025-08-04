@@ -5,7 +5,6 @@ import prettierPlugin from 'eslint-plugin-prettier';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import prettierConfig from 'eslint-config-prettier';
 
-
 export default tseslint.config(
   {
     plugins: {
@@ -53,6 +52,6 @@ export default tseslint.config(
   },
   {
     files: ['**/*.scss'],
-    extends: [eslintPluginPrettierRecommended],
+    extends: [eslintPluginPrettierRecommended]
   }
 );

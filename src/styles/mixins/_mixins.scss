@@ -1,34 +1,22 @@
-@use '../_variables' as *;
+@use 'variables' as *;
 
 @mixin box-inset-shadow {
-  box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.1) inset;
-  -webkit-box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.1) inset;
-  -moz-box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.1) inset;
+  box-shadow: 0 1px 5px 0 rgb(0 0 0 / 10%) inset;
 }
 
 @mixin box-shadow {
-  box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.1);
-  -webkit-box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.1);
-  -moz-box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 5px 0 rgb(0 0 0 / 10%);
 }
 
 @mixin text-shadow {
-  text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.26);
+  text-shadow: 0 0 2px rgb(0 0 0 / 26%);
 }
 
 @mixin background-main-container($blur: true) {
   background-color: $contaier-background;
   border: 1px solid $border;
   border-radius: 1em;
-  @if $blur {
-    backdrop-filter: blur($blur-intensity);
-  }
-}
 
-@mixin background-main-container($blur: true) {
-  background-color: $contaier-background;
-  border: 1px solid $border;
-  border-radius: 1em;
   @if $blur {
     backdrop-filter: blur($blur-intensity);
   }

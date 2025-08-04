@@ -1,10 +1,10 @@
 <div
-  class="input_container"
+  class="input-container"
   [class.error]="errorMessages"
   [class.success]="!errorMessages && (control.value.length > 1)"
   [class.disabled]="!control.disable"
 >
-  <label class="input_container__label" [for]="mergeConfigs().label.trim()"
+  <label class="input-container-label" [for]="mergeConfigs().label.trim()"
     >{{ mergeConfigs().label }}{{ (mergeConfigs().required) ? '' : '*'}}</label
   >
 
@@ -18,5 +18,5 @@
     (blur)="control.markAsTouched()"
   />
 
-  <div class="informations"><app-input-error [control]="control"></app-input-error></div>
+  <div class="input-informations"><app-input-error [control]="control"></app-input-error></div>
 </div>

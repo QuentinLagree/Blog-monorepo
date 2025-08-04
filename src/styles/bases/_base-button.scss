@@ -1,5 +1,5 @@
 @use 'mixins/mixins' as *;
-@use '_variables' as *;
+@use 'variables' as *;
 
 button {
   width: 100%;
@@ -7,18 +7,22 @@ button {
   border: none;
   cursor: pointer;
   color: #fff;
-  font-family: 'Inter', sans-serif;
+  font-family: Inter, sans-serif;
   font-weight: 600;
   border-radius: 0.2em;
+
   @include box-inset-shadow;
   @include box-shadow;
+
   transition: filter 0.3s;
-  &:hover:not(:disabled, .btn-outlined, .btn-secondary) {
-    filter: brightness(1.2);
-  }
+
   &:disabled {
     cursor: no-drop;
     opacity: 0.6;
+  }
+
+  &:hover:not(:disabled, .btn-outlined, .btn-secondary) {
+    filter: brightness(1.2);
   }
 }
 
@@ -45,6 +49,7 @@ button.btn-secondary {
   background-color: $white;
   color: $black;
   transition: 0.3s;
+
   &:hover {
     background-color: #e4e4e4;
   }
