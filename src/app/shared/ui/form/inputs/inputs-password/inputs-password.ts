@@ -1,4 +1,4 @@
-import { Component, computed, input, signal, WritableSignal, effect } from "@angular/core";
+import { Component } from "@angular/core";
 import { BaseInputComponent } from "../base-input";
 import { InputPasswordConfig } from "./models/input-password-config.model";
 import { ReactiveFormsModule } from "@angular/forms";

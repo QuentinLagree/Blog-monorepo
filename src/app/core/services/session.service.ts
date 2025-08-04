@@ -1,16 +1,15 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { BehaviorSubject, catchError, map, Observable, of } from "rxjs";
-import { Message } from "../models/message.model";
 import { HttpRequestService } from "../../shared/services/http-service/get_request.service";
 
-export type UserSession = {
+export interface UserSession {
     id: number
     email: string
     role: string
 }
 
 
-type SessionType = {
+interface SessionType {
     loggedIn: boolean,
     user: UserSession
 }
@@ -19,8 +18,10 @@ type SessionType = {
 export class SessionService {
   private session$ = new BehaviorSubject<SessionType | null>(null);
   private readonly KEY = 'cached_session';
-
-  constructor(private _http: HttpRequestService) {
+  
+  private _http: HttpRequestService = inject(HttpRequestService)
+  
+  constructor() {
     const stored = localStorage.getItem(this.KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
@@ -40,7 +41,7 @@ export class SessionService {
         this.session$.next(res.data); // ⬅️ cache mémoire
         return res.data;
       }),
-      catchError(err => {
+      catchError(() => {
         this.clearSession();
         return of(null);
       })

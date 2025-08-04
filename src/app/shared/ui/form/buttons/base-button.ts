@@ -1,5 +1,4 @@
 import { Component, EventEmitter, HostBinding, input, InputSignal, Output } from "@angular/core";
-import { FormGroup } from "@angular/forms";
 
 export type ButtonType = 'primary' | 'secondary' | 'danger' | 'ghost' | 'success' | 'outlined';
 export type ButtonSize = 'sm' | 'md' | 'lg';

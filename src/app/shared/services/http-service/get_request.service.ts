@@ -1,16 +1,17 @@
 import { HttpClient } from "@angular/common/http";
-import { Inject, Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { Message } from "src/app/core/models/message.model";
 
 
 const API_URL = 'http://localhost:3000/';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
   @Injectable()
   export class HttpRequestService {
-    constructor(private http: HttpClient) {}
+    private http: HttpClient = inject(HttpClient)
 
-    getData(url: string, credentials: boolean = false): Observable<Message> {
+    getData(url: string, credentials = false): Observable<Message> {
       let options = {}
       
       if (credentials) {
@@ -22,7 +23,7 @@ const API_URL = 'http://localhost:3000/';
       return this.http.get<Message>(API_URL + url, options ?? null);
     }
 
-    postData(url: string, data: any, credentials: boolean = false): Observable<Message> {
+    postData(url: string, data: any, credentials = false): Observable<Message> {
 
       let options = {}
       
@@ -44,4 +45,5 @@ const API_URL = 'http://localhost:3000/';
     patchData(url: string, data: any): Observable<Message> {
       return this.http.patch<Message>(API_URL + url, data);
     }
+    /* eslint-enable @typescript-eslint/no-explicit-any */
   }

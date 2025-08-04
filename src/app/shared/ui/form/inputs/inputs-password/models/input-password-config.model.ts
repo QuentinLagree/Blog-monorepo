@@ -1,4 +1,3 @@
-import { InputType } from "../../input.model";
 import { InputConfig } from "../../models/input-config.model";
 import { InputPasswordType } from "./input-password-type";
 

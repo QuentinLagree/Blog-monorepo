@@ -1,4 +1,4 @@
-export type userRegisterForm = {
+export interface userRegisterForm {
     firstname: string;
     lastname: string;
     pseudo: string;

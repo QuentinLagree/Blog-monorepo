@@ -1,8 +1,6 @@
-import { Component, computed, effect, Input, input, InputSignal, Signal, signal, WritableSignal } from "@angular/core";
-import { InputType } from "../../../input.model";
+import { Component, Input } from "@angular/core";
 import { slideDown } from "src/app/shared/animations/eyeAnimation.animation";
 import { InputPasswordConfig } from "../../models/input-password-config.model";
-import { InputPasswordType } from "../../models/input-password-type";
 
 @Component({
     selector: 'app-input-password-toggle',

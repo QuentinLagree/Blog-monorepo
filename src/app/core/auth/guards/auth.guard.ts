@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   CanActivate,
   Router,
@@ -12,21 +12,19 @@ import { SessionService } from 'src/app/core/services/session.service';
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
-  constructor(
-    private sessionService: SessionService,
-    private router: Router
-  ) {}
+  private _sessionService: SessionService = inject(SessionService);
+  private _router: Router = inject(Router);
 
   canActivate(): Observable<boolean | UrlTree> {
-    return this.sessionService.fetchSession().pipe(
+    return this._sessionService.fetchSession().pipe(
       map(session => {
         if (session?.loggedIn) {
           return true;
         } else {
-          return this.router.createUrlTree(['/login']); // Redirige si non connecté
+          return this._router.createUrlTree(['/login']); // Redirige si non connecté
         }
       }),
-      catchError(() => of(this.router.createUrlTree(['/login'])))
+      catchError(() => of(this._router.createUrlTree(['/login'])))
     );
   }
 }

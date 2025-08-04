@@ -1,7 +1,6 @@
-import { Component, computed, input, Input } from "@angular/core";
-import { InputComponent } from "../input/input";
+import { Component } from "@angular/core";
 import { BaseInputComponent } from "../base-input";
-import { FormControl, ReactiveFormsModule } from "@angular/forms";
+import { ReactiveFormsModule } from "@angular/forms";
 import { InputConfig } from "../models/input-config.model";
 import { InputErrorComponent } from "../inputs-error/inputs-error";
 

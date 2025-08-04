@@ -1,5 +1,5 @@
 import { InputConfig } from '../models/input-config.model';
-import { Component, computed, input } from '@angular/core';
+import { Component } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BaseInputComponent } from '../base-input';
 import { InputErrorComponent } from "../inputs-error/inputs-error";

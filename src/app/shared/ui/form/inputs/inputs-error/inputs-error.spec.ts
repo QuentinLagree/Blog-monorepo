@@ -33,7 +33,7 @@ describe('InputErrorComponent', () => {
   })
 
   it("Should display an error message if fields value is less than minLength", () => {
-    const minLength: number = 6;
+    const minLength = 6;
     const control = new FormControl('abc', Validators.minLength(minLength));
     control.markAsTouched();
     component.control = control;
@@ -44,7 +44,7 @@ describe('InputErrorComponent', () => {
   })
 
   it("Should display an error message if fields value is less than maxLength", () => {
-    const maxLength: number = 10;
+    const maxLength = 10;
     const control = new FormControl('abcabcbcabcabc', Validators.maxLength(maxLength));
     control.markAsTouched();
     component.control = control;

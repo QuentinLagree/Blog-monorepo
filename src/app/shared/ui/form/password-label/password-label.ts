@@ -4,7 +4,7 @@ type StrengthPassword = "Faible" | "Moyen" | "Fort" | "Trés Fort"
 type StrengthPasswordColor = "#F34848" | "#f3b748ff" | "#c5f348ff" | "#56f348ff"
 
 @Component({
-    selector: 'password-checker',
+    selector: 'app-password-checker',
     template: `<p [style.color]="color()">{{ strength() }}</p>`,
     styles: `
     p {
@@ -37,7 +37,7 @@ export class PasswordLabelComponent {
                 errors++;
             }
 
-            if (!/[!@#$%\^&*)(+=._-]/.test(this.value())) {
+            if (!/[!@#$%^&*)(+=._-]/.test(this.value())) {
                 errors++;
             }
 

@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { FormBuilder, FormControl, ReactiveFormsModule } from "@angular/forms";
 import { SubmitButtonComponent } from "src/app/shared/ui/form/buttons/button-submit/button-submit";
 import { EmailInputComponent } from "src/app/shared/ui/form/inputs/input-email/input-email";
@@ -16,10 +16,8 @@ import { PasswordInputValidatorFactory } from "src/app/shared/ui/form/inputs/inp
 })
 
 export class LoginPageComponent {
-    constructor(
-        private _formBuilder: FormBuilder
-    ) {
-    }
+    
+    private _formBuilder: FormBuilder = inject(FormBuilder)
 
 
 

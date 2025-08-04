@@ -1,4 +1,4 @@
-export type userRegister = {
+export interface userRegister {
     firstname: string;
     lastname: string;
     pseudo: string;

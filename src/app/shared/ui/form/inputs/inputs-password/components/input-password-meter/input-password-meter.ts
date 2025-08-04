@@ -1,4 +1,4 @@
-import { Component, effect, input, InputSignal, Signal, signal, WritableSignal } from "@angular/core";
+import { Component, effect, input, InputSignal, signal } from "@angular/core";
 
 export type stateMeter = "Faible" | "Moyen" | "Fort" | "Très Fort";
 
@@ -26,7 +26,7 @@ export class InputPasswordMeterComponent {
 
             if (val.length < 8) errorsCount++;
             if (!/[A-Z]/.test(val)) errorsCount++;
-            if (!/[!@#$%\^&*)(+=._-]/.test(val)) errorsCount++;
+            if (!/[!@#$%^&*)(+=._-]/.test(val)) errorsCount++;
             if (!/[0-9]/.test(val)) errorsCount++;
 
             // Interprétation du résultat

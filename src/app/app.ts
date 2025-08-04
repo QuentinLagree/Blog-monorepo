@@ -1,4 +1,4 @@
-import { Component, signal, WritableSignal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { HeaderComponent } from "./core/layouts/templates/header/header";
@@ -11,14 +11,6 @@ import { HeaderComponent } from "./core/layouts/templates/header/header";
     standalone: true
 })
 export class AppComponent {
-  constructor (){}
-
-  model = {
-    firstname : ""
-  }
-
-
-  users: WritableSignal<any[]> = signal<any[]>([]);
 
   prod: boolean = environment.production
 

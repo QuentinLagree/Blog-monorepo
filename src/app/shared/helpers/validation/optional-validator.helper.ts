@@ -4,11 +4,11 @@ import { OptionalValidations } from "../../ui/form/inputs/models/optional-input-
 export function OptionalValideInput(value: string, options: OptionalValidations): ValidationErrors | null {
     const errors: ValidationErrors = {}
 
-    const EMAIL_VALIDATOR_REGEX: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const EMAIL_VALIDATOR_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     
     
     if (options.acceptSpecialCaracters === false) {
-        if (/[!@#$%\^&*)(+=._-]/.test(value)) {
+        if (/[!@#$%^&*)(+=._-]/.test(value)) {
             errors["disabledSpecialCaracter"] = true
         }
     }
@@ -23,7 +23,7 @@ export function OptionalValideInput(value: string, options: OptionalValidations)
         if (
             value.length < 8
             || !/[A-Z]/.test(value)
-            || !/[!@#$%\^&*)(+=._-]/.test(value)
+            || !/[!@#$%^&*)(+=._-]/.test(value)
             || !/[0-9]/.test(value)) {
             errors["tooWeak"] = true
         }
