@@ -1,11 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
-@use 'styles/reset.scss';
-@use 'styles/fonts.scss';
+@use 'styles/reset';
+@use 'styles/fonts';
 @use 'styles/variables';
 @use 'styles/mixins/mixins';
 @use 'styles/mixins/space_mixins';
 @use 'styles/helpers';
-@use 'styles/_base.scss';
+@use 'styles/base';
 
 * {
   margin: 0;
@@ -14,7 +14,7 @@
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: Poppins, sans-serif;
   color: #fff;
   background-image: url('assets/img/background.svg');
   background-size: cover;
@@ -23,7 +23,7 @@ body {
   height: auto;
 }
 
-body:after {
+body::after {
   content: '';
   padding: 0;
   margin: 0;

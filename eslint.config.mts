@@ -1,9 +1,10 @@
-
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import angular from 'angular-eslint';
 import prettierPlugin from 'eslint-plugin-prettier';
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import prettierConfig from 'eslint-config-prettier';
+
 
 export default tseslint.config(
   {
@@ -24,6 +25,24 @@ export default tseslint.config(
     ],
     processor: angular.processInlineTemplates,
     rules: {
+      '@typescript-eslint/no-unused-vars': 'error',
+      '@typescript-eslint/no-explicit-any': 'error',
+      '@angular-eslint/directive-selector': [
+        'off',
+        {
+          type: 'attribute',
+          prefix: 'app',
+          style: 'camelCase'
+        }
+      ],
+      '@angular-eslint/component-selector': [
+        'warn',
+        {
+          type: 'element',
+          prefix: 'app',
+          style: 'kebab-case'
+        }
+      ],
       'prettier/prettier': 'error'
     }
   },
@@ -31,5 +50,9 @@ export default tseslint.config(
     files: ['**/*.html'],
     extends: [...angular.configs.templateRecommended, ...angular.configs.templateAccessibility],
     rules: {}
+  },
+  {
+    files: ['**/*.scss'],
+    extends: [eslintPluginPrettierRecommended],
   }
 );
