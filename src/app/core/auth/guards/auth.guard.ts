@@ -1,9 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import {
-  CanActivate,
-  Router,
-  UrlTree
-} from '@angular/router';
+import { CanActivate, Router, UrlTree } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { SessionService } from 'src/app/core/services/session.service';
@@ -17,7 +13,7 @@ export class AuthGuard implements CanActivate {
 
   canActivate(): Observable<boolean | UrlTree> {
     return this._sessionService.fetchSession().pipe(
-      map(session => {
+      map((session) => {
         if (session?.loggedIn) {
           return true;
         } else {

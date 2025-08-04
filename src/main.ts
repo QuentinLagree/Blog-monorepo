@@ -6,12 +6,10 @@ import { appRoutes } from './app/app.routes';
 import { authRoutes } from './app/core/auth/auth.routes';
 import { provideAnimations } from '@angular/platform-browser/animations';
 
-
-
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter([...appRoutes, ...authRoutes]),
     provideAnimations(),
-    provideHttpClient(),  
+    provideHttpClient()
   ]
 });

@@ -1,53 +1,70 @@
 <div class="main__container fcol gap-3 ghost">
-    <div class="main__container_container frow gap-6">
-        <div class="main__container_container ghost">
-            <h1 class="mb-1">Titre du premier niveau</h1>
-            <h2 class="mb-1">Titre du deuxieme niveau</h2>
-            <h3 class="mb-1">Titre du troisième niveau</h3>
-            <h4 class="mb-1">Titre du quatrième niveau</h4>
-            <h5 class="mb-1">Titre du cinquième niveau</h5>
-            <p class="baseline">.baseline Lorem, ipsum dolor sit amet consectetur adipisicing elit. Placeat molestias
-                rerum nemo delectus incidunt quam temporibus molestiae modi nihil distinctio necessitatibus voluptates
-                velit ad, maxime fuga, deserunt fugit ex eligendi.</p>
-        </div>
-        <div class="main__container_container ghost">
-            <h1 class="mb-1 hero_title">Titre .hero_title</h1>
-            <p class="hero_baseline">.hero_baseline Lorem, ipsum dolor sit amet consectetur adipisicing elit. Placeat
-                molestias rerum nemo delectus incidunt quam temporibus molestiae modi nihil distinctio necessitatibus
-                voluptates velit ad, maxime fuga, deserunt fugit ex eligendi.</p>
-        </div>
+  <div class="main__container_container frow gap-6">
+    <div class="main__container_container ghost">
+      <h1 class="mb-1">Titre du premier niveau</h1>
+      <h2 class="mb-1">Titre du deuxieme niveau</h2>
+      <h3 class="mb-1">Titre du troisième niveau</h3>
+      <h4 class="mb-1">Titre du quatrième niveau</h4>
+      <h5 class="mb-1">Titre du cinquième niveau</h5>
+      <p class="baseline">
+        .baseline Lorem, ipsum dolor sit amet consectetur adipisicing elit. Placeat molestias rerum
+        nemo delectus incidunt quam temporibus molestiae modi nihil distinctio necessitatibus
+        voluptates velit ad, maxime fuga, deserunt fugit ex eligendi.
+      </p>
     </div>
-    <div class="main__container_container flex between col gap-6">
-        <h1>Couleurs</h1>
-        <p>Aucune couleurs déinie pour le moment (à terminer)</p>
+    <div class="main__container_container ghost">
+      <h1 class="mb-1 hero_title">Titre .hero_title</h1>
+      <p class="hero_baseline">
+        .hero_baseline Lorem, ipsum dolor sit amet consectetur adipisicing elit. Placeat molestias
+        rerum nemo delectus incidunt quam temporibus molestiae modi nihil distinctio necessitatibus
+        voluptates velit ad, maxime fuga, deserunt fugit ex eligendi.
+      </p>
     </div>
+  </div>
+  <div class="main__container_container flex between col gap-6">
+    <h1>Couleurs</h1>
+    <p>Aucune couleurs déinie pour le moment (à terminer)</p>
+  </div>
 
-    <div class="main__container_container flex between col gap-6">
-        <h1>Boutons (lg)</h1>
-        <div class="frow gap-5">
-            <app-button size="lg" label="Bouton .btn-primary"></app-button>
-            <app-button size="lg" type="secondary" label="Bouton .btn-secondary"></app-button>
-            <app-button size="lg" type="success" label="Bouton .btn-success"></app-button>
-            <app-button size="lg" type="danger" label="Bouton .btn-danger"></app-button>
-            <app-button size="lg" type="primary" [disabled]="true" label="Bouton .btn-primary [disabled]"></app-button>
-        </div>
-        <h1>Boutons (md)</h1>
-        <div class="frow gap-5">
-            <app-button size="md" label="Bouton .btn-primary"></app-button>
-            <app-button size="md" type="secondary" label="Bouton .btn-secondary"></app-button>
-            <app-button size="md" type="success" label="Bouton .btn-success"></app-button>
-            <app-button size="md" type="danger" label="Bouton .btn-danger"></app-button>
-            <app-button size="md" type="primary" [disabled]="true" label="Bouton .btn-primary [disabled]"></app-button>
-        </div>
-        <h1>Boutons (sm)</h1>
-        <div class="frow gap-5">
-            <app-button size="sm" label="Bouton .btn-primary"></app-button>
-            <app-button size="sm" type="secondary" label="Bouton .btn-secondary"></app-button>
-            <app-button size="sm" type="success" label="Bouton .btn-success"></app-button>
-            <app-button size="sm" type="danger" label="Bouton .btn-danger"></app-button>
-            <app-button size="sm" type="primary" [disabled]="true" label="Bouton .btn-primary [disabled]"></app-button>
-        </div>
+  <div class="main__container_container flex between col gap-6">
+    <h1>Boutons (lg)</h1>
+    <div class="frow gap-5">
+      <app-button size="lg" label="Bouton .btn-primary"></app-button>
+      <app-button size="lg" type="secondary" label="Bouton .btn-secondary"></app-button>
+      <app-button size="lg" type="success" label="Bouton .btn-success"></app-button>
+      <app-button size="lg" type="danger" label="Bouton .btn-danger"></app-button>
+      <app-button
+        size="lg"
+        type="primary"
+        [disabled]="true"
+        label="Bouton .btn-primary [disabled]"
+      ></app-button>
     </div>
-
-
+    <h1>Boutons (md)</h1>
+    <div class="frow gap-5">
+      <app-button size="md" label="Bouton .btn-primary"></app-button>
+      <app-button size="md" type="secondary" label="Bouton .btn-secondary"></app-button>
+      <app-button size="md" type="success" label="Bouton .btn-success"></app-button>
+      <app-button size="md" type="danger" label="Bouton .btn-danger"></app-button>
+      <app-button
+        size="md"
+        type="primary"
+        [disabled]="true"
+        label="Bouton .btn-primary [disabled]"
+      ></app-button>
+    </div>
+    <h1>Boutons (sm)</h1>
+    <div class="frow gap-5">
+      <app-button size="sm" label="Bouton .btn-primary"></app-button>
+      <app-button size="sm" type="secondary" label="Bouton .btn-secondary"></app-button>
+      <app-button size="sm" type="success" label="Bouton .btn-success"></app-button>
+      <app-button size="sm" type="danger" label="Bouton .btn-danger"></app-button>
+      <app-button
+        size="sm"
+        type="primary"
+        [disabled]="true"
+        label="Bouton .btn-primary [disabled]"
+      ></app-button>
+    </div>
+  </div>
 </div>

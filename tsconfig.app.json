@@ -2,10 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "module": "es2020",
-    "types": ["jest"]
+    "types": ["node"]
   },
   "include": ["src/**/*.spec.ts", "src/**/*.ts"],
-    "exclude": [
-    "**/*.spec.ts"
-  ]
+  "exclude": ["**/*.spec.ts"]
 }

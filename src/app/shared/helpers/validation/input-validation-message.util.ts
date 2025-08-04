@@ -1,7 +1,7 @@
-import { AbstractControl } from "@angular/forms";
+import { AbstractControl } from '@angular/forms';
 
-export function   GetInputErrorMessage (control: AbstractControl): string | null {
-    if (!control) return null;
+export function GetInputErrorMessage(control: AbstractControl): string | null {
+  if (!control) return null;
 
   if (!control?.errors || (!control.touched && !control.dirty)) return null;
 
@@ -21,20 +21,19 @@ export function   GetInputErrorMessage (control: AbstractControl): string | null
   }
 
   if (errors?.['email']) {
-    return 'L\'email saisi n\'est pas valide. (exemple@gmail.com)';
+    return "L'email saisi n'est pas valide. (exemple@gmail.com)";
   }
-
 
   if (errors?.['tooWeak']) {
     return `Le mot de passe est trop faible. Veuillez le rendre plus complexe.`;
   }
 
-  if (errors?.["disabledSpecialCaracter"]) {
-    return `Les caractères spéciaux ne sont pas valide dans ce champ.`
+  if (errors?.['disabledSpecialCaracter']) {
+    return `Les caractères spéciaux ne sont pas valide dans ce champ.`;
   }
 
-  if (errors?.["PasswordNotMatch"]) {
-    return `Les deux mots de passes doivent correspondre.`
+  if (errors?.['PasswordNotMatch']) {
+    return `Les deux mots de passes doivent correspondre.`;
   }
 
   return 'Champ invalide';

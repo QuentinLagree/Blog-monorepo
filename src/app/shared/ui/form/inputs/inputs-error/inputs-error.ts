@@ -7,13 +7,13 @@ import { GetInputErrorMessage } from 'src/app/shared/helpers/validation/input-va
   standalone: true,
   imports: [ReactiveFormsModule],
   template: `
-    @if(errorMessage) {
-        <div class="error-message">
-          {{ errorMessage }}
-        </div>
+    @if (errorMessage) {
+      <div class="error-message">
+        {{ errorMessage }}
+      </div>
     }
   `,
-  styleUrls: ['./inputs-error.scss'], 
+  styleUrls: ['./inputs-error.scss']
 })
 export class InputErrorComponent {
   @Input({ required: true }) control!: AbstractControl;

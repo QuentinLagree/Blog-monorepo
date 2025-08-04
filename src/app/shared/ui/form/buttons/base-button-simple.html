@@ -1,11 +1,7 @@
-<button
-  [disabled]="disabled() || loading()"
-  [class]="[hostClasses]"
-  (click)="onClick()"
-  >
+<button [disabled]="disabled() || loading()" [class]="[hostClasses]" (click)="onClick()">
   @if (!loading()) {
-    <span>{{ label() }}</span>
+  <span>{{ label() }}</span>
   } @else {
-    <span class="spinner"></span>
+  <span class="spinner"></span>
   }
 </button>

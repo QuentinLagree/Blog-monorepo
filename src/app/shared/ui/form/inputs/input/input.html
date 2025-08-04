@@ -1,18 +1,22 @@
-<div class="input_container" [class.error]="errorMessages"
-    [class.success]="!errorMessages && (control.value.length > 1)" [class.disabled]="!control.disable">
-    <label 
-    class="input_container__label" 
-    [for]="mergeConfigs().label.trim()">{{ mergeConfigs().label }}{{
-        (mergeConfigs().required) ? '' : '*'}}</label>
+<div
+  class="input_container"
+  [class.error]="errorMessages"
+  [class.success]="!errorMessages && (control.value.length > 1)"
+  [class.disabled]="!control.disable"
+>
+  <label class="input_container__label" [for]="mergeConfigs().label.trim()"
+    >{{ mergeConfigs().label }}{{ (mergeConfigs().required) ? '' : '*'}}</label
+  >
 
-    <input 
-    [formControl]="control" 
-    [type]="mergeConfigs().type" 
+  <input
+    [formControl]="control"
+    [type]="mergeConfigs().type"
     [attr.placeholder]="this.mergeConfigs().placeholder"
     [attr.id]="mergeConfigs().label.trim()"
-    autocomplete="off" 
+    autocomplete="off"
     required="{{ mergeConfigs().required }}"
-    (blur)="control.markAsTouched()" />
+    (blur)="control.markAsTouched()"
+  />
 
-    <div class="informations"><app-input-error [control]="control"></app-input-error></div>
+  <div class="informations"><app-input-error [control]="control"></app-input-error></div>
 </div>
