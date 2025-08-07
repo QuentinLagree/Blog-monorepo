@@ -1,7 +1,7 @@
-import { InputType } from "../../inputs/input.model";
+import { InputType } from '../../inputs/input.model';
 
 export interface SelectValidationContext {
   value: string;
-  required?: boolean,
+  required?: boolean;
   type: InputType;
 }

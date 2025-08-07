@@ -6,34 +6,30 @@
 >
   <p class="baseline">
     <label class="input-container-label" [for]="mergeConfigs().label.trim()"
-    >{{ mergeConfigs().label }}{{ (mergeConfigs().required) ? '' : '*'}}</label
-  >
+      >{{ mergeConfigs().label }}{{ (mergeConfigs().required) ? '' : '*'}}</label
+    >
   </p>
-  
 
   <div class="select-container">
     <select
-    [formControl]="control"
-    [attr.placeholder]="this.mergeConfigs().placeholder"
-    [attr.id]="mergeConfigs().label.trim()"
-    autocomplete="off"
-    required="{{ mergeConfigs().required }}"
-    (change)="control.markAsTouched()"
-  >
-
-  <option value="" disabled selected>{{ mergeConfigs().placeholder }}</option>
-  @for (choice of mergeConfigs().choices; track $index) {
-      <option  [value]="choice">{{ choice }}</option>
-  }
-</select>
-<i class="icon-container">
-    <svg viewBox="0 0 24 24">
-        <use href="#icon-arrow-down"/>
-    </svg>
-  </i>
+      [formControl]="control"
+      [attr.placeholder]="this.mergeConfigs().placeholder"
+      [attr.id]="mergeConfigs().label.trim()"
+      autocomplete="off"
+      required="{{ mergeConfigs().required }}"
+      (change)="control.markAsTouched()"
+    >
+      <option value="" disabled selected>{{ mergeConfigs().placeholder }}</option>
+      @for (choice of mergeConfigs().choices; track $index) {
+      <option [value]="choice">{{ choice }}</option>
+      }
+    </select>
+    <i class="icon-container">
+      <svg viewBox="0 0 24 24">
+        <use href="#icon-arrow-down" />
+      </svg>
+    </i>
   </div>
-
-
 
   <div class="input-informations"><app-input-error [control]="control"></app-input-error></div>
 </div>

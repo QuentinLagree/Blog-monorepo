@@ -25,4 +25,6 @@ export type InputType =
   | 'text'
   | 'time'
   | 'url'
-  | 'week';
+  | 'week'
+  | 'select'
+  | 'multi-select';
