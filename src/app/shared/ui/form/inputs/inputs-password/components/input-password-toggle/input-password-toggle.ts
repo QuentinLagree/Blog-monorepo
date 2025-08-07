@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { slideDown } from 'src/app/shared/animations/eyeAnimation.animation';
 import { InputPasswordConfig } from '../../models/input-password-config.model';
+import { IconLoaderService } from '@src/app/shared/helpers/icons/services/icons-loader';
 
 @Component({
   selector: 'app-input-password-toggle',
@@ -10,6 +11,8 @@ import { InputPasswordConfig } from '../../models/input-password-config.model';
   animations: [slideDown]
 })
 export class InputPasswordToggleComponent {
+  private readonly _iconLoader: IconLoaderService = inject(IconLoaderService);
+
   @Input({ required: true }) config!: Partial<InputPasswordConfig>;
 
   @Input({ required: true })

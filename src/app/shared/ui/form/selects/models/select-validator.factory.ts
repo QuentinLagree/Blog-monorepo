@@ -7,9 +7,9 @@ export function SelectValidatorFactory(
 ): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const context: SelectValidationContext = {
-        type: 'select',
-        required: true,
-        value: (control.value || '').toString(),
+      type: 'select',
+      required: true,
+      value: (control.value || '').toString(),
       ...config
     };
 
