@@ -30,26 +30,26 @@
 
 @mixin generate-paddings($max: 10) {
   @for $i from 0 through $max {
-    .m-#{$i} {
+    .p-#{$i} {
       padding: $i * $spacing-unit;
     }
-    .mt-#{$i} {
+    .pt-#{$i} {
       padding-top: $i * $spacing-unit;
     }
-    .mb-#{$i} {
+    .pb-#{$i} {
       padding-bottom: $i * $spacing-unit;
     }
-    .ml-#{$i} {
+    .pl-#{$i} {
       padding-left: $i * $spacing-unit;
     }
-    .mr-#{$i} {
+    .pr-#{$i} {
       padding-right: $i * $spacing-unit;
     }
-    .mx-#{$i} {
+    .px-#{$i} {
       padding-left: $i * $spacing-unit;
       padding-right: $i * $spacing-unit;
     }
-    .my-#{$i} {
+    .py-#{$i} {
       padding-top: $i * $spacing-unit;
       padding-bottom: $i * $spacing-unit;
     }

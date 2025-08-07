@@ -1,17 +1,24 @@
 @use 'mixins/mixins' as *;
 @use './bases/base-text' as *;
 @use './bases/base-flex' as *;
+@use './bases/base-card' as *;
 @use './bases/base-button' as *;
 
 .main-container {
+  position: relative;
+  min-width: 500px;
   width: 100%;
-  height: auto;
+}
 
-  @include background-main-container;
+.main-container-form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
 
-  &.ghost {
-    border: none;
-    background: none;
-    backdrop-filter: none;
-  }
+  @include box-shadow;
+}
+
+.main-container-form .form-title {
+  align-self: flex-start;
 }

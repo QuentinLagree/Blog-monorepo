@@ -1,11 +1,11 @@
 @use 'variables' as *;
 
 @mixin box-inset-shadow {
-  box-shadow: 0 1px 5px 0 rgb(0 0 0 / 10%) inset;
+  box-shadow: 0 0 5px 2px rgb(0 0 0 / 10%) inset;
 }
 
 @mixin box-shadow {
-  box-shadow: 0 1px 5px 0 rgb(0 0 0 / 10%);
+  box-shadow: 0 0 10px 0 rgb(0 0 0 / 10%);
 }
 
 @mixin text-shadow {

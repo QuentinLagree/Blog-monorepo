@@ -1,9 +1,13 @@
-<button [disabled]="disabled() || loading()" [attr.class]="hostClasses" (click)="onClick()">
+<button
+  [disabled]="disabled() || loading()"
+  [attr.class]="[hostClasses + ' ' + ((loading()) ? 'loading' : '')]"
+  (click)="onClick()"
+>
   @if (icon()) {
   <i class="icon" [class]="icon()"></i>
-  } @if (!loading()) {
-  <span>{{ label() }}</span>
   } @else {
-  <span class="spinner"></span>
-  }
+  <span class="label">{{ label() }}</span>
+  @if (loading()) {
+  <span class="loader"></span>
+  } }
 </button>

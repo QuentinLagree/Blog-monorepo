@@ -1,7 +1,7 @@
 @use 'mixins/mixins' as *;
 @use 'variables' as *;
 
-button {
+button:not(.input-password-toggle) {
   width: 100%;
   outline: none;
   border: none;
@@ -14,16 +14,45 @@ button {
   @include box-inset-shadow;
   @include box-shadow;
 
-  transition: filter 0.3s;
+  transition:
+    filter 0.3s,
+    scale 0.1s ease-in-out;
 
   &:disabled {
-    cursor: no-drop;
+    cursor: default;
     opacity: 0.6;
   }
 
-  &:hover:not(:disabled, .btn-outlined, .btn-secondary) {
-    filter: brightness(1.2);
+  &:hover:not(:disabled, .btn-secondary) {
+    filter: brightness(1.1);
   }
+
+  &:active:not(:disabled) {
+    scale: 0.97;
+  }
+}
+
+button.loading {
+  position: relative;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 0.5em;
+}
+
+button.loading.lg .loader {
+  width: 1.2em;
+  height: 1.2em;
+}
+
+button.loading.md .loader {
+  width: 1em;
+  height: 1em;
+}
+
+button.loading.sm .loader {
+  width: 0.9em;
+  height: 0.9em;
 }
 
 button.lg {
@@ -48,10 +77,11 @@ button.btn-primary {
 button.btn-secondary {
   background-color: $white;
   color: $black;
+  border: 1px solid transparent;
   transition: 0.3s;
 
   &:hover {
-    background-color: #e4e4e4;
+    border-color: #e4e4e4;
   }
 }
 

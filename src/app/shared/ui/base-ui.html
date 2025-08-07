@@ -1,5 +1,5 @@
-<div class="main-container fcol gap-3 ghost">
-  <div class="main-container blur frow gap-6">
+<div class="main-container fcol gap-8 p-7">
+  <div class="main-container blur frow gap-5 ghost">
     <div class="main-container ghost">
       <h1 class="mb-1">Titre du premier niveau</h1>
       <h2 class="mb-1">Titre du deuxieme niveau</h2>
@@ -19,20 +19,26 @@
         rerum nemo delectus incidunt quam temporibus molestiae modi nihil distinctio necessitatibus
         voluptates velit ad, maxime fuga, deserunt fugit ex eligendi.
       </p>
+      <div class="frow gap-4">
+        <p class="text-danger">.text-danger</p>
+        <p class="text-muted">.text-disabled</p>
+      </div>
     </div>
   </div>
   <div class="main__container_container flex between col gap-6">
-    <h1>Couleurs</h1>
+    <h1 class="hero-title">Couleurs</h1>
     <p>Aucune couleurs déinie pour le moment (à terminer)</p>
   </div>
 
   <div class="main-container-container flex between col gap-6">
-    <h1>Boutons (lg)</h1>
+    <h1 class="hero-title">Boutons</h1>
+    <h1>Boutons (large)</h1>
     <div class="frow gap-5">
       <app-button size="lg" label="Bouton .btn-primary"></app-button>
       <app-button size="lg" type="secondary" label="Bouton .btn-secondary"></app-button>
       <app-button size="lg" type="success" label="Bouton .btn-success"></app-button>
       <app-button size="lg" type="danger" label="Bouton .btn-danger"></app-button>
+      <app-button size="lg" label="Bouton chargement" [loading]="true"></app-button>
       <app-button
         size="lg"
         type="primary"
@@ -40,12 +46,13 @@
         label="Bouton .btn-primary [disabled]"
       ></app-button>
     </div>
-    <h1>Boutons (md)</h1>
+    <h1>Boutons (medium)</h1>
     <div class="frow gap-5">
       <app-button size="md" label="Bouton .btn-primary"></app-button>
       <app-button size="md" type="secondary" label="Bouton .btn-secondary"></app-button>
       <app-button size="md" type="success" label="Bouton .btn-success"></app-button>
       <app-button size="md" type="danger" label="Bouton .btn-danger"></app-button>
+      <app-button size="md" label="Bouton chargement" [loading]="true"></app-button>
       <app-button
         size="md"
         type="primary"
@@ -53,18 +60,63 @@
         label="Bouton .btn-primary [disabled]"
       ></app-button>
     </div>
-    <h1>Boutons (sm)</h1>
+    <h1>Boutons (small)</h1>
     <div class="frow gap-5">
       <app-button size="sm" label="Bouton .btn-primary"></app-button>
       <app-button size="sm" type="secondary" label="Bouton .btn-secondary"></app-button>
       <app-button size="sm" type="success" label="Bouton .btn-success"></app-button>
       <app-button size="sm" type="danger" label="Bouton .btn-danger"></app-button>
+      <app-button size="sm" label="Bouton chargement" [loading]="true"></app-button>
+
       <app-button
         size="sm"
         type="primary"
         [disabled]="true"
         label="Bouton .btn-primary [disabled]"
       ></app-button>
+    </div>
+  </div>
+
+  <div class="main-container px-5">
+    <div class="main-container-form p-5">
+      <h1 class="hero-title form-title">Formulaire</h1>
+      <form [formGroup]="form">
+        <app-input
+          [control]="textControl"
+          [configuration]="{
+      label: 'Nom d\'utilisateur',
+      placeholder: 'Ecrivez votre nom d\'utilisateur',
+      required: true,
+    }"
+        ></app-input>
+        <app-input-password
+          [control]="passwordControl"
+          [configuration]="{
+      label: 'Mot de passe',
+      placeholder: 'Ecrivez votre mot de passe',
+      required: true,
+      showPassword: true,
+    }"
+        ></app-input-password>
+        <app-input-email
+          [control]="emailControl"
+          [configuration]="{
+      label: 'Adresse email',
+      placeholder: 'Ecrivez votre adresse email',
+      required: true,
+    }"
+        ></app-input-email>
+
+        <app-select
+          [control]="selectControl"
+          [configuration]="{
+      label: 'Choisis ton pays',
+      placeholder: 'Choisis ton pays',
+      required: true,
+      choices: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+    }"
+        ></app-select>
+      </form>
     </div>
   </div>
 </div>

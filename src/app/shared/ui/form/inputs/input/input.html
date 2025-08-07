@@ -4,9 +4,11 @@
   [class.success]="!errorMessages && (control.value.length > 1)"
   [class.disabled]="!control.disable"
 >
-  <label class="input-container-label" [for]="mergeConfigs().label.trim()"
-    >{{ mergeConfigs().label }}{{ (mergeConfigs().required) ? '' : '*'}}</label
-  >
+  <p class="baseline">
+    <label class="input-container-label" [for]="mergeConfigs().label.trim()"
+      >{{ mergeConfigs().label }}{{ (mergeConfigs().required) ? '' : '*'}}</label
+    >
+  </p>
 
   <input
     [formControl]="control"
