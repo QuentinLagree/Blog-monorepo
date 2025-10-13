@@ -17,10 +17,10 @@ export class AuthGuard implements CanActivate {
         if (session?.loggedIn) {
           return true;
         } else {
-          return this._router.createUrlTree(['/login']); // Redirige si non connecté
+          return this._router.createUrlTree(['auth/login']);
         }
       }),
-      catchError(() => of(this._router.createUrlTree(['/login'])))
+      catchError(() => of(this._router.createUrlTree(['auth/login'])))
     );
   }
 }

@@ -1,0 +1,212 @@
+@use 'sass:color';
+@use 'variables' as *;
+@use 'mixins/mixins' as *;
+@use 'bases/base-flex' as *;
+
+// === Palette / tokens ===
+$primary: #cb2fff !default;
+$surface: $white;
+$text:    $black;
+$border:  color.mix($black, $surface, 10%);
+
+$success: #16a34a;
+$error:   #ef4444;
+$warning: #f59e0b;
+$info:    $primary;
+
+:host {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.toast-wrapper {
+  position: absolute;
+  right: env(safe-area-inset-right);
+  top: env(safe-area-inset-top);
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  padding: 16px;
+  width: min(92vw, 35em);
+
+  &.top-left { left: env(safe-area-inset-left); right: auto; }
+  &.bottom-right { bottom: env(safe-area-inset-bottom); top: auto; }
+  &.bottom-left  { bottom: env(safe-area-inset-bottom); top: auto; left: env(safe-area-inset-left); right: auto; }
+}
+
+.toast {
+  position: relative;
+  // grille type "bannière" : icône | contenu | close
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+
+  background: $surface;
+  color: $text;
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  box-shadow: none; // style plat
+  padding: 1em 1em; // compact
+  padding-left: 0;
+  overflow: hidden;
+
+  // anim entrée/sortie sobres
+  animation: fadeIn .16s ease-out;
+  transition: opacity .14s ease, transform .2s ease;
+  opacity: 1;
+  transform: translateY(0);
+  @include box-shadow;
+
+
+  &.closing {
+    opacity: 0;
+    transform: translateY(-4px);
+    pointer-events: none;
+  }
+
+  .wrapper {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .toast-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 5em;
+    width: 100%;
+  }
+
+  .toast-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  // on neutralise l’ancienne barre verticale
+  .left-bar { display: none; }
+
+  .toast-icon-container {
+    margin: 0 1em;
+    margin-top: 2px;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .toast-icon {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  color: var(--accent);
+}
+
+  .content {
+    min-width: 0; // évite l’overflow
+  }
+
+  .title {
+    font-weight: 800;
+    margin-bottom: 2px;
+    letter-spacing: .2px;
+    color: $black;
+  }
+
+  .message {
+    font-weight: 400;
+    width: 100%;
+    font-size: 1em;
+    line-height: 1em;
+    color: $black;
+  }
+
+  .actions {
+    margin-top: 2em;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    gap: 10px;
+    
+
+    .action {
+      width: auto; 
+      appearance: none;
+      font-weight: 400;
+      font-size: 0.9em;
+      cursor: pointer;
+
+      // petite pastille au focus pour l’accessibilité
+      &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px color.change($primary, $alpha: .18);
+      }
+    }
+  }
+
+  .close {
+    flex: 0;
+    border: none;
+    color: #9ca3af;
+    background: transparent !important;
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+    border-radius: 6px;
+    padding: 0 0.8em;
+    box-shadow: none;
+
+    &:hover { color: $text; }
+    &:focus-visible { outline: none; }
+  }
+
+  // variantes : on utilise une variable CSS --accent (icône + barre de progression)
+  &.info    { --accent: #{$info}; }
+  &.success { --accent: #{$success}; }
+  &.warning { --accent: #{$warning}; }
+  &.error   { --accent: #{$error}; }
+}
+
+// soulignement fin façon “bannière”
+.progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 5px; // trait fin comme dans ton screenshot
+  width: 100%;
+  border-radius: 5em;
+  overflow: hidden;
+  margin-top: 8px;
+
+
+  .bar {
+    height: 100%;
+    width: 100%;
+    background: var(--accent, $primary);
+    animation-name: shrink;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+  }
+
+  &.paused .bar { animation-play-state: paused; }
+}
+
+@keyframes shrink {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100%); }
+}
+
+@keyframes fadeIn {
+  from { transform: translateY(-4px); opacity: 0; }
+  to   { transform: translateY(0);   opacity: 1; }
+}
+
+// Respect des préférences utilisateurs
+@media (prefers-reduced-motion: reduce) {
+  .toast { animation: none; transition: none; }
+  .progress .bar { animation: none; }
+}

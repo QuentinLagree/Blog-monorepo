@@ -6,6 +6,7 @@ export interface InputValidationContext {
   required?: boolean;
   minlength?: number;
   maxlength?: number;
+  validate?: boolean,
   type: InputType;
   options?: OptionalValidations;
 }

@@ -1,47 +1,25 @@
-<h1>Login Page</h1>
+<div class="flex frow-center">
+  <div class="main-container-form p-5">
+  <h1>Ravis de te revoir !</h1>
+  <form [formGroup]="form" class="stack gap-4 pt-5">
+    
 
-<form [formGroup]="form">
-  <app-input
-    [control]="usernameControl"
-    [configuration]="{
-  label: 'Nom',
-  placeholder: 'Entrez votre nom',
-  required: true,
-  type: 'text'
-}"
-  />
-
-  <app-input-email
-    [control]="emailControl"
-    [configuration]="{
+    <app-input-email [control]="emailControl" [configuration]="{
   label: 'Adresse Email',
   placeholder: 'Entrez votre adresse email',
   required: true,
   type: 'email'
-}"
-  />
+}" />
 
-  <app-input-password
-    [control]="passwordControl"
-    [configuration]="{
+    <app-input-password [control]="passwordControl" [configuration]="{
   label: 'Mot de passe',
   placeholder: 'Entrez votre mot de passe',
   required: true,
   type: 'password',
   showPassword: true,
-  displayStrenghMeterPassword: true,
-}"
-  />
-
-  <app-input-password
-    [control]="passwordConfirmControl"
-    [configuration]="{
-  label: 'Confirmation Mot de passe',
-  placeholder: 'Entrez de nouveau votre mot de passe',
-  required: true,
-  type: 'password',
-}"
-  />
-
-  <app-button-submit (clicked)="submit()"></app-button-submit>
-</form>
+}" />
+    <app-button (clicked)="submit()" class="full" size="lg" [label]="loading ? 'Connection en cours...' : 'Se connecter'" [disabled]="!form.valid" [loading]="loading"></app-button>
+  </form>
+  <p class="main-container-form-link">Vous n'avez pas de compte ? <a href="auth/register">Inscris-toi</a>.</p>
+</div>
+</div>

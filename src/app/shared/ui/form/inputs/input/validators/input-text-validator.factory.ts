@@ -9,7 +9,9 @@ export function TextInputValidatorFactory(
     const context: InputValidationContext = {
       type: 'text',
       minlength: 4,
+      maxlength: 255,
       required: true,
+      validate: true,
       value: (control.value || '').toString(),
       options: {
         acceptSpecialCaracters: false
@@ -17,6 +19,9 @@ export function TextInputValidatorFactory(
       ...config
     };
 
-    return validateInput(context);
+    if (context.validate === true) {
+      return validateInput(context)
+    }
+    return null;
   };
 }

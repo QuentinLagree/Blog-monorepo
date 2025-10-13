@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { BaseInputComponent } from '../base-input';
+import { BaseFormElementComponent } from '../base-input';
 import { InputPasswordConfig } from './models/input-password-config.model';
 import { ReactiveFormsModule } from '@angular/forms';
 import { InputPasswordMeterComponent } from './components/input-password-meter/input-password-meter';
@@ -18,7 +18,7 @@ import { InputErrorComponent } from '../inputs-error/inputs-error';
   ],
   standalone: true
 })
-export class InputPassswordComponent extends BaseInputComponent<InputPasswordConfig> {
+export class InputPassswordComponent extends BaseFormElementComponent<InputPasswordConfig> {
   override defaultConfiguration: InputPasswordConfig = {
     label: 'Mot de passe',
     placeholder: 'placeholder : password',

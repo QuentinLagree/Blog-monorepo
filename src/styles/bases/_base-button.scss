@@ -1,7 +1,7 @@
 @use 'mixins/mixins' as *;
 @use 'variables' as *;
 
-button:not(.input-password-toggle) {
+button:not(.btn-select, .input-password-toggle) {
   width: 100%;
   outline: none;
   border: none;
@@ -36,6 +36,7 @@ button.loading {
   position: relative;
   display: flex;
   flex-direction: row-reverse;
+  justify-content: center;
   align-items: center;
   gap: 0.5em;
 }
@@ -91,4 +92,31 @@ button.btn-success {
 
 button.btn-danger {
   background-color: $danger;
+}
+
+button.btn-select {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 15px 25px;
+  background: none;
+  border: 0.5px solid transparent;
+  border-radius: 7px;
+  outline: none;
+  transition: border-color 0.2s;
+  text-align: left;
+
+  font-family: Poppins, sans-serif !important;
+  font-size: 1em;
+  font-weight: 500;
+  color: $input-placeholder;
+  
+  @include box-inset-shadow;
+
+  &:focus {
+    border-color: $primary;
+  }
+  &.fill {
+    color: $black;
+  }
 }

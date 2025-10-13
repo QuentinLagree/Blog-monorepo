@@ -8,9 +8,9 @@ import { GetInputErrorMessage } from 'src/app/shared/helpers/validation/input-va
   imports: [ReactiveFormsModule],
   template: `
     @if (errorMessage) {
-      <div class="error-message">
+      <p class="text-danger error-message">
         {{ errorMessage }}
-      </div>
+      </p>
     }
   `,
   styleUrls: ['./inputs-error.scss']

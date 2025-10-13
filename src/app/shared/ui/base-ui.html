@@ -1,4 +1,4 @@
-<div class="main-container fcol gap-8 p-7">
+  <div class="main-container fcol gap-8 p-7">
   <div class="main-container blur frow gap-5 ghost">
     <div class="main-container ghost">
       <h1 class="mb-1">Titre du premier niveau</h1>
@@ -77,45 +77,34 @@
     </div>
   </div>
 
-  <div class="main-container px-5">
+  <div class="main-container">
     <div class="main-container-form p-5">
       <h1 class="hero-title form-title">Formulaire</h1>
-      <form [formGroup]="form">
-        <app-input
+      <form [formGroup]="form" class="stack gap-2">
+        <app-input-password
           [control]="textControl"
           [configuration]="{
-      label: 'Nom d\'utilisateur',
-      placeholder: 'Ecrivez votre nom d\'utilisateur',
+      label: 'LABEL',
+      placeholder: 'PLACEHOLDER',
       required: true,
-    }"
-        ></app-input>
-        <app-input-password
-          [control]="passwordControl"
-          [configuration]="{
-      label: 'Mot de passe',
-      placeholder: 'Ecrivez votre mot de passe',
-      required: true,
-      showPassword: true,
+      displayStrenghMeterPassword: true,
+
     }"
         ></app-input-password>
-        <app-input-email
-          [control]="emailControl"
-          [configuration]="{
-      label: 'Adresse email',
-      placeholder: 'Ecrivez votre adresse email',
-      required: true,
-    }"
-        ></app-input-email>
-
         <app-select
           [control]="selectControl"
           [configuration]="{
-      label: 'Choisis ton pays',
-      placeholder: 'Choisis ton pays',
-      required: true,
-      choices: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+      label: 'CUSTOM SELECT',
+      placeholder: 'Selectionne une valeur',
+      required: false,
+      choices: ['Valeur1', 'Valeur2', 'Valeur3', 'Valeur4'],
     }"
         ></app-select>
+        <app-switch-button [control]="checkboxControl" [configuration]="{
+          label:'CUSTOM SWITCH BUTTON',
+          type: 'checkbox',
+          required:true
+        }"></app-switch-button>
       </form>
     </div>
   </div>

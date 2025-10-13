@@ -7,15 +7,3 @@
 @use 'styles/helpers';
 @use 'styles/base';
 @use 'styles/utils/spinner_icon';
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  background-color: #fff;
-  padding: 2em;
-  height: auto;
-}

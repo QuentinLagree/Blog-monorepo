@@ -1,4 +1,4 @@
-import { Component, input, InputSignal } from '@angular/core';
+import { Component, HostBinding, input, InputSignal } from '@angular/core';
 import { BaseButtonComponent, ButtonSize, ButtonType } from '../base-button';
 
 @Component({

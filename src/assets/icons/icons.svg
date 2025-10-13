@@ -13,6 +13,23 @@
 <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </symbol>
 
+<symbol id="icon-cancel" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12.0009 12L17.2435 17.2426M6.75827 17.2426L12.0009 12L6.75827 17.2426ZM17.2435 6.75732L12.0009 12L17.2435 6.75732ZM12.0009 12L6.75827 6.75732L12.0009 12Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</symbol>
+<symbol id="icon-warn-triangle" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M20.0429 20.9999H3.95705C2.41902 20.9999 1.45658 19.3363 2.22324 18.003L10.2662 4.01527C11.0352 2.67786 12.9648 2.67785 13.7338 4.01526L21.7768 18.003C22.5434 19.3363 21.581 20.9999 20.0429 20.9999Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M12 9V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M12 17.01L12.01 16.9989" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</symbol>
+<symbol id="icon-check" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M5 13L9 17L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</symbol>
+<symbol id="icon-info" width="24" height="24" viewBox="0 0 5 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2.916 3.02C2.548 3.02 2.244 2.94 2.004 2.78C1.764 2.62 1.644 2.404 1.644 2.132C1.644 1.868 1.732 1.652 1.908 1.484C2.084 1.308 2.296 1.176 2.544 1.088C2.8 1 3.04 0.956 3.264 0.956C3.632 0.956 3.936 1.036 4.176 1.196C4.416 1.348 4.536 1.564 4.536 1.844C4.536 2.076 4.46 2.284 4.308 2.468C4.156 2.644 3.956 2.78 3.708 2.876C3.468 2.972 3.204 3.02 2.916 3.02ZM2.196 11.3C1.684 11.3 1.32 11.172 1.104 10.916C0.888 10.66 0.78 10.292 0.78 9.812C0.78 9.636 0.804 9.392 0.852 9.08C0.9 8.76 0.964 8.408 1.044 8.024C1.124 7.632 1.208 7.236 1.296 6.836C1.384 6.436 1.468 6.06 1.548 5.708L0.876 4.7C1.3 4.444 1.704 4.232 2.088 4.064C2.472 3.888 2.856 3.8 3.24 3.8C3.576 3.8 3.808 3.872 3.936 4.016C4.072 4.16 4.14 4.384 4.14 4.688C4.14 4.808 4.108 5.004 4.044 5.276C3.988 5.548 3.916 5.868 3.828 6.236C3.74 6.604 3.652 6.992 3.564 7.4C3.476 7.8 3.4 8.196 3.336 8.588C3.28 8.972 3.252 9.316 3.252 9.62C3.252 9.86 3.28 10.076 3.336 10.268C3.4 10.452 3.496 10.6 3.624 10.712C3.176 11.104 2.7 11.3 2.196 11.3Z" fill="currentColor"/>
+</symbol>
+
+
+
 
 
 </svg>

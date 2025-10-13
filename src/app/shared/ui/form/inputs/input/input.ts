@@ -1,7 +1,7 @@
 import { InputConfig } from '../models/input-config.model';
 import { Component } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { BaseInputComponent } from '../base-input';
+import { BaseFormElementComponent } from '../base-input';
 import { InputErrorComponent } from '../inputs-error/inputs-error';
 
 @Component({
@@ -11,7 +11,7 @@ import { InputErrorComponent } from '../inputs-error/inputs-error';
   styleUrls: ['../base-input.scss'],
   standalone: true
 })
-export class InputComponent extends BaseInputComponent<InputConfig> {
+export class InputComponent extends BaseFormElementComponent<InputConfig> {
   override defaultConfiguration: InputConfig = {
     label: 'Text',
     placeholder: 'placeholder : text',

@@ -7,12 +7,26 @@ export function GetInputErrorMessage(control: AbstractControl): string | null {
 
   const errors = control.errors;
 
+  if (errors?.['required-multi-select']) {
+    return 'Une option minimum est requise.';
+  }
+
+  if (errors?.['required-select']) {
+    return 'La séléction d\'une option est requise.';
+  }
+
   if (errors?.['required']) {
     return 'Ce champ est requis';
   }
+
   if (errors?.['minlength']) {
     const { requiredLength, actualLength } = errors['minlength'];
     return `Le texte doit contenir au moins ${requiredLength} caractère${requiredLength == 1 ? '' : 's'} (actuellement ${actualLength}).`;
+  }
+
+  if (errors?.['maxcount-multi-select']) {
+    const { requiredLength } = errors['maxcount-multi-select'];
+    return `Vous ne pouvez pas séléctionner plus de ${requiredLength} éléments dans la liste.`;
   }
 
   if (errors?.['maxlength']) {

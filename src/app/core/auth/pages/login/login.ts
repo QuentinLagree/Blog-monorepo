@@ -1,56 +1,69 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { SubmitButtonComponent } from 'src/app/shared/ui/form/buttons/button-submit/button-submit';
 import { EmailInputComponent } from 'src/app/shared/ui/form/inputs/input-email/input-email';
 import { EmailInputValidatorFactory } from 'src/app/shared/ui/form/inputs/input-email/validators/input-email-validator.factory';
-import { InputComponent } from 'src/app/shared/ui/form/inputs/input/input';
-import { TextInputValidatorFactory } from 'src/app/shared/ui/form/inputs/input/validators/input-text-validator.factory';
 import { InputPassswordComponent } from 'src/app/shared/ui/form/inputs/inputs-password/inputs-password';
 import { PasswordInputValidatorFactory } from 'src/app/shared/ui/form/inputs/inputs-password/validators/input-password-validator.factory';
+import { BaseButtonComponent } from "@src/app/shared/ui/form/buttons/base-button";
+import { UserService } from '@src/app/core/services/user.service';
+import { Router } from '@angular/router';
+import { userLogin } from '../../models/user-login.model';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-login-page',
   imports: [
-    InputComponent,
     ReactiveFormsModule,
     EmailInputComponent,
     InputPassswordComponent,
-    SubmitButtonComponent
+    BaseButtonComponent
   ],
   standalone: true,
-  templateUrl: './login.html'
+  templateUrl: './login.html',
+  styleUrls: ['./login.scss']
 })
 export class LoginPageComponent {
   private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _router: Router = inject(Router);
+  private _user: UserService = inject(UserService)
 
-  usernameControl = new FormControl('', [TextInputValidatorFactory()]);
+  loading: boolean = false;
 
-  emailControl = new FormControl('', [
+
+  emailControl = new FormControl('lagreequentindev21@gmail.com', [
     EmailInputValidatorFactory({
       minlength: 5
     })
   ]);
 
-  passwordControl = new FormControl('', [PasswordInputValidatorFactory()]);
-
-  passwordConfirmControl = new FormControl('', [
-    PasswordInputValidatorFactory({
-      minlength: 0,
-      options: {
-        useStrengthCheck: false,
-        hasSameValueOf: this.passwordControl
-      }
-    })
-  ]);
+  passwordControl = new FormControl('Salut1234!', [PasswordInputValidatorFactory({
+    options: {
+      useStrengthCheck: false
+    }
+  })]);
 
   form = this._formBuilder.group({
-    username: this.usernameControl,
     email: this.emailControl,
     password: this.passwordControl,
-    password_confirm: this.passwordConfirmControl
   });
 
   submit = () => {
-    console.log('Le bouton fonctionne correctement.');
-  };
+    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (this.loading) return;
+
+    this.loading = true;
+
+    const { email, password } = this.form.getRawValue();
+
+    setTimeout(() => {
+      this._user.loginUser({ email, password }).pipe(
+        finalize(() => {
+          this.loading = false
+        })
+      ).subscribe({
+        next: () => this._router.navigate(['auth/register']),
+      });
+    },2000)
+
+  }
 }

@@ -78,8 +78,6 @@ input {
   }
 }
 
-select {
-  font-size: 1em;
-  font-weight: 500;
-  color: $input-placeholder;
+strong {
+  font-weight: 700;
 }

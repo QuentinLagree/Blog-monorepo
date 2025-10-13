@@ -8,15 +8,29 @@ export function validateInput(context: InputValidationContext): ValidationErrors
   const value = context.value.trim() || '';
 
   if (context.required && value === '') {
-    errors['required'] = true;
+    if (context.type === 'select') {
+       errors['required-select'] = true
+    } else if (context.type === 'multi-select') {
+      errors['required-multi-select'] = true
+    } else {
+      errors['required'] = true;
+    }
   }
 
   if (context.maxlength) {
-    if (value.length > (context.maxlength ?? 0)) {
-      errors['maxlength'] = {
-        requiredLength: context.maxlength,
-        actualLength: value.length
-      };
+    if (context.type === 'multi-select') {
+      if (context.value.split(',').length > context.maxlength - 1) {
+        errors['maxcount-multi-select'] = {
+          requiredLength: context.maxlength
+        };
+      }
+    } else {
+      if (value.length > (context.maxlength ?? 0)) {
+        errors['maxlength'] = {
+          requiredLength: context.maxlength,
+          actualLength: value.length
+        };
+      }
     }
   }
 

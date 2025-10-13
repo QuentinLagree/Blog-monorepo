@@ -7,7 +7,7 @@ import { userLogin } from '../auth/models/user-login.model';
 export class UserService {
   private readonly _http: HttpRequestService = inject(HttpRequestService);
   getAllUsers() {
-    return this._http.getData('user');
+      return this._http.getData('user');
   }
 
   registerUser(dto: userRegister) {

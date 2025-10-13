@@ -1,7 +1,8 @@
 export interface userRegister {
-  firstname: string;
-  lastname: string;
-  pseudo: string;
-  email: string;
-  password: string;
+  nom: string | null;
+  prenom: string | null;
+  pseudo: string | null;
+  email: string | null;
+  password: string | null;
+  role: 'user';
 }

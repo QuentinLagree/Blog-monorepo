@@ -6,7 +6,7 @@ import { Message } from 'src/app/core/models/message.model';
 const API_URL = 'http://localhost:3000/';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class HttpRequestService {
   private http: HttpClient = inject(HttpClient);
 

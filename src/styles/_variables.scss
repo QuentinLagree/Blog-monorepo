@@ -4,7 +4,7 @@ $white: #fff;
 $black: #210242;
 $input-placeholder: rgb(33 2 66 / 35%);
 $border: #af94cc;
-$contaier-background: rgb(220 220 220 / 5%);
+$container-background: rgb(220 220 220 / 20%);
 
 /* BUTTON */
 $primary: #cb2fff;
@@ -17,6 +17,11 @@ $error: #e96969;
 
 /* spacing */
 
-$gap-unit: 0.45rem;
+$gap-unit: 0.45em;
 $spacing-unit: 0.5em;
 $blur-intensity: 2em;
+
+/* SELECT */
+$option-background: rgb(220 220 220 / 20%);
+
+$switch-toggle: 2.4em;
