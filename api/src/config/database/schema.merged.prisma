@@ -1,0 +1,99 @@
+// AUTO-GENERATED FILE. DO NOT EDIT.
+// Run: npm run prisma:build
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "foreignKeys"
+}
+
+// Base Prisma : datasource + generator (pas de model ici)
+
+// ----- models\account.prisma -----
+model Account {
+  id              Int     @id @default(autoincrement())
+  user            User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id         Int     @unique
+  followees_count Int
+  followers_count Int
+  avatar_profil   String? @db.Text
+  theme           String  @default("dark")
+  language        String  @default("fr")
+
+  followees Follows[] @relation("Followee")
+  followers Follows[] @relation("Follower")
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@map("account")
+}
+
+// ----- models\follows.prisma -----
+model Follows {
+  id Int @id @default(autoincrement())
+
+  // Utilisateur suivi
+  followee_id Int     @unique
+  followee    Account @relation("Followee", fields: [followee_id], references: [id], onDelete: Cascade)
+
+  // Utilisateur qui suit
+  follower_id Int     @unique
+  follower    Account @relation("Follower", fields: [follower_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+
+  @@map("follows")
+}
+
+// ----- models\post.prisma -----
+model Post {
+  id          Int     @id @default(autoincrement())
+  authorId    Int
+  title       String
+  description String
+  content     String
+  published   Boolean @default(false)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@map("post")
+}
+
+// ----- models\user.prisma -----
+model User {
+  id       Int    @id @default(autoincrement())
+  nom      String
+  prenom   String
+  pseudo   String
+  email    String @unique
+  password String
+  role     String
+
+  posts   Post[]
+  Account Account?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("user")
+}
+
+// ----- models\verification.prisma -----
+model VerificationTokens {
+  id    Int    @id @default(autoincrement())
+  email String @unique
+  code  String
+
+  expired_at DateTime
+  created_at DateTime @default(now())
+
+  @@map("verification_tokens")
+}

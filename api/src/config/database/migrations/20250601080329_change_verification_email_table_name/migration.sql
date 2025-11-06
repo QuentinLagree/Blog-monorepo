@@ -1,0 +1,1 @@
+ALTER TABLE `VerificationEmail` RENAME TO `VerificationTokens`;

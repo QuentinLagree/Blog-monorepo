@@ -1,0 +1,10 @@
+// Base Prisma : datasource + generator (pas de model ici)
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "foreignKeys"
+}

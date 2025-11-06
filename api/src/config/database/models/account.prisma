@@ -1,0 +1,18 @@
+model Account {
+  id              Int     @id @default(autoincrement())
+  user            User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id         Int     @unique
+  followees_count Int
+  followers_count Int
+  avatar_profil   String? @db.Text
+  theme           String  @default("dark")
+  language        String  @default("fr")
+
+  followees Follows[] @relation("Followee")
+  followers Follows[] @relation("Follower")
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@map("account")
+}

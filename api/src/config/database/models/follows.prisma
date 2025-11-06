@@ -1,0 +1,15 @@
+model Follows {
+  id Int @id @default(autoincrement())
+
+  // Utilisateur suivi
+  followee_id Int     @unique
+  followee    Account @relation("Followee", fields: [followee_id], references: [id], onDelete: Cascade)
+
+  // Utilisateur qui suit
+  follower_id Int     @unique
+  follower    Account @relation("Follower", fields: [follower_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+
+  @@map("follows")
+}

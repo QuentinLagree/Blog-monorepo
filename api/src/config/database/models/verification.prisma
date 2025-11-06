@@ -1,0 +1,10 @@
+model VerificationTokens {
+  id    Int    @id @default(autoincrement())
+  email String @unique
+  code  String
+
+  expired_at DateTime
+  created_at DateTime @default(now())
+
+  @@map("verification_tokens")
+}
