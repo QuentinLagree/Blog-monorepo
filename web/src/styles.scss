@@ -1,0 +1,9 @@
+/* You can add global styles to this file, and also import other style files */
+@use 'styles/reset';
+@use 'styles/fonts';
+@use 'styles/variables';
+@use 'styles/mixins/mixins';
+@use 'styles/mixins/space_mixins';
+@use 'styles/helpers';
+@use 'styles/base';
+@use 'styles/utils/spinner_icon';

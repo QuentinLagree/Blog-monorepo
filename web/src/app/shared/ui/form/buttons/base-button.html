@@ -1,0 +1,13 @@
+<button
+  [disabled]="disabled() || loading()"
+  [attr.class]="[hostClasses + ' ' + ((loading()) ? 'loading' : '')]"
+  (click)="onClick()"
+>
+  @if (icon()) {
+  <i class="icon" [class]="icon()"></i>
+  } @else {
+  <span class="label">{{ label() }}</span>
+  @if (loading()) {
+  <span class="loader"></span>
+  } }
+</button>

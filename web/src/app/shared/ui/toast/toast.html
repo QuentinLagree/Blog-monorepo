@@ -1,0 +1,84 @@
+<div class="toast-wrapper" [class.top-left]="pos==='top-left'" [class.bottom-right]="pos==='bottom-right'"
+
+    [class.bottom-left]="pos==='bottom-left'" role="region" aria-label="Notifications">
+
+    @for (t of service.toasts(); track t.id) {
+
+    <div class="toast" (transitionend)="onTransitionEnd($event, t.id)" [class.closing]="t._closed"
+        [class.success]="t.variant==='success'" [class.error]="t.variant==='error'" [class.info]="t.variant==='info'"
+        [class.warning]="t.variant==='warning'" [attr.role]="t.variant==='error' ? 'alert' : 'status'"
+        [attr.aria-live]="t.variant==='error' ? 'assertive' : 'polite'" aria-atomic="true"
+        (mouseenter)="service.pause(t.id)" (mouseleave)="service.resume(t.id)">
+        
+        <div class="wrapper">
+            <div class="toast-icon-container" aria-hidden="true">
+            @if (t.variant==='success') {
+            <i>
+                <svg viewBox="0 0 24 24" class="toast-icon">
+                    <use href="#icon-check" />
+                </svg>
+            </i>
+            }
+            @if (t.variant==='error') { 
+                <i>
+                <svg viewBox="0 0 24 24" class="toast-icon">
+                    <use href="#icon-cancel" />
+                </svg>
+            </i>
+             }
+            @if (t.variant==='info') { 
+                <i>
+                <svg viewBox="0 0 24 24" class="toast-icon">
+                    <use href="#icon-info" />
+                </svg>
+            </i>
+             }
+            @if (t.variant==='warning') {
+            <i>
+                <svg viewBox="0 0 24 24" class="toast-icon">
+                    <use href="#icon-warn-triangle" />
+                </svg>
+            </i>
+            }
+        </div>
+        <div class="toast-content-wrapper">
+            <div class="toast-content">
+                <div class="content">
+                    @if (t.title) { <h5 class="baseline title">{{ t.title }}</h5> }
+                    <p class="message baseline">{{ t.message }}</p>
+                    
+                </div>
+
+                
+            </div>
+            
+
+            @if (!t.sticky) {
+        <div class="progress" [class.paused]="t._paused">
+            <div class="bar" [style.animation-duration.ms]="t.duration"
+                [style.animation-play-state]="t._paused ? 'paused' : 'running'"></div>
+        </div>
+        }
+
+        
+        </div>
+        <button type="button" class="close" (click)="service.close(t.id, 'manual')"
+                        aria-label="Fermer">×</button>        
+        </div>
+        
+        
+
+                    
+        @if (t.actions.length) {
+                    <div class="actions">
+                        @for (a of t.actions; track a.value) {
+                        <button type="button" [className]="'action btn sm p-1 btn-' + a.buttonType" (click)="service.action(t.id, a.value)"
+                            [attr.aria-label]="a.ariaLabel || a.label">{{ a.label }}</button>
+                        }
+                    </div>
+                    }
+    </div>
+    
+    
+}
+</div>

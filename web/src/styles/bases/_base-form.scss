@@ -1,0 +1,126 @@
+@use 'fonts' as *;
+@use 'mixins/mixins' as *;
+@use 'variables' as *;
+
+
+
+
+.input-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 10em;
+}
+
+
+/* BASE */
+
+.input-container-label {
+  cursor: inherit;
+  user-select: none;
+  padding-bottom: 0.5em;
+  padding-left: 0.5em;
+  border-radius: 2em;
+  color: $black;
+}
+
+input:not([type="checkbox"]) {
+  width: 100%;
+  height: 100%;
+  padding: 15px 25px;
+  background: none;
+  border: 0.5px solid transparent;
+  border-radius: 7px;
+  outline: none;
+  transition: border-color 0.2s;
+
+  @include box-inset-shadow;
+
+  &:focus {
+    border-color: $primary;
+  }
+}
+
+.select-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.select-container .icon-container {
+  position: absolute;
+  margin-right: 24px;
+  rotate: 0;
+}
+
+.select-container .icon-container svg {
+  width: 24px;
+  transition: rotate .4s;
+}
+
+.select-container.open .icon-container svg {
+  rotate: 180deg;
+}
+
+
+
+/* VALUE */
+input:not(:placeholder-shown) {
+  color: $black;
+}
+
+.input-container .input-informations {
+  height: 0.5em;
+  margin-top: 0.3em;
+
+  .row {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 25px;
+  }
+}
+
+/* ERROR */
+
+$states: (
+  error: $error,
+  success: $success
+);
+
+@each $state, $color in $states {
+  .input-container.#{$state} {
+    input {
+      border-color: $color;
+    }
+  }
+  .select-container.#{$state} {
+    select {
+      border-color: $color;
+    }
+  }
+}
+
+/* DISABLED */
+.input-container.disabled {
+  cursor: no-drop;
+
+  input:disabled {
+    user-select: none;
+    cursor: inherit;
+  }
+}
+
+
+
+input[type="checkbox"] {
+  position: relative;
+  height: 50px;
+  width: 50px;
+  appearance: auto;
+}

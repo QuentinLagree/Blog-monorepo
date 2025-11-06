@@ -1,0 +1,41 @@
+@use 'fonts' as *;
+@use 'mixins/mixins' as *;
+@use 'variables' as *;
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2em;
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+.stack {
+  display: grid!important;
+  grid-template-columns: 1fr;
+  align-content: flex-start;
+}
+
+.stack-separated {
+  gap: 14px;
+}
+
+.stack-separated>*+*{
+
+      position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+  
+  &:before{
+        content: "";
+      position: relative;
+      top: 1em;
+      left: 0;
+      right: 0;
+      height: 1px;
+      width: 100%;
+      background: $border;
+  }
+}

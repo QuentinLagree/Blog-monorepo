@@ -1,0 +1,83 @@
+@use 'variables' as *;
+
+* {
+  font-family: Poppins, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  color: $black;
+  font-weight: 500;
+  line-height: 1.4em;
+}
+
+h1 {
+  font-size: 2.5em;
+}
+
+h2 {
+  font-size: 2.1em;
+}
+
+h3 {
+  font-size: 1.8em;
+}
+
+h4 {
+  font-size: 1.5em;
+}
+
+h5 {
+  font-size: 1.3em;
+}
+
+p {
+  font-size: 1.2em;
+  font-weight: 400;
+  line-height: 1.4em;
+}
+
+h1.hero-title {
+  font-size: 3.5em;
+  font-weight: 700;
+}
+
+p.hero-baseline,
+label.hero-baseline {
+  font-size: 2em;
+  font-weight: 400;
+  line-height: 1.4em;
+}
+
+p.text-danger {
+  color: $danger;
+}
+
+p.text-muted {
+  color: $border;
+}
+
+input {
+  font-family: Poppins, sans-serif;
+  color: $input-placeholder;
+  font-weight: 500;
+  font-size: 1em;
+
+  &::placeholder {
+    font-weight: 500;
+    color: $input-placeholder;
+  }
+
+  &:not(:placeholder-shown) {
+    color: $black;
+  }
+}
+
+strong {
+  font-weight: 700;
+}

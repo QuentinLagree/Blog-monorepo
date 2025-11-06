@@ -1,0 +1,111 @@
+  <div class="main-container fcol gap-8 p-7">
+  <div class="main-container blur frow gap-5 ghost">
+    <div class="main-container ghost">
+      <h1 class="mb-1">Titre du premier niveau</h1>
+      <h2 class="mb-1">Titre du deuxieme niveau</h2>
+      <h3 class="mb-1">Titre du troisième niveau</h3>
+      <h4 class="mb-1">Titre du quatrième niveau</h4>
+      <h5 class="mb-1">Titre du cinquième niveau</h5>
+      <p class="baseline">
+        .baseline Lorem, ipsum dolor sit amet consectetur adipisicing elit. Placeat molestias rerum
+        nemo delectus incidunt quam temporibus molestiae modi nihil distinctio necessitatibus
+        voluptates velit ad, maxime fuga, deserunt fugit ex eligendi.
+      </p>
+    </div>
+    <div class="main-container-box ghost">
+      <h1 class="mb-1 hero-title">Titre .hero-title</h1>
+      <p class="hero-baseline">
+        .hero-baseline Lorem, ipsum dolor sit amet consectetur adipisicing elit. Placeat molestias
+        rerum nemo delectus incidunt quam temporibus molestiae modi nihil distinctio necessitatibus
+        voluptates velit ad, maxime fuga, deserunt fugit ex eligendi.
+      </p>
+      <div class="frow gap-4">
+        <p class="text-danger">.text-danger</p>
+        <p class="text-muted">.text-disabled</p>
+      </div>
+    </div>
+  </div>
+  <div class="main__container_container flex between col gap-6">
+    <h1 class="hero-title">Couleurs</h1>
+    <p>Aucune couleurs déinie pour le moment (à terminer)</p>
+  </div>
+
+  <div class="main-container-container flex between col gap-6">
+    <h1 class="hero-title">Boutons</h1>
+    <h1>Boutons (large)</h1>
+    <div class="frow gap-5">
+      <app-button size="lg" label="Bouton .btn-primary"></app-button>
+      <app-button size="lg" type="secondary" label="Bouton .btn-secondary"></app-button>
+      <app-button size="lg" type="success" label="Bouton .btn-success"></app-button>
+      <app-button size="lg" type="danger" label="Bouton .btn-danger"></app-button>
+      <app-button size="lg" label="Bouton chargement" [loading]="true"></app-button>
+      <app-button
+        size="lg"
+        type="primary"
+        [disabled]="true"
+        label="Bouton .btn-primary [disabled]"
+      ></app-button>
+    </div>
+    <h1>Boutons (medium)</h1>
+    <div class="frow gap-5">
+      <app-button size="md" label="Bouton .btn-primary"></app-button>
+      <app-button size="md" type="secondary" label="Bouton .btn-secondary"></app-button>
+      <app-button size="md" type="success" label="Bouton .btn-success"></app-button>
+      <app-button size="md" type="danger" label="Bouton .btn-danger"></app-button>
+      <app-button size="md" label="Bouton chargement" [loading]="true"></app-button>
+      <app-button
+        size="md"
+        type="primary"
+        [disabled]="true"
+        label="Bouton .btn-primary [disabled]"
+      ></app-button>
+    </div>
+    <h1>Boutons (small)</h1>
+    <div class="frow gap-5">
+      <app-button size="sm" label="Bouton .btn-primary"></app-button>
+      <app-button size="sm" type="secondary" label="Bouton .btn-secondary"></app-button>
+      <app-button size="sm" type="success" label="Bouton .btn-success"></app-button>
+      <app-button size="sm" type="danger" label="Bouton .btn-danger"></app-button>
+      <app-button size="sm" label="Bouton chargement" [loading]="true"></app-button>
+
+      <app-button
+        size="sm"
+        type="primary"
+        [disabled]="true"
+        label="Bouton .btn-primary [disabled]"
+      ></app-button>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="main-container-form p-5">
+      <h1 class="hero-title form-title">Formulaire</h1>
+      <form [formGroup]="form" class="stack gap-2">
+        <app-input-password
+          [control]="textControl"
+          [configuration]="{
+      label: 'LABEL',
+      placeholder: 'PLACEHOLDER',
+      required: true,
+      displayStrenghMeterPassword: true,
+
+    }"
+        ></app-input-password>
+        <app-select
+          [control]="selectControl"
+          [configuration]="{
+      label: 'CUSTOM SELECT',
+      placeholder: 'Selectionne une valeur',
+      required: false,
+      choices: ['Valeur1', 'Valeur2', 'Valeur3', 'Valeur4'],
+    }"
+        ></app-select>
+        <app-switch-button [control]="checkboxControl" [configuration]="{
+          label:'CUSTOM SWITCH BUTTON',
+          type: 'checkbox',
+          required:true
+        }"></app-switch-button>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+<app-toast-container></app-toast-container>
+<app-header title="Blog"></app-header>
+
+@if (!prod) {
+<a href="/ui">
+  <p
+  class="baseline"
+  style="
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    z-index: 999;
+    background-color: black;
+    color: rgb(226, 226, 9);
+    font-size: 0.8em;
+    user-select: none;
+    padding: 0.2em 2em;
+  "
+>
+  DEV MODE
+</p>
+</a>
+}
+
+<router-outlet />

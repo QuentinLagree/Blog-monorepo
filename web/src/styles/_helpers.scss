@@ -1,0 +1,4 @@
+@use 'mixins/space_mixins' as *;
+@include generate-gaps(10);
+@include generate-margins(8);
+@include generate-paddings(10);

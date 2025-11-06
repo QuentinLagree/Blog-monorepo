@@ -1,0 +1,24 @@
+<div
+  class="input-container"
+  [class.error]="errorMessages"
+  [class.success]="!errorMessages && (control.value.length > 1)"
+  [class.disabled]="!control.disable"
+>
+  <p class="baseline">
+    <label class="input-container-label" [for]="mergeConfigs().label.trim()"
+      >{{ mergeConfigs().label }}</label
+    >
+  </p>
+
+  <input
+    [formControl]="control"
+    [type]="mergeConfigs().type"
+    [attr.placeholder]="this.mergeConfigs().placeholder"
+    [attr.id]="mergeConfigs().label.trim()"
+    autocomplete="off"
+    required="{{ mergeConfigs().required }}"
+    (blur)="control.markAsTouched()"
+  />
+
+  <div class="input-informations"><app-input-error [control]="control"></app-input-error></div>
+</div>

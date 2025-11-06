@@ -1,0 +1,31 @@
+@use 'fonts' as *;
+@use 'mixins/mixins' as *;
+@use 'variables' as *;
+
+.pills {
+    display: flex;
+    gap: 0.5em;
+}
+
+.pill {
+    border-radius: 25px;
+    padding: 0.5em 1em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5em;
+}
+
+.icon-container-cancel {
+    height: 24px;
+    width: 24px;
+    color: $primary;
+    cursor: pointer;
+}
+
+.pill-primary {
+    color: $primary;
+    background-color: rgb(203 47 255 / 20%);
+}
+

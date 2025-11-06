@@ -1,0 +1,36 @@
+.flex {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: row;
+  width: 100%;
+}
+
+.flex > * {
+  flex: 1;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.flex.col {
+  flex-direction: column;
+}
+
+.flex.between {
+  justify-content: space-between;
+}
+
+.frow {
+  display: flex;
+  flex-direction: row;
+}
+
+.fcol {
+  display: flex;
+  flex-direction: column;
+}
+
+.frow-center {
+  flex-direction: row;
+  justify-content: center;
+}

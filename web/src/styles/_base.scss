@@ -1,0 +1,53 @@
+@use 'variables' as *;
+@use 'mixins/mixins' as *;
+@use './bases/base-text' as *;
+@use './bases/base-flex' as *;
+@use './bases/base-card' as *;
+@use './bases/base-form' as *;
+@use './bases/base-grid' as *;
+@use './bases/base-button' as *;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: $container-background;
+  padding: 2em;
+  height: auto;
+}
+
+
+.main-container {
+  position: relative;
+  min-width: 500px;
+  width: 100%;
+}
+
+.main-container-form {
+  height: 100%;
+  width: 100%;
+  max-width: 50%;
+  @include box-shadow;
+}
+
+.main-container-form .form-title {
+  align-self: flex-start;
+}
+
+.main-container-form-link {
+  color: $black;
+  margin-top: 2em;
+  text-align: center;
+}
+
+.main-container-form-link a {
+  color: $primary;
+  text-decoration: none;
+  font-weight: 700;
+  &:hover {
+    text-decoration: underline;
+  }
+}

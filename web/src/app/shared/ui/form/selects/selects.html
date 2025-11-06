@@ -1,0 +1,67 @@
+@if (status() === 'ready') {
+<div class="input-container" (focusout)="onFocusOut($event)"
+  (keydown.backspace)="deleteChoice(this.selectedValues[this.selectedValues.length - 1], $event)">
+  <p class="baseline">
+    <label class="input-container-label" [for]="mergeConfigs().label.trim()">
+      {{ mergeConfigs().label }}{{ (mergeConfigs().required) ? '' : '*'}}
+    </label>
+  </p>
+
+  <div #main_component class="select-container" (keydown)="onListKeydown($event)" [class.open]="isDropdownOpen">
+
+    <input type="hidden" [formControl]="control" [value]="" required="{{ mergeConfigs().required }}">
+
+    <button class="btn-select" [class.fill]="rawSelectedValue" [attr.id]="mergeConfigs().label.trim()"
+      [class.error]="errorMessages" [class.success]="!errorMessages && (control.value.length > 1)" (click)="toggle()"
+      (keydown.escape)="toggle(false)">
+
+      @if (mergeConfigs().multiple) {
+        @if (selectedValues.length > 0) {
+        <div class="pills">
+          @for (value of this.selectedValues; track $index) {
+          <app-pills [value]="value">
+            <i class="icon-container-cancel" (click)="deleteChoice(value, $event)">
+              <svg viewBox="0 0 24 24">
+                <use href="#icon-cancel" />
+              </svg>
+            </i>
+          </app-pills>
+          }
+        </div>
+        } @else {
+          @if (mergeConfigs().default_choice) {
+            {{mergeConfigs().default_choice}}
+          } @else {
+            {{mergeConfigs().placeholder}}
+          }
+        }
+      } @else {
+      {{rawSelectedValue || mergeConfigs().placeholder}}
+      }
+    </button>
+    <i class="icon-container">
+      <svg viewBox="0 0 24 24">
+        <use href="#icon-arrow-down" />
+      </svg>
+    </i>
+    <div #panel class="select-list flex fcol" [class.open]="isDropdownOpen" [class.up]="opensUpward">
+      <input placeholder="Filter..." type="text" #filter (keyup)="updateFilter(filter.value)">
+      <ul>
+        @for (choice of filteredAvailableChoices; track $index) {
+        <li #optionRef [attr.aria-selected]="rawSelectedValue.includes(choice) ? 'true' : 'false'"
+          [tabindex]="$index === activeIndex ? 0 : -1" tabindex="0" #optionselectother
+          (click)="updateValue(optionselectother)" class="py-2 pl-2"
+          [class.selected]="rawSelectedValue.includes(choice)" [value]="choice">
+          {{ choice }}
+        </li>
+        }
+      </ul>
+    </div>
+  </div>
+
+
+  <div class="input-informations"><app-input-error [control]="control"></app-input-error></div>
+</div>
+} @else {
+<p class="text-danger">{{ this.errorMessage }}</p>
+}

@@ -1,0 +1,7 @@
+<button [disabled]="disabled() || loading()" [class]="[hostClasses]" (click)="onClick()">
+  @if (!loading()) {
+  <span>{{ label() }}</span>
+  } @else {
+  <span class="spinner"></span>
+  }
+</button>

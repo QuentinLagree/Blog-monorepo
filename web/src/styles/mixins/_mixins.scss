@@ -1,0 +1,23 @@
+@use 'variables' as *;
+
+@mixin box-inset-shadow {
+  box-shadow: 0 0 5px 2px rgb(0 0 0 / 10%) inset;
+}
+
+@mixin box-shadow {
+  box-shadow: 0 0 10px 0 rgb(0 0 0 / 10%);
+}
+
+@mixin text-shadow {
+  text-shadow: 0 0 2px rgb(0 0 0 / 26%);
+}
+
+@mixin background-main-container($blur: true) {
+  background-color: $contaier-background;
+  border: 1px solid $border;
+  border-radius: 1em;
+
+  @if $blur {
+    backdrop-filter: blur($blur-intensity);
+  }
+}

@@ -1,0 +1,122 @@
+@use 'mixins/mixins' as *;
+@use 'variables' as *;
+
+button:not(.btn-select, .input-password-toggle) {
+  width: 100%;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  font-family: Inter, sans-serif;
+  font-weight: 600;
+  border-radius: 0.2em;
+
+  @include box-inset-shadow;
+  @include box-shadow;
+
+  transition:
+    filter 0.3s,
+    scale 0.1s ease-in-out;
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+
+  &:hover:not(:disabled, .btn-secondary) {
+    filter: brightness(1.1);
+  }
+
+  &:active:not(:disabled) {
+    scale: 0.97;
+  }
+}
+
+button.loading {
+  position: relative;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5em;
+}
+
+button.loading.lg .loader {
+  width: 1.2em;
+  height: 1.2em;
+}
+
+button.loading.md .loader {
+  width: 1em;
+  height: 1em;
+}
+
+button.loading.sm .loader {
+  width: 0.9em;
+  height: 0.9em;
+}
+
+button.lg {
+  padding: 0.7em 1em;
+  font-size: 1.3em;
+}
+
+button.md {
+  padding: 0.6em 0.85em;
+  font-size: 1.2em;
+}
+
+button.sm {
+  padding: 0.5em 0.75em;
+  font-size: 1.1em;
+}
+
+button.btn-primary {
+  background-color: $primary;
+}
+
+button.btn-secondary {
+  background-color: $white;
+  color: $black;
+  border: 1px solid transparent;
+  transition: 0.3s;
+
+  &:hover {
+    border-color: #e4e4e4;
+  }
+}
+
+button.btn-success {
+  background-color: $success;
+}
+
+button.btn-danger {
+  background-color: $danger;
+}
+
+button.btn-select {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 15px 25px;
+  background: none;
+  border: 0.5px solid transparent;
+  border-radius: 7px;
+  outline: none;
+  transition: border-color 0.2s;
+  text-align: left;
+
+  font-family: Poppins, sans-serif !important;
+  font-size: 1em;
+  font-weight: 500;
+  color: $input-placeholder;
+  
+  @include box-inset-shadow;
+
+  &:focus {
+    border-color: $primary;
+  }
+  &.fill {
+    color: $black;
+  }
+}

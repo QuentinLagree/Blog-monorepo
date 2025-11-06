@@ -1,0 +1,22 @@
+<div
+  class="input-container"
+>
+  @if (mergeConfigs().label) {
+    <p class="baseline">
+    <label class="input-container-label" [for]="mergeConfigs().label.trim()"
+      >{{ mergeConfigs().label }}</label
+    >
+</p>
+}
+  <input
+    [formControl]="control"
+    type="hidden"
+    [value]="isChecked()"
+    [attr.id]="mergeConfigs().label.trim()"
+    required="{{ mergeConfigs().required }}"
+    [checked]="isChecked()"
+  />
+  <div class="input-container-switch-button" [class.checked]="this.isChecked()" (click)="toggleChecked()">
+    <span></span>
+  </div>
+</div>
