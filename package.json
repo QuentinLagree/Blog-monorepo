@@ -1,0 +1,14 @@
+{
+  "name": "blog-monorepo",
+  "private": true,
+  "scripts": {
+    "docker:dev": "docker compose -f docker-compose.dev.yml up --build",
+    "dev": "pnpm --parallel --filter ./api start:dev --filter ./web start",
+    "build": "pnpm --filter ./api build && pnpm --filter ./web build",
+    "install:all": "pnpm install --recursive"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0",
+    "@angular/cli": "~20.1.0"
+  }
+}
