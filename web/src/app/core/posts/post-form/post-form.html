@@ -1,0 +1,109 @@
+@let state = this.state();
+@let isTitle = state === 'TITLE';
+@let isDesc = state === 'DESCRIPTION';
+@let isMeta = isTitle || isDesc;
+
+@if (isMeta) {
+  <div class="flex frow-center">
+    <div class="main-container-form p-5">
+      <h1>Rédige ton article !</h1>
+
+      <form [formGroup]="form" class="flex col gap-5 pt-5">
+        @if (isTitle) {
+          <app-input
+            [control]="titleControl"
+            [configuration]="{
+              label: 'Titre',
+              placeholder: 'Entrez le titre de l\'article',
+              required: true,
+              type: 'text'
+            }"
+          />
+        } @else {
+          <app-textarea
+            [control]="descriptionControl"
+            [configuration]="{
+              label: 'Description',
+              placeholder: 'Ajoute une description',
+              required: true
+            }"
+          ></app-textarea>
+        }
+
+        @let backLabel = isTitle ? 'Annuler' : 'Retour';
+        @let nextLabel = isDesc ? 'Ecrire le contenu' : 'Suivant';
+        @let backAction = isDesc ? prevStep.bind(this) : goBack.bind(this) ;
+        @let nextDisabled = isTitle ? !titleControl.valid : !descriptionControl.valid;
+
+        <div class="buttons flex frow flex-between gap-3">
+          <app-button
+            (clicked)="backAction()"
+            type="danger"
+            class="full"
+            size="lg"
+            [label]="backLabel"
+          ></app-button>
+
+          <app-button
+            (clicked)="nextStep()"
+            class="full flex-5"
+            size="lg"
+            [label]="nextLabel"
+            [disabled]="nextDisabled"
+            [loading]="loading()"
+          ></app-button>
+        </div>
+      </form>
+    </div>
+  </div>
+} @else {
+<div [class.fullscreen-editor]="true" [class.hide]="!markdownEditor">
+    <div class="topbar">
+        <h1 class="title">{{ this.titleControl.value}}</h1>
+        <div class="buttons frow gap-3">
+            <app-button (clicked)="goBack()" size="sm" type="danger" [label]="'Annulé'"></app-button>
+            <app-button (clicked)="prevStep()" size="sm" type="danger" [label]="'Retour'"></app-button>
+            <app-button (clicked)="submit()" [loading]="loading()" size="sm" [label]="'Enregistrer'"></app-button>
+        </div>
+    </div>
+    <div class="editors">
+        <app-textarea [contextMenuTrigger]="''" [contextMenuAction]="formatFromContextMenu" class="markdown"
+        (scrolled)="onEditorScroll($event)"
+        (keydown)="onTabPress($event)"
+            #markdownEditor [control]="contentControl" [configuration]="{
+                label: '',
+                required: false,
+                placeholder: '',
+            }"></app-textarea>
+        <div #preview (wheel)="blockScroll($event)"  (click)="onPreviewClick($event)" class="pl-2 preview">
+            <markdown class="variable-binding" [data]="resolvedMarkdown()" katex>
+            </markdown>
+        </div>
+        <input
+  #relinkPicker
+  type="file"
+  accept="image/*"
+  hidden
+  (change)="onRelinkPicked($event)"
+/>
+    </div>
+
+    <div class="bottombar gap-4">
+        <input
+            #imagePicker
+            type="file"
+            accept="image/*"
+            hidden
+            (change)="onPickImage($event)"
+            />
+
+            <app-button
+            type="secondary"
+            size="sm"
+            [label]="'Insérer une image'"
+            (clicked)="imagePicker.click()"
+            ></app-button>
+        <app-button type="secondary" size="sm" [label]="'Sauvegardé'" (clicked)="saveManual()"></app-button>
+    </div>
+</div>
+}

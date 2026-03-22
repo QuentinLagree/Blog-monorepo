@@ -1,0 +1,28 @@
+<div class="main-container">
+    <a class="post_detail" [href]="detailPath">
+        <div class="post-container p-2 mb-8" (click)="this.getDetail()">
+            <div class="post-container__infos">
+                <div class="title">
+                    <h3>{{ post().title }}</h3>
+                    
+                </div>
+                <p class="post-container__infos-description baseline">{{ post().description }}</p>
+                <div class="likes pt-2">
+                    25 J'aimes
+                </div>
+            </div>
+            <div class="post-container__callactions">
+                <p class="text-muted text-small">{{ post().created_at | date:'dd/MM/yyyy'}}</p>
+                <p class="baseline text"><strong>Auteur:</strong> {{ author?.prenom }}</p>
+                <div class="buttons frow flex.between gap-3">
+                    @if (this.sessionId === this.post().authorId || this.sessionRole === 'admin') {
+                        <app-button-edit (clicked)="toEditForm()" icon="icon-info"></app-button-edit>
+                    }
+                    <app-button size="sm" type="primary" label="Lire l'article"
+                        (clicked)="this.getDetail()"></app-button>
+                </div>
+            </div>
+        </div>
+    </a>
+
+</div>

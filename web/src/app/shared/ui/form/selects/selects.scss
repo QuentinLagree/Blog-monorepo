@@ -3,35 +3,63 @@
 @use 'bases/base-form' as *;
 @use 'bases/base-pills' as *;
 
+button.btn-select {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 15px 25px;
+  background: none;
+  border: 0.5px solid transparent;
+  border-radius: 7px;
+  outline: none;
+  transition: border-color 0.2s;
+  text-align: left;
+  font-family: Poppins, sans-serif !important;
+  font-size: 1em;
+  font-weight: 500;
+  color: $input-placeholder;
+
+  @include box-inset-shadow;
+
+  &:focus {
+    border-color: $primary;
+  }
+
+  &.fill {
+    color: $black;
+  }
+}
+
 .select-list {
-    position: absolute;
-    z-index: 5;
-    top: 100%; 
-    left: 0;
-    max-height: 400px;
-    height: auto;
-    width: 100%;
-    max-height: 15em;
-    margin-top: 0.5em;
-    border-radius: 7px;
+  position: absolute;
+  z-index: 5;
+  top: 100%;
+  left: 0;
+  height: auto;
+  width: 100%;
+  max-height: 15em;
+  margin-top: 0.5em;
   border: 0.5px solid transparent;
   border-radius: 7px;
   outline: none;
   background-color: $white;
   color: $black;
   list-style-type: none;
+
   @include box-inset-shadow;
+
   opacity: 0;
   pointer-events: none;
-  animation: hideList 0.2s ease-in 0s 1 normal forwards;
+  animation: hide 0.2s ease-in 0s 1 normal forwards;
+
   &.open {
     pointer-events: all;
     opacity: 1;
-      animation: showList 0.2s ease-in 0s 1 normal forwards;
+    animation: show 0.2s ease-in 0s 1 normal forwards;
   }
 }
 
-.select-list input{ 
+.select-list input {
   top: 0;
   position: relative;
 
@@ -41,93 +69,97 @@
 }
 
 .select-list ul {
-    overflow-y: scroll;
-
+  overflow-y: scroll;
 }
 
 .select-list.up {
-  animation: hideListUp 0.2s ease-in 0s 1 normal forwards;
+  animation: hide-up 0.2s ease-in 0s 1 normal forwards;
   top: auto;
   bottom: 100%;
   margin-bottom: 0.5em;
+
   &.open {
     pointer-events: all;
     opacity: 1;
-    animation: showListUp 0.2s ease-in 0s 1 normal forwards;
+    animation: show-up 0.2s ease-in 0s 1 normal forwards;
   }
 }
 
 .select-list li {
   display: flex;
   align-items: center;
-    font-size: 1em;
-    font-family: Poppins, sans-serif;
-    color: $black;
-    cursor: pointer;
-    transition:  background-color .3s;
-    
-    &:hover,
-    &.selected {
-        background-color: $option-background;
-    }
-    &.selected {
-      padding-left: 2em;
-    }
+  font-size: 1em;
+  font-family: Poppins, sans-serif;
+  color: $black;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover,
+  &.selected {
+    background-color: $option-background;
+  }
+
+  &.selected {
+    padding-left: 2em;
+  }
+  
+  &:focus {
+    background-color: $option-background-focus;
+  }
 }
 
+@keyframes show {
+  0% {
+    opacity: 0;
+    transform: rotateX(70deg);
+    transform-origin: top;
+  }
 
-
-@keyframes showList {
-	0% {
-		opacity: 0;
-		transform: rotateX(70deg);
-		transform-origin: top;
-	}
-
-	100% {
-		opacity: 1;
-		transform: rotateX(0deg);
-		transform-origin: top;
-	}
+  100% {
+    opacity: 1;
+    transform: rotateX(0deg);
+    transform-origin: top;
+  }
 }
 
-@keyframes hideList {
-	0% {
-		opacity: 1;
-		transform: rotateX(0deg);
-		transform-origin: top;
-	}
+@keyframes hide {
+  0% {
+    opacity: 1;
+    transform: rotateX(0deg);
+    transform-origin: top;
+  }
 
-	100% {
-		opacity: 0;
-		transform: rotateX(70deg);
-		transform-origin: top;
-	}
+  100% {
+    opacity: 0;
+    transform: rotateX(70deg);
+    transform-origin: top;
+  }
 }
 
-@keyframes hideListUp {
-	0% {
-		opacity: 1;
-		transform: rotateX(0);
-		transform-origin: bottom;
-	}
+@keyframes hide-up {
+  0% {
+    opacity: 1;
+    transform: rotateX(0);
+    transform-origin: bottom;
+  }
 
-	100% {
-		opacity: 0;
-		transform: rotateX(100deg);
-		transform-origin: bottom;
-	}
+  100% {
+    opacity: 0;
+    transform: rotateX(100deg);
+    transform-origin: bottom;
+  }
 }
-@keyframes showListUp {
-	0% {
-		opacity: 0;
-		transform: rotateX(-70deg);
-		transform-origin: bottom;
-	}
 
-	100% {
-		opacity: 1;
-		transform: rotateX(0);
-		transform-origin: bottom;
-	}
+@keyframes show-up {
+  0% {
+    opacity: 0;
+    transform: rotateX(-70deg);
+    transform-origin: bottom;
+  }
+
+  100% {
+    opacity: 1;
+    transform: rotateX(0);
+    transform-origin: bottom;
+  }
 }

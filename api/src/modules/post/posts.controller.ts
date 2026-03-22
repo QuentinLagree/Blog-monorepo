@@ -12,30 +12,33 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
-import { Post as Posts } from '@prisma/client';
 import { PostsEntity } from 'src/modules/post/entities/posts.entities';
 import { TransformDataMessageIntoObjectSerialization } from 'src/commons/interceptors/transform_data_message_into_object_serialization.interceptor';
 import { makeMessage } from 'src/commons/helpers/logger.helper';
-import { PostsService } from './posts.service';
+import { ArticleService } from './posts.service';
 import { ID } from 'src/commons/types/id.types';
-import { Message } from 'src/commons/types/message/message';
+import { Message } from 'src/commons/types/dto/message/message';
 import { CreatePostDto } from './dto/create-post.dto';
 import { ValidationError } from 'class-validator';
 import { dtoIsValid } from 'src/commons/helpers/dto/dto-validations.helper';
 import { UserService } from '../user/user.service';
+import { SlugService } from 'src/commons/services/slug.service';
+import { Post as Articles } from '@prisma/client';
+import { NumberNotCorrectFormat } from 'src/commons/exceptions/NumberNotCorrectFormat.error';
 
 @ApiTags('Gestion des Publications')
 @Controller('posts')
 @UseInterceptors(new TransformDataMessageIntoObjectSerialization([PostsEntity]))
 export class PostController {
-  constructor(private readonly _posts: PostsService,
-    private readonly _user: UserService
+  constructor(private readonly _articles: ArticleService,
+    private readonly _user: UserService,
+    private readonly _slug: SlugService
   ) {}
 
   @Get()
-  async index(): Promise<Message<Posts[] | null>> {
+  async index(): Promise<Message<Articles[] | null>> {
     try {
-      const posts: Posts[] = await this._posts.index();
+      const posts: Articles[] = await this._articles.index();
       return posts.length == 0
         ? makeMessage(
             'List of all posts is empty.',
@@ -64,9 +67,9 @@ export class PostController {
   }
 
   @Get('/published')
-  async indexPublished(): Promise<Message<Posts[] | null>> {
+  async indexPublished(): Promise<Message<Articles[] | null>> {
     try {
-      const posts: Posts[] = await this._posts.index(true);
+      const posts: Articles[] = await this._articles.index(true);
       return posts.length == 0
         ? makeMessage(
             'List of all published posts is empty.',
@@ -95,7 +98,7 @@ export class PostController {
   }
 
   @Get('/:id')
-  async show(@Param('id') id: number): Promise<Message<Posts | null>> {
+  async show(@Param('id') id: number): Promise<Message<Articles | null>> {
     if (!ID.hasValid(id))
       throw new HttpException(
         makeMessage(
@@ -108,7 +111,7 @@ export class PostController {
 
     let type_id = ID.add(id);
     try {
-      const user = await this._posts.show({ id: type_id.value() });
+      const user = await this._articles.show({ id: type_id.value() });
       return makeMessage(
         `Post found with ID: ${user.id}!`,
         `La publication ${user.id} a bien été trouvé.`,
@@ -150,7 +153,7 @@ export class PostController {
     })
     async store(
       @Body() createData: CreatePostDto,
-    ): Promise<Message<Posts | null | ValidationError[]>> {
+    ): Promise<Message<Articles | null | ValidationError[]>> {
       const errors: ValidationError[] = await dtoIsValid(createData, CreatePostDto);
   
       if (errors.length > 0) {
@@ -166,7 +169,7 @@ export class PostController {
   
       try {
         const author = await this._user.show({ id: createData.authorId });
-        const created_post = await this._posts.store(createData, author);
+        const created_post = await this._articles.store(createData, author);
         return makeMessage(
           'Post created !',
           "La publication a été publié !",
@@ -212,7 +215,7 @@ export class PostController {
     let id_type: ID = ID.add(id);
 
     try {
-      await this._posts.destroy({ id: id_type.value() });
+      await this._articles.destroy({ id: id_type.value() });
       return makeMessage(
         'Post deleted !',
         'La suppression de votre publication est un succée !',
@@ -243,4 +246,67 @@ export class PostController {
       }
     }
   }
+
+  @Get("/slug")
+  async slugTest() {
+    let article: Articles | null = await this._articles.indexOneWhere({ id: 2});
+    if (!article) return null;
+    return this._slug.generateSlugFromArticleTitle(article.title, article.id);
+  }
+
+  @Get("/slug/:slug_title")
+  async slugTestWithID(@Param('slug_title') slug: string): Promise<Message<Articles | null>> {
+    if (!this._slug.isValidateSlug(slug))
+      throw new HttpException(
+        makeMessage(
+          `Error Param slug : '${slug}' is invalid.`,
+          `Le paramètre : '${slug} n'est pas valide.`,
+          null,
+        ),
+        HttpStatus.BAD_REQUEST,
+      );
+
+      try {
+        const article = await this._slug.getPostWithSlug(slug);
+        return makeMessage(
+        'Post found !',
+        'Article trouvé !',
+        article,
+      );
+      } catch (error) {
+        switch (true) {
+        case error instanceof NotFoundException:
+          throw new HttpException(
+            makeMessage(
+              'Post not found!',
+              `Aucun article correspond...`,
+              null,
+            ),
+            HttpStatus.NOT_FOUND,
+          );
+        
+          case error instanceof NumberNotCorrectFormat:
+            throw new HttpException(
+            makeMessage(
+              'Param invalid!',
+              `Aucun article correspond...`,
+              null,
+            ),
+            HttpStatus.BAD_REQUEST,
+          );
+
+        default:
+          throw new HttpException(
+            makeMessage(
+              'Fatal Error',
+              "Une erreur est survenue, essayer de contacter l'administrateur ou réessayer ultérieurement.",
+              error,
+              { level: 'Fatal' },
+            ),
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+      }
+    }
+  }
 }
+  

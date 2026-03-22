@@ -1,0 +1,36 @@
+  <div
+  style="height: 100%;"
+  class="input-container"
+  [class.error]="errorMessages"
+  [class.success]="!errorMessages && (control.value.length > 1)"
+  [class.disabled]="!control.disable"
+  >
+    @if (mergeConfigs().label.length != 0) {
+      <p class="baseline">
+      <label class="input-container-label" [for]="mergeConfigs().label.trim()"
+        >{{ mergeConfigs().label }}</label
+      >
+    </p>
+    }
+
+  <textarea
+    #textarea
+    style="height: 100%;"
+      [formControl]="control"
+      [attr.placeholder]="this.mergeConfigs().placeholder"
+      [value]="control.value"
+      [attr.id]="mergeConfigs().label.trim()"
+      autocomplete="off"
+      required="{{ mergeConfigs().required }}"
+      (blur)="control.markAsTouched()"
+      (keyup.enter)="markdownSetNewLine()"
+      (scroll)="onScroll()"
+      
+  ></textarea>
+
+  @if (this.control.errors != null) {
+    <div class="input-informations"><app-input-error [control]="control"></app-input-error></div>
+  }
+  </div>
+  <ng-content></ng-content>
+

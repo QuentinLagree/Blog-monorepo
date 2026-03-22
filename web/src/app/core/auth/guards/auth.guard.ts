@@ -1,26 +1,19 @@
 import { inject, Injectable } from '@angular/core';
-import { CanActivate, Router, UrlTree } from '@angular/router';
-import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { CanActivateFn, Router } from '@angular/router';
+import { map, take } from 'rxjs/operators';
 import { SessionService } from 'src/app/core/services/session.service';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class AuthGuard implements CanActivate {
-  private _sessionService: SessionService = inject(SessionService);
-  private _router: Router = inject(Router);
+export const authGuard: CanActivateFn = (route, state) => {
+  const session = inject(SessionService);
+  const router = inject(Router);
 
-  canActivate(): Observable<boolean | UrlTree> {
-    return this._sessionService.fetchSession().pipe(
-      map((session) => {
-        if (session?.loggedIn) {
-          return true;
-        } else {
-          return this._router.createUrlTree(['auth/login']);
-        }
-      }),
-      catchError(() => of(this._router.createUrlTree(['auth/login'])))
-    );
-  }
-}
+  // Utilise fetchSession() pour charger (depuis cache mémoire/localStorage ou API)
+  return session.fetchSession().pipe(
+    take(1),
+    map((s) =>
+      s?.loggedIn
+        ? true
+        : router.createUrlTree(['/auth/login'], { queryParams: { returnUrl: state.url } })
+    )
+  );
+};

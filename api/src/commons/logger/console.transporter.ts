@@ -8,8 +8,8 @@ export class ConsoleTransport implements LogTransport {
   constructor(private formatter: LogFormatter) {}
   async write(entry: LogEntry): Promise<void> {
     const line = this.formatter.format(entry);
-    if (entry.level === LogLevel.Warning) console.warn(line);
-    else if (entry.level === LogLevel.Fatal) console.error(line);
-    else console.log(line);
+    // if (entry.level === LogLevel.Warning) console.warn(line);
+    // else if (entry.level === LogLevel.Fatal) console.error(line);
+    // else console.log(line);
   }
 }

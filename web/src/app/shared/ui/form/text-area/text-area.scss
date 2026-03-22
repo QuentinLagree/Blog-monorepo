@@ -1,0 +1,12 @@
+@use 'fonts' as *;
+@use 'mixins/mixins' as *;
+@use 'variables' as *;
+
+textarea {
+    font-size: 1em;
+    padding: 1em 0.5em;
+    resize: none;
+    &:focus {
+        outline: 1px solid $primary;
+    }
+}

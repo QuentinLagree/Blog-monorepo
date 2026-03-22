@@ -11,6 +11,8 @@ button:not(.btn-select, .input-password-toggle) {
   font-weight: 600;
   border-radius: 0.2em;
 
+  overflow: hidden;
+
   @include box-inset-shadow;
   @include box-shadow;
 
@@ -32,14 +34,17 @@ button:not(.btn-select, .input-password-toggle) {
   }
 }
 
-button.loading {
+button.loading,
+button.icon {
+  padding: 0;
   position: relative;
   display: flex;
   flex-direction: row-reverse;
   justify-content: center;
   align-items: center;
-  gap: 0.5em;
 }
+
+
 
 button.loading.lg .loader {
   width: 1.2em;
@@ -94,6 +99,10 @@ button.btn-danger {
   background-color: $danger;
 }
 
+button.btn-warn {
+  background-color: $warning;
+}
+
 button.btn-select {
   position: relative;
   width: 100%;
@@ -118,5 +127,89 @@ button.btn-select {
   }
   &.fill {
     color: $black;
+  }
+}
+
+button.btn-outlined {
+  color: $primary;
+  background: none;
+  box-shadow: none;
+  border: 1px solid $primary;
+  transition: .3s ease-in;
+
+  &:hover {
+    background-color: $primary;
+    color: $white;
+  }
+  
+}
+
+i.button-icon  svg {
+  height: 24px;
+  width: 24px;
+}
+
+button.icon {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  gap: 0.8em;
+  
+  i.button-icon {
+    display: flex;
+    align-items: center;
+    background-color: rgba($color:$black, $alpha: 0.1);
+    width: 100%;
+    min-width: 24px;
+  }
+}
+
+button.lg.icon {
+  padding: 0;
+  padding-right: 1em;
+  font-size: 1.3em;
+
+  i.button-icon {
+    padding: 0.604em;
+    svg {
+      width: 28px;
+    }
+  }
+  &.noLabel {
+    padding: 0; 
+  }
+}
+
+button.md.icon {
+  padding: 0;
+  padding-right: 0.85em;
+  font-size: 1.2em;
+
+  i.button-icon {
+    padding: 0.47em;
+    svg {
+      width: 24px;
+    }
+  }
+  &.noLabel {
+    padding: 0; 
+  }
+}
+
+button.sm.icon {
+  padding: 0;
+  padding-right: 0.75em;
+  font-size: 1.1em;
+
+  i.button-icon {
+    padding: 0.3em;
+    svg {
+      width: 20px;
+    }
+  }
+  &.noLabel {
+    padding: 0; 
   }
 }

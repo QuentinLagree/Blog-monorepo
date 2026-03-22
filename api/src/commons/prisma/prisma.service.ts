@@ -15,7 +15,7 @@ export class PrismaService
       try {
         await this.$connect();
         console.log(
-          `\n\n${chalk.green('> ')} ${chalk.bold.bgGreen(' GOOD ')} ${chalk.green('Connection établie avec la base de donnée.')}\n\n`,
+          `\n${chalk.green('> ')} ${chalk.bold.bgGreen(' GOOD ')} ${chalk.green('Connection établie avec la base de donnée.')}\n`,
         );
         PrismaService.isInitiated = true;
       } catch (error) {

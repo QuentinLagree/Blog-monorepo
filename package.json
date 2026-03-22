@@ -10,5 +10,13 @@
   "devDependencies": {
     "concurrently": "^9.0.0",
     "@angular/cli": "~20.1.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "chalk": "4.1.2"
+    },
+    "onlyBuiltDependencies": [
+      "sodium-native"
+    ]
   }
 }

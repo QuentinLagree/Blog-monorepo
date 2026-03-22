@@ -1,5 +1,5 @@
 import { PartialType, OmitType } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, isString, IsString, Length } from 'class-validator';
+import { IsDate, IsNotEmpty, IsNumber, isString, IsString, Length } from 'class-validator';
 import { PostsEntity } from '../entities/posts.entities';
 import { User } from '@prisma/client';
 
@@ -23,5 +23,6 @@ export class CreatePostDto extends PartialType(
   @IsString()
   description: string;
 
-  published: boolean;
+  @IsDate()
+  published_at: Date;
 }

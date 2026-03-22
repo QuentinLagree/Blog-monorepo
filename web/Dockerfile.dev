@@ -1,0 +1,13 @@
+FROM node:20-alpine
+WORKDIR /app
+RUN corepack enable
+
+COPY package*.json ./
+COPY pnpm-lock.yaml* ./
+RUN pnpm i
+
+COPY . .
+EXPOSE 4200
+
+# Le "ng serve" est lancé depuis docker-compose.dev.yml :
+# "npm run start" (avec proxy /api si tu l'utilises)

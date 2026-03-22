@@ -6,13 +6,12 @@
 // === Palette / tokens ===
 $primary: #cb2fff !default;
 $surface: $white;
-$text:    $black;
-$border:  color.mix($black, $surface, 10%);
-
+$text: $black;
+$border: color.mix($black, $surface, 10%);
 $success: #16a34a;
-$error:   #ef4444;
+$error: #ef4444;
 $warning: #f59e0b;
-$info:    $primary;
+$info: $primary;
 
 :host {
   position: fixed;
@@ -31,34 +30,46 @@ $info:    $primary;
   padding: 16px;
   width: min(92vw, 35em);
 
-  &.top-left { left: env(safe-area-inset-left); right: auto; }
-  &.bottom-right { bottom: env(safe-area-inset-bottom); top: auto; }
-  &.bottom-left  { bottom: env(safe-area-inset-bottom); top: auto; left: env(safe-area-inset-left); right: auto; }
+  &.top-left {
+    left: env(safe-area-inset-left);
+    right: auto;
+  }
+
+  &.bottom-right {
+    bottom: env(safe-area-inset-bottom);
+    top: auto;
+  }
+
+  &.bottom-left {
+    inset: auto auto env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
 }
 
 .toast {
   position: relative;
+
   // grille type "bannière" : icône | contenu | close
   pointer-events: auto;
   display: flex;
   flex-direction: column;
-
   background: $surface;
   color: $text;
   border: 2px solid var(--accent);
   border-radius: 8px;
   box-shadow: none; // style plat
-  padding: 1em 1em; // compact
+  padding: 1em; // compact
   padding-left: 0;
   overflow: hidden;
 
   // anim entrée/sortie sobres
-  animation: fadeIn .16s ease-out;
-  transition: opacity .14s ease, transform .2s ease;
+  animation: fade-in 0.16s ease-out;
+  transition:
+    opacity 0.14s ease,
+    transform 0.2s ease;
   opacity: 1;
   transform: translateY(0);
-  @include box-shadow;
 
+  @include box-shadow;
 
   &.closing {
     opacity: 0;
@@ -88,7 +99,9 @@ $info:    $primary;
   }
 
   // on neutralise l’ancienne barre verticale
-  .left-bar { display: none; }
+  .left-bar {
+    display: none;
+  }
 
   .toast-icon-container {
     margin: 0 1em;
@@ -100,11 +113,11 @@ $info:    $primary;
   }
 
   .toast-icon {
-  position: relative;
-  width: 30px;
-  height: 30px;
-  color: var(--accent);
-}
+    position: relative;
+    width: 30px;
+    height: 30px;
+    color: var(--accent);
+  }
 
   .content {
     min-width: 0; // évite l’overflow
@@ -113,7 +126,7 @@ $info:    $primary;
   .title {
     font-weight: 800;
     margin-bottom: 2px;
-    letter-spacing: .2px;
+    letter-spacing: 0.2px;
     color: $black;
   }
 
@@ -131,10 +144,9 @@ $info:    $primary;
     flex-direction: row-reverse;
     justify-content: space-between;
     gap: 10px;
-    
 
     .action {
-      width: auto; 
+      width: auto;
       appearance: none;
       font-weight: 400;
       font-size: 0.9em;
@@ -143,7 +155,7 @@ $info:    $primary;
       // petite pastille au focus pour l’accessibilité
       &:focus-visible {
         outline: none;
-        box-shadow: 0 0 0 3px color.change($primary, $alpha: .18);
+        box-shadow: 0 0 0 3px color.change($primary, $alpha: 0.18);
       }
     }
   }
@@ -160,15 +172,31 @@ $info:    $primary;
     padding: 0 0.8em;
     box-shadow: none;
 
-    &:hover { color: $text; }
-    &:focus-visible { outline: none; }
+    &:hover {
+      color: $text;
+    }
+
+    &:focus-visible {
+      outline: none;
+    }
   }
 
   // variantes : on utilise une variable CSS --accent (icône + barre de progression)
-  &.info    { --accent: #{$info}; }
-  &.success { --accent: #{$success}; }
-  &.warning { --accent: #{$warning}; }
-  &.error   { --accent: #{$error}; }
+  &.info {
+    --accent: #{$info};
+  }
+
+  &.success {
+    --accent: #{$success};
+  }
+
+  &.warning {
+    --accent: #{$warning};
+  }
+
+  &.error {
+    --accent: #{$error};
+  }
 }
 
 // soulignement fin façon “bannière”
@@ -182,7 +210,6 @@ $info:    $primary;
   overflow: hidden;
   margin-top: 8px;
 
-
   .bar {
     height: 100%;
     width: 100%;
@@ -192,21 +219,41 @@ $info:    $primary;
     animation-fill-mode: forwards;
   }
 
-  &.paused .bar { animation-play-state: paused; }
+  &.paused .bar {
+    animation-play-state: paused;
+  }
 }
 
 @keyframes shrink {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-100%); }
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-100%);
+  }
 }
 
-@keyframes fadeIn {
-  from { transform: translateY(-4px); opacity: 0; }
-  to   { transform: translateY(0);   opacity: 1; }
+@keyframes fade-in {
+  from {
+    transform: translateY(-4px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 // Respect des préférences utilisateurs
 @media (prefers-reduced-motion: reduce) {
-  .toast { animation: none; transition: none; }
-  .progress .bar { animation: none; }
+  .toast {
+    animation: none;
+    transition: none;
+  }
+
+  .progress .bar {
+    animation: none;
+  }
 }

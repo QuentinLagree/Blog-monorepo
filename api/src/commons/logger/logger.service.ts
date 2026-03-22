@@ -25,7 +25,7 @@ export class LoggerService implements OnModuleInit {
     if (!LoggerService.isInitiated) {
       try {
         console.log(
-          `\n\n${chalk.green('> ')} ${chalk.bold.bgGreen(' GOOD ')} ${chalk.green('Le logger est bien initialisé.')}\n`,
+          `${chalk.green('> ')} ${chalk.bold.bgGreen(' GOOD ')} ${chalk.green('Le logger est bien initialisé.')}\n`,
         );
       } catch (error) {
         console.log(

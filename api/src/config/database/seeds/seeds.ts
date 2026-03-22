@@ -2,8 +2,6 @@ import { PrismaClient } from '@prisma/client';
 
 import { PasswordService } from '../../../commons/services/password.service'
 
-import { genSaltSync, hashSync } from 'bcryptjs';
-
 const prisma = new PrismaClient();
 
 const _password = new PasswordService()
@@ -11,6 +9,9 @@ const _password = new PasswordService()
 
 async function main() {
   const password = process.env['PASSWORD_SEED'] ?? 'Salut1234!';
+
+  if (await prisma.user.findUnique({where: {email: 'lagreequentindev21@gail.com'}})) return;
+  if (await prisma.user.findUnique({where: {email: 'johndoe@gmail.com'}})) return;
 
   const quentin = await prisma.user.create({
     data: {
@@ -62,6 +63,13 @@ async function main() {
           'Salut je suis un deuxième titre super sympa aussi voir meilleur !',
         content: 'Encore du contenue, toujours du contenue',
         description: "Ceci est la description de la deuxième publication."
+      },
+      {
+        authorId: quentin.id,
+        title:
+          'Je suis un titre custom sympatique',
+        content: 'Est toujours du contenue',
+        description: "Une description toute mignonne."
       },
     ],
   });

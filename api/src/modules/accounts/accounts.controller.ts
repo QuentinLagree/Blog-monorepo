@@ -5,7 +5,7 @@ import { AccountEntity } from "./entities/account.entities";
 import { AccountService } from "./accounts.service";
 import { Account } from "@prisma/client";
 import { makeMessage } from "src/commons/helpers/logger.helper";
-import { Message } from "src/commons/types/message/message";
+import { Message } from "src/commons/types/dto/message/message";
 import { ID } from "src/commons/types/id.types";
 
 @ApiTags("Compte Utilisateur")

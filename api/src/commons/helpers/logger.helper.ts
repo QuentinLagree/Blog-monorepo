@@ -3,8 +3,8 @@ import { ConsoleTransport } from '../logger/console.transporter';
 import { FileTransport } from '../logger/file-transport';
 import { Logger } from '../logger/logger.log';
 import { PlainFormatter } from '../logger/plain-formatter';
-import { Message } from '../types/message/message';
-import { MessageOptions } from '../types/message/message-options';
+import { Message } from '../types/dto/message/message';
+import { MessageOptions } from '../types/dto/message/message-options';
 
 export function makeMessage<T>(
   log: string,

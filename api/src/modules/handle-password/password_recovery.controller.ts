@@ -5,14 +5,12 @@ import {
   Get,
   HttpException,
   HttpStatus,
+  Inject,
   NotFoundException,
   Post,
   Query,
   Req,
   UseInterceptors,
-  UsePipes,
-  ValidationError,
-  ValidationPipe,
 } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { User, VerificationTokens } from '@prisma/client';
@@ -29,24 +27,26 @@ import { UserEntity } from 'src/modules/user/entities/user.entities';
 import { TransformDataMessageIntoObjectSerialization } from 'src/commons/interceptors/transform_data_message_into_object_serialization.interceptor';
 import { FailSendingMail } from 'src/commons/exceptions/failSendingMail.error';
 import { TokenService } from 'src/commons/token/token.service';
-import { MailService } from 'src/config/mail/mailer.service';
-import { Url } from 'src/commons/types/url.types';
 import { PasswordNotSameException } from 'src/commons/exceptions/PasswordNotSame.error';
 import { UserLoginCredentials } from '../auth/dto/user-login-credentials.dto';
 import { UserPasswordFields } from './dto/passwords-fields.dto';
 import { UserEmail } from './dto/user-email.dto';
 import { checkFieldIsEmpty } from 'src/commons/helpers/dto/checkIfFieldsEmpty.utils';
-import { Message } from 'src/commons/types/message/message';
+import { Message } from 'src/commons/types/dto/message/message';
+import { Queue } from 'bullmq';
+import { MAIL_QUEUE } from 'src/commons/mailing/bullmq/bullmq.token';
+import { MailingService } from 'src/commons/mailing/mailing.service';
 
 @ApiTags('Gestion du mot de passe')
 @UseInterceptors(new TransformDataMessageIntoObjectSerialization([UserEntity]))
 @Controller('password')
 export class PasswordRecoveryController {
   constructor(
+    @Inject(MAIL_QUEUE) private readonly __mails_queue: Queue,
     private readonly _auth: AuthService,
     private readonly _user: UserService,
     private readonly _token: TokenService,
-    private readonly _mailer: MailService,
+    private readonly _mailer: MailingService
   ) {}
 
   @Get('reset')
@@ -211,7 +211,7 @@ export class PasswordRecoveryController {
 
       let resetUrl = `${request.raw.headers.origin || 'http://localhost:3000'}${RESET_PASSWORD_ROUTE}?token=${token.getToken}&email=${email}`;
 
-      this._mailer.sendEmailToken(new_verification_email, resetUrl);
+      await this.__mails_queue.add('mail', this._mailer.getOptionRecoveryEmail(new_verification_email, resetUrl))
 
       return makeMessage(
         'Generate token and Send email successful',

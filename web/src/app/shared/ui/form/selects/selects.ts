@@ -1,4 +1,14 @@
-import { Component, ElementRef, HostListener, OnInit, QueryList, signal, ViewChild, ViewChildren, WritableSignal } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  OnInit,
+  QueryList,
+  signal,
+  ViewChild,
+  ViewChildren,
+  WritableSignal
+} from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { BaseFormElementComponent } from '../inputs/base-input';
@@ -9,7 +19,12 @@ import { PillsComponent } from '../../utils/pills/pills';
 import { getUniqueChoice } from './helper/get-unique-choice';
 import { computeDirection } from './helper/viewport-change-to-set-position';
 import { setIsOpenOutFocus } from './helper/on-focus-out';
-import { validateDefaultChoice, formatKebab, filterChoices, computeAvailableChoices } from './services/select-logic';
+import {
+  validateDefaultChoice,
+  formatKebab,
+  filterChoices,
+  computeAvailableChoices
+} from './services/select-logic';
 
 @Component({
   selector: 'app-select',
@@ -18,27 +33,27 @@ import { validateDefaultChoice, formatKebab, filterChoices, computeAvailableChoi
   imports: [ReactiveFormsModule, InputErrorComponent, PillsComponent]
 })
 export class SelectComponent extends BaseFormElementComponent<SelectConfig> implements OnInit {
-  @ViewChild('main_component', { static: false }) triggerRef!: ElementRef<HTMLElement>;   // ancien main_component
-  @ViewChild('panel') panelRef?: ElementRef<HTMLElement>;                                  // ancien panel
-  @ViewChild('filter') searchInputRef?: ElementRef<HTMLInputElement>;                      // ancien filter
+  @ViewChild('main_component', { static: false }) triggerRef!: ElementRef<HTMLElement>; // ancien main_component
+  @ViewChild('panel') panelRef?: ElementRef<HTMLElement>; // ancien panel
+  @ViewChild('filter') searchInputRef?: ElementRef<HTMLInputElement>; // ancien filter
 
   @ViewChildren('optionRef') optionRefs!: QueryList<ElementRef<HTMLElement>>;
 
-
   activeIndex = 0;
 
+  status: WritableSignal<'loading' | 'ready' | 'error'> = signal<'loading' | 'ready' | 'error'>(
+    'loading'
+  ); // ancien state
+  errorMessage = ''; // ancien errorMessageComponent
 
-  status: WritableSignal<'loading' | 'ready' | 'error'> = signal<'loading' | 'ready' | 'error'>('loading'); // ancien state
-  errorMessage = '';                                                                                         // ancien errorMessageComponent
-
-  isDropdownOpen = false;                                                                                    // ancien isOpen
-  opensUpward = false;                                                                                       // ancien openUp
+  isDropdownOpen = false; // ancien isOpen
+  opensUpward = false; // ancien openUp
 
   uniqueChoices: string[] = [];
-  rawSelectedValue: string | string[] = '';                                                                  // ancien valueWithoutFormat
-  filteredAvailableChoices: string[] = [];                                                                   // ancien choiceFilter
+  rawSelectedValue: string | string[] = ''; // ancien valueWithoutFormat
+  filteredAvailableChoices: string[] = []; // ancien choiceFilter
 
-  selectedValues: string[] = [];                                                                             // ancien values
+  selectedValues: string[] = []; // ancien values
 
   override defaultConfiguration: SelectConfig = {
     label: 'Label',
@@ -47,12 +62,12 @@ export class SelectComponent extends BaseFormElementComponent<SelectConfig> impl
     choices: ['Valeur par défaut'],
     default_choice: '',
     required: true,
-    multiple: false,
+    multiple: false
   };
 
   onFocusOut(event: FocusEvent) {
     this.isDropdownOpen = setIsOpenOutFocus(event) ?? this.isDropdownOpen;
-    this.control.markAsTouched()
+    this.control.markAsTouched();
   }
 
   toggle(open?: boolean) {
@@ -101,9 +116,9 @@ export class SelectComponent extends BaseFormElementComponent<SelectConfig> impl
 
   updateValue(optionEl: HTMLLIElement) {
     if (this.control.errors && this.control.errors['maxcount-multi-select']) {
-        return;
-      }
-    
+      return;
+    }
+
     const selectedText = optionEl.innerText.trim();
     const { multiple } = this.mergeConfigs();
 
@@ -115,19 +130,19 @@ export class SelectComponent extends BaseFormElementComponent<SelectConfig> impl
       let available = computeAvailableChoices(this.uniqueChoices, this.selectedValues);
 
       const query = this.searchInputRef?.nativeElement.value ?? '';
-      if (query) available = available.filter(c => c.toLowerCase().includes(query.toLowerCase()));
+      if (query) available = available.filter((c) => c.toLowerCase().includes(query.toLowerCase()));
 
       this.filteredAvailableChoices = available;
-      this.control.setValue(this.selectedValues)
-      this.control.markAsTouched()
-      
+      this.control.setValue(this.selectedValues);
+      this.control.markAsTouched();
+
       this.rawSelectedValue = this.selectedValues;
+      return;
     } else {
       this.control.setValue(formatKebab(selectedText));
       this.rawSelectedValue = selectedText;
-
+      return;
     }
-    
   }
 
   updateFilter(query: string) {
@@ -140,19 +155,18 @@ export class SelectComponent extends BaseFormElementComponent<SelectConfig> impl
     event.preventDefault();
     event.stopPropagation();
 
-    const nextSelectedValues = this.selectedValues.filter(v => v !== valueToRemove);
+    const nextSelectedValues = this.selectedValues.filter((v) => v !== valueToRemove);
     this.selectedValues = nextSelectedValues;
     this.rawSelectedValue = nextSelectedValues.length ? nextSelectedValues : '';
 
     let available = computeAvailableChoices(this.uniqueChoices, nextSelectedValues);
 
     const query = this.searchInputRef?.nativeElement.value ?? '';
-    if (query) available = available.filter(c => c.toLowerCase().includes(query.toLowerCase()));
+    if (query) available = available.filter((c) => c.toLowerCase().includes(query.toLowerCase()));
 
     this.filteredAvailableChoices = available;
     this.isDropdownOpen = true;
-    this.control.setValue(this.selectedValues)
-
+    this.control.setValue(this.selectedValues);
   }
 
   getFormattedChoice(text: string) {
@@ -167,34 +181,67 @@ export class SelectComponent extends BaseFormElementComponent<SelectConfig> impl
     items[this.activeIndex]?.nativeElement.focus();
   }
 
-  private focusFirst() { this.focusOption(0); }
-  private focusLast() { const n = this.optionRefs.length; if (n) this.focusOption(n - 1); }
-  private focusNext() { this.focusOption(this.activeIndex + 1); }
-  private focusPrev() { this.focusOption(this.activeIndex - 1); }
+  private focusFirst() {
+    this.focusOption(0);
+  }
+  private focusLast() {
+    const n = this.optionRefs.length;
+    if (n) this.focusOption(n - 1);
+  }
+  private focusNext() {
+    if ((this.activeIndex) == (this.optionRefs.length - 1)) {
+      this.focusFirst();
+      return;
+    }
+    this.focusOption(this.activeIndex + 1);
+  }
+  private focusPrev() {
+    if ((this.activeIndex) == 0) {
+      this.focusLast();
+      return;
+    }
+    this.focusOption(this.activeIndex - 1);
+  }
 
   onListKeydown(e: KeyboardEvent) {
     if (!this.isDropdownOpen) return;
 
     switch (e.key) {
       case 'ArrowDown':
-        this.isDropdownOpen = true
-        e.preventDefault(); this.focusNext(); break;
+        if (document.activeElement?.localName != "li") {
+          this.focusFirst();
+          return;
+        }
+        this.isDropdownOpen = true;
+        e.preventDefault();
+        this.focusNext();
+        break;
       case 'ArrowUp':
-        this.isDropdownOpen = true
-        e.preventDefault(); this.focusPrev(); break;
+        this.isDropdownOpen = true;
+        e.preventDefault();
+        this.focusPrev();
+        break;
       case 'Home':
-        this.isDropdownOpen = true
-        e.preventDefault(); this.focusFirst(); break;
+        this.isDropdownOpen = true;
+        e.preventDefault();
+        this.focusFirst();
+        break;
       case 'End':
-        this.isDropdownOpen = true
-        e.preventDefault(); this.focusLast(); break;
+        this.isDropdownOpen = true;
+        e.preventDefault();
+        this.focusLast();
+        break;
       case 'Enter':
-      case ' ':
+        break;
+      case ' ': {
         e.preventDefault();
         // Sélectionne l’élément actif
-        const el = this.optionRefs.get(this.activeIndex)?.nativeElement as HTMLLIElement | undefined;
+        const el = this.optionRefs.get(this.activeIndex)?.nativeElement as
+          | HTMLLIElement
+          | undefined;
         if (el) this.updateValue(el);
         break;
+      }
       case 'Escape':
         e.preventDefault();
         this.isDropdownOpen = false;
@@ -202,10 +249,8 @@ export class SelectComponent extends BaseFormElementComponent<SelectConfig> impl
         this.triggerRef?.nativeElement.focus();
         break;
 
-      default: 
+      default:
         this.searchInputRef?.nativeElement.focus();
     }
   }
-
 }
-

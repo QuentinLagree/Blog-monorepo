@@ -1,0 +1,10 @@
+<div class="home-container">
+    <h1>Welcome to the Blog</h1>
+    <p>This is your home page content.</p>
+    <app-button type="danger" [loading]="loading" label="Se déconnecter" (clicked)="this.logout()" ></app-button>
+    @for (post of this.posts.value(); track $index) {
+        <app-post-card [post]="post"></app-post-card>
+    }
+
+    <a href="/post/add">Créer un article</a>
+</div>

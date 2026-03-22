@@ -1,5 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { MailService } from '../../src/config/mail/mailer.service';
+import { MailService } from '../../src/commons/mailing/mail/mailer.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   CreatePackageMailerService,
@@ -59,7 +59,7 @@ describe('MailService', () => {
       sendMailMock.mockResolvedValue(undefined);
 
       await expect(
-        service.sendEmailToken(verificationEmailData, url as any),
+        service.sendRecoveryPasswordEmail(verificationEmailData, url as any),
       ).resolves.toBeUndefined();
       expect(readHTMLFile).toHaveBeenCalled();
       expect(sendMailMock).toHaveBeenCalledWith(
@@ -75,7 +75,7 @@ describe('MailService', () => {
         cb(new Error('fail'), '');
       });
       await expect(
-        service.sendEmailToken(verificationEmailData, url as any),
+        service.sendRecoveryPasswordEmail(verificationEmailData, url as any),
       ).rejects.toThrow();
       expect(readHTMLFile).toHaveBeenCalled();
       expect(sendMailMock).not.toHaveBeenCalled();
@@ -86,7 +86,7 @@ describe('MailService', () => {
         cb(null, null as any); // content is null, Handlebars.compile will throw
       });
       await expect(
-        service.sendEmailToken(verificationEmailData, url as any),
+        service.sendRecoveryPasswordEmail(verificationEmailData, url as any),
       ).rejects.toThrow();
       expect(sendMailMock).not.toHaveBeenCalled();
     });
@@ -97,7 +97,7 @@ describe('MailService', () => {
       });
       sendMailMock.mockRejectedValue(new Error('smtp fail'));
       await expect(
-        service.sendEmailToken(verificationEmailData, url as any),
+        service.sendRecoveryPasswordEmail(verificationEmailData, url as any),
       ).rejects.toThrow();
       expect(sendMailMock).toHaveBeenCalled();
     });

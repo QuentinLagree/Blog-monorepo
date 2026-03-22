@@ -3,20 +3,23 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Post, Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { Prisma, User, Post as Articles } from '@prisma/client';
 
 @Injectable()
-export class PostsService {
+export class ArticleService {
   constructor(private readonly _prisma: PrismaService) {}
 
-  async index(published: boolean = false): Promise<Post[]> {
-    return await this._prisma.post.findMany({
-      where: published ? { published: true } : {},
-    });
-  }
-
+  async index(published?: boolean): Promise<Articles[]> {
+  return await this._prisma.post.findMany({
+    where: published === undefined
+      ? {}
+      : {
+          published_at: published ? { not: null } : null
+        }
+  });
+}
   async indexWhere(where: Prisma.PostWhereInput) {
     try {
       return await this._prisma.post.findMany({ where });
@@ -25,10 +28,17 @@ export class PostsService {
     }
   }
 
+  async indexOneWhere(where: Prisma.PostWhereUniqueInput): Promise<Articles | null> {
+    try {
+      return await this._prisma.post.findUnique({ where });
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async show(
     uniqueProperties: Prisma.PostWhereUniqueInput,
-    published: Boolean = false,
-  ): Promise<Post> {
+  ): Promise<Articles> {
     try {
       const post = await this._prisma.post.findUnique({
         where: uniqueProperties,
@@ -40,7 +50,7 @@ export class PostsService {
     }
   }
 
-  async store(createdData: CreatePostDto, author: User): Promise<Post> {
+  async store(createdData: CreatePostDto, author: User): Promise<Articles> {
     //TODO faire un test de markdown
 
     try {
@@ -49,7 +59,7 @@ export class PostsService {
           title: createdData.title,
           content: createdData.content,
           description: createdData.description,
-          published: createdData.published,
+          published_at: createdData.published_at,
           author: {
             connect: { id: author.id }
           }

@@ -9,6 +9,7 @@ import fastifySecureSession from '@fastify/secure-session';
 import fs from 'node:fs';
 import { ValidationPipe } from '@nestjs/common';
 import { PrismaService } from './commons/prisma/prisma.service';
+import helmet from '@fastify/helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -18,7 +19,7 @@ async function bootstrap() {
 
   await app.register(fastifySecureSession, {
     salt: 'mq9hDxBVDbspDR6n',
-    key: fs.readFileSync('./secret-key'),
+    key: process.env.SECRET_KEY ? Buffer.from(process.env.SECRET_KEY, 'base64') : fs.readFileSync('/app/secret-key'),
     cookie: {
       path: '/',
       httpOnly: true,
@@ -26,6 +27,7 @@ async function bootstrap() {
   });
 
   app.get(PrismaService);
+  await app.register(helmet);
   app.useGlobalPipes();
 
   const config = new DocumentBuilder()
@@ -47,12 +49,13 @@ async function bootstrap() {
     }),
   );
   app.enableCors({
-    origin: 'http://localhost:4200',
+    origin: ['http://localhost:4200'],
     credentials: true,
   });
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
-  await app.listen(3000);
+  await app.listen(3000, "0.0.0.0");
 }
 bootstrap();
+

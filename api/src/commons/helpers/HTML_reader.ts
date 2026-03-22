@@ -1,11 +1,8 @@
 import fs from 'fs';
+import { join } from 'path/posix';
 
-export const readHTMLFile = (path: string, callback: CallableFunction) => {
-  fs.readFile(path, { encoding: 'utf-8' }, (err, html) => {
-    if (err) {
-      callback(err);
-    } else {
-      callback(null, html);
-    }
-  });
-};
+export function resolveTemplatePath(...segments: string[]) {
+  // Chemin en prod/compilé
+  const distPath = join(__dirname, '../../templates', ...segments);
+  return distPath;
+}

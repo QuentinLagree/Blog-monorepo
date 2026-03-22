@@ -1,28 +1,51 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpRequestService } from '../../shared/services/http-service/get-request';
+import { HttpOptions, HttpRequestService } from '../../shared/services/http-service/get-request';
 import { userRegister } from '../auth/models/user-register.model';
 import { userLogin } from '../auth/models/user-login.model';
+
+
+export interface User {
+  id: number,
+  email: string,
+  pseudo?: string
+  nom?: string
+  prenom?: string
+}
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private readonly _http: HttpRequestService = inject(HttpRequestService);
-  getAllUsers() {
-      return this._http.getData('user');
+
+  getAllUsers(options?: HttpOptions) {
+    return this._http.getData('user', options);
   }
 
-  registerUser(dto: userRegister) {
+  findUserWithId(id: number, options?: HttpOptions) {
+    return this._http.getData(`user/${id}`, options)
+  }
+
+  registerUser(dto: userRegister, options?: HttpOptions) {
     return this._http.postData('auth/register', dto);
   }
 
-  loginUser(dto: userLogin) {
-    return this._http.postData('auth/login', dto, true);
+  loginUser(dto: userLogin, options?: HttpOptions) {
+    return this._http.postData('auth/login', dto, {
+      credentials: true,
+      ...options
+    });
   }
 
-  checkSessionActive() {
-    return this._http.getData('auth/session', true);
+  checkSessionActive(options?: HttpOptions) {
+    return this._http.getData('auth/session', {
+      credentials: true,
+      ...options
+    });
   }
 
-  logout() {
-    return this._http.getData('auth/logout', true);
+  logout(options?: HttpOptions) {
+    return this._http.getData('auth/logout', {
+      credentials: true,
+      ...options
+    });
   }
 }

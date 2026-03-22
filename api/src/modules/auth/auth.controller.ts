@@ -32,7 +32,7 @@ import { SessionType } from 'src/commons/types/session.type';
 import { dtoIsValid } from 'src/commons/helpers/dto/dto-validations.helper';
 import { AuthService } from './auth.service';
 import { UserLoginCredentials } from './dto/user-login-credentials.dto';
-import { Message } from 'src/commons/types/message/message';
+import { Message } from 'src/commons/types/dto/message/message';
 import { UserSession } from './dto/user-session.dto';
 
 @ApiTags('Authentification')
@@ -171,6 +171,7 @@ export class AuthController {
 
     try {
       const created_user = await this._user.create(createData);
+      
       return makeMessage(
         'User register !',
         "L'enregistrement de ton compte s'est déroulé avec succès. Maintenant tu peux te connecter.",

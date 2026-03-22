@@ -1,0 +1,20 @@
+@if (this.visible) {
+<div class="context-menu" #menu
+[style.left.px]="pos.x"
+  [style.top.px]="pos.y">
+    <ul>
+        @for (syntax of this.getAllOptions(); track $index) {
+            <li
+            (click)="onSelect(syntax.name)"
+          #optionRef
+          tabindex="0"
+          #optionselectother
+          (keyup.enter)="$event.preventDefault()"
+          class="py-2 pl-2"
+        >
+          {{ syntax.display }}
+        </li>
+        }
+    </ul>
+</div>
+}

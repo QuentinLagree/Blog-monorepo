@@ -9,5 +9,5 @@ import { BaseButtonComponent, ButtonSize, ButtonType } from '../base-button';
 export class SuccessButtonComponent extends BaseButtonComponent {
   override type: InputSignal<ButtonType> = input<ButtonType>('success');
   override size: InputSignal<ButtonSize> = input<ButtonSize>('sm');
-  override label: InputSignal<string> = input<string>('Valider');
+  override label: InputSignal<string | undefined> = input<string | undefined>('Valider');
 }

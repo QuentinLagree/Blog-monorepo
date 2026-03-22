@@ -4,11 +4,13 @@
   [class.success]="!errorMessages && (control.value.length > 1)"
   [class.disabled]="!control.disable"
 >
-  <p class="baseline">
+  @if (mergeConfigs().label.length != 0) {
+    <p class="baseline">
     <label class="input-container-label" [for]="mergeConfigs().label.trim()"
       >{{ mergeConfigs().label }}</label
     >
   </p>
+  }
 
   <input
     [formControl]="control"

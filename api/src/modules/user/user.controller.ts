@@ -25,7 +25,7 @@ import { UserAlreadyExistWithEmail } from '../../commons/exceptions/userAlreadyE
 import { dtoIsValid } from 'src/commons/helpers/dto/dto-validations.helper';
 import { UserUpdateDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
-import { Message } from 'src/commons/types/message/message';
+import { Message } from 'src/commons/types/dto/message/message';
 
 @ApiTags('Gestion des utilisateurs')
 @Controller('user')

@@ -1,13 +1,22 @@
 <button
   [disabled]="disabled() || loading()"
-  [attr.class]="[hostClasses + ' ' + ((loading()) ? 'loading' : '')]"
-  (click)="onClick()"
+  [attr.class]="[hostClasses + ' ' + ((loading()) ? 'loading' : '') + ((icon()) ? 'icon' : '') + (!label() ? 'noLabel' : '')]"
+  [className]=""
+  aria-label="Bouton secondaire"
+  [class.noLabel]="!label()"
+  (click)="onClick($event)"
 >
   @if (icon()) {
-  <i class="icon" [class]="icon()"></i>
-  } @else {
-  <span class="label">{{ label() }}</span>
-  @if (loading()) {
-  <span class="loader"></span>
-  } }
+    <i class="button-icon" [class.noLabel]="!label()">
+      <svg viewBox="0 0 24 24">
+              <use [attr.href]="`#${icon()}`" />
+            </svg>
+          </i>
+        }
+          @if (this.label()) {
+            <span class="label">{{ label() }}</span>
+          }
+          @if (loading()) {
+            <span class="loader"></span>
+           }
 </button>

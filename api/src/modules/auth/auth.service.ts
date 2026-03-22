@@ -1,4 +1,10 @@
 import { Session } from '@fastify/secure-session';
+declare module '@fastify/secure-session' {
+  interface SessionData {
+    get(key: 'user'): UserSession | null;
+    set(key: 'user', value: UserSession): void;
+  }
+}
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PasswordNotMatchException } from '../../commons/exceptions/PasswordNotMatchException.error';
@@ -8,7 +14,6 @@ import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { UserLoginCredentials } from './dto/user-login-credentials.dto';
 import { UserSession } from './dto/user-session.dto';
 import { PasswordService } from 'src/commons/services/password.service';
-import { PEPPER } from 'src/commons/constants/pepper';
 
 @Injectable()
 export class AuthService {

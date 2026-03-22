@@ -20,7 +20,7 @@ export function TextInputValidatorFactory(
     };
 
     if (context.validate === true) {
-      return validateInput(context)
+      return validateInput(context);
     }
     return null;
   };

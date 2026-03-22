@@ -4,13 +4,13 @@ import { glob } from 'glob';
 
 const cwd = process.cwd();
 const root = path.join(cwd, 'src/config/database');
-const base = path.join(root, 'base.prisma');
+const base = path.join(root, 'base.prisma.part');
 const out = path.join(root, 'schema.merged.prisma');
 
 // Patterns POSIX (marche sous Windows et Linux)
 const patterns = [
-  'src/config/database/models/*.prisma',
-  'src/config/database/models/**/*.prisma',
+  'src/config/database/models/*.prisma.part',
+  'src/config/database/models/**/*.prisma.part',
 ];
 
 const header = `// AUTO-GENERATED FILE. DO NOT EDIT.

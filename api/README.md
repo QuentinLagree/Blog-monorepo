@@ -31,7 +31,7 @@
 - [x] Authentification (sessions, cookies sécurisés)  
 - [x] DTOs avec validation (class-validator)  
 - [x] Base Angular 20 + routing  
-- [ ] CORS + Helmet activés  
+- [x] CORS + Helmet activés  
 - [x] Variables d’environnement `.env` propres et centralisées  
 - [X] Logger personnalisé (NestJS Custom)  
 
@@ -39,9 +39,9 @@
 
 ### **M1 – Gestion des articles (backend + admin)**
 
-- [ ] Modèle `Article` (Prisma)  
-- [ ] Endpoints CRUD `/articles`  
-- [ ] Slug unique et publication `draft/published`  
+- [x] Modèle `Article` (Prisma)  
+- [x] Endpoints CRUD `/articles`  
+- [x] Slug unique et publication `draft/published`  
 - [ ] Sanitization Markdown (DOMPurify / marked)  
 - [ ] Pagination et filtres (tags, date, auteur)  
 - [ ] Test E2E création + publication article  
@@ -50,21 +50,21 @@
 
 ### **M2 – Éditeur Markdown (frontend)**
 
-- [ ] Formulaire de rédaction d’article (simple)  
-- [ ] Éditeur Markdown split-view (rédaction + preview)  
-- [ ] Raccourcis Markdown (bold, italic, code, titres)  
-- [ ] Auto-save (localStorage)  
-- [ ] Upload image + insertion automatique dans le contenu  
-- [ ] Sauvegarde article via API `/articles`  
+- [x] Formulaire de rédaction d’article (simple)  
+- [x] Éditeur Markdown split-view (rédaction + preview)  
+- [x] Raccourcis Markdown (bold, italic, code, titres)  
+- [x] Auto-save (localStorage)  
+- [x] Upload image + insertion automatique dans le contenu  
+- [x] Sauvegarde article via API `/articles`  
 
 ---
 
 ### **M3 – Lecture publique**
 
-- [ ] Page `/` : liste des articles  
+- [x] Page `/` : liste des articles
 - [ ] Page `/article/:slug` : affichage d’un article  
 - [ ] Calcul du temps de lecture  
-- [ ] Styles Markdown pour lecture agréable  
+- [ ] Styles Markdown pour lecture agréa    ble  
 - [ ] Meta dynamique (title, description)  
 - [ ] Navigation mobile fluide  
 
@@ -82,10 +82,10 @@
 
 ### **M5 – Emailing & Notifications**
 
-- [ ] Installer et configurer BullMQ (Redis)  
-- [ ] Créer `MailService` et `MailProcessor`  
+- [x] Installer et configurer BullMQ (Redis)  
+- [x] Créer `MailService` et `MailProcessor`  
 - [ ] Envoyer un mail de bienvenue / publication  
-- [ ] Gérer les erreurs d’envoi (retry, backoff)  
+- [x] Gérer les erreurs d’envoi (retry, backoff)  
 - [ ] Ajouter provider (Postmark / Resend)  
 - [ ] Ajouter DKIM/SPF/DMARC en prod  
 
@@ -214,7 +214,7 @@
 ## 🧭 TL;DR (priorités immédiates)
 
 1. [x] Passer **bcrypt → Argon2id**  
-2. [ ] Mettre en place **BullMQ + Nodemailer provider**  
+2. [x] Mettre en place **BullMQ + Nodemailer provider**  
 3. [ ] Intégrer **éditeur Markdown complet** (split-view + preview)  
 4. [ ] Ajouter **cache Redis** sur les routes publiques  
 5. [ ] Finaliser **workflow de publication** côté admin  

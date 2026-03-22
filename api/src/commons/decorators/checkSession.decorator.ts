@@ -1,6 +1,9 @@
-import { SessionData } from '@fastify/secure-session';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { FastifyReply, FastifyRequest } from 'fastify';
+
+export interface SessionData {
+  user: any;
+}
 
 type UserRedirecter = {
   sessionId: keyof SessionData;

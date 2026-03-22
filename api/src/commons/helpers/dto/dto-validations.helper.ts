@@ -1,6 +1,6 @@
 import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { ValidationError, validate } from 'class-validator';
-import { dtoClasses } from 'src/commons/types/dto-types';
+import { dtoClasses } from 'src/commons/types/dto/dto-types';
 import { UserDto } from 'src/modules/user/dto/user.dto';
 
 export const dtoIsValid = async (

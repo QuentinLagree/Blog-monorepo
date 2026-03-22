@@ -8,25 +8,25 @@ import {
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { Url } from 'src/commons/types/url.types';
 import { makeMessage } from '../helpers/logger.helper';
-import { Message } from '../types/message/message';
+import { Message } from '../types/dto/message/message';
 
 export const AuthGuardSession = (
   urlRedirect?: Url,
-  outputMessage?: Message<String>,
+  outputMessage?: Message<any>,
 ) => {
   class UserGuardSession implements CanActivate {
     canActivate(context: ExecutionContext): boolean | Promise<boolean> {
       const request: FastifyRequest = context.switchToHttp().getRequest();
       const response: FastifyReply = context.switchToHttp().getResponse();
+      console.log(request.session['user'])
 
-      if (!request.session.user) {
+      if (!request.session['user']) {
         urlRedirect = !urlRedirect ? Url.create('/') : urlRedirect;
 
-        if (outputMessage?.log) {
           response.send(
             outputMessage
               ? makeMessage(
-                  outputMessage?.log,
+                  outputMessage?.log ?? '',
                   outputMessage.message,
                   outputMessage.data,
                 )
@@ -39,8 +39,7 @@ export const AuthGuardSession = (
           response.redirect(urlRedirect.value());
           throw new UnauthorizedException('Session Invalid/Expired');
         }
-      }
-      return true;
+        return true;
     }
   }
 

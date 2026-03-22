@@ -13,13 +13,13 @@ export class PostsEntity implements Post {
   @ApiProperty()
   description: string;
   @ApiProperty()
-  published: boolean;
-  @ApiProperty()
   created_at: Date;
   @ApiProperty()
   updated_at: Date;
   @ApiProperty()
   author: User;
+  @ApiProperty()
+  published_at: Date | null;
 
   constructor(partial: Partial<PostsEntity>) {
     Object.assign(this, partial);

@@ -1,4 +1,5 @@
-import { InjectionToken } from '@angular/core';
+import { HttpContextToken } from '@angular/common/http';
+import { Inject, InjectionToken } from '@angular/core';
 
 export type ToastPosition = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
 
@@ -10,10 +11,12 @@ export interface ToastConfig {
 }
 
 export const TOAST_CONFIG = new InjectionToken<ToastConfig>('TOAST_CONFIG');
+export const SUCCESS_MESSAGE = new HttpContextToken<boolean>(() => true);
+export const ERROR_MESSAGE = new HttpContextToken<boolean>(() => true);
 
 export const DEFAULT_TOAST_CONFIG: ToastConfig = {
   maxVisible: 2,
   defaultDuration: 3000,
   position: 'top-right',
-  deduplicate: false,
+  deduplicate: false
 };

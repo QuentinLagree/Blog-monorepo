@@ -1,8 +1,14 @@
-import { Component, computed, Input, input, InputSignal, signal, WritableSignal } from "@angular/core";
-import { BaseFormElementComponent } from "../inputs/base-input";
-import { CheckboxConfig } from "./models/checkbox-config";
-import { FormControl, ReactiveFormsModule } from "@angular/forms";
-
+import {
+  Component,
+  computed,
+  Input,
+  input,
+  InputSignal,
+  signal,
+  WritableSignal
+} from '@angular/core';
+import { CheckboxConfig } from './models/checkbox-config';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-switch-button',
@@ -20,7 +26,7 @@ export class SwitchButtonComponent {
     label: '',
     required: true,
     type: 'checkbox'
-  }
+  };
 
   readonly mergeConfigs = computed<CheckboxConfig>(() => ({
     ...this.defaultConfiguration,
@@ -28,9 +34,8 @@ export class SwitchButtonComponent {
     ...(this.localOverrides() ?? {})
   }));
   toggleChecked() {
-    this.isChecked.set(!this.isChecked())
-    this.control.setValue(this.isChecked())
-    console.log(this.control)
+    this.isChecked.set(!this.isChecked());
+    this.control.setValue(this.isChecked());
+    console.log(this.control);
   }
-
 }

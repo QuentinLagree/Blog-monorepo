@@ -9,5 +9,5 @@ export const moduleModules = [
     AccountsModule,
     AuthModule,
     PasswordRecoveryModule,
-    PostsModule
+    PostsModule,
 ]

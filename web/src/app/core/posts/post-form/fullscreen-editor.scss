@@ -1,0 +1,101 @@
+@use 'markdown' as *;
+@use 'fonts' as *;
+@use 'mixins/mixins' as *;
+@use 'variables' as *;
+
+
+.fullscreen-editor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #fafafa;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 999;
+  font-family: system-ui, sans-serif;
+}
+
+.fullscreen-editor.hide {
+  position: relative;
+  top: initial;
+  left: initial;
+  width: initial;
+  height: initial;
+  background: #fafafa;
+  z-index: -1;
+  font-family: system-ui, sans-serif;
+}
+
+/* Barre du haut */
+.fullscreen-editor .topbar,
+.fullscreen-editor .bottombar {
+  background: #f3f3f3;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 500;
+  padding: 2em 4em;
+}
+
+.fullscreen-editor .topbar {
+  border-bottom: 1px solid #ddd;
+}
+
+.fullscreen-editor .bottombar {
+  border-top: 1px solid #ddd;
+  justify-content: flex-start;
+}
+
+/* Zone de texte */
+.fullscreen-editor textarea {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 16px;
+  font-size: 2rem;
+  line-height: 1.5;
+  color: #222;
+  background: #fff;
+  overflow: auto;
+}
+
+.fullscreen-editor .editors {
+  flex: 5;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  height: 100%;
+  position: relative;
+}
+
+.fullscreen-editor .editors .markdown::ng-deep,
+.fullscreen-editor .editors .variable-binding {
+  width: 50%;
+  height: 100%;
+}
+
+.fullscreen-editor .editors .variable-binding {
+  overflow-y: scroll;
+  font-size: 1.0em;
+  padding: 1em;
+}
+
+.fullscreen-editor>* {
+  white-space: pre-line;
+}
+
+
+.preview {
+  width: 50%;
+  height: 100%;
+  overflow: auto;
+}

@@ -12,6 +12,7 @@ $primary-hover: #c421fa;
 $success: #3cda6c;
 $danger: #da3c3c;
 $error: #e96969;
+$warning: #da9b3c;
 
 /* UTNITS VARIABLES */
 
@@ -23,5 +24,5 @@ $blur-intensity: 2em;
 
 /* SELECT */
 $option-background: rgb(220 220 220 / 20%);
-
+$option-background-focus: rgb(220 220 220 / 45%);
 $switch-toggle: 2.4em;

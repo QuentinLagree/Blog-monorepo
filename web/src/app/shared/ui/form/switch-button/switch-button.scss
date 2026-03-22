@@ -18,34 +18,34 @@
   border: 0.5px solid transparent;
   border-radius: $switch-toggle;
   outline: none;
-  transition:  0.4s;
   background-color: $container-background;
   cursor: pointer;
   transition: background-color 0.4s;
 
-
   @include box-inset-shadow;
 
   &:focus {
+    border-width: 0.2px;
+    outline: 0.2px solid transparent;
     border-color: $primary;
   }
 }
 
 .input-container-switch-button.checked {
-    background-color: $primary;
+  background-color: $primary;
 }
 
 .input-container-switch-button span {
-  transition: .3s;
-
+  transition: 0.3s;
   position: absolute;
   border-radius: calc(2.5 * $switch-toggle);
+  top: 0;
   left: 0;
-    width: $switch-toggle;
-    height: $switch-toggle;
-    background-color: $white;
-  @include box-inset-shadow;
+  width: $switch-toggle;
+  height: $switch-toggle - 0.1em;
+  background-color: $white;
 
+  @include box-inset-shadow;
 }
 
 .input-container-switch-button.checked span {

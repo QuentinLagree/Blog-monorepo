@@ -1,0 +1,52 @@
+@use 'variables' as *;
+@use 'mixins/mixins' as *;
+@use 'bases/base-form' as *;
+@use 'bases/base-pills' as *;
+
+.context-menu {
+    position: fixed;
+    z-index: 99999;
+    height: 45em;
+    overflow-x: hidden;
+    width: 18em;
+    max-height: 100em;
+    margin-top: 0.5em;
+    border: 0.5px solid transparent;
+    border-radius: 7px;
+    outline: none;
+    background-color: $white;
+    color: $black;
+    list-style-type: none;
+    @include box-inset-shadow;
+
+}
+
+.context-menu ul {
+    overflow-y: scroll;
+}
+
+.context-menu ul li {
+  display: flex;
+  align-items: center;
+  font-size: 1em;
+  font-family: Poppins, sans-serif;
+  color: $black;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  transition: .3s;
+  padding: 1.2em 0.8em;
+
+  &:hover,
+  &.selected {
+    padding-left: 1.5em;
+    background-color: $option-background;
+  }
+
+  &.selected {
+    padding-left: 2em;
+  }
+  
+  &:focus {
+    background-color: $option-background-focus;
+  }
+}

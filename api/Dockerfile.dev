@@ -1,0 +1,30 @@
+# api/Dockerfile.dev
+FROM node:20-bookworm-slim
+
+# Outils système (ps pour Nest watch) + toolchain natif + libsodium pour sodium-native
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    procps \
+    python3 \
+    make \
+    g++ \
+    git \
+    libsodium-dev \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# pnpm via corepack
+RUN corepack enable
+
+# (optionnel) store pnpm persistant si tu montes un volume sur /pnpm/store
+ENV PNPM_STORE_DIR=/pnpm/store
+
+# Installer les deps d'abord pour profiter du cache
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
+# Puis le reste du code
+COPY . .
+
+# Démarrage dev (Nest watch)
+CMD ["pnpm", "run", "start:dev"]

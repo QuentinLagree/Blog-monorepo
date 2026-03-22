@@ -2,7 +2,7 @@ import { ClassConstructor } from 'class-transformer';
 import { ValidationError } from 'class-validator';
 import { isFieldsInvalid } from '../error.helper';
 import { dtoIsValid } from './dto-validations.helper';
-import { dtoClasses } from 'src/commons/types/dto-types';
+import { dtoClasses } from 'src/commons/types/dto/dto-types';
 
 export const checkFieldIsEmpty = async (
   dto: dtoClasses,

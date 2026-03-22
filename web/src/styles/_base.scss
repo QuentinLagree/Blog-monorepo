@@ -51,3 +51,60 @@ body {
     text-decoration: underline;
   }
 }
+
+/* Table markdown minimaliste */
+markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+}
+
+/* En-tête */
+markdown th {
+  text-align: left;
+  font-weight: 600;
+  padding: 8px;
+  border-bottom: 2px solid #cb2fff;
+  color: #3c3c3c;
+}
+
+/* Cellules */
+markdown td {
+  padding: 8px;
+  border-bottom: 1px solid #e6e6e6;
+  color: #333;
+}
+
+/* Code inline léger */
+markdown td code {
+  background: #f7eaff;   /* violet très pâle */
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: Consolas, monospace;
+  font-size: 0.9rem;
+  border: 1px solid #ebd6ff;
+  color: #5a008a;
+}
+
+.math-block {
+  margin: 1.5rem 0;
+  padding: 12px 16px;
+  border-left: 3px solid #cb2fff;
+  background: #f9f3ff;           /* violet très léger */
+  font-family: "STIX Two Math", "Times New Roman", serif;
+  font-size: 1.05rem;
+}
+
+.math-block .katex-display,
+.math-block .MathJax_Display {
+  /* si tu utilises KaTeX ou MathJax, ça ajustera aussi la formule rendue */
+  margin: 0;
+}
+
+markdown img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1rem auto;
+}

@@ -5,17 +5,13 @@ import { LoggerService } from './commons/logger/logger.service';
 import { ConfigurationModule } from './config/config.module';
 import { moduleModules } from './modules/app-modules';
 
-@Global()
 @Module({
   imports: [
-    ...moduleModules,
-    ConfigurationModule,
     ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
+    ConfigurationModule,  // ← expose MailModule, Prisma, Redis, BullMQ
+    ...moduleModules,     // UserModule, AuthModule, PasswordRecoveryModule, etc.
   ],
-  providers: [LoggerService],
-  controllers: [
-    AppController,
-
-  ],
+  controllers: [AppController],
+  providers: [LoggerService], // évite d'ajouter ici RedisService/BullMQService s’ils sont déjà dans leurs modules
 })
 export class AppModule {}

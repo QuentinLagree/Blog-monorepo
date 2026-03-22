@@ -393,7 +393,7 @@ describe('PasswordRecoveryController Tests', () => {
       tokenIsValid.mockResolvedValue(true);
 
       _token.set.mockReset();
-      _mailer.sendEmailToken.mockReset();
+      _mailer.sendRecoveryPasswordEmail.mockReset();
       _token.generate.mockReset();
 
       _token.generate.mockResolvedValue(MockToken);
@@ -412,7 +412,7 @@ describe('PasswordRecoveryController Tests', () => {
 
       _token.generate.mockResolvedValue(MockToken);
       _token.set.mockResolvedValue(verifEmail);
-      _mailer.sendEmailToken.mockResolvedValue(undefined);
+      _mailer.sendRecoveryPasswordEmail.mockResolvedValue(undefined);
 
       const result = controller.requestPasswordReset(
         { email },
@@ -426,12 +426,12 @@ describe('PasswordRecoveryController Tests', () => {
 
       expect(_token.generate).toHaveBeenCalledTimes(1);
       expect(_token.set).toHaveBeenCalledTimes(1);
-      expect(_mailer.sendEmailToken).toHaveBeenCalledTimes(1);
+      expect(_mailer.sendRecoveryPasswordEmail).toHaveBeenCalledTimes(1);
       await expect(_token.generate()).resolves.toBe(MockToken);
       expect(_token.generate).toHaveBeenCalledWith();
 
       await expect(_token.set()).resolves.toBe(verifEmail);
-      expect(_mailer.sendEmailToken).toHaveBeenCalledWith(
+      expect(_mailer.sendRecoveryPasswordEmail).toHaveBeenCalledWith(
         expect.objectContaining({
           code: MockToken,
           expired_at: fixedDate,
@@ -445,7 +445,7 @@ describe('PasswordRecoveryController Tests', () => {
         }),
       );
 
-      await expect(_mailer.sendEmailToken()).resolves.toBe(undefined);
+      await expect(_mailer.sendRecoveryPasswordEmail()).resolves.toBe(undefined);
     });
     it('Sould return a error when fields are empty', async () => {
       const { email } = createUserMock();
@@ -529,7 +529,7 @@ describe('PasswordRecoveryController Tests', () => {
       let verifEmail = createVerificationEmailMock();
 
       _token.set.mockResolvedValue(verifEmail);
-      _mailer.sendEmailToken.mockImplementationOnce(() => {
+      _mailer.sendRecoveryPasswordEmail.mockImplementationOnce(() => {
         throw new FailSendingMail();
       });
 
@@ -555,7 +555,7 @@ describe('PasswordRecoveryController Tests', () => {
 
       _token.set.mockResolvedValue(verifEmail);
       const error = new Error(FATAL_ERROR);
-      _mailer.sendEmailToken.mockImplementationOnce(() => {
+      _mailer.sendRecoveryPasswordEmail.mockImplementationOnce(() => {
         throw error;
       });
 
@@ -576,7 +576,7 @@ describe('PasswordRecoveryController Tests', () => {
         ),
       );
       expect(_token.set).toHaveBeenCalledTimes(1);
-      expect(_mailer.sendEmailToken).toHaveBeenCalledTimes(1);
+      expect(_mailer.sendRecoveryPasswordEmail).toHaveBeenCalledTimes(1);
 
       await expect(_token.set()).resolves.toEqual(verifEmail);
       expect(_token.set).toHaveBeenCalledWith(

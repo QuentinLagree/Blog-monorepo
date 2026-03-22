@@ -12,7 +12,7 @@ export function GetInputErrorMessage(control: AbstractControl): string | null {
   }
 
   if (errors?.['required-select']) {
-    return 'La séléction d\'une option est requise.';
+    return "La séléction d'une option est requise.";
   }
 
   if (errors?.['required']) {
