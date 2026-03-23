@@ -260,7 +260,7 @@ export class PostController {
       throw new HttpException(
         makeMessage(
           `Error Param slug : '${slug}' is invalid.`,
-          `Le paramètre : '${slug} n'est pas valide.`,
+          `Le paramètre : '${slug}' n'est pas valide.`,
           null,
         ),
         HttpStatus.BAD_REQUEST,
