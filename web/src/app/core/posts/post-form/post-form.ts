@@ -194,7 +194,7 @@ export class PostFormComponent implements AfterViewInit {
       description: description ?? '',
       content: content ?? '',
       authorId,
-      published: true,
+      published_at: new Date(),
       created_at: new Date(),
     };
 

@@ -9,7 +9,7 @@ export interface Post {
     title: string,
     content: string,
     description: string,
-    published: boolean,
+    published_at: Date,
     created_at: Date
 }
 
@@ -25,5 +25,9 @@ export class PostService {
 
     publishPost(post: Post, options?: HttpOptions) {
         return this._http.postData('posts', post, options)
+    }
+
+    getPublishedDetail(slug: string, options?: HttpOptions): Observable<Message<Post>> {
+        return this._http.getData(`posts/slug/${slug}`, options)
     }
 }

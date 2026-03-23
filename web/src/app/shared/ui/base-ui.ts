@@ -50,7 +50,7 @@ export class UIComponent implements AfterViewInit {
     title: 'Premier post',
     content: 'Ceci est le contenu de mon premier post.',
     description: "Ceci est une description de la publication",
-    published: true,
+    published_at: new Date(Date.now()),
     created_at: new Date(Date.now())
   });
   

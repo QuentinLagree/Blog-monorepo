@@ -1,0 +1,8 @@
+<h1>Poste detail</h1>
+
+@if (post.value()) {
+    <h1>Poste {{ this.post.value()?.title}}</h1>
+
+} @else {
+    <h1>Pas de post</h1>
+}

@@ -62,7 +62,7 @@
 ### **M3 – Lecture publique**
 
 - [x] Page `/` : liste des articles
-- [ ] Page `/article/:slug` : affichage d’un article  
+- [x] Page `/article/:slug` : affichage d’un article  
 - [ ] Calcul du temps de lecture  
 - [ ] Styles Markdown pour lecture agréa    ble  
 - [ ] Meta dynamique (title, description)  
@@ -95,7 +95,7 @@
 
 - [x] Bcrypt en place  
 - [x] Migration vers **Argon2id**  
-- [ ] Rehash automatique au login si ancien hash  
+- [x] Rehash automatique au login si ancien hash  
 - [ ] Rate-limit sur `/auth/login`  
 - [ ] Captcha ou double validation (si besoin)  
 - [x] Rotation de session au login / logout  
@@ -211,11 +211,11 @@
 
 ---
 
-## 🧭 TL;DR (priorités immédiates)
-
+# 🧭 TL;DR (priorités immédiates)
+1
 1. [x] Passer **bcrypt → Argon2id**  
 2. [x] Mettre en place **BullMQ + Nodemailer provider**  
-3. [ ] Intégrer **éditeur Markdown complet** (split-view + preview)  
+3. [x] Intégrer **éditeur Markdown complet** (split-view + preview)  
 4. [ ] Ajouter **cache Redis** sur les routes publiques  
 5. [ ] Finaliser **workflow de publication** côté admin  
 6. [ ] Mettre en place **tests E2E + CI/CD**  

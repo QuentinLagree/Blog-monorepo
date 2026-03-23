@@ -14,5 +14,10 @@ export const postsRoutes: Routes = [
     data: {
         markdown: true
     }
+  },
+  {
+    path: 'detail/:title',
+    loadComponent: () => import('./post-detail/post-detail').then((module) => module.PostDetailComponent),
   }
+  
 ];

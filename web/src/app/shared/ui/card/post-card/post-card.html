@@ -12,7 +12,7 @@
                 </div>
             </div>
             <div class="post-container__callactions">
-                <p class="text-muted text-small">{{ post().created_at | date:'dd/MM/yyyy'}}</p>
+                <p class="text-muted text-small">{{ post().published_at | date:'dd/MM/yyyy'}}</p>
                 <p class="baseline text"><strong>Auteur:</strong> {{ author?.prenom }}</p>
                 <div class="buttons frow flex.between gap-3">
                     @if (this.sessionId === this.post().authorId || this.sessionRole === 'admin') {
