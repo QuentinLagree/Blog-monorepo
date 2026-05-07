@@ -1,7 +1,7 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+import { Message } from '@src/app/core/models/message.model';
 import { Observable } from 'rxjs';
-import { Message } from 'src/app/core/models/message.model';
 
 const API_URL = 'http://localhost:3000/';
 
