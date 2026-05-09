@@ -9,7 +9,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test --no-watch --browsers=ChromeHeadless",
     "test:browser": "ng test",
-    "format": "prettier --write .",
+    "format": "prettier --write .", 
     "lint": "ng lint",
     "lint:all": "ng lint & pnpm run format & pnpm run lint:style",
     "lint:style": "stylelint src/**/*.scss",
