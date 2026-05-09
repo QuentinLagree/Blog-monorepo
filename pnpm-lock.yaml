@@ -11,7 +11,7 @@ importers:
 
   .:
     devDependencies:
-      '@angular/cli':
+      '@angular/cli': 
         specifier: ~20.1.0
         version: 20.1.6(@types/node@22.19.15)(chokidar@4.0.3)
       concurrently:

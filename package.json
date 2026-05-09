@@ -8,7 +8,7 @@
     "install:all": "pnpm install --recursive"
   },
   "devDependencies": {
-    "concurrently": "^9.0.0",
+    "concurrently": "^9.0.0", 
     "@angular/cli": "~20.1.0"
   },
   "pnpm": {
