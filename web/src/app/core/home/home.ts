@@ -10,12 +10,13 @@ import { Message } from '../models/message.model';
 import { HttpContext } from '@angular/common/http';
 import { SUCCESS_MESSAGE } from '../toasts/models/toasts.config';
 import { PostCard } from "@src/app/shared/ui/card/post-card/post-card";
+import { PaginatorComponent } from "@src/app/shared/ui/paginator/paginator";
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.html',
     styleUrls: ['./home.scss'],
-    imports: [BaseButtonComponent, PostCard]
+    imports: [BaseButtonComponent, PostCard, PaginatorComponent]
 })
 export class HomeComponent {
     constructor() { }

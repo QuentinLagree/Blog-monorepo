@@ -249,7 +249,7 @@ export class PostController {
 
   @Get("/slug")
   async slugTest() {
-    let article: Articles | null = await this._articles.indexOneWhere({ id: 2});
+    let article: Articles | null = await this._articles.indexOneWhere({ id: 4});
     if (!article) return null;
     return this._slug.generateSlugFromArticleTitle(article.title, article.id);
   }

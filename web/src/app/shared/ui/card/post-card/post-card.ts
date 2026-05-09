@@ -59,18 +59,30 @@ export class PostCard implements OnInit {
         this.detailPath = this.getDetailPath()
     }
 
+    getSlugifyPath (noID: boolean = false): string {
+       return (`${this.post().title.toLocaleLowerCase().replaceAll(/[*+~.()'"!:@]/g, "")} ${noID == true ? " " : this.post().id}`).replaceAll("  ", " ").replaceAll(' ', '-')
+
+       /**
+        * Titre sympatique !
+        * titre sympatique !
+        * titre sympatique
+        * titre sympatique 2
+        * titre-sympatique-2
+        * 
+        * titre sympatique
+        * titre sympatique
+        */
+    }
+
     getDetail () {
-        const titlePath: string = this.post().title.toLocaleLowerCase().replaceAll(' ', '-')
-        const id = this.post().id
-        const detailPath = `/post/detail/${titlePath}?id=${id}`
+        const id = this.post().id;
+        const detailPath = `/post/detail/${this.getSlugifyPath(true)}?id=${id}`
         this._router.navigate([detailPath])
         
     }
 
     private getDetailPath () {
-        const titlePath: string = this.post().title.toLocaleLowerCase().replaceAll(' ', '-')
-        const id = this.post().id
-        return `/post/detail/${titlePath}-${id}`
+        return `/post/detail/${this.getSlugifyPath()}`
     }
 
     toEditForm () {

@@ -38,7 +38,6 @@ export class SlugService {
         }
 
         const id: number = Number(id_not_checked);
-        console.log(id);
         const article: Articles | null = await this._post.indexOneWhere({ id });
         if (!article || !article.published_at) throw new NotFoundException();
         if (this.generateSlugFromArticleTitle(article.title, article.id) !== slug) {
