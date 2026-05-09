@@ -1,7 +1,7 @@
 {
   "name": "titi",
   "version": "0.0.0",
-  "type": "commonjs",
+  "type": "commonjs", 
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0 --port 4200 --hmr",
