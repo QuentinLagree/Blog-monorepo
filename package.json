@@ -18,8 +18,5 @@
     "onlyBuiltDependencies": [
       "sodium-native"
     ]
-  },
-  "dependencies": {
-    "tslib": "^2.8.1"
   }
 }
