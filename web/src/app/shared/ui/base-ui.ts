@@ -13,11 +13,11 @@ import { PostCard } from "./card/post-card/post-card";
 import { Post } from '@src/app/core/services/post.service';
 import { TextAreaValidatorFactory } from './form/text-area/validators/textarea-validator.factory';
 import { TextAreaComponent } from "./form/text-area/text-area";
-import { ContextMenuComponent } from "./context-menu/context-menu";
 import { ContextMenuTriggerDirective } from "./context-menu/context-menu.directive";
 import { MarkdownSyntaxOptions } from './context-menu/config/context-menu-options';
 import { EditButtonComponent } from "./form/buttons/button-edit/button-edit";
 import { DangerButtonComponent } from "./form/buttons/button-danger/button-danger";
+import { ButtonAddComponent } from "./form/buttons/button-add/button-add";
 
 @Component({
   selector: 'app-generic-ui',
@@ -34,7 +34,8 @@ import { DangerButtonComponent } from "./form/buttons/button-danger/button-dange
     TextAreaComponent,
     ContextMenuTriggerDirective,
     EditButtonComponent,
-    DangerButtonComponent
+    DangerButtonComponent,
+    ButtonAddComponent
 ]
 })
 export class UIComponent implements AfterViewInit {

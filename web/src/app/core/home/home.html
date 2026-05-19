@@ -2,7 +2,9 @@
     <h1>Welcome to the Blog</h1>
     <p>This is your home page content.</p>
     <app-button type="danger" [loading]="loading" label="Se déconnecter" (clicked)="this.logout()" ></app-button>
-    <ng-paginator [items]="this.posts.value() ?? []" />
+    <app-button icon="icon-plus" label="Créer un article" (clicked)="this._router.navigate(['/post/add'])"></app-button>
+    @if (this.loadingPost()) {
+        <ng-paginator [currentPageIndex]="+page()" [items]="this.posts.value() ?? []" />
+    }
 
-    <a href="/post/add">Créer un article</a>
 </div>

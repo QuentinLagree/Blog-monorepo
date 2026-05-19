@@ -9,8 +9,8 @@ export class UserLoginCredentials extends PickType(UserEntity, [
   @IsNotEmpty()
   @IsString()
   @IsEmail({}, { message: "L'email n'est pas valide !" })
-  email: string;
+  override email: string;
   @MinLength(4)
   @IsString()
-  password: string;
+  override password: string;
 }

@@ -5,22 +5,21 @@ import { PostsEntity } from '../entities/posts.entities';
 
 export class Posts extends PartialType(PostsEntity) {
   @IsNotEmpty()
-  id: number;
+  override id: number;
   @IsNotEmpty()
-  authorId: number;
+  override authorId: number;
   @IsNotEmpty()
-  title: string;
+  override title: string;
   @IsNotEmpty()
-  content: string;
+  override content: string;
   @IsNotEmpty()
-  description: string;
-  
+  override description: string;
   @IsNotEmpty()
-  created_at: Date;
+  override created_at: Date;
   @IsNotEmpty()
-  updated_at: Date;
+  override updated_at: Date;
   @IsNotEmpty()
-  published_at: Date;
+  override published_at: Date;
   @IsNotEmpty()
-  author: User;
+  override author: User;
 }

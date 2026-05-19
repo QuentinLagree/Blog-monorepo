@@ -18,7 +18,7 @@ export class UserDto extends UserEntity {
   @MaxLength(50, {
     message: 'Le nom de famille doit contenir au maximum 50 caractères.',
   })
-  nom: string;
+  override nom: string;
   @IsDefined({
     message: 'Le Prénom doit être défini.',
   })
@@ -27,14 +27,14 @@ export class UserDto extends UserEntity {
     message: 'Le Prénom doit contenir au maximum 16 caractères.',
   })
   @IsString()
-  prenom: string;
+  override prenom: string;
   @IsNotEmpty()
   @IsString()
   @MinLength(2, { message: 'Le Pseudo doit contenir au moins 2 caractères.' })
   @MaxLength(16, {
     message: 'Le Pseudo doit contenir au maximum 16 caractères.',
   })
-  pseudo: string;
+  override pseudo: string;
   @IsNotEmpty({
     message: "L'email doit être défini.",
   })
@@ -45,7 +45,7 @@ export class UserDto extends UserEntity {
   @MaxLength(255, {
     message: "L'email doit contenir au maximum 255 caractères.",
   })
-  email: string;
+  override email: string;
   @IsNotEmpty({
     message: "L'Adresse email doit être défini.",
   })
@@ -56,10 +56,10 @@ export class UserDto extends UserEntity {
   @MaxLength(255, {
     message: 'Le mot de passe doit contenir au maximum 255 caractères.',
   })
-  password: string;
+  override password: string;
   @IsString()
   @MaxLength(255, {
     message: 'Le rôle doit contenir au maximum 255 caractères.',
   })
-  role: string;
+  override role: string;
 }

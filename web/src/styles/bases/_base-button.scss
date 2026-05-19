@@ -163,6 +163,7 @@ button.icon {
     background-color: rgba($color:$black, $alpha: 0.1);
     width: 100%;
     min-width: 24px;
+    flex: 1;
   }
 }
 
@@ -201,7 +202,8 @@ button.md.icon {
 button.sm.icon {
   padding: 0;
   padding-right: 0.75em;
-  font-size: 1.1em;
+  font-size: 1em;
+  font-weight: 500;
 
   i.button-icon {
     padding: 0.3em;

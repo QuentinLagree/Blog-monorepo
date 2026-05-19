@@ -3,40 +3,48 @@ import {
   Component,
   computed,
   effect,
+  inject,
   Input,
   signal,
 } from '@angular/core';
 import { PostCard } from "../card/post-card/post-card";
 import { Post } from "@src/app/core/services/post.service";
+import { BaseButtonComponent } from "../form/buttons/base-button";
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 @Component({
   standalone: true,
   selector: 'ng-paginator',
+  styleUrl: "./paginator.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    @for (item of page(); track $index) {
+    @for (item of page(); track item.id) {
       <app-post-card [post]="item"></app-post-card>
+    } @empty {
+      <div class="main container py-5">
+        <p>Ce ci est un texte inidiquant que la ressource n'est pas trouvé</p>
+      </div>
     }
 
-    <div class="flex items-center justify-between mt-8">
-      <div class="inline-flex rounded shadow-lg">
-        @for (size of pageSizes; track $index) {
-          <button (click)="pageSize.set(size)" class="px-3 py-1 text-sm font-medium bg-white border border-gray-200" [class.rounded-s-lg]="$index === 0"  [class.rounded-e-lg]="$index === pageSizes.length - 1" [class.font-black]="pageSize() === size">
-            {{size}}
-          </button>
+    <div class="flex between">
+      <div class="frow  gap-2">
+        @for (page of [].constructor(pageCount()); track $index) {
+          <app-button [type]="($index == currentPageIndex()) ? 'secondary' : 'primary'"  (click)="goToPage($index)" [class.rounded-s-lg]="$index === 0" [class.font-black]="currentPageIndex() === $index" label="{{ $index + 1}}">
+          </app-button>
         }
       </div>
-      <span><strong>{{currentPageIndex() + 1 }}</strong> of {{ pageCount() }}</span>
-      <div>
-        <button class="px-2 pb-1 rounded shadow-lg hover:shadow-md bg-white font-bold mr-2" (click)="prev()"><</button>
-        <button class="px-2 pb-1 rounded shadow-lg hover:shadow-md bg-white font-bold mr-2" (click)="next()">></button>
-      </div>
+       <div class="frow flex-end gap-2">
+      <app-button type="primary" label="<" (click)="prev()"></app-button>
+      <app-button type="primary" label=">" (click)="next()"></app-button>
+        
     </div>
   `,
-  imports: [PostCard],
+  imports: [PostCard, BaseButtonComponent],
 })
 export class PaginatorComponent {
+
+  private _router = inject(Router)
   // will be removed once signal based inputs are released!
   @Input({ alias: 'items' }) set _items(items: Post[]) {
     this.items.set(items);
@@ -44,13 +52,13 @@ export class PaginatorComponent {
   @Input({ alias: 'currentPageIndex' }) set _currentPageIndex(
     currentPageIndex: number
   ) {
-    this.currentPageIndex.set(currentPageIndex);
+    this.currentPageIndex.set(currentPageIndex - 1);
   }
   @Input({ alias: 'pageSize' }) set _pageSize(pageSize: number) {
     this.pageSize.set(pageSize);
   }
 
-  pageSizes = [5, 10, 20];
+  pageSizes = [5, 10];
 
   // will be converted to inputs...  items = input([]);
   items = signal<Post[]>([]);
@@ -70,21 +78,33 @@ export class PaginatorComponent {
       () => {
         this.items();
         this.pageSize();
-        this.currentPageIndex.set(0);
       },
       { allowSignalWrites: true }
     );
   }
 
+  private navigateToCurrentIndex() {
+    this._router.navigate(['/home'], {
+      queryParams: { page: this.currentPageIndex() + 1 }
+    });
+  }
+
+  goToPage(index: number) {
+    this.currentPageIndex.set(index)
+    this.navigateToCurrentIndex()
+  }
+
   next() {
     if (this.currentPageIndex() < this.pageCount() - 1) {
       this.currentPageIndex.update((index) => index + 1);
+      this.navigateToCurrentIndex()
     }
   }
 
   prev() {
     if (this.currentPageIndex() > 0) {
       this.currentPageIndex.update((index) => index - 1);
+      this.navigateToCurrentIndex()
     }
   }
 }

@@ -2,7 +2,9 @@
   "compileOnSave": false,
   "compilerOptions": {
     "paths": {
+      "src/*": ["./src/*"],
       "@src/*": ["./src/*"],
+      "styles/*": ["./src/styles/*"],
       "@styles/*": ["./src/styles/*"]
     },
     "outDir": "./dist/out-tsc",

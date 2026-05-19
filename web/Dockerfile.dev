@@ -1,13 +1,17 @@
 FROM node:20-alpine
-WORKDIR /app
-RUN corepack enable
 
-COPY package*.json ./
-COPY pnpm-lock.yaml* ./
-RUN pnpm i
+WORKDIR /app
+
+RUN corepack enable && corepack prepare pnpm@10.15.0 --activate
+
+ENV PNPM_STORE_DIR=/pnpm/store
+
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --no-frozen-lockfile
 
 COPY . .
+
 EXPOSE 4200
 
 # Le "ng serve" est lancé depuis docker-compose.dev.yml :
-# "npm run start" (avec proxy /api si tu l'utilises)
+# "pnpm run start" via docker-compose

@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { LandingComponent } from './core/landing/landing';
-import { landingGuard } from './core/auth/guards/landing.guard';
 import { loginGuard } from './core/auth/guards/login.guard';
 import { authGuard } from './core/auth/guards/auth.guard';
 

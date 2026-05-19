@@ -63,3 +63,12 @@
     }
   }
 }
+
+
+@mixin generate-flex($max) {
+  @for $i from 1 through $max {
+    .flex-#{$i} {
+      flex: $i;
+    }
+  }
+}

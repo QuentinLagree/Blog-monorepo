@@ -20,6 +20,14 @@
   justify-content: space-between;
 }
 
+.flex-start {
+  justify-content: flex-start;
+}
+
+.flex-end {
+  justify-content: flex-end;
+}
+
 .frow {
   display: flex;
   flex-direction: row;

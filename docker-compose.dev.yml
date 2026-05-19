@@ -59,7 +59,7 @@ services:
     command: >
       sh -lc "
         pnpm -v &&
-        pnpm install --frozen-lockfile || pnpm install &&
+        pnpm install --no-frozen-lockfile &&
         pnpm run prisma:build &&
         pnpm run prisma:generate &&
         pnpm run prisma:migrate &&
@@ -101,7 +101,7 @@ services:
     command: >
       sh -lc "
         pnpm -v &&
-        pnpm install --frozen-lockfile || pnpm install &&
+        pnpm install --no-frozen-lockfile &&
         pnpm exec ng version &&
         pnpm run start
       "

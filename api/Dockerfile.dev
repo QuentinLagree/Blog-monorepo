@@ -14,14 +14,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /app
 
 # pnpm via corepack
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@10.15.0 --activate
 
 # (optionnel) store pnpm persistant si tu montes un volume sur /pnpm/store
 ENV PNPM_STORE_DIR=/pnpm/store
 
 # Installer les deps d'abord pour profiter du cache
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
 
 # Puis le reste du code
 COPY . .
