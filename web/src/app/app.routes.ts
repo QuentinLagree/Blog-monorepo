@@ -7,6 +7,13 @@ export const appRoutes: Routes = [
   { path: '', component: LandingComponent, pathMatch: 'full' },
 
   {
+    path: 'account',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./core/account/account.routes').then((m) => m.accountRoutes),
+  },
+
+  {
     path: 'auth',
     canActivate: [loginGuard],
     loadChildren: () =>

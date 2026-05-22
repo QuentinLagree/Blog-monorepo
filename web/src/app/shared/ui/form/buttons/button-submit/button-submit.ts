@@ -10,4 +10,5 @@ export class SubmitButtonComponent extends BaseButtonComponent {
   override type: InputSignal<ButtonType> = input<ButtonType>('primary');
   override size: InputSignal<ButtonSize> = input<ButtonSize>('lg');
   override label: InputSignal<string | undefined> = input<string | undefined>('Envoyer');
+  
 }

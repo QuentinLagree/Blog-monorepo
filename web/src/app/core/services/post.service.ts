@@ -30,4 +30,8 @@ export class PostService {
     getPublishedDetail(slug: string, options?: HttpOptions): Observable<Message<Post>> {
         return this._http.getData(`posts/slug/${slug}`, options)
     }
+
+    getDraftsPostsOfUser(userId: number, options?: HttpOptions): Observable<Message<Post[]>> {
+        return this._http.getData(`users/posts/drafts/${userId}`, options);
+    }
 }

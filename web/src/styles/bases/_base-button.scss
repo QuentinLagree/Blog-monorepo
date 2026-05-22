@@ -2,7 +2,7 @@
 @use 'variables' as *;
 
 button:not(.btn-select, .input-password-toggle) {
-  width: 100%;
+  width: auto;
   outline: none;
   border: none;
   cursor: pointer;
@@ -20,10 +20,16 @@ button:not(.btn-select, .input-password-toggle) {
     filter 0.3s,
     scale 0.1s ease-in-out;
 
+  &.full {
+    width: 100%;
+  }
+
   &:disabled {
     cursor: default;
     opacity: 0.6;
   }
+
+  
 
   &:hover:not(:disabled, .btn-secondary) {
     filter: brightness(1.1);
@@ -154,7 +160,7 @@ button.icon {
   display: flex;
   flex-direction: row;
   align-items: center;
-  width: 100%;
+  width: auto;
   gap: 0.8em;
   
   i.button-icon {

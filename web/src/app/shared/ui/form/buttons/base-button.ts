@@ -19,10 +19,11 @@ export class BaseButtonComponent {
   icon: InputSignal<string | undefined> = input<string | undefined>(undefined);
   disabled: InputSignal<boolean> = input<boolean>(false);
   loading: InputSignal<boolean> = input<boolean>(false);
+  full: InputSignal<boolean> = input<boolean>(false);
 
   @HostBinding('class')
   get hostClasses() {
-    return `btn-${this.type()} ${this.size()}`;
+    return `btn-${this.type()} ${this.size()} ${this.full() ? 'full' : ''}`;
   }
 
   onClick(event: Event) {

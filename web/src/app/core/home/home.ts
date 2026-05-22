@@ -1,25 +1,21 @@
-import { Component, computed, inject, OnInit, resource, signal } from '@angular/core';
-import { DangerButtonComponent } from "@src/app/shared/ui/form/buttons/button-danger/button-danger";
+import { HttpContext } from '@angular/common/http';
+import { Component, computed, inject, resource, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BaseButtonComponent } from "@src/app/shared/ui/form/buttons/base-button";
+import { PaginatorComponent } from "@src/app/shared/ui/paginator/paginator";
+import { finalize, firstValueFrom } from 'rxjs';
+import { Message } from '../models/message.model';
+import { Post, PostService } from '../services/post.service';
 import { SessionService } from '../services/session.service';
 import { UserService } from '../services/user.service';
-import { catchError, finalize, firstValueFrom, from, shareReplay } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Post, PostService } from '../services/post.service';
-import { Message } from '../models/message.model';
-import { HttpContext } from '@angular/common/http';
 import { SUCCESS_MESSAGE } from '../toasts/models/toasts.config';
-import { PaginatorComponent } from "@src/app/shared/ui/paginator/paginator";
-import { toSignal } from '@angular/core/rxjs-interop';
-import { ContextMenuTriggerDirective } from "src/app/shared/ui/context-menu/context-menu.directive";
-import { SuccessButtonComponent } from "src/app/shared/ui/form/buttons/button-sucess/button-success";
-import { ButtonAddComponent } from "src/app/shared/ui/form/buttons/button-add/button-add";
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.html',
     styleUrls: ['./home.scss'],
-    imports: [BaseButtonComponent, PaginatorComponent, SuccessButtonComponent, ButtonAddComponent]
+    imports: [BaseButtonComponent, PaginatorComponent]
 })
 export class HomeComponent {
     constructor() { }

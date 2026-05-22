@@ -7,7 +7,6 @@ export const authGuard: CanActivateFn = (route, state) => {
   const session = inject(SessionService);
   const router = inject(Router);
 
-  // Utilise fetchSession() pour charger (depuis cache mémoire/localStorage ou API)
   return session.fetchSession().pipe(
     take(1),
     map((s) =>

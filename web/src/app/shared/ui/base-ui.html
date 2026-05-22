@@ -60,6 +60,11 @@
 
       <app-button size="sm" type="primary" [disabled]="true" label="Bouton .btn-primary [disabled] small"></app-button>
     </div>
+
+    <h1>Bouton "full"</h1>
+    <div class="fcol">
+      <app-button size="lg" [full]="true" label="Bouton FULL"></app-button>
+    </div>
   </div>
   <div class="main-container-container flex between col gap-6">
     <div class="main-container p-5">
@@ -107,7 +112,7 @@
           maxLength: 255,
           required: false,
         }"></app-textarea>
-        <app-button-submit></app-button-submit>
+        <app-button-submit size="md"></app-button-submit>
       </form>
     </div>
   </div>
