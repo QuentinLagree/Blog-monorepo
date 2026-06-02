@@ -44,7 +44,7 @@
 - [x] Slug unique et publication `draft/published`  
 - [ ] Sanitization Markdown (DOMPurify / marked)  
 - [ ] Pagination et filtres (tags, date, auteur)  
-- [ ] Test E2E création + publication article  
+- [x] Test E2E création + publication article  
 
 ---
 
@@ -64,7 +64,7 @@
 - [x] Page `/` : liste des articles
 - [x] Page `/article/:slug` : affichage d’un article  
 - [ ] Calcul du temps de lecture  
-- [ ] Styles Markdown pour lecture agréa    ble  
+- [ ] Styles Markdown pour lecture agréable  
 - [ ] Meta dynamique (title, description)  
 - [ ] Navigation mobile fluide  
 

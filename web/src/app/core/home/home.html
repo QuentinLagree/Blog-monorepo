@@ -1,11 +1,12 @@
 <div class="home-container">
     <h1>Welcome to the Blog</h1>
     <p>This is your home page content.</p>
-    <app-button type="danger" [loading]="loading" label="Se déconnecter" (clicked)="this.logout()" ></app-button>
+    
     <app-button icon="icon-plus" label="Créer un article" (clicked)="this._router.navigate(['/post/add'])"></app-button>
-    <app-button label="Aller sur le profile" (clicked)="this._router.navigate(['/account/profil'])"></app-button>
-    @if (this.loadingPost()) {
-        <ng-paginator [currentPageIndex]="+page() == 0 ? 1 : +page()" [items]="this.posts.value() ?? []" />
+    
+    <app-button label="Voir tous les profils utilisateurs" (clicked)="this._router.navigate(['/account/users'])"></app-button>
+    @if (this.loadingPost() ) {
+        <ng-paginator [currentPageIndex]="+page() == 0 ? 1 : +page()" [items]="this.posts.value() ?? []" itemContainer="POST_CARD"/>
     }
 
 </div>

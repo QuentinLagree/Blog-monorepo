@@ -16,6 +16,11 @@ export interface User {
 export class UserService {
   private readonly _http: HttpRequestService = inject(HttpRequestService);
 
+  asUser (value: unknown): User {
+    return value as User;
+  }
+  
+
   getAllUsers(options?: HttpOptions) {
     return this._http.getData('user', options);
   }

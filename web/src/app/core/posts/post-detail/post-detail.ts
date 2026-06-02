@@ -34,6 +34,10 @@ export class PostDetailComponent implements OnInit {
         loader: async () => {
             const context: HttpContext = new HttpContext().set(SUCCESS_MESSAGE, false)
             const res: Message<Post> = await firstValueFrom(this._post.getPublishedDetail(this.slug_title.normalize("NFD").replace(/[\u0300-\u036f]/g, ""), { context }));
+            if (res.data.published_at == null && this.sessionId != res.data.authorId) {
+                this._route.navigate(['/home']);
+            };
+            console.log(res.data.authorId == this.sessionId);
             return res.data;
         },
     })

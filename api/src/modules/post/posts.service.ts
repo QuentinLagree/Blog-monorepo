@@ -6,18 +6,29 @@ import {
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { Prisma, User, Post as Articles } from '@prisma/client';
+import { PaginationDto } from '../pagination/pagination.dto';
+import { skip } from 'node:test';
 
 @Injectable()
 export class ArticleService {
   constructor(private readonly _prisma: PrismaService) {}
 
-  async index(published?: boolean): Promise<Articles[]> {
+  async countAll(): Promise<number> {
+  return await this._prisma.post.count();
+}
+  
+
+  async index(paginationDto?: PaginationDto): Promise<Articles[]> {
   return await this._prisma.post.findMany({
-    where: published === undefined
+    
+    take: paginationDto.limit,
+    skip: (paginationDto.page * paginationDto.limit) - paginationDto.limit,
+    where: paginationDto.published === false
       ? {}
       : {
-          published_at: published ? { not: null } : null
-        }
+          published_at: paginationDto.published ? { not: null } : null
+        },
+        
   });
 }
   async indexWhere(where: Prisma.PostWhereInput) {

@@ -8,10 +8,13 @@ import {
   signal,
 } from '@angular/core';
 import { PostCard } from "../card/post-card/post-card";
-import { Post } from "@src/app/core/services/post.service";
+import { Post, PostService } from "@src/app/core/services/post.service";
 import { BaseButtonComponent } from "../form/buttons/base-button";
 import { ActivatedRoute, Router } from '@angular/router';
+import { UserService } from 'src/app/core/services/user.service';
 
+
+type ItemContaien = "POST_CARD" | "USER_CARD" | "NOTHING"
 
 @Component({
   standalone: true,
@@ -20,14 +23,27 @@ import { ActivatedRoute, Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @for (item of page(); track item.id) {
-      <app-post-card [post]="item"></app-post-card>
+      @switch (this.itemContainer()) {
+        @case ("NOTHING") {
+          <h1>Item : {{ item.title }}</h1>
+        }
+        @case ("POST_CARD") {
+          @let post = this._post.asPost(item);
+          <app-post-card [isDraft]="isDraft()" [post]="post"></app-post-card>
+        }
+        @case ("USER_CARD") {
+          @let user = this._user.asUser(item);
+          <h1>{{user.email}}</h1>
+        }
+      }
     } @empty {
       <div class="main container py-5">
         <p>Ce ci est un texte inidiquant que la ressource n'est pas trouvé</p>
       </div>
     }
 
-    <div class="flex between">
+    @if (this.pageCount() > 1) {
+<div class="flex between">
       <div class="frow  gap-2">
         @for (page of [].constructor(pageCount()); track $index) {
           <app-button [type]="($index == currentPageIndex()) ? 'secondary' : 'primary'"  (click)="goToPage($index)" [class.rounded-s-lg]="$index === 0" [class.font-black]="currentPageIndex() === $index" label="{{ $index + 1}}">
@@ -39,15 +55,27 @@ import { ActivatedRoute, Router } from '@angular/router';
       <app-button type="primary" label=">" (click)="next()"></app-button>
         
     </div>
+</div>
+      }
   `,
   imports: [PostCard, BaseButtonComponent],
 })
 export class PaginatorComponent {
 
+  protected _user: UserService = inject(UserService)
+  protected _post: PostService = inject(PostService)
+
   private _router = inject(Router)
-  // will be removed once signal based inputs are released!
-  @Input({ alias: 'items' }) set _items(items: Post[]) {
+  @Input({ alias: 'items' }) set _items(items: any[]) {
     this.items.set(items);
+  }
+
+    @Input({ alias: 'itemContainer' }) set _itemContainer(itemContainer: ItemContaien) {
+    this.itemContainer.set(itemContainer);
+  }
+
+  @Input({ alias: 'isDraft' }) set _isDrafts(isDraft: boolean) {
+    this.isDraft.set(isDraft);
   }
   @Input({ alias: 'currentPageIndex' }) set _currentPageIndex(
     currentPageIndex: number
@@ -60,12 +88,12 @@ export class PaginatorComponent {
 
   pageSizes = [5, 10];
 
-  // will be converted to inputs...  items = input([]);
-  items = signal<Post[]>([]);
+  items = signal<any[]>([]);
+  itemContainer = signal<ItemContaien>("NOTHING");
+  isDraft = signal<boolean>(false)
   currentPageIndex = signal(0);
   pageSize = signal(5);
 
-  // computed derived state and effect...
   pageCount = computed(() => Math.ceil(this.items().length / this.pageSize()));
   page = computed(() => {
     const startIndex = this.pageSize() * this.currentPageIndex();

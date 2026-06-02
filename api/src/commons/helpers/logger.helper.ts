@@ -6,10 +6,11 @@ import { PlainFormatter } from '../logger/plain-formatter';
 import { Message } from '../types/dto/message/message';
 import { MessageOptions } from '../types/dto/message/message-options';
 
-export function makeMessage<T>(
+export function makeMessage<T = any, K= any>(
   log: string,
   message: string,
   data: T,
+  meta: K = undefined,
   options?: MessageOptions,
 ): Message<T> {
   const formatter = new PlainFormatter('fr-FR', /*useUTC*/ false);
@@ -23,7 +24,7 @@ export function makeMessage<T>(
     ],
   });
   const isTest =
-    process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID !== undefined;
+    process.env['NODE_ENV'] === 'test' || process.env['JEST_WORKER_ID'] !== undefined;
 
   options = { log: options?.log ?? true, level: options?.level ?? 'Info' };
 
@@ -41,5 +42,5 @@ export function makeMessage<T>(
     }
   }
 
-  return { message, data };
+  return { message, data, meta };
 }

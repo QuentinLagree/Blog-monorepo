@@ -19,12 +19,17 @@ export interface Post {
 export class PostService {
     private readonly _http: HttpRequestService = inject(HttpRequestService);
 
+      asPost (value: unknown): Post {
+        return value as Post;
+      }
+    
+
     getAllPublishedPost(options?: HttpOptions): Observable<Message> {
         return this._http.getData('posts/published', options)
     }
 
-    publishPost(post: Post, options?: HttpOptions) {
-        return this._http.postData('posts', post, options)
+    publishPost(post: Post, page: number, limit: number, options?: HttpOptions) {
+        return this._http.postData(`posts?page=${page}&limit=${limit}&published=true`, post, options)
     }
 
     getPublishedDetail(slug: string, options?: HttpOptions): Observable<Message<Post>> {

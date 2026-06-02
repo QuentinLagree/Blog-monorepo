@@ -11,7 +11,7 @@ import { Post, PostService } from "src/app/core/services/post.service";
 import { PaginatorComponent } from "src/app/shared/ui/paginator/paginator";
 
 @Component({
-  selector: 'app-login-page',
+  selector: 'app-profil-page',
   imports: [DangerButtonComponent, BaseButtonComponent, PaginatorComponent],
   standalone: true,
   templateUrl: './profil.html',

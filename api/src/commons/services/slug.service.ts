@@ -4,7 +4,7 @@ import { ArticleService } from "src/modules/post/posts.service";
 import { Post as Articles } from "@prisma/client";
 import { NumberNotCorrectFormat } from "../exceptions/NumberNotCorrectFormat.error";
 
-const VALIDATE_SLUG = new RegExp("^[a-z0-9]+(?:-[a-z0-9]+)+-[0-9]*$")
+const VALIDATE_SLUG = new RegExp("^[a-z0-9]+(?:-[a-z0-9]+)*-[0-9]+$")
 
 @Injectable()
 export class SlugService {
@@ -39,7 +39,7 @@ export class SlugService {
 
         const id: number = Number(id_not_checked);
         const article: Articles | null = await this._post.indexOneWhere({ id });
-        if (!article || !article.published_at) throw new NotFoundException();
+        if (!article) throw new NotFoundException();
         if (this.generateSlugFromArticleTitle(article.title, article.id) !== slug) {
             throw new NotFoundException();
         }

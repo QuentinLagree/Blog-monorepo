@@ -1,6 +1,6 @@
 <div class="main-container fcol gap-8 p-7">
-  <div class="main-container blur frow gap-5 ghost">
-    <div class="main-container ghost">
+  <div class="frow gap-5 ghost">
+    <div class="ghost">
       <h1 class="mb-1">Titre du premier niveau</h1>
       <h2 class="mb-1">Titre du deuxieme niveau</h2>
       <h3 class="mb-1">Titre du troisième niveau</h3>
@@ -22,15 +22,16 @@
       <div class="frow gap-4">
         <p class="text-danger">.text-danger</p>
         <p class="text-muted">.text-disabled</p>
+        <a href="#">link</a>
       </div>
     </div>
   </div>
-  <div class="main__container_container flex between col gap-6">
+  <div class="main-container flex between col gap-6">
     <h1 class="hero-title">Couleurs</h1>
     <p>Aucune couleurs déinie pour le moment (à terminer)</p>
   </div>
 
-  <div class="main-container-container flex between col gap-6">
+  <div class="main-container flex between col gap-6">
     <h1 class="hero-title">Boutons</h1>
     <h1>Boutons (large)</h1>
     <div class="frow gap-5">
@@ -66,8 +67,7 @@
       <app-button size="lg" [full]="true" label="Bouton FULL"></app-button>
     </div>
   </div>
-  <div class="main-container-container flex between col gap-6">
-    <div class="main-container p-5">
+  <div class="main-container flex between col gap-6">
       <h1 class="hero-title">Boutons spécials</h1>
       <div class="frow gap-5">
         <app-button-edit></app-button-edit>
@@ -76,9 +76,8 @@
         <app-button-add size="sm"></app-button-add>
         <app-button size="sm" icon="icon-plus" type="primary" label="Ajouter"></app-button>
     </div>
-      </div>
   </div>
-  <div class="main-container flex frow-center">
+  <div class="flex frow-center">
     <div class="main-container-form p-5">
       <h1 class="hero-title form-title">Formulaire</h1>
       <form [formGroup]="form" class="stack gap-2">
@@ -116,10 +115,11 @@
       </form>
     </div>
   </div>
+  <!--
   <div class="main-container flex">
     <app-post-card [post]="this.exemplePost()"></app-post-card>
   </div>
   <div class="main-container-form flex" [contextMenuTrigger]="''" [contextMenuAction]="actionHandle">
     <h1>Choix : {{ syntaxChoice() }}</h1>
-  </div>
+  </div> -->
 </div>

@@ -14,43 +14,43 @@
 }
 
 body {
-  background-color: $container-background;
+  background: #e5e5e5;
+  
+  padding: 0 5em;
   padding: 2em;
-  height: auto;
+  height: 100vh;
+  
 }
+
+header {
+  width: 100%;
+  background: rgba(255, 255, 255);
+  border-radius: 5px;
+  margin-bottom: 2em;
+  padding: 0.2em 0.8em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header nav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 2em;
+}
+
 
 
 .main-container {
+  padding: 1.2em;
   position: relative;
   min-width: 500px;
   width: 100%;
+  background: rgba(255, 255, 255);
 }
 
-.main-container-form {
-  height: 100%;
-  width: 100%;
-  max-width: 50%;
-  @include box-shadow;
-}
 
-.main-container-form .form-title {
-  align-self: flex-start;
-}
-
-.main-container-form-link {
-  color: $black;
-  margin-top: 2em;
-  text-align: center;
-}
-
-.main-container-form-link a {
-  color: $primary;
-  text-decoration: none;
-  font-weight: 700;
-  &:hover {
-    text-decoration: underline;
-  }
-}
 
 /* Table markdown minimaliste */
 markdown table {

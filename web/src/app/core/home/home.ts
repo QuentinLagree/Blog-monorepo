@@ -10,6 +10,8 @@ import { Post, PostService } from '../services/post.service';
 import { SessionService } from '../services/session.service';
 import { UserService } from '../services/user.service';
 import { SUCCESS_MESSAGE } from '../toasts/models/toasts.config';
+import { PostCard } from "src/app/shared/ui/card/post-card/post-card";
+import { ContextMenuTriggerDirective } from "src/app/shared/ui/context-menu/context-menu.directive";
 
 @Component({
     selector: 'app-home',
@@ -20,8 +22,6 @@ import { SUCCESS_MESSAGE } from '../toasts/models/toasts.config';
 export class HomeComponent {
     constructor() { }
 
-    private _session: SessionService = inject(SessionService)
-    private _user: UserService = inject(UserService)
     private _post: PostService = inject(PostService)
     public _router: Router = inject(Router)
     private _activatedRoute = inject(ActivatedRoute)
@@ -30,7 +30,7 @@ export class HomeComponent {
         initialValue: this._activatedRoute.snapshot.queryParamMap    })
     page = computed(() =>this.queryParamsMap()?.get('page') ?? 1);
 
-    loading = false;
+    
     loadingPost = signal(true);
 
      posts = resource<Post[], Error>({
@@ -46,19 +46,5 @@ export class HomeComponent {
   
     
 
-    logout() {
-        this.loading = true;
-        setTimeout(() => {
-        this._user
-        .logout()
-        .pipe(
-            finalize(() => {
-                this.loading = false
-            })
-        ).subscribe(() => {
-            this._session.clearSession();
-            this._router.navigate([''])
-        })
-        }, 2000)
-    }
+    
 }

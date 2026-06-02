@@ -25,6 +25,8 @@ import { UserService } from './user.service';
 import { Message } from 'src/commons/types/dto/message/message';
 import { Posts } from '../post/dto/posts.dto';
 
+type PostWithAuthor = Articles & { author: User };
+
 @ApiTags('Gestion des Publications en fonction des utilisateurs')
 @Controller('users/posts')
 @UseInterceptors(
@@ -224,5 +226,6 @@ if (!ID.hasValid(id))
           );
       }
     }
+    
   }
 }

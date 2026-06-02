@@ -24,6 +24,7 @@ export class PostCard {
     
     post: InputSignal<Post> = input.required<Post>()
     author: WritableSignal<User | undefined> = signal(undefined);
+    isDraft: InputSignal<boolean> = input(false)
 
     detailPath: string = "";
 
@@ -31,6 +32,8 @@ export class PostCard {
 
     sessionId = this._session.getUserIdSync();
     sessionRole = this._session.getUserRoleSync();
+
+    isAdminAndNoAuthor: boolean = this.sessionId != this.author()?.id && this.sessionRole == 'admin'
     
    constructor () {
     effect(() => {
@@ -90,11 +93,18 @@ export class PostCard {
         
     }
 
+    getDraftDetail () {
+      const id = this.post().id;
+        const detailPath = `/draft/detail/${this.getSlugifyPath(true)}?id=${id}`
+        this._router.navigate([detailPath])
+    }
+
     private getDetailPath () {
         return `/post/detail/${this.getSlugifyPath()}`
     }
 
     toEditForm () {
+      console.log("Salut je suis edit")
         this._router.navigate([`post/edit?=${this.post().id}`])
     }
 }

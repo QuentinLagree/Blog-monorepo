@@ -7,4 +7,9 @@
       loadComponent: () =>
         import('./pages/profil/profil').then((m) => m.ProfilPageComponent),
     },
+    {
+      path: 'users',
+      title: "Liste de tous les utilisateurs",
+      loadComponent: () => import('./pages/accounts/accounts').then(m => m.AccountsComponent)   
+    }
   ];

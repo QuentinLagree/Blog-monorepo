@@ -19,7 +19,7 @@ async function bootstrap() {
 
   await app.register(fastifySecureSession, {
     salt: 'mq9hDxBVDbspDR6n',
-    key: process.env.SECRET_KEY ? Buffer.from(process.env.SECRET_KEY, 'base64') : fs.readFileSync('/app/secret-key'),
+    key: process.env['SECRET_KEY'] ? Buffer.from(process.env['SECRET_KEY'], 'base64') : fs.readFileSync('/app/secret-key'),
     cookie: {
       path: '/',
       httpOnly: true,

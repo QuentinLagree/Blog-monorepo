@@ -8,10 +8,11 @@ import {
   NotFoundException,
   Param,
   Post,
+  Query,
   SerializeOptions,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { PostsEntity } from 'src/modules/post/entities/posts.entities';
 import { TransformDataMessageIntoObjectSerialization } from 'src/commons/interceptors/transform_data_message_into_object_serialization.interceptor';
 import { makeMessage } from 'src/commons/helpers/logger.helper';
@@ -25,6 +26,8 @@ import { UserService } from '../user/user.service';
 import { SlugService } from 'src/commons/services/slug.service';
 import { Post as Articles } from '@prisma/client';
 import { NumberNotCorrectFormat } from 'src/commons/exceptions/NumberNotCorrectFormat.error';
+import { PaginationDto } from '../pagination/pagination.dto';
+import { MetaPaginationDto } from '../pagination/meta.pagination.dto';
 
 @ApiTags('Gestion des Publications')
 @Controller('posts')
@@ -36,19 +39,33 @@ export class PostController {
   ) {}
 
   @Get()
-  async index(): Promise<Message<Articles[] | null>> {
+  @ApiQuery({ name: 'PaginationDto', type: PaginationDto,
+    example: {
+      
+    }
+   })
+  async index(
+    @Query() PaginationDto: PaginationDto
+  ): Promise<Message<Articles[] | null, PaginationDto>> {
+    console.log(PaginationDto)
     try {
-      const posts: Articles[] = await this._articles.index();
+      const posts: Articles[] = await this._articles.index(PaginationDto);
+      const articleLength: number = await this._articles.countAll();
       return posts.length == 0
         ? makeMessage(
             'List of all posts is empty.',
             'La liste des publications est vide',
             null,
           )
-        : makeMessage(
+        : makeMessage<Articles[], MetaPaginationDto>(
             'List of all posts',
             'Liste de toutes les publications',
             posts,
+            {
+              currentPage: PaginationDto.page,
+              limit: PaginationDto.limit,
+              totalArticle: articleLength
+            }
           );
     } catch (error) {
       switch (true) {
@@ -66,10 +83,11 @@ export class PostController {
     }
   }
 
+
   @Get('/published')
   async indexPublished(): Promise<Message<Articles[] | null>> {
     try {
-      const posts: Articles[] = await this._articles.index(true);
+      const posts: Articles[] = await this._articles.index({ published: true });
       return posts.length == 0
         ? makeMessage(
             'List of all published posts is empty.',
