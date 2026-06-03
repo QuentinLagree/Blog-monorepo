@@ -12,7 +12,7 @@ import { PaginatorComponent } from "src/app/shared/ui/paginator/paginator";
   standalone: true,
   template: `
   @if (this.loadingPost()) {
-        <ng-paginator [items]="this.users.value() ?? []" itemContainer="USER_CARD"/>
+        <!-- <ng-paginator [items]="this.users.value() ?? []" itemContainer="USER_CARD"/> -->
     }`,
   imports: [BaseButtonComponent, PaginatorComponent]
 })

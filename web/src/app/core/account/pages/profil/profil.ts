@@ -12,7 +12,7 @@ import { PaginatorComponent } from "src/app/shared/ui/paginator/paginator";
 
 @Component({
   selector: 'app-profil-page',
-  imports: [DangerButtonComponent, BaseButtonComponent, PaginatorComponent],
+  imports: [DangerButtonComponent, BaseButtonComponent],
   standalone: true,
   templateUrl: './profil.html',
   styleUrls: ['./profil.scss']

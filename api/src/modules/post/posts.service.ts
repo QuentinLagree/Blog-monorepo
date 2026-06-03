@@ -7,7 +7,6 @@ import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { Prisma, User, Post as Articles } from '@prisma/client';
 import { PaginationDto } from '../pagination/pagination.dto';
-import { skip } from 'node:test';
 
 @Injectable()
 export class ArticleService {

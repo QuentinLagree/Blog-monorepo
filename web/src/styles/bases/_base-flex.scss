@@ -8,7 +8,6 @@
 
 .flex > * {
   flex: 1;
-  flex-wrap: wrap;
   width: 100%;
 }
 
@@ -31,6 +30,11 @@
 .frow {
   display: flex;
   flex-direction: row;
+}
+
+.frow-re {
+  display: flex;
+  flex-direction: row-reverse;
 }
 
 .fcol {
