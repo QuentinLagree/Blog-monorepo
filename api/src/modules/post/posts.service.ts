@@ -2,11 +2,14 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/commons/prisma/prisma.service';
-import { CreatePostDto } from './dto/create-post.dto';
-import { Prisma, User, Post as Articles } from '@prisma/client';
+import { CreatePostDto } from './dto/create.post.dto';
+import { Prisma, User, Post as Article } from '@prisma/client';
 import { PaginationDto } from '../pagination/pagination.dto';
+import { UpdatePostDto } from './dto/update.post.dto';
+import { Role } from 'src/commons/roles/role.enum';
 
 @Injectable()
 export class ArticleService {
@@ -17,7 +20,7 @@ export class ArticleService {
 }
   
 
-  async index(paginationDto?: PaginationDto): Promise<Articles[]> {
+  async index(paginationDto?: PaginationDto): Promise<Article[]> {
   return await this._prisma.post.findMany({
     
     take: paginationDto.limit,
@@ -38,7 +41,7 @@ export class ArticleService {
     }
   }
 
-  async indexOneWhere(where: Prisma.PostWhereUniqueInput): Promise<Articles | null> {
+  async indexOneWhere(where: Prisma.PostWhereUniqueInput): Promise<Article | null> {
     try {
       return await this._prisma.post.findUnique({ where });
     } catch (error) {
@@ -48,7 +51,7 @@ export class ArticleService {
 
   async show(
     uniqueProperties: Prisma.PostWhereUniqueInput,
-  ): Promise<Articles> {
+  ): Promise<Article> {
     try {
       const post = await this._prisma.post.findUnique({
         where: uniqueProperties,
@@ -60,7 +63,7 @@ export class ArticleService {
     }
   }
 
-  async store(createdData: CreatePostDto, author: User): Promise<Articles> {
+  async store(createdData: CreatePostDto, author: User): Promise<Article> {
     //TODO faire un test de markdown
 
     try {
@@ -80,12 +83,35 @@ export class ArticleService {
     }
   }
 
+  async update (where: Prisma.PostWhereUniqueInput, updatePostDto: UpdatePostDto, role: string): Promise<Article | null> {
+    try {
+      const post = await this.show(where);
+      if (!post) {
+        throw new NotFoundException('Post Not Found');
+      }
+
+      if (where.authorId !== post.authorId && role != 'admin') {
+        throw new UnauthorizedException("You do not have the necessary authorization")
+      }
+
+     return await this._prisma.post.update({
+        where: {
+          id: post.id
+        },
+        data: updatePostDto
+      })
+
+    } catch (error) {
+      throw error;
+    } 
+  }
+
   async destroy(where: Prisma.PostWhereUniqueInput): Promise<void> {
     try {
-      const user = await this.show(where);
+      const post = await this.show(where);
 
-      if (!user) {
-        throw new NotFoundException('User Not Found');
+      if (!post) {
+        throw new NotFoundException('Post Not Found');
       }
 
       await this._prisma.post.delete({ where });

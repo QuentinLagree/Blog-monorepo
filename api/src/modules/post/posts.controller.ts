@@ -1,3 +1,5 @@
+import * as secureSession from '@fastify/secure-session';
+
 import {
   Body,
   Controller,
@@ -7,9 +9,12 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
+  Patch,
   Post,
   Query,
   SerializeOptions,
+  Session,
+  UnauthorizedException,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBody, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
@@ -19,7 +24,7 @@ import { makeMessage } from 'src/commons/helpers/logger.helper';
 import { ArticleService } from './posts.service';
 import { ID } from 'src/commons/types/id.types';
 import { Message } from 'src/commons/types/dto/message/message';
-import { CreatePostDto } from './dto/create-post.dto';
+import { CreatePostDto } from './dto/create.post.dto';
 import { ValidationError } from 'class-validator';
 import { dtoIsValid } from 'src/commons/helpers/dto/dto-validations.helper';
 import { UserService } from '../user/user.service';
@@ -28,6 +33,7 @@ import { Post as Articles } from '@prisma/client';
 import { NumberNotCorrectFormat } from 'src/commons/exceptions/NumberNotCorrectFormat.error';
 import { PaginationDto } from '../pagination/pagination.dto';
 import { MetaPaginationDto } from '../pagination/meta.pagination.dto';
+import { UpdatePostDto } from './dto/update.post.dto';
 
 @ApiTags('Gestion des Publications')
 @Controller('posts')
@@ -159,6 +165,67 @@ export class PostController {
           );
       }
     }
+  }
+
+  @Patch('/:id')
+  async updatePost (@Param('id') id: number,
+@Body() updatePostDto: UpdatePostDto,
+@Session() session: secureSession.Session): Promise<Message<Articles | null | ValidationError[]>> {
+     const errors: ValidationError[] = await dtoIsValid(updatePostDto, UpdatePostDto);
+  
+      if (errors.length > 0) {
+        throw new HttpException(
+          makeMessage(
+            'Post created failed !',
+            'Les données sont incorrectes !',
+            errors,
+          ),
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      try {
+        const role = session.get('user').role;
+        const updated_post = await this._articles.update({id}, updatePostDto, role);
+        return makeMessage(
+          'Post updated !',
+          "La publication a été modifié !",
+          updated_post,
+        );
+      } catch (error) {
+        switch (true) {
+          case error instanceof NotFoundException:
+          throw new HttpException(
+            makeMessage(
+              `Post Not Found with id ${id}`,
+              `L'utilisateur ${id} n'existe pas.`,
+              null,
+            ),
+            HttpStatus.NOT_FOUND,
+          );
+          case error instanceof UnauthorizedException:
+            throw new HttpException(
+            makeMessage(
+              error.message,
+              `Vous n'avez pas l'autorisation d'accéder à cette ressource.`,
+              null,
+            ),
+            HttpStatus.UNAUTHORIZED,
+          );
+          default:
+            throw new HttpException(
+              makeMessage(
+                'Fatal Error',
+                "Une erreur est survenue, essayer de contacter l'administrateur ou réessayer ultérieurement.",
+                error,
+                { level: 'Fatal' },
+              ),
+              HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+        }
+      }
+      return null
+      
   }
 
   @Post()

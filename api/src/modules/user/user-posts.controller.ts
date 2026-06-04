@@ -17,7 +17,7 @@ import { dtoIsValid } from 'src/commons/helpers/dto/dto-validations.helper';
 import { makeMessage } from 'src/commons/helpers/logger.helper';
 import { TransformDataMessageIntoObjectSerialization } from 'src/commons/interceptors/transform_data_message_into_object_serialization.interceptor';
 import { ID } from 'src/commons/types/id.types';
-import { CreatePostDto } from '../post/dto/create-post.dto';
+import { CreatePostDto } from '../post/dto/create.post.dto';
 import { PostsEntity } from '../post/entities/posts.entities';
 import { ArticleService } from '../post/posts.service';
 import { UserEntity } from './entities/user.entities';
