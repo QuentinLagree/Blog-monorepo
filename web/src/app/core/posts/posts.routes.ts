@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { canEditPostGuard } from '../auth/guards/authorisation.guard';
 
 export const postsRoutes: Routes = [
   {
@@ -18,6 +19,11 @@ export const postsRoutes: Routes = [
   {
     path: 'detail/:title',
     loadComponent: () => import('./post-detail/post-detail').then((module) => module.PostDetailComponent),
+  },
+  {
+    canActivate: [canEditPostGuard],
+    path: 'edit/:id',
+    loadComponent: () => import('./post-edit/post.edit.component').then((module) => module.PostEditComponent),
   }
   
 ];

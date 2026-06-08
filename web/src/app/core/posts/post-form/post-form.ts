@@ -4,6 +4,7 @@ import {
   DestroyRef,
   ElementRef,
   ViewChild,
+  effect,
   inject,
   input,
   InputSignal,
@@ -12,7 +13,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { debounceTime, finalize, map, throttleTime } from 'rxjs';
+import { finalize, throttleTime } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { generateSyntaxList } from '@src/app/shared/helpers/markdown/markdown.helper';
@@ -25,14 +26,14 @@ import { TextInputValidatorFactory } from '@src/app/shared/ui/form/inputs/input/
 import { TextAreaComponent } from '@src/app/shared/ui/form/text-area/text-area';
 import { MarkdownComponent } from 'ngx-markdown';
 
-import { Post, PostService } from '../../services/post.service';
+import { Post, PostService, UpdatedPost } from '../../services/post.service';
 import { SessionService } from '../../services/session.service';
-
-import { PostDraftStorage } from './post-draft.storage';
-import { POST_FORM_STATES, PostFormState, nextState, prevState } from './post-form.state';
 import { PrismHighlightService } from '../../services/prism-highlight.service';
 import { ToastService } from '../../toasts/toaster.service';
 import { LocalImageStore } from '@src/app/shared/services/storage.image';
+
+import { PostDraftStorage } from './post-draft.storage';
+import { PostFormState, nextState, prevState } from './post-form.state';
 
 @Component({
   selector: 'app-form-post',
@@ -57,24 +58,24 @@ export class PostFormComponent implements AfterViewInit {
   private toast = inject(ToastService);
   private localImages = inject(LocalImageStore);
 
-  private readonly ACTION_COOLDOWN_MS = 60000; // 60s (1min)
+  private readonly ACTION_COOLDOWN_MS = 60000;
 
   @ViewChild('markdownEditor') markdownEditorElement!: TextAreaComponent;
   @ViewChild('preview', { static: false }) preview?: ElementRef<HTMLElement>;
 
-  // ✅ input file pour relink (placeholder click)
   @ViewChild('relinkPicker') relinkPicker?: ElementRef<HTMLInputElement>;
   private relinkTargetId: string | null = null;
 
   post: InputSignal<Post | undefined> = input();
-  resolvedMarkdown = signal<string>('');
 
+  resolvedMarkdown = signal<string>('');
   loading: WritableSignal<boolean> = signal(false);
+
   markdownEditor = false;
 
   state = signal<PostFormState>('TITLE');
 
-  titleControl = new FormControl<string>(this.post()?.title ?? '', [
+  titleControl = new FormControl<string>('', [
     TextInputValidatorFactory({
       minlength: 5,
       maxlength: 30,
@@ -82,15 +83,18 @@ export class PostFormComponent implements AfterViewInit {
     }),
   ]);
 
-  descriptionControl = new FormControl<string>(this.post()?.description ?? '', [
+  descriptionControl = new FormControl<string>('', [
     TextInputValidatorFactory({
       maxlength: 255,
       options: { acceptSpecialCaracters: false },
     }),
   ]);
 
-  contentControl = new FormControl<string>(this.post()?.content ?? `# Titre\n\n> Exemple`, [
-    TextInputValidatorFactory({ validate: false, required: false }),
+  contentControl = new FormControl<string>('# Titre\n\n> Exemple', [
+    TextInputValidatorFactory({
+      validate: false,
+      required: false,
+    }),
   ]);
 
   form = this.fb.group({
@@ -101,77 +105,130 @@ export class PostFormComponent implements AfterViewInit {
 
   private draft = new PostDraftStorage(this.getDraftKey());
 
+  private hasInitializedFromInput = false;
+  private hasRestoredDraft = false;
+
   constructor() {
     generateSyntaxList();
 
-    // ✅ restore draft + state
-    const restoredState = this.draft.restore(this.form);
-    console.log(restoredState)
-    if ((restoredState === 'TITLE' || restoredState === 'DESCRIPTION' || restoredState === 'CONTENT') && restoredState) {
-      this.state.set(restoredState as PostFormState);
-      this.toast.info('Récupération du brouillon', { duration: 2000 });
-    }
+    this.initPostOrDraft();
 
-    // ✅ autosave via storage
     this.draft.watch(this.form, () => this.state());
 
-    // ✅ toast “cooldown”
     this.draft.saved$
       .pipe(
-        throttleTime(this.ACTION_COOLDOWN_MS, undefined, { leading: true, trailing: false }),
+        throttleTime(this.ACTION_COOLDOWN_MS, undefined, {
+          leading: true,
+          trailing: false,
+        }),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe((payload) => {
-        console.log('[saved$] emitted', payload.updatedAt);
         this.toast.info('Brouillon sauvegardé', { duration: 2000 });
       });
 
-    // ✅ resolved markdown + prism (1 seule subscription)
     this.contentControl.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
-        this.resolvedMarkdown.set(this.resolveLocalImages(this.contentControl.value ?? ''));
+        this.updateResolvedMarkdown();
         this.prism.highlightPreview(this.preview?.nativeElement);
       });
-
-    // init
-    this.resolvedMarkdown.set(this.resolveLocalImages(this.contentControl.value ?? ''));
-
-    // (optionnel) ton autosave direct localStorage devient redondant si PostDraftStorage le fait déjà.
-    // Si tu le gardes, évite doublon. Perso: je le supprime.
-    // this.contentControl.valueChanges...
   }
 
   ngAfterViewInit(): void {
     this.prism.highlightPreview(this.preview?.nativeElement);
   }
 
-  ngOnDestroy() {
-    // ✅ libère les blob URLs
+  ngOnDestroy(): void {
     this.localImages.revokeAll?.();
 
     this.draft.flush(this.form, () => this.state());
     this.draft.destroy();
   }
 
-  private getDraftKey() {
+  private initPostOrDraft(): void {
+    effect(() => {
+      const inputPost = this.post();
+
+      if (inputPost) {
+        this.applyPostInput(inputPost);
+        return;
+      }
+
+      this.restoreDraftOnce();
+    });
+  }
+
+  private applyPostInput(post: Post): void {
+    if (this.hasInitializedFromInput) return;
+
+    this.hasInitializedFromInput = true;
+    this.hasRestoredDraft = true;
+
+    this.form.patchValue(
+      {
+        title: post.title ?? '',
+        description: post.description ?? '',
+        content: post.content ?? '',
+      },
+      { emitEvent: true }
+    );
+
+    this.state.set('TITLE');
+
+    // Le post passé en Input écrase le brouillon courant.
+    this.draft.flush(this.form, () => this.state());
+
+    this.updateResolvedMarkdown();
+
+    this.toast.info('Post chargé dans le formulaire', {
+      duration: 1000,
+    });
+  }
+
+  private restoreDraftOnce(): void {
+    if (this.hasRestoredDraft) return;
+
+    this.hasRestoredDraft = true;
+
+    const restoredState = this.draft.restore(this.form);
+
+    if (this.isPostFormState(restoredState)) {
+      this.state.set(restoredState);
+      this.toast.info('Récupération du brouillon', {
+        duration: 2000,
+      });
+    }
+
+    this.updateResolvedMarkdown();
+  }
+
+  private isPostFormState(value: unknown): value is PostFormState {
+    return value === 'TITLE' || value === 'DESCRIPTION' || value === 'CONTENT';
+  }
+
+  private updateResolvedMarkdown(): void {
+    this.resolvedMarkdown.set(
+      this.resolveLocalImages(this.contentControl.value ?? '')
+    );
+  }
+
+  private getDraftKey(): string {
     return 'post:draft:v1';
   }
 
   goBack = () => this.router.navigate(['']);
 
-  toggleEditorMarkdown() {
+  toggleEditorMarkdown(): void {
     this.markdownEditor = !this.markdownEditor;
   }
 
-  nextStep() {
+  nextStep(): void {
     this.state.set(nextState(this.state()));
-
   }
 
-  prevStep() {
-    const prevStateCurrent = prevState(this.state())
-    this.state.set(prevStateCurrent);
+  prevStep(): void {
+    this.state.set(prevState(this.state()));
   }
 
   submit = () => {
@@ -181,6 +238,7 @@ export class PostFormComponent implements AfterViewInit {
     }
 
     const authorId = this.session.getUserIdSync();
+
     if (!authorId) {
       this.router.navigate(['auth/login']);
       return;
@@ -189,133 +247,188 @@ export class PostFormComponent implements AfterViewInit {
     if (this.loading()) return;
 
     const { title, description, content } = this.form.getRawValue();
-    const post: Post = {
-      title: title ?? '',
-      description: description ?? '',
-      content: content ?? '',
-      authorId,
-      published_at: new Date(),
-      created_at: new Date(),
-    };
 
-    this.loading.set(true);
+    if (!this.post()) {
 
-    this.postService
-      .publishPost(post)
-      .pipe(finalize(() => this.loading.set(false)))
-      .subscribe({
-        next: () => {
-          localStorage.removeItem(this.getDraftKey());
-          this.router.navigate(['home']);
-        },
-      });
+        console.log("CREATE")
+
+      
+
+      const post: Post = {
+        title: title ?? '',
+        description: description ?? '',
+        content: content ?? '',
+        authorId,
+        published_at: new Date(),
+        created_at: new Date(),
+      };
+
+      this.loading.set(true);
+
+      this.postService
+        .publishPost(post)
+        .pipe(finalize(() => this.loading.set(false)))
+        .subscribe({
+          next: () => {
+            localStorage.removeItem(this.getDraftKey());
+            this.router.navigate(['home']);
+          },
+        });
+      } else {
+        console.log("UPDATE")
+        const currentPost = this.post();
+
+        if (!currentPost || currentPost.id === undefined) return;
+
+        const updatePost: UpdatedPost = {
+          title: title ?? '',
+          description: description ?? '',
+          content: content ?? '',
+        };
+
+        this.loading.set(true);
+
+        this.postService
+          .updatePost(currentPost.id, updatePost)
+          .pipe(finalize(() => this.loading.set(false)))
+          .subscribe({
+            next: () => {
+              this.router.navigate(['home']);
+            },
+          });
+      }
+      
   };
 
-  formatFromContextMenu = (_data: any, syntaxName: string) => this.setFormat(syntaxName);
+  formatFromContextMenu = (_data: unknown, syntaxName: string) => {
+    this.setFormat(syntaxName);
+  };
 
-  setFormat(name: string) {
-    const item: MarkdownSyntax | undefined = MarkdownSyntaxOptions.find((s) => s.name === name);
-    if (!item) throw new Error(`Syntax name : '${name}' doesn't exist!`);
+  setFormat(name: string): void {
+    const item: MarkdownSyntax | undefined = MarkdownSyntaxOptions.find(
+      (syntax) => syntax.name === name
+    );
+
+    if (!item) {
+      throw new Error(`Syntax name : '${name}' doesn't exist!`);
+    }
+
     this.markdownEditorElement.applySyntax(item);
   }
 
-  onTabPress(event: KeyboardEvent) {
+  onTabPress(event: KeyboardEvent): void {
     if (event.key !== 'Tab') return;
+
     event.preventDefault();
 
     const textarea = event.target as HTMLTextAreaElement;
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
 
-    textarea.value = textarea.value.slice(0, start) + '\t' + textarea.value.slice(end);
+    textarea.value =
+      textarea.value.slice(0, start) + '\t' + textarea.value.slice(end);
+
     textarea.selectionStart = textarea.selectionEnd = start + 1;
   }
 
-  onEditorScroll(editorScrollTop: number) {
+  onEditorScroll(editorScrollTop: number): void {
     const el = this.markdownEditorElement.getElement();
     const editorEl = el?.nativeElement;
     const previewEl = this.preview?.nativeElement;
+
     if (!editorEl || !previewEl) return;
 
     const editorMax = editorEl.scrollHeight - editorEl.clientHeight;
+
     if (editorMax <= 0) return;
 
     const previewMax = previewEl.scrollHeight - previewEl.clientHeight;
     const ratio = editorScrollTop / editorMax;
+
     previewEl.scrollTop = ratio * previewMax;
   }
 
-  blockScroll(event: Event) {
+  blockScroll(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
   }
 
-  saveManual() {
+  saveManual(): void {
     this.draft.flush(this.form, () => this.state());
   }
 
-  // -------------------------
-  // Images localimg + placeholder + relink
-  // -------------------------
-
-  onPickImage(event: Event) {
+  onPickImage(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
+
     if (!file) return;
+
     input.value = '';
 
     const id = this.uuid();
     const blobUrl = URL.createObjectURL(file);
+
     this.localImages.add(id, blobUrl);
 
     const alt = file.name.replace(/\.[^/.]+$/, '');
+
     this.insertAtCursor(`\n![${alt}](localimg:${id})\n`);
   }
 
-  // ✅ clic dans la preview sur placeholder → relink
-  onPreviewClick(ev: MouseEvent) {
-  const target = ev.target as HTMLElement | null;
-  if (!target) return;
+  onPreviewClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement | null;
 
-  if (target.tagName.toLowerCase() !== 'img') return;
-  const img = target as HTMLImageElement;
+    if (!target) return;
+    if (target.tagName.toLowerCase() !== 'img') return;
 
-  const title = img.getAttribute('title') ?? '';
-  if (!title.startsWith('localimg:')) return;
+    const img = target as HTMLImageElement;
+    const title = img.getAttribute('title') ?? '';
 
-  const id = title.slice('localimg:'.length);
-  if (!id) return;
+    if (!title.startsWith('localimg:')) return;
 
-  this.relinkTargetId = id;
-  this.relinkPicker?.nativeElement.click();
-}
+    const id = title.slice('localimg:'.length);
 
-  // ✅ l’utilisateur re-choisit un fichier pour cet id
-  onRelinkPicked(event: Event) {
+    if (!id) return;
+
+    this.relinkTargetId = id;
+    this.relinkPicker?.nativeElement.click();
+  }
+
+  onRelinkPicked(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
+
     if (!file || !this.relinkTargetId) return;
 
     input.value = '';
 
     const blobUrl = URL.createObjectURL(file);
+
     this.localImages.add(this.relinkTargetId, blobUrl);
 
-    // force re-render markdown
-    const cur = this.contentControl.value ?? '';
-    this.contentControl.setValue(cur);
+    const currentContent = this.contentControl.value ?? '';
 
-    this.toast.success('Image re-liée ✅', { duration: 1500 });
+    this.contentControl.setValue(currentContent);
+
+    this.toast.success('Image re-liée ✅', {
+      duration: 1500,
+    });
+
     this.relinkTargetId = null;
   }
 
-  private uuid() {
-    return 'li_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+  private uuid(): string {
+    return (
+      'li_' +
+      Math.random().toString(36).slice(2) +
+      Date.now().toString(36)
+    );
   }
 
-  private insertAtCursor(text: string) {
+  private insertAtCursor(text: string): void {
     const elRef = this.markdownEditorElement.getElement();
     const editorEl = elRef?.nativeElement as HTMLTextAreaElement | undefined;
+
     if (!editorEl) return;
 
     const start = editorEl.selectionStart ?? editorEl.value.length;
@@ -329,28 +442,30 @@ export class PostFormComponent implements AfterViewInit {
 
     queueMicrotask(() => {
       editorEl.focus();
-      const pos = start + text.length;
-      editorEl.setSelectionRange(pos, pos);
+
+      const position = start + text.length;
+
+      editorEl.setSelectionRange(position, position);
     });
   }
 
-  private resolveLocalImages(md: string): string {
-  // remplace ![alt](localimg:id) par un <img> HTML avec title="localimg:id"
-  return md.replace(/!\[([^\]]*)\]\(localimg:([a-zA-Z0-9_\-]+)\)/g, (_m, alt, id) => {
-    const blob = this.localImages.get(id);
-    const src = blob ?? this.placeholderSrc(id);
+  private resolveLocalImages(markdown: string): string {
+    return markdown.replace(
+      /!\[([^\]]*)\]\(localimg:([a-zA-Z0-9_\-]+)\)/g,
+      (_match, alt, id) => {
+        const blob = this.localImages.get(id);
+        const src = blob ?? this.placeholderSrc(id);
 
-    const safeAlt = this.escapeHtml(String(alt ?? 'image'));
-    const safeId = this.escapeHtml(String(id));
-    const safeSrc = this.escapeHtml(String(src));
+        const safeAlt = this.escapeHtml(String(alt ?? 'image'));
+        const safeId = this.escapeHtml(String(id));
+        const safeSrc = this.escapeHtml(String(src));
 
-    // ✅ title est généralement conservé par le sanitizer
-    return `<img src="${safeSrc}" alt="${safeAlt}" title="localimg:${safeId}" style="cursor:pointer" />`;
-  });
-}
+        return `<img src="${safeSrc}" alt="${safeAlt}" title="localimg:${safeId}" style="cursor:pointer" />`;
+      }
+    );
+  }
 
-
-  private placeholderSrc(id: string) {
+  private placeholderSrc(id: string): string {
     const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="800" height="220">
   <rect width="100%" height="100%" fill="#f3f4f6"/>
@@ -366,8 +481,8 @@ export class PostFormComponent implements AfterViewInit {
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   }
 
-  private escapeHtml(s: string) {
-    return s
+  private escapeHtml(value: string): string {
+    return value
       .replaceAll('&', '&amp;')
       .replaceAll('<', '&lt;')
       .replaceAll('>', '&gt;')

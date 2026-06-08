@@ -48,6 +48,7 @@ export class SessionService {
       credentials: true,
       context: new HttpContext()
       .set(ERROR_MESSAGE, false)
+      .set(SUCCESS_MESSAGE, false)
     }).pipe(
       map((res: any) => {
         const data: SessionType = res?.data ?? { loggedIn: false, user: null };

@@ -63,7 +63,7 @@
         <div class="buttons frow gap-3">
             <app-button (clicked)="goBack()" size="sm" type="danger" [label]="'Annulé'"></app-button>
             <app-button (clicked)="prevStep()" size="sm" type="danger" [label]="'Retour'"></app-button>
-            <app-button (clicked)="submit()" [loading]="loading()" size="sm" [label]="'Enregistrer'"></app-button>
+            <app-button (clicked)="submit()" [loading]="loading()" size="sm" [label]="(this.post() ? 'Enregistrer les modifications' : 'Enregistrer')"></app-button>
         </div>
     </div>
     <div class="editors">

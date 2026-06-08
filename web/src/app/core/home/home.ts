@@ -40,7 +40,6 @@ export class HomeComponent {
     totalArticle = signal(0);
 
     
-    loadingPost = signal(true);
 
     posts = resource<Post[], PostsParams>({
   params: () => ({

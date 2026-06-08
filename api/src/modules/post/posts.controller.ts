@@ -193,6 +193,7 @@ export class PostController {
           updated_post,
         );
       } catch (error) {
+        console.log(error)
         switch (true) {
           case error instanceof NotFoundException:
           throw new HttpException(
@@ -224,8 +225,6 @@ export class PostController {
             );
         }
       }
-      return null
-      
   }
 
   @Post()

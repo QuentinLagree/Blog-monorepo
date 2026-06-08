@@ -13,6 +13,12 @@ export interface Post {
     created_at: Date
 }
 
+export interface UpdatedPost {
+    title?: string,
+    content?: string,
+    description?: string,
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -32,11 +38,19 @@ export class PostService {
         return this._http.postData('posts', post, options)
     }
 
+    getPostWithID(id: number, options?: HttpOptions): Observable<Message<Post>> {
+        return this._http.getData(`posts/${id}`)
+    }
+
     getPublishedDetail(slug: string, options?: HttpOptions): Observable<Message<Post>> {
         return this._http.getData(`posts/slug/${slug}`, options)
     }
 
     getDraftsPostsOfUser(userId: number, options?: HttpOptions): Observable<Message<Post[]>> {
         return this._http.getData(`users/posts/drafts/${userId}`, options);
+    }
+
+    updatePost(id: number, updatedPost: UpdatedPost, options?: HttpOptions) {
+        return this._http.patchData(`posts/${id}`, updatedPost, options);
     }
 }

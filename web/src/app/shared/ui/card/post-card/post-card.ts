@@ -93,6 +93,14 @@ export class PostCard {
         
     }
 
+    updatePost () {
+        const id = this.post().id;
+        const detailPath = `/post/edit/${id}`
+        console.log("UPDATED")
+        this._router.navigate([detailPath])
+        
+    }
+
     getDraftDetail () {
       const id = this.post().id;
         const detailPath = `/draft/detail/${this.getSlugifyPath(true)}?id=${id}`
@@ -101,10 +109,5 @@ export class PostCard {
 
     private getDetailPath () {
         return `/post/detail/${this.getSlugifyPath()}`
-    }
-
-    toEditForm () {
-      console.log("Salut je suis edit")
-        this._router.navigate([`post/edit?=${this.post().id}`])
     }
 }

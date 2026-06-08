@@ -1,7 +1,7 @@
-import { Component, inject, input, InputSignal } from '@angular/core';
+import { Component, inject, input, InputSignal, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
-import { SessionService } from 'src/app/core/services/session.service';
+import { SessionService, UserSession } from 'src/app/core/services/session.service';
 import { UserService } from 'src/app/core/services/user.service';
 import { BaseButtonComponent } from "src/app/shared/ui/form/buttons/base-button";
 
@@ -20,6 +20,7 @@ export class HeaderComponent {
   
   title: InputSignal<string> = input.required<string>();
   loading = false;
+  user: UserSession | undefined;
   
   logout() {
         this.loading = true;
