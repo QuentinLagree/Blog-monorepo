@@ -1,3 +1,5 @@
+import * as secureSession from '@fastify/secure-session';
+
 import {
   Controller,
   UseInterceptors,
@@ -9,6 +11,9 @@ import {
   Post,
   Body,
   BadRequestException,
+  Patch,
+  Session,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Post as Articles, User } from '@prisma/client';
@@ -24,6 +29,8 @@ import { UserEntity } from './entities/user.entities';
 import { UserService } from './user.service';
 import { Message } from 'src/commons/types/dto/message/message';
 import { Posts } from '../post/dto/posts.dto';
+import { PublishedPostDto } from '../post/dto/published-post.dto';
+import { PostIsAlreadyPublish } from 'src/commons/exceptions/PostAlreadyPublished.errors';
 
 type PostWithAuthor = Articles & { author: User };
 
@@ -103,7 +110,7 @@ export class userToPostController {
   }
 
   @Post()
-  async publishedPost(
+  async createPost(
     @Body() createdPost: CreatePostDto,
   ): Promise<Message<Articles | ValidationError[] | null>> {
     const errors: ValidationError[] = await dtoIsValid(createdPost);
@@ -165,6 +172,84 @@ export class userToPostController {
       }
     }
   }
+
+  @Patch('/publish')
+  async publishPost (@Body() publishedDto: PublishedPostDto, @Session() session: secureSession.Session): Promise<Message<null>>  {
+    if (!ID.hasValid(+publishedDto.id))
+      throw new HttpException(
+        makeMessage(
+          `Error Param ID : '${publishedDto.id}' is invalid.`,
+          "L'id doit être un nombre entier.",
+          null,
+        ),
+        HttpStatus.BAD_REQUEST,
+      );
+
+      let type_id = ID.add(publishedDto.id);
+
+      try {
+        let post: Articles = await this._posts.show({ id: type_id.value() })
+        let author: User = await this._user.show({ id: post.authorId });
+        if (session.get('user') == null) throw new UnauthorizedException()
+        const role = session.get('user').role
+
+        console.log(this._posts.isPublished(post))
+
+         if (await this._posts.isPublished(post)) throw new PostIsAlreadyPublish()
+
+         this._posts.update({
+          id: post.id,
+          authorId: author.id
+         }, publishedDto, role)
+
+         return makeMessage(
+          `Post publish`,
+          "La publication a été publié.",
+          null,
+        )
+      } catch (error) {
+        switch (true) {
+                  case error instanceof NotFoundException:
+                  throw new HttpException(
+                    makeMessage(
+                      `Post Not Found with id ${publishedDto.id}`,
+                      `L'article ${publishedDto.id} n'existe pas.`,
+                      null,
+                    ),
+                    HttpStatus.NOT_FOUND,
+                  );
+                  case error instanceof PostIsAlreadyPublish:
+                    throw new HttpException(
+                    makeMessage(
+                    `Post with id '${publishedDto.id}' is already published.`,
+                    `L'article '${publishedDto.id}' est déjà publié !`,
+                    null,
+                    ),
+                    HttpStatus.BAD_REQUEST,
+                  );
+                  case error instanceof UnauthorizedException:
+                    throw new HttpException(
+                    makeMessage(
+                      error.message,
+                      `Vous n'avez pas l'autorisation d'accéder à cette ressource.`,
+                      null,
+                    ),
+                    HttpStatus.UNAUTHORIZED,
+                  );
+                  default:
+                    throw new HttpException(
+                      makeMessage(
+                        'Fatal Error',
+                        "Une erreur est survenue, essayer de contacter l'administrateur ou réessayer ultérieurement.",
+                        error,
+                        { level: 'Fatal' },
+                      ),
+                      HttpStatus.INTERNAL_SERVER_ERROR,
+                    );
+                }
+      }
+  }
+  
   @Get("/drafts/:id")
   async getAllUserDraft (@Param("id") id:number): Promise<Message<Articles[] | null>> {
 if (!ID.hasValid(id))

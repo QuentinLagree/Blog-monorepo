@@ -24,7 +24,7 @@ import { BaseButtonComponent } from '@src/app/shared/ui/form/buttons/base-button
 import { InputComponent } from '@src/app/shared/ui/form/inputs/input/input';
 import { TextInputValidatorFactory } from '@src/app/shared/ui/form/inputs/input/validators/input-text-validator.factory';
 import { TextAreaComponent } from '@src/app/shared/ui/form/text-area/text-area';
-import { MarkdownComponent } from 'ngx-markdown';
+import { MarkdownComponent, MarkdownService } from 'ngx-markdown';
 
 import { Post, PostService, UpdatedPost } from '../../services/post.service';
 import { SessionService } from '../../services/session.service';
@@ -34,6 +34,8 @@ import { LocalImageStore } from '@src/app/shared/services/storage.image';
 
 import { PostDraftStorage } from './post-draft.storage';
 import { PostFormState, nextState, prevState } from './post-form.state';
+import { ImageEditorService } from '../../services/image-editor.service';
+import { MarkdownFeaturesService } from '../../services/markdow.service';
 
 @Component({
   selector: 'app-form-post',
@@ -54,9 +56,10 @@ export class PostFormComponent implements AfterViewInit {
   private postService = inject(PostService);
   private session = inject(SessionService);
   private router = inject(Router);
-  private prism = inject(PrismHighlightService);
   private toast = inject(ToastService);
-  private localImages = inject(LocalImageStore);
+  private image_editor = inject(ImageEditorService)
+  private _markdown = inject(MarkdownFeaturesService)
+  
 
   private readonly ACTION_COOLDOWN_MS = 60000;
 
@@ -131,16 +134,16 @@ export class PostFormComponent implements AfterViewInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.updateResolvedMarkdown();
-        this.prism.highlightPreview(this.preview?.nativeElement);
+        this._markdown.refreshPreview(this.preview?.nativeElement)
       });
   }
 
   ngAfterViewInit(): void {
-    this.prism.highlightPreview(this.preview?.nativeElement);
+    this._markdown.refreshPreview(this.preview?.nativeElement)
   }
 
   ngOnDestroy(): void {
-    this.localImages.revokeAll?.();
+    this.image_editor.clearLocalImages()
 
     this.draft.flush(this.form, () => this.state());
     this.draft.destroy();
@@ -209,7 +212,7 @@ export class PostFormComponent implements AfterViewInit {
 
   private updateResolvedMarkdown(): void {
     this.resolvedMarkdown.set(
-      this.resolveLocalImages(this.contentControl.value ?? '')
+      this.image_editor.resolveLocalImages(this.contentControl.value ?? '')
     );
   }
 
@@ -299,7 +302,7 @@ export class PostFormComponent implements AfterViewInit {
       }
       
   };
-
+ 
   formatFromContextMenu = (_data: unknown, syntaxName: string) => {
     this.setFormat(syntaxName);
   };
@@ -358,21 +361,7 @@ export class PostFormComponent implements AfterViewInit {
   }
 
   onPickImage(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-
-    if (!file) return;
-
-    input.value = '';
-
-    const id = this.uuid();
-    const blobUrl = URL.createObjectURL(file);
-
-    this.localImages.add(id, blobUrl);
-
-    const alt = file.name.replace(/\.[^/.]+$/, '');
-
-    this.insertAtCursor(`\n![${alt}](localimg:${id})\n`);
+    this._markdown.insertAtCursor(this.image_editor.getImageSyntaxPosition(event), this.markdownEditorElement, this.contentControl);
   }
 
   onPreviewClick(event: MouseEvent): void {
@@ -404,7 +393,7 @@ export class PostFormComponent implements AfterViewInit {
 
     const blobUrl = URL.createObjectURL(file);
 
-    this.localImages.add(this.relinkTargetId, blobUrl);
+    this.image_editor.addLocalImage(this.relinkTargetId, blobUrl);
 
     const currentContent = this.contentControl.value ?? '';
 
@@ -415,78 +404,5 @@ export class PostFormComponent implements AfterViewInit {
     });
 
     this.relinkTargetId = null;
-  }
-
-  private uuid(): string {
-    return (
-      'li_' +
-      Math.random().toString(36).slice(2) +
-      Date.now().toString(36)
-    );
-  }
-
-  private insertAtCursor(text: string): void {
-    const elRef = this.markdownEditorElement.getElement();
-    const editorEl = elRef?.nativeElement as HTMLTextAreaElement | undefined;
-
-    if (!editorEl) return;
-
-    const start = editorEl.selectionStart ?? editorEl.value.length;
-    const end = editorEl.selectionEnd ?? editorEl.value.length;
-
-    const current = this.contentControl.value ?? '';
-    const next = current.slice(0, start) + text + current.slice(end);
-
-    this.contentControl.setValue(next);
-    this.contentControl.markAsDirty();
-
-    queueMicrotask(() => {
-      editorEl.focus();
-
-      const position = start + text.length;
-
-      editorEl.setSelectionRange(position, position);
-    });
-  }
-
-  private resolveLocalImages(markdown: string): string {
-    return markdown.replace(
-      /!\[([^\]]*)\]\(localimg:([a-zA-Z0-9_\-]+)\)/g,
-      (_match, alt, id) => {
-        const blob = this.localImages.get(id);
-        const src = blob ?? this.placeholderSrc(id);
-
-        const safeAlt = this.escapeHtml(String(alt ?? 'image'));
-        const safeId = this.escapeHtml(String(id));
-        const safeSrc = this.escapeHtml(String(src));
-
-        return `<img src="${safeSrc}" alt="${safeAlt}" title="localimg:${safeId}" style="cursor:pointer" />`;
-      }
-    );
-  }
-
-  private placeholderSrc(id: string): string {
-    const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="800" height="220">
-  <rect width="100%" height="100%" fill="#f3f4f6"/>
-  <rect x="24" y="24" width="752" height="172" rx="14" fill="#ffffff" stroke="#d1d5db"/>
-  <text x="50%" y="48%" text-anchor="middle" font-size="20" fill="#111827" font-family="Arial, sans-serif">
-    Image manquante
-  </text>
-  <text x="50%" y="62%" text-anchor="middle" font-size="14" fill="#6b7280" font-family="Arial, sans-serif">
-    Cliquez pour re-sélectionner (id: ${id})
-  </text>
-</svg>`.trim();
-
-    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-  }
-
-  private escapeHtml(value: string): string {
-    return value
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#039;');
   }
 }

@@ -22,7 +22,4 @@ export class CreatePostDto extends PartialType(
   @IsNotEmpty()
   @IsString()
   override description: string;
-
-  @IsDateString()
-  override published_at: Date;
 }

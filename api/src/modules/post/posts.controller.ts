@@ -176,7 +176,7 @@ export class PostController {
       if (errors.length > 0) {
         throw new HttpException(
           makeMessage(
-            'Post created failed !',
+            'Post updated failed !',
             'Les données sont incorrectes !',
             errors,
           ),
@@ -193,7 +193,6 @@ export class PostController {
           updated_post,
         );
       } catch (error) {
-        console.log(error)
         switch (true) {
           case error instanceof NotFoundException:
           throw new HttpException(

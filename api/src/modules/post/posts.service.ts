@@ -6,10 +6,11 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { CreatePostDto } from './dto/create.post.dto';
-import { Prisma, User, Post as Article } from '@prisma/client';
+import { Prisma, User, Post as Article, Post } from '@prisma/client';
 import { PaginationDto } from '../pagination/pagination.dto';
 import { UpdatePostDto } from './dto/update.post.dto';
 import { Role } from 'src/commons/roles/role.enum';
+import { PublishedPostDto } from './dto/published-post.dto';
 
 @Injectable()
 export class ArticleService {
@@ -72,7 +73,7 @@ export class ArticleService {
           title: createdData.title,
           content: createdData.content,
           description: createdData.description,
-          published_at: createdData.published_at,
+          published_at: null,
           author: {
             connect: { id: author.id }
           }
@@ -83,8 +84,9 @@ export class ArticleService {
     }
   }
 
-  async update (where: Prisma.PostWhereUniqueInput, updatePostDto: UpdatePostDto, role: string): Promise<Article | null> {
+  async update (where: Prisma.PostWhereUniqueInput, updatePostDto: UpdatePostDto | PublishedPostDto, role: string): Promise<Article | null> {
     try {
+      console.log(updatePostDto)
       const post = await this.show(where);
       if (!post) {
         throw new NotFoundException('Post Not Found');
@@ -113,10 +115,14 @@ export class ArticleService {
       if (!post) {
         throw new NotFoundException('Post Not Found');
       }
-
       await this._prisma.post.delete({ where });
     } catch (error) {
       throw error;
     }
+  }
+
+  async isPublished(post: Post): Promise<boolean> {
+    console.log(post.published_at !== null)
+    return post.published_at !== null;
   }
 }
