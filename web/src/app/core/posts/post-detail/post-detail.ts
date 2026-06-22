@@ -1,5 +1,4 @@
 import { Component, OnInit, resource } from "@angular/core";
-import { PostFormState } from "../post-form/post-form.state";
 import { Post, PostService } from "../../services/post.service";
 import { SessionService } from "../../services/session.service";
 import { ActivatedRoute, Router } from "@angular/router";

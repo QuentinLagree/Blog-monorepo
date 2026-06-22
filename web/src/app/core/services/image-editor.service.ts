@@ -2,7 +2,7 @@ import { inject, Injectable } from "@angular/core";
 import { LocalImageStore } from "src/app/shared/services/storage.image";
 import { MarkdownFeaturesService } from "./markdow.service";
 
-@Injectable({
+@Injectable({ 
     providedIn: 'root'
 })
 

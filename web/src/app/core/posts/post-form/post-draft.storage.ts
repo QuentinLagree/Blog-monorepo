@@ -1,13 +1,11 @@
 import { FormGroup } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
 import { Subscription, Subject } from 'rxjs';
-import { PostFormState } from './post-form.state';
 
 export interface PostDraft {
   title: string;
   description: string;
   content: string;
-  state: PostFormState;
   updatedAt: number;
 }
 
@@ -21,7 +19,7 @@ export class PostDraftStorage {
 
   constructor(private key: string) {}
 
-  restore(form: FormGroup): PostFormState | null {
+  restore(form: FormGroup): null {
     const raw = localStorage.getItem(this.key);
     if (!raw) return null;
     try {
@@ -31,20 +29,19 @@ export class PostDraftStorage {
         { emitEvent: false }
       );
       this.lastContent = (draft.content ?? '') as string;
-      return (draft.state as PostFormState) ?? null;
+      return null;
     } catch {
         return null;
     }
 
   }
 
-  watch(form: FormGroup, getState: () => PostFormState): void {
+  watch(form: FormGroup): void {
     this.sub = form.valueChanges.pipe(debounceTime(700)).subscribe((value: any) => {
       const payload: PostDraft = {
         title: value?.title ?? '',
         description: value?.description ?? '',
         content: value?.content ?? '',
-        state: getState(),
         updatedAt: Date.now(),
       };
 
@@ -55,13 +52,12 @@ export class PostDraftStorage {
     });
   }
 
-  flush(form: FormGroup, getState: () => PostFormState): void {
+  flush(form: FormGroup): void {
     const v: any = form.getRawValue();
     const payload: PostDraft = {
       title: v.title ?? '',
       description: v.description ?? '',
       content: v.content ?? '',
-      state: getState(),
       updatedAt: Date.now(),
     };
     localStorage.setItem(this.key, JSON.stringify(payload));

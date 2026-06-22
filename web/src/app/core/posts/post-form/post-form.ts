@@ -2,19 +2,19 @@ import {
   AfterViewInit,
   Component,
   DestroyRef,
-  ElementRef,
-  ViewChild,
   effect,
+  ElementRef,
   inject,
   input,
   InputSignal,
   signal,
+  ViewChild,
   WritableSignal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize, throttleTime } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { generateSyntaxList } from '@src/app/shared/helpers/markdown/markdown.helper';
 import { MarkdownSyntaxOptions } from '@src/app/shared/ui/context-menu/config/context-menu-options';
@@ -24,18 +24,15 @@ import { BaseButtonComponent } from '@src/app/shared/ui/form/buttons/base-button
 import { InputComponent } from '@src/app/shared/ui/form/inputs/input/input';
 import { TextInputValidatorFactory } from '@src/app/shared/ui/form/inputs/input/validators/input-text-validator.factory';
 import { TextAreaComponent } from '@src/app/shared/ui/form/text-area/text-area';
-import { MarkdownComponent, MarkdownService } from 'ngx-markdown';
+import { MarkdownComponent } from 'ngx-markdown';
 
 import { Post, PostService, UpdatedPost } from '../../services/post.service';
 import { SessionService } from '../../services/session.service';
-import { PrismHighlightService } from '../../services/prism-highlight.service';
 import { ToastService } from '../../toasts/toaster.service';
-import { LocalImageStore } from '@src/app/shared/services/storage.image';
 
-import { PostDraftStorage } from './post-draft.storage';
-import { PostFormState, nextState, prevState } from './post-form.state';
 import { ImageEditorService } from '../../services/image-editor.service';
 import { MarkdownFeaturesService } from '../../services/markdow.service';
+import { PostDraftStorage } from './post-draft.storage';
 
 @Component({
   selector: 'app-form-post',
@@ -76,8 +73,6 @@ export class PostFormComponent implements AfterViewInit {
 
   markdownEditor = false;
 
-  state = signal<PostFormState>('TITLE');
-
   titleControl = new FormControl<string>('', [
     TextInputValidatorFactory({
       minlength: 5,
@@ -89,7 +84,7 @@ export class PostFormComponent implements AfterViewInit {
   descriptionControl = new FormControl<string>('', [
     TextInputValidatorFactory({
       maxlength: 255,
-      options: { acceptSpecialCaracters: false },
+      options: { acceptSpecialCaracters: true },
     }),
   ]);
 
@@ -116,7 +111,7 @@ export class PostFormComponent implements AfterViewInit {
 
     this.initPostOrDraft();
 
-    this.draft.watch(this.form, () => this.state());
+    this.draft.watch(this.form);
 
     this.draft.saved$
       .pipe(
@@ -126,7 +121,7 @@ export class PostFormComponent implements AfterViewInit {
         }),
         takeUntilDestroyed(this.destroyRef)
       )
-      .subscribe((payload) => {
+      .subscribe(() => {
         this.toast.info('Brouillon sauvegardé', { duration: 2000 });
       });
 
@@ -145,7 +140,7 @@ export class PostFormComponent implements AfterViewInit {
   ngOnDestroy(): void {
     this.image_editor.clearLocalImages()
 
-    this.draft.flush(this.form, () => this.state());
+    this.draft.flush(this.form);
     this.draft.destroy();
   }
 
@@ -177,10 +172,8 @@ export class PostFormComponent implements AfterViewInit {
       { emitEvent: true }
     );
 
-    this.state.set('TITLE');
-
     // Le post passé en Input écrase le brouillon courant.
-    this.draft.flush(this.form, () => this.state());
+    this.draft.flush(this.form);
 
     this.updateResolvedMarkdown();
 
@@ -196,20 +189,12 @@ export class PostFormComponent implements AfterViewInit {
 
     const restoredState = this.draft.restore(this.form);
 
-    if (this.isPostFormState(restoredState)) {
-      this.state.set(restoredState);
       this.toast.info('Récupération du brouillon', {
         duration: 2000,
       });
-    }
 
     this.updateResolvedMarkdown();
   }
-
-  private isPostFormState(value: unknown): value is PostFormState {
-    return value === 'TITLE' || value === 'DESCRIPTION' || value === 'CONTENT';
-  }
-
   private updateResolvedMarkdown(): void {
     this.resolvedMarkdown.set(
       this.image_editor.resolveLocalImages(this.contentControl.value ?? '')
@@ -224,14 +209,6 @@ export class PostFormComponent implements AfterViewInit {
 
   toggleEditorMarkdown(): void {
     this.markdownEditor = !this.markdownEditor;
-  }
-
-  nextStep(): void {
-    this.state.set(nextState(this.state()));
-  }
-
-  prevStep(): void {
-    this.state.set(prevState(this.state()));
   }
 
   submit = () => {
@@ -357,7 +334,7 @@ export class PostFormComponent implements AfterViewInit {
   }
 
   saveManual(): void {
-    this.draft.flush(this.form, () => this.state());
+    this.draft.flush(this.form);
   }
 
   onPickImage(event: Event): void {
