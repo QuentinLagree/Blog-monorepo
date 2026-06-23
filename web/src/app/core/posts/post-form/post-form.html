@@ -1,62 +1,42 @@
-  <div class="fcol">
-    <div class="main-container-form p-5">
-      <h1>Rédige ton article !</h1>
+<div class="fcol">
+  <div class="main-container-form p-5">
+    <h1>Rédige ton article !</h1>
 
-      <form [formGroup]="form" class="flex row gap-5 pt-5²">
-          <app-input
-            [control]="titleControl"
-            [configuration]="{
+    <form [formGroup]="form" class="flex col gap-5 pt-5 pb-4">
+      <app-input [control]="titleControl" [configuration]="{
               label: 'Titre',
               placeholder: 'Entrez le titre de l\'article',
               required: true,
               type: 'text'
-            }"
-          />
-          <app-textarea
-            [control]="descriptionControl"
-            [configuration]="{
+            }" />
+      <app-textarea [control]="descriptionControl" [configuration]="{
               label: 'Description',
               placeholder: 'Ajoute une description',
               required: true
-            }"
-          ></app-textarea>
-      </form>
-      
-    </div>
-    <div [class.fullscreen-editor]="true" [class.hide]="!markdownEditor">
-    <!-- <div class="topbar">
-        <div class="buttons frow gap-3">
-            <app-button (clicked)="goBack()" size="sm" type="danger" [label]="'Annulé'"></app-button>
-            <app-button (clicked)="submit()" [loading]="loading()" size="sm" [label]="(this.post() ? 'Enregistrer les modifications' : 'Enregistrer')"></app-button>
-        </div>
-    </div> -->
-    <div class="editors">
-        <app-textarea [contextMenuTrigger]="''" [contextMenuAction]="formatFromContextMenu" class="markdown"
-        (scrolled)="onEditorScroll($event)"
-        (keydown)="onTabPress($event)"
-            #markdownEditor [control]="contentControl" [configuration]="{
+            }"></app-textarea>
+    </form>
+    <p class="label">Contenu</p>
+    <div class="fullscreen-editor">
+      <app-button icon="icon-eye" size="md" label=""></app-button>
+      <app-textarea [noShadow]="true" [contextMenuTrigger]="''" [contextMenuAction]="formatFromContextMenu" class="markdown"
+        (scrolled)="onEditorScroll($event)" (keydown)="onTabPress($event)" #markdownEditor [control]="contentControl"
+        [configuration]="{
                 label: '',
                 required: false,
                 placeholder: '',
             }"></app-textarea>
-        <div #preview (wheel)="blockScroll($event)"  (click)="onPreviewClick($event)" class="pl-2 preview">
-            <markdown class="variable-binding" [data]="resolvedMarkdown()" katex>
-            </markdown>
-        </div>
-        <input
-  #relinkPicker
-  type="file"
-  accept="image/*"
-  hidden
-  (change)="onRelinkPicked($event)"
-/>
+            <span class="line"></span>
+      <div #preview (wheel)="blockScroll($event)" (click)="onPreviewClick($event)" class="pl-2 preview hide">
+        <markdown class="variable-binding" [data]="resolvedMarkdown()" katex>
+        </markdown>
+        <div class="pill">Preview</div>
+      </div>
+      <input #relinkPicker type="file" accept="image/*" hidden (change)="onRelinkPicked($event)" />
     </div>
-
-    
-</div>
-    
   </div>
-  <!-- <div class="bottombar gap-4">
+</div>
+
+<!-- <div class="bottombar gap-4">
         <input
             #imagePicker
             type="file"
@@ -72,4 +52,10 @@
             (clicked)="imagePicker.click()"
             ></app-button>
         <app-button type="secondary" size="sm" [label]="'Sauvegardé'" (clicked)="saveManual()"></app-button>
+    </div> -->
+<!-- <div class="topbar">
+        <div class="buttons frow gap-3">
+            <app-button (clicked)="goBack()" size="sm" type="danger" [label]="'Annulé'"></app-button>
+            <app-button (clicked)="submit()" [loading]="loading()" size="sm" [label]="(this.post() ? 'Enregistrer les modifications' : 'Enregistrer')"></app-button>
+        </div>
     </div> -->

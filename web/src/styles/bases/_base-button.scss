@@ -171,6 +171,9 @@ button.icon {
     min-width: 24px;
     flex: 1;
   }
+  &.noLabel {
+    padding: 0;
+  }
 }
 
 button.lg.icon {
@@ -184,8 +187,15 @@ button.lg.icon {
       width: 28px;
     }
   }
-  &.noLabel {
-    padding: 0; 
+
+   &.noLabel {
+      padding: 0; 
+      i {
+        padding: 0.5em 0.6em; 
+        svg {
+          width: 22px;
+        }
+      } 
   }
 }
 
@@ -200,9 +210,17 @@ button.md.icon {
       width: 24px;
     }
   }
-  &.noLabel {
-    padding: 0; 
+
+   &.noLabel {
+      padding: 0; 
+      i {
+        padding: 0.3em 0.5em; 
+        svg {
+          width: 18px;
+        }
+      } 
   }
+  
 }
 
 button.sm.icon {
@@ -217,7 +235,16 @@ button.sm.icon {
       width: 20px;
     }
   }
+
   &.noLabel {
-    padding: 0; 
-  }
+      padding: 0; 
+      i {
+        padding: 0.2em 0.5em; 
+        svg {
+          width: 15px;
+        }
+      } 
+    }
+
+  
 }

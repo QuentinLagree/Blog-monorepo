@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Output, viewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, input, Input, InputSignal, Output, viewChild } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TextAreaConfig } from './models/textarea-validation-context';
 import { InputErrorComponent } from '../inputs/inputs-error/inputs-error';
@@ -18,13 +18,15 @@ export class TextAreaComponent extends BaseFormElementComponent<TextAreaConfig> 
 
   textareaComponent = viewChild<ElementRef<HTMLTextAreaElement>>('textarea');
   @Output()
-  scrolled = new EventEmitter<number>(); // scrollTop
+  scrolled = new EventEmitter<number>();
 
   override defaultConfiguration: TextAreaConfig = {
     label: 'Text',
     placeholder: 'placeholder : text',
     required: true,
   };
+
+  noShadow: InputSignal<boolean> = input(false)
 
   markdownSetNewLine () {
     const textarea = this.textareaComponent()?.nativeElement;

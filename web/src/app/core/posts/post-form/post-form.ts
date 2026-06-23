@@ -41,11 +41,11 @@ import { PostDraftStorage } from './post-draft.storage';
   imports: [
     ReactiveFormsModule,
     InputComponent,
-    BaseButtonComponent,
     TextAreaComponent,
     MarkdownComponent,
     ContextMenuTriggerDirective,
-  ],
+    BaseButtonComponent
+],
 })
 export class PostFormComponent implements AfterViewInit {
   private destroyRef = inject(DestroyRef);

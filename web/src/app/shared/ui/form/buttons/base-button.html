@@ -1,6 +1,6 @@
 <button
   [disabled]="disabled() || loading()"
-  [attr.class]="[hostClasses + ' ' + ((loading()) ? 'loading' : '') + ((icon()) ? 'icon' : '') + (!label() ? 'noLabel' : '')]"
+  [attr.class]="[hostClasses + ' ' + ((loading()) ? ' loading' : '') + ((icon()) ? ' icon' : '') + (!label() ? ' noLabel' : '')]"
   aria-label="Bouton secondaire"
   [class.noLabel]="!label()"
   (click)="onClick($event)"

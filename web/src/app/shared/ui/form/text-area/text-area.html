@@ -17,6 +17,7 @@
     #textarea
     style="height: 100%;"
       [formControl]="control"
+      [class.no-shadow]="noShadow()"
       [attr.placeholder]="this.mergeConfigs().placeholder"
       [value]="control.value"
       [attr.id]="mergeConfigs().label.trim()"

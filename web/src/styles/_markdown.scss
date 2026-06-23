@@ -107,48 +107,139 @@ ol li::before {
 }
 
 li {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin: 0.4rem 0;
-    list-style: none;     // supprime le point de liste normal
-  }
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.4rem 0;
+  list-style: none; // supprime le point de liste normal
+}
 
-  li input[type="checkbox"] {
-    width: 1.1rem;
-    height: 1.1rem;
-    appearance: none;
-    border: 2px solid #94a3b8;  // gris slate
-    border-radius: 4px;
-    cursor: pointer;
-    position: relative;
-    background: white;
-  }
+li input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  appearance: none;
+  border: 2px solid #94a3b8; // gris slate
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  background: white;
+}
 
-  /* coche */
-  li input[type="checkbox"]:checked {
-    background-color: #4f46e5;
-    border-color: #4f46e5;
-  }
+/* coche */
+li input[type="checkbox"]:checked {
+  background-color: #4f46e5;
+  border-color: #4f46e5;
+}
 
-  li input[type="checkbox"]:checked::after {
-    content: "";
-    position: absolute;
-    inset: 0;
+li input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  inset: 0;
 
-    /* petit check blanc */
-    mask-image: url('data:image/svg+xml;utf8,<svg fill="none" stroke="white" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>');
-    background: white;
-    mask-size: contain;
-    mask-repeat: no-repeat;
-    mask-position: center;
-  }
+  /* petit check blanc */
+  mask-image: url('data:image/svg+xml;utf8,<svg fill="none" stroke="white" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>');
+  background: white;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
 
-  /* tâche complétée (désactivée) */
-  li input[disabled] + * {
-    opacity: 0.7;
-  }
+/* tâche complétée (désactivée) */
+li input[disabled]+* {
+  opacity: 0.7;
+}
 
-  img {
-    display: initial;
-  }
+img {
+  display: initial;
+}
+
+em {
+  font-style: italic;
+}
+
+/* Listes Markdown classiques */
+.preview {
+  ul {
+  margin: 0.8rem 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+ul li {
+  position: relative;
+  display: block;
+  margin: 0.35rem 0;
+  padding-left: 1.45rem;
+  line-height: 1.5;
+  color: #1f2937;
+}
+
+/* Bullet niveau 1 */
+ul li::before {
+  content: "";
+  position: absolute;
+  left: 0.25rem;
+  top: 0.75em;
+  transform: translateY(-50%);
+
+  width: 0.45rem;
+  height: 0.45rem;
+
+  background: #475569;
+  border-radius: 50%;
+}
+
+/* Sous-liste compacte */
+ul li > ul {
+  margin: 0.3rem 0 0.35rem 0.1rem;
+  padding: 0.25rem 0 0.25rem 1rem;
+
+  border-left: 2px solid #e5e7eb;
+  background: #f9fafb;
+  border-radius: 0 6px 6px 0;
+}
+
+/* Élément niveau 2 */
+ul li > ul > li {
+  margin: 0.25rem 0;
+  padding-left: 1.25rem;
+  color: #374151;
+  line-height: 1.45;
+}
+
+/* Bullet niveau 2 */
+ul li > ul > li::before {
+  left: 0.15rem;
+  width: 0.38rem;
+  height: 0.38rem;
+
+  border: 2px solid #64748b;
+  box-shadow: none;
+}
+
+/* Sous-sous-liste encore plus discrète */
+ul li > ul > li > ul {
+  margin: 0.25rem 0 0.3rem 0;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+
+  border-left-color: #d1d5db;
+}
+
+/* Élément niveau 3 */
+ul li > ul > li > ul > li {
+  margin: 0.2rem 0;
+  color: #4b5563;
+}
+
+/* Bullet niveau 3 */
+ul li > ul > li > ul > li::before {
+  width: 0.42rem;
+  height: 0.42rem;
+
+  background: transparent;
+  border: 2px solid #9ca3af;
+  border-radius: 3px;
+  transform: translateY(-50%) rotate(45deg);
+}
+}
