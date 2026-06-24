@@ -31,7 +31,7 @@ export class PostService {
     
 
     getAllPublishedPost(page: number, limit: number, options?: HttpOptions): Observable<Message> {
-        return this._http.getData(`posts?page=${page}&limit=${limit}`, options)
+        return this._http.getData(`posts?page=${page}&limit=${limit}&published=true`, options)
     }
 
     publishPost(post: Post, options?: HttpOptions) {

@@ -173,6 +173,9 @@ button.icon {
   }
   &.noLabel {
     padding: 0;
+    & i.button-icon {
+      background-color: inherit;
+    }
   }
 }
 

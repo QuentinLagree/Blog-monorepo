@@ -19,9 +19,9 @@ export class PostDraftStorage {
 
   constructor(private key: string) {}
 
-  restore(form: FormGroup): null {
+  restore(form: FormGroup): boolean {
     const raw = localStorage.getItem(this.key);
-    if (!raw) return null;
+    if (!raw) return false;
     try {
       const draft = JSON.parse(raw) as Partial<PostDraft>;
       form.patchValue(
@@ -29,9 +29,9 @@ export class PostDraftStorage {
         { emitEvent: false }
       );
       this.lastContent = (draft.content ?? '') as string;
-      return null;
-    } catch {
-        return null;
+      return true;
+    } catch (error){
+        throw error;
     }
 
   }
@@ -64,11 +64,15 @@ export class PostDraftStorage {
     this.savedSubject.next(payload);
   }
 
-  destroy(): void {
+  destroy(): void { 
     this.sub?.unsubscribe();
     this.sub = undefined;
     this.cancelIdle();
     this.savedSubject.complete();
+  }
+
+  clear() {
+    localStorage.removeItem(this.key);
   }
 
   private writeIdle(payload: PostDraft) {

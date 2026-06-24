@@ -9,10 +9,11 @@ import { HttpContext } from "@angular/common/http";
 import { SUCCESS_MESSAGE } from "src/app/core/toasts/models/toasts.config";
 import { Post, PostService } from "src/app/core/services/post.service";
 import { PaginatorComponent } from "src/app/shared/ui/paginator/paginator";
+import { PostCard } from "src/app/shared/ui/card/post-card/post-card";
 
 @Component({
   selector: 'app-profil-page',
-  imports: [DangerButtonComponent, BaseButtonComponent],
+  imports: [DangerButtonComponent, BaseButtonComponent, PaginatorComponent, PostCard],
   standalone: true,
   templateUrl: './profil.html',
   styleUrls: ['./profil.scss']

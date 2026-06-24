@@ -68,10 +68,13 @@ export class PostFormComponent implements AfterViewInit {
 
   post: InputSignal<Post | undefined> = input();
 
+  showPreview: WritableSignal<boolean> = signal(false);
+
   resolvedMarkdown = signal<string>('');
   loading: WritableSignal<boolean> = signal(false);
 
   markdownEditor = false;
+  isBackAction = false;
 
   titleControl = new FormControl<string>('', [
     TextInputValidatorFactory({
@@ -133,6 +136,10 @@ export class PostFormComponent implements AfterViewInit {
       });
   }
 
+  togglePreview() {
+    this.showPreview.set(!this.showPreview())
+  }
+
   ngAfterViewInit(): void {
     this._markdown.refreshPreview(this.preview?.nativeElement)
   }
@@ -140,7 +147,12 @@ export class PostFormComponent implements AfterViewInit {
   ngOnDestroy(): void {
     this.image_editor.clearLocalImages()
 
-    this.draft.flush(this.form);
+    if (!this.isBackAction) {
+      this.draft.flush(this.form)
+    } else {
+      this.draft.clear()
+    };
+    
     this.draft.destroy();
   }
 
@@ -187,11 +199,12 @@ export class PostFormComponent implements AfterViewInit {
 
     this.hasRestoredDraft = true;
 
-    const restoredState = this.draft.restore(this.form);
-
+    if (this.draft.restore(this.form)) {
       this.toast.info('Récupération du brouillon', {
         duration: 2000,
       });
+    } 
+
 
     this.updateResolvedMarkdown();
   }
@@ -205,10 +218,31 @@ export class PostFormComponent implements AfterViewInit {
     return 'post:draft:v1';
   }
 
-  goBack = () => this.router.navigate(['']);
+  goBack = () => {
+    this.isBackAction = true;
+    this.router.navigate(['']);}
 
   toggleEditorMarkdown(): void {
     this.markdownEditor = !this.markdownEditor;
+  }
+
+  saveAsDraft () {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const authorId = this.session.getUserIdSync();
+
+    if (!authorId) {
+      this.router.navigate(['auth/login']);
+      return;
+    }
+
+    if (this.loading()) return;
+
+    const { title, description, content } = this.form.getRawValue();
+    this.draft.clear()
   }
 
   submit = () => {
@@ -227,13 +261,8 @@ export class PostFormComponent implements AfterViewInit {
     if (this.loading()) return;
 
     const { title, description, content } = this.form.getRawValue();
-
+    this.draft.clear()
     if (!this.post()) {
-
-        console.log("CREATE")
-
-      
-
       const post: Post = {
         title: title ?? '',
         description: description ?? '',
@@ -255,7 +284,6 @@ export class PostFormComponent implements AfterViewInit {
           },
         });
       } else {
-        console.log("UPDATE")
         const currentPost = this.post();
 
         if (!currentPost || currentPost.id === undefined) return;

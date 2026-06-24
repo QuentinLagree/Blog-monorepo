@@ -6,6 +6,11 @@
     <app-button [label]="`${this.showDraftsPosts ? 'Masquer' : 'Afficher'} les brouillons`" (clicked)="this.showDraftsPosts = !this.showDraftsPosts"></app-button>
 
     @if (this.showDraftsPosts) {
+        @for (post of drafts.value(); track post.id) {
+            <app-post-card [post]="post" />
+        } @empty {
+            <h1>Aucun posts</h1>
+        }
     }
     
     

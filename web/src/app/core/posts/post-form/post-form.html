@@ -17,45 +17,38 @@
     </form>
     <p class="label">Contenu</p>
     <div class="fullscreen-editor">
-      <app-button icon="icon-eye" size="md" label=""></app-button>
-      <app-textarea [noShadow]="true" [contextMenuTrigger]="''" [contextMenuAction]="formatFromContextMenu" class="markdown"
-        (scrolled)="onEditorScroll($event)" (keydown)="onTabPress($event)" #markdownEditor [control]="contentControl"
-        [configuration]="{
+      <app-textarea [noShadow]="true" [contextMenuTrigger]="''" [contextMenuAction]="formatFromContextMenu"
+        class="markdown" (scrolled)="onEditorScroll($event)" (keydown)="onTabPress($event)" #markdownEditor
+        [control]="contentControl" [configuration]="{
                 label: '',
                 required: false,
                 placeholder: '',
             }"></app-textarea>
-            <span class="line"></span>
-      <div #preview (wheel)="blockScroll($event)" (click)="onPreviewClick($event)" class="pl-2 preview hide">
+      <nav class="options">
+        <div class="flex col">
+          <app-button icon="icon-eye" size="md" label="" type="secondary" (clicked)="togglePreview()"></app-button>
+          <input #imagePicker type="file" accept="image/*" hidden (change)="onPickImage($event)" />
+
+          <app-button icon="icon-image-picker" size="md" label="" type="secondary" 
+            (clicked)="imagePicker.click()"></app-button>
+        </div>
+        <app-button icon="icon-save" size="md" label="" type="primary" (clicked)="saveManual()"></app-button>
+      </nav>
+      <span class="line"></span>
+      <div #preview (wheel)="blockScroll($event)" (click)="onPreviewClick($event)" class="pl-2 preview"
+        [class.hide]="showPreview()">
         <markdown class="variable-binding" [data]="resolvedMarkdown()" katex>
         </markdown>
         <div class="pill">Preview</div>
       </div>
       <input #relinkPicker type="file" accept="image/*" hidden (change)="onRelinkPicked($event)" />
     </div>
+    <div class="actionbar">
+            <div class="buttons frow gap-3">
+              <app-button  size="sm" type="outlined" [label]="'Enregister en tant que brouillon'"></app-button>
+              <app-button (clicked)="submit()" [loading]="loading()" size="sm" [label]="(this.post() ? 'Enregistrer les modifications' : 'Créer l\'article')"></app-button>
+            </div>
+            <app-button (clicked)="goBack()" size="sm" type="danger" [label]="'Annulé'"></app-button>
+        </div>
   </div>
 </div>
-
-<!-- <div class="bottombar gap-4">
-        <input
-            #imagePicker
-            type="file"
-            accept="image/*"
-            hidden
-            (change)="onPickImage($event)"
-            />
-
-            <app-button
-            type="secondary"
-            size="sm"
-            [label]="'Insérer une image'"
-            (clicked)="imagePicker.click()"
-            ></app-button>
-        <app-button type="secondary" size="sm" [label]="'Sauvegardé'" (clicked)="saveManual()"></app-button>
-    </div> -->
-<!-- <div class="topbar">
-        <div class="buttons frow gap-3">
-            <app-button (clicked)="goBack()" size="sm" type="danger" [label]="'Annulé'"></app-button>
-            <app-button (clicked)="submit()" [loading]="loading()" size="sm" [label]="(this.post() ? 'Enregistrer les modifications' : 'Enregistrer')"></app-button>
-        </div>
-    </div> -->
