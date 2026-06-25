@@ -4,6 +4,7 @@ import { catchError, distinctUntilChanged, filter, finalize, map, shareReplay, s
 import { HttpRequestService } from '../../shared/services/http-service/get-request';
 import { HttpContext } from '@angular/common/http';
 import { ERROR_MESSAGE, SUCCESS_MESSAGE } from '../toasts/models/toasts.config';
+import { Router } from '@angular/router';
 
 export interface UserSession { id: number; email: string; role: string; }
 export interface SessionType { loggedIn: boolean; user?: UserSession | null; }
@@ -17,6 +18,7 @@ export class SessionService {
   private readonly TTL_MS = 5 * 60 * 1000;
 
   private _http = inject(HttpRequestService);
+  private _router = inject(Router)
 
   constructor() {
     try {
@@ -111,6 +113,17 @@ export class SessionService {
   invalidateCache(): void {
     this.session$.next(null);
     localStorage.removeItem(this.KEY);
+  }
+
+  getAuthorIdOrRedirect(): number | null {
+    const authorId = this.getUserIdSync();
+  
+    if (!authorId) {
+      this._router.navigate(['auth/login']);
+      return null;
+    }
+  
+    return authorId;
   }
 
   private persist(data: SessionType) {
