@@ -56,7 +56,7 @@ export class PostController {
     console.log(PaginationDto)
     try {
       const posts: Articles[] = await this._articles.index(PaginationDto);
-      const articleLength: number = await this._articles.countAll();
+      const articleLength: number = await this._articles.countAll(true);
       return posts.length == 0
         ? makeMessage(
             'List of all posts is empty.',
@@ -225,7 +225,7 @@ export class PostController {
         }
       }
   }
-
+  
   @Post()
     // @Roles(Role.Admin)
     @ApiBody({
@@ -255,7 +255,7 @@ export class PostController {
         const created_post = await this._articles.store(createData, author);
         return makeMessage(
           'Post created !',
-          "La publication a été publié !",
+          "La publication a été créer !",
           created_post,
         );
       } catch (error) {
@@ -283,6 +283,7 @@ export class PostController {
       }
     }
 
+  
   @Delete(':id')
   async destroy(@Param('id') id: number): Promise<Message<null>> {
     if (!ID.hasValid(id))

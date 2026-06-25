@@ -16,8 +16,12 @@ import { PublishedPostDto } from './dto/published-post.dto';
 export class ArticleService {
   constructor(private readonly _prisma: PrismaService) {}
 
-  async countAll(): Promise<number> {
-  return await this._prisma.post.count();
+  async countAll(published: boolean = false): Promise<number> {
+  return await this._prisma.post.count({
+    where: {
+      published_at: (published) ? { not: null} : null
+    }
+  });
 }
   
 

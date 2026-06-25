@@ -1,38 +1,35 @@
 import * as secureSession from '@fastify/secure-session';
 
 import {
+  BadRequestException,
+  Body,
   Controller,
-  UseInterceptors,
   Get,
-  Param,
   HttpException,
   HttpStatus,
   NotFoundException,
-  Post,
-  Body,
-  BadRequestException,
+  Param,
   Patch,
+  Post,
   Session,
   UnauthorizedException,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Post as Articles, User } from '@prisma/client';
 import { ValidationError } from 'class-validator';
+import { PostIsAlreadyPublish } from 'src/commons/exceptions/PostAlreadyPublished.errors';
 import { dtoIsValid } from 'src/commons/helpers/dto/dto-validations.helper';
 import { makeMessage } from 'src/commons/helpers/logger.helper';
 import { TransformDataMessageIntoObjectSerialization } from 'src/commons/interceptors/transform_data_message_into_object_serialization.interceptor';
+import { Message } from 'src/commons/types/dto/message/message';
 import { ID } from 'src/commons/types/id.types';
 import { CreatePostDto } from '../post/dto/create.post.dto';
+import { PublishedPostDto } from '../post/dto/published-post.dto';
 import { PostsEntity } from '../post/entities/posts.entities';
 import { ArticleService } from '../post/posts.service';
 import { UserEntity } from './entities/user.entities';
 import { UserService } from './user.service';
-import { Message } from 'src/commons/types/dto/message/message';
-import { Posts } from '../post/dto/posts.dto';
-import { PublishedPostDto } from '../post/dto/published-post.dto';
-import { PostIsAlreadyPublish } from 'src/commons/exceptions/PostAlreadyPublished.errors';
-
-type PostWithAuthor = Articles & { author: User };
 
 @ApiTags('Gestion des Publications en fonction des utilisateurs')
 @Controller('users/posts')
