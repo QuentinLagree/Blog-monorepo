@@ -2,6 +2,7 @@ import { inject, Injectable } from "@angular/core";
 import { HttpOptions, HttpRequestService } from "@src/app/shared/services/http-service/get-request";
 import { Observable } from "rxjs";
 import { Message } from "../models/message.model";
+import { CreatePostPayload } from "./post-form-submit.service";
 
 export interface Post {
     id?: number;
@@ -9,14 +10,21 @@ export interface Post {
     title: string,
     content: string,
     description: string,
-    published_at: Date,
+    published_at: string,
     created_at: Date
 }
 
+
+
+export interface PublishPost {
+    id?: number;
+    published_at: string,
+}
+
 export interface UpdatedPost {
-    title?: string,
-    content?: string,
-    description?: string,
+    title: string,
+    content: string,
+    description: string,
 }
 
 @Injectable({
@@ -34,12 +42,16 @@ export class PostService {
         return this._http.getData(`posts?page=${page}&limit=${limit}&published=true`, options)
     }
 
-    publishPost(post: Post, options?: HttpOptions) {
+    createPost(post: CreatePostPayload, options?: HttpOptions) {
         return this._http.postData('posts', post, options)
     }
 
+    publishPost(post: PublishPost, options?: HttpOptions) {
+        return this._http.patchData('users/posts/publish', post, options) 
+    }
+
     getPostWithID(id: number, options?: HttpOptions): Observable<Message<Post>> {
-        return this._http.getData(`posts/${id}`)
+        return this._http.getData(`posts/${id}`, options)
     }
 
     getPublishedDetail(slug: string, options?: HttpOptions): Observable<Message<Post>> {

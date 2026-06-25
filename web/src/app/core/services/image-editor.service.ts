@@ -1,69 +1,50 @@
-import { inject, Injectable } from "@angular/core";
-import { LocalImageStore } from "src/app/shared/services/storage.image";
-import { MarkdownFeaturesService } from "./markdow.service";
+import { inject, Injectable } from '@angular/core';
+import { LocalImageStore } from 'src/app/shared/services/storage.image';
+import { MarkdownEditorService } from './markdow.service';
 
-@Injectable({ 
-    providedIn: 'root'
+@Injectable({
+  providedIn: 'root',
 })
-
 export class ImageEditorService {
+  private readonly localImages = inject(LocalImageStore);
+  private readonly markdown = inject(MarkdownEditorService);
 
-    private localImages = inject(LocalImageStore);
-    private _markdown = inject(MarkdownFeaturesService);
-
-    getBlobWithId(id: string): string {
-        return this.localImages.get(id) ?? ''
-    }
-
-    addLocalImage(id: string, blobUrl: string) {
-        this.localImages.add(id, blobUrl)
-    }
-    
-    clearLocalImages() {
-        this.localImages.revokeAll?.();
-    }
-
-
-    getImageSyntaxPosition(event: Event): string {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-
-    if (!file) return '';
-
-    input.value = '';
-
-    const id = this.generateImageUUID();
+  createLocalImageSyntax(file: File): string {
+    const id = this.generateImageId();
     const blobUrl = URL.createObjectURL(file);
+    const alt = this.getAltFromFilename(file.name);
 
     this.localImages.add(id, blobUrl);
-
-    const alt = file.name.replace(/\.[^/.]+$/, '');
 
     return `\n![${alt}](localimg:${id})\n`;
   }
 
-  private generateImageUUID(): string {
-    return (
-      'li_' +
-      Math.random().toString(36).slice(2) +
-      Date.now().toString(36)
-    );
+  addLocalImage(id: string, blobUrl: string): void {
+    this.localImages.add(id, blobUrl);
+  }
+
+  clearLocalImages(): void {
+    this.localImages.revokeAll?.();
   }
 
   resolveLocalImages(markdown: string): string {
     return markdown.replace(
-      /!\[([^\]]*)\]\(localimg:([a-zA-Z0-9_\-]+)\)/g,
-      (_match, alt, id) => {
-        const blob = this.getBlobWithId(id);
-        const src = blob ?? this._markdown.placeholderSrc(id);
-
-        const safeAlt = this._markdown.escapeHtml(String(alt ?? 'image'));
-        const safeId = this._markdown.escapeHtml(String(id));
-        const safeSrc = this._markdown.escapeHtml(String(src));
-
-        return `<img src="${safeSrc}" alt="${safeAlt}" title="localimg:${safeId}" style="cursor:pointer" />`;
-      }
+      /!\[([^\]]*)\]\(localimg:([a-zA-Z0-9_-]+)\)/g,
+      (_match, alt, id) => this.createImageHtml(String(alt), String(id))
     );
   }
 
+  private createImageHtml(alt: string, id: string): string {
+    const src = this.localImages.get(id) || this.markdown.createMissingImagePlaceholder(id);
+
+    return `<img src="${this.markdown.escapeHtml(src)}" alt="${this.markdown.escapeHtml(alt || 'image')}" title="localimg:${this.markdown.escapeHtml(id)}" style="cursor:pointer" />`;
+  }
+
+  private getAltFromFilename(filename: string): string {
+    return filename.replace(/\.[^/.]+$/, '');
+  }
+
+  private generateImageId(): string {
+    return `li_${crypto.randomUUID()}`;
+  }
 }

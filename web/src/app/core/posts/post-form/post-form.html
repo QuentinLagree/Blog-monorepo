@@ -45,8 +45,10 @@
     </div>
     <div class="actionbar">
             <div class="buttons frow gap-3">
-              <app-button  size="sm" type="outlined" [label]="'Enregister en tant que brouillon'"></app-button>
-              <app-button (clicked)="submit()" [loading]="loading()" size="sm" [label]="(this.post() ? 'Enregistrer les modifications' : 'Créer l\'article')"></app-button>
+              @if (!this.post()) {
+                <app-button  size="sm" type="outlined" [label]="'Enregister en tant que brouillon'" (clicked)="submit('draft')"></app-button>
+              }
+              <app-button (clicked)="submit('publish')" [loading]="loading()" size="sm" [label]="(this.post() ? 'Enregistrer les modifications' : 'Créer l\'article')"></app-button>
             </div>
             <app-button (clicked)="goBack()" size="sm" type="danger" [label]="'Annulé'"></app-button>
         </div>

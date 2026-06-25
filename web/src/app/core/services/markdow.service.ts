@@ -2,50 +2,47 @@ import { inject, Injectable } from "@angular/core";
 import { PrismHighlightService } from "./prism-highlight.service";
 import { TextAreaComponent } from "src/app/shared/ui/form/text-area/text-area";
 import { FormControl } from "@angular/forms";
+import { MarkdownSyntax } from "src/app/shared/ui/context-menu/types/markdownOptions.interface";
+import { MarkdownSyntaxOptions } from "src/app/shared/ui/context-menu/config/context-menu-options";
 
-@Injectable({
-    providedIn: 'root'
-})
-export class MarkdownFeaturesService {
-    private _prism: PrismHighlightService = inject(PrismHighlightService)
-    refreshPreview(element: HTMLElement | undefined) {
-        this._prism.highlightPreview(element)
+@Injectable({ providedIn: 'root' })
+export class MarkdownEditorService {
+    private prism = inject(PrismHighlightService);
+
+    refreshPreview(element?: HTMLElement): void {
+        this.prism.highlightPreview(element);
     }
 
-    escapeHtml(value: string): string {
-        return value
-            .replaceAll('&', '&amp;')
-            .replaceAll('<', '&lt;')
-            .replaceAll('>', '&gt;')
-            .replaceAll('"', '&quot;')
-            .replaceAll("'", '&#039;');
-    }
-
-    insertAtCursor(text: string, editor: TextAreaComponent, input: FormControl): void {
-        const elRef = editor.getElement();
-        const editorEl = elRef?.nativeElement as HTMLTextAreaElement | undefined;
+    insertAtCursor(
+        text: string,
+        editor: TextAreaComponent,
+        control: FormControl<string | null>
+    ): void {
+        const editorEl = editor.getElement()?.nativeElement as
+            | HTMLTextAreaElement
+            | undefined;
 
         if (!editorEl) return;
 
         const start = editorEl.selectionStart ?? editorEl.value.length;
         const end = editorEl.selectionEnd ?? editorEl.value.length;
+        const current = control.value ?? '';
 
-        const current = input.value ?? '';
-        const next = current.slice(0, start) + text + current.slice(end);
+        control.setValue(
+            current.slice(0, start) + text + current.slice(end)
+        );
 
-        input.setValue(next);
-        input.markAsDirty();
+        control.markAsDirty();
 
         queueMicrotask(() => {
             editorEl.focus();
 
-            const position = start + text.length;
-
-            editorEl.setSelectionRange(position, position);
+            const cursorPosition = start + text.length;
+            editorEl.setSelectionRange(cursorPosition, cursorPosition);
         });
     }
 
-    placeholderSrc(id: string): string {
+    createMissingImagePlaceholder(id: string): string {
         const svg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="800" height="220">
   <rect width="100%" height="100%" fill="#f3f4f6"/>
@@ -60,4 +57,52 @@ export class MarkdownFeaturesService {
 
         return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
     }
+
+    escapeHtml(value: string): string { return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;'); }
+
+    applySyntax(name: string, editor: TextAreaComponent): void {
+  const item: MarkdownSyntax | undefined = MarkdownSyntaxOptions.find(
+    syntax => syntax.name === name
+  );
+
+  if (!item) {
+    throw new Error(`Syntax name : '${name}' doesn't exist!`);
+  }
+
+  editor.applySyntax(item);
+}
+
+handleTabPress(event: KeyboardEvent): void {
+  if (event.key !== 'Tab') return;
+
+  event.preventDefault();
+
+  const textarea = event.target as HTMLTextAreaElement;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+
+  textarea.value =
+    textarea.value.slice(0, start) + '\t' + textarea.value.slice(end);
+
+  textarea.selectionStart = textarea.selectionEnd = start + 1;
+}
+
+syncScroll(
+  editorScrollTop: number,
+  editor: TextAreaComponent,
+  preview?: HTMLElement
+): void {
+  const editorEl = editor.getElement()?.nativeElement;
+
+  if (!editorEl || !preview) return;
+
+  const editorMax = editorEl.scrollHeight - editorEl.clientHeight;
+  if (editorMax <= 0) return;
+
+  const previewMax = preview.scrollHeight - preview.clientHeight;
+  const ratio = editorScrollTop / editorMax;
+
+  preview.scrollTop = ratio * previewMax;
+}
+    
 }
