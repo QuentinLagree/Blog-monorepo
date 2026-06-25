@@ -13,7 +13,7 @@ import { PostCard } from "src/app/shared/ui/card/post-card/post-card";
 
 @Component({
   selector: 'app-profil-page',
-  imports: [DangerButtonComponent, BaseButtonComponent, PaginatorComponent, PostCard],
+  imports: [DangerButtonComponent, BaseButtonComponent, PostCard],
   standalone: true,
   templateUrl: './profil.html',
   styleUrls: ['./profil.scss']

@@ -14,7 +14,6 @@ import { Message } from "../../models/message.model";
     template: `
     
     @if (this.post.value()){
-        {{ post.value()?.title }}
         <app-form-post [post]="post.value() ?? undefined"></app-form-post>
     }
   `,

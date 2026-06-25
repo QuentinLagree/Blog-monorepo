@@ -169,10 +169,3 @@ export const setNewLineWithSyntax = (
 
   return { type, text };
 }
-
-export function generateSyntaxList () { 
-  const syntaxesItem = MarkdownSyntaxOptions
-  for (const syntax of syntaxesItem) {
-    
-  }
-}
