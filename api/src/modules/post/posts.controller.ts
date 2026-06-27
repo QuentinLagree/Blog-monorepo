@@ -5,35 +5,34 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
-  NotFoundException,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
   SerializeOptions,
   Session,
-  UnauthorizedException,
-  UseInterceptors,
+  UseGuards,
+  UseInterceptors
 } from '@nestjs/common';
-import { ApiBody, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { PostsEntity } from 'src/modules/post/entities/posts.entities';
-import { TransformDataMessageIntoObjectSerialization } from 'src/commons/interceptors/transform_data_message_into_object_serialization.interceptor';
-import { makeMessage } from 'src/commons/helpers/logger.helper';
-import { ArticleService } from './posts.service';
-import { ID } from 'src/commons/types/id.types';
-import { Message } from 'src/commons/types/dto/message/message';
-import { CreatePostDto } from './dto/create.post.dto';
-import { ValidationError } from 'class-validator';
-import { dtoIsValid } from 'src/commons/helpers/dto/dto-validations.helper';
-import { UserService } from '../user/user.service';
-import { SlugService } from 'src/commons/services/slug.service';
+import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Post as Articles } from '@prisma/client';
-import { NumberNotCorrectFormat } from 'src/commons/exceptions/NumberNotCorrectFormat.error';
-import { PaginationDto } from '../pagination/pagination.dto';
+import { Roles } from 'src/commons/decorators/role.decorator';
+import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
+import { PostOwnerOrAdminGuard } from 'src/commons/guards/post-owner-or-admin.guard';
+import { RolesGuard } from 'src/commons/guards/role.guard';
+import { makeMessage } from 'src/commons/helpers/logger.helper';
+import { TransformDataMessageIntoObjectSerialization } from 'src/commons/interceptors/transform_data_message_into_object_serialization.interceptor';
+import { Role } from 'src/commons/roles/role.enum';
+import { SlugService } from 'src/commons/services/slug.service';
+import { Message } from 'src/commons/types/dto/message/message';
+import { PostsEntity } from 'src/modules/post/entities/posts.entities';
 import { MetaPaginationDto } from '../pagination/meta.pagination.dto';
+import { PaginationDto } from '../pagination/pagination.dto';
+import { UserService } from '../user/user.service';
+import { CreatePostDto } from './dto/create.post.dto';
 import { UpdatePostDto } from './dto/update.post.dto';
+import { ArticleService } from './posts.service';
 
 @ApiTags('Gestion des Publications')
 @Controller('posts')
@@ -45,352 +44,122 @@ export class PostController {
   ) {}
 
   @Get()
-  @ApiQuery({ name: 'PaginationDto', type: PaginationDto,
-    example: {
-      
-    }
-   })
+  @ApiQuery({
+    name: 'PaginationDto', type: PaginationDto
+  })
+  @UseGuards(AuthGuardSession(), RolesGuard)
+  @Roles(Role.Admin)
   async index(
-    @Query() PaginationDto: PaginationDto
-  ): Promise<Message<Articles[] | null, PaginationDto>> {
-    console.log(PaginationDto)
-    try {
-      const posts: Articles[] = await this._articles.index(PaginationDto);
-      const articleLength: number = await this._articles.countAll(true);
-      return posts.length == 0
-        ? makeMessage(
-            'List of all posts is empty.',
-            'La liste des publications est vide',
-            null,
-          )
-        : makeMessage<Articles[], MetaPaginationDto>(
-            'List of all posts',
-            'Liste de toutes les publications',
-            posts,
-            {
-              currentPage: PaginationDto.page,
-              limit: PaginationDto.limit,
-              totalArticle: articleLength
-            }
-          );
-    } catch (error) {
-      switch (true) {
-        default:
-          throw new HttpException(
-            makeMessage(
-              'Fatal Error',
-              "Une erreur est survenue, essayer de contacter l'administrateur ou réessayer ultérieurement.",
-              error,
-              { level: 'Fatal' },
-            ),
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-      }
-    }
+
+    @Query() payload: PaginationDto
+  ): Promise<Message<Articles[] | null, MetaPaginationDto>> {
+    const posts: Articles[] = await this._articles.index(payload);
+    const articleLength: number = await this._articles.countByPublishedStatus(true);
+    return posts.length == 0
+      ? makeMessage(
+        'List of all posts is empty.',
+        'La liste des publications est vide',
+        null,
+      )
+      : makeMessage<Articles[], MetaPaginationDto>(
+        'List of all posts',
+        'Liste de toutes les publications',
+        posts,
+        {
+          currentPage: payload.page,
+          limit: payload.limit,
+          totalArticle: articleLength
+        }
+      );
   }
 
 
   @Get('/published')
   async indexPublished(): Promise<Message<Articles[] | null>> {
-    try {
       const posts: Articles[] = await this._articles.index({ published: true });
       return posts.length == 0
         ? makeMessage(
-            'List of all published posts is empty.',
-            'La liste des publications publiées est vide',
-            null,
-          )
+          'List of all published posts is empty.',
+          'La liste des publications publiées est vide',
+          null,
+        )
         : makeMessage(
-            'List of all published posts',
-            'Liste de toutes les publications publiées',
-            posts,
-          );
-    } catch (error) {
-      switch (true) {
-        default:
-          throw new HttpException(
-            makeMessage(
-              'Fatal Error',
-              "Une erreur est survenue, essayer de contacter l'administrateur ou réessayer ultérieurement.",
-              error,
-              { level: 'Fatal' },
-            ),
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-      }
-    }
+          'List of all published posts',
+          'Liste de toutes les publications publiées',
+          posts,
+        );
   }
 
-  @Get('/:id')
-  async show(@Param('id') id: number): Promise<Message<Articles | null>> {
-    if (!ID.hasValid(id))
-      throw new HttpException(
-        makeMessage(
-          `Error Param ID : '${id}' is invalid.`,
-          "L'id doit être un nombre entier.",
-          null,
-        ),
-        HttpStatus.BAD_REQUEST,
-      );
-
-    let type_id = ID.add(id);
-    try {
-      const user = await this._articles.show({ id: type_id.value() });
-      return makeMessage(
-        `Post found with ID: ${user.id}!`,
-        `La publication ${user.id} a bien été trouvé.`,
-        user,
-      );
-    } catch (error) {
-      switch (true) {
-        case error instanceof NotFoundException:
-          throw new HttpException(
-            makeMessage(
-              `Posts Not Found with id ${type_id.value()}`,
-              `La publication ${type_id.value()} n'a pas été trouvé.`,
-              null,
-            ),
-            HttpStatus.NOT_FOUND,
-          );
-
-        default:
-          throw new HttpException(
-            makeMessage(
-              'Fatal Error',
-              "Une erreur est survenue, essayer de contacter l'administrateur ou réessayer ultérieurement.",
-              error,
-              { level: 'Fatal' },
-            ),
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-      }
-    }
-  }
-
-  @Patch('/:id')
-  async updatePost (@Param('id') id: number,
-@Body() updatePostDto: UpdatePostDto,
-@Session() session: secureSession.Session): Promise<Message<Articles | null | ValidationError[]>> {
-     const errors: ValidationError[] = await dtoIsValid(updatePostDto, UpdatePostDto);
-  
-      if (errors.length > 0) {
-        throw new HttpException(
-          makeMessage(
-            'Post updated failed !',
-            'Les données sont incorrectes !',
-            errors,
-          ),
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
-      try {
-        const role = session.get('user').role;
-        const updated_post = await this._articles.update({id}, updatePostDto, role);
-        return makeMessage(
-          'Post updated !',
-          "La publication a été modifié !",
-          updated_post,
-        );
-      } catch (error) {
-        switch (true) {
-          case error instanceof NotFoundException:
-          throw new HttpException(
-            makeMessage(
-              `Post Not Found with id ${id}`,
-              `L'utilisateur ${id} n'existe pas.`,
-              null,
-            ),
-            HttpStatus.NOT_FOUND,
-          );
-          case error instanceof UnauthorizedException:
-            throw new HttpException(
-            makeMessage(
-              error.message,
-              `Vous n'avez pas l'autorisation d'accéder à cette ressource.`,
-              null,
-            ),
-            HttpStatus.UNAUTHORIZED,
-          );
-          default:
-            throw new HttpException(
-              makeMessage(
-                'Fatal Error',
-                "Une erreur est survenue, essayer de contacter l'administrateur ou réessayer ultérieurement.",
-                error,
-                { level: 'Fatal' },
-              ),
-              HttpStatus.INTERNAL_SERVER_ERROR,
-            );
-        }
-      }
-  }
-  
-  @Post()
-    // @Roles(Role.Admin)
-    @ApiBody({
-      type: CreatePostDto,
-    })
-    @SerializeOptions({
-      ignoreDecorators: true,
-    })
-    async store(
-      @Body() createData: CreatePostDto,
-    ): Promise<Message<Articles | null | ValidationError[]>> {
-      const errors: ValidationError[] = await dtoIsValid(createData, CreatePostDto);
-  
-      if (errors.length > 0) {
-        throw new HttpException(
-          makeMessage(
-            'Post created failed !',
-            'Les données sont incorrectes !',
-            errors,
-          ),
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-  
-      try {
-        const author = await this._user.show({ id: createData.authorId });
-        const created_post = await this._articles.store(createData, author);
-        return makeMessage(
-          'Post created !',
-          "La publication a été créer !",
-          created_post,
-        );
-      } catch (error) {
-        switch (true) {
-          case error instanceof NotFoundException:
-          throw new HttpException(
-            makeMessage(
-              `User Not Found with id ${createData.authorId}`,
-              `L'utilisateur ${createData.authorId} n'existe pas.`,
-              null,
-            ),
-            HttpStatus.NOT_FOUND,
-          );
-          default:
-            throw new HttpException(
-              makeMessage(
-                'Fatal Error',
-                "Une erreur est survenue, essayer de contacter l'administrateur ou réessayer ultérieurement.",
-                error,
-                { level: 'Fatal' },
-              ),
-              HttpStatus.INTERNAL_SERVER_ERROR,
-            );
-        }
-      }
-    }
-
-  
-  @Delete(':id')
-  async destroy(@Param('id') id: number): Promise<Message<null>> {
-    if (!ID.hasValid(id))
-      throw new HttpException(
-        makeMessage(
-          `Error Param ID : '${id}' is invalid.`,
-          "L'id doit être un nombre entier.",
-          null,
-        ),
-        HttpStatus.BAD_REQUEST,
-      );
-
-    let id_type: ID = ID.add(id);
-
-    try {
-      await this._articles.destroy({ id: id_type.value() });
-      return makeMessage(
-        'Post deleted !',
-        'La suppression de votre publication est un succée !',
-        null,
-      );
-    } catch (error) {
-      switch (true) {
-        case error instanceof NotFoundException:
-          throw new HttpException(
-            makeMessage(
-              'Post deleted failed',
-              `Cette publication n'existe pas.`,
-              null,
-            ),
-            HttpStatus.NOT_FOUND,
-          );
-
-        default:
-          throw new HttpException(
-            makeMessage(
-              'Fatal Error',
-              "Une erreur est survenue, essayer de contacter l'administrateur ou réessayer ultérieurement.",
-              error,
-              { level: 'Fatal' },
-            ),
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-      }
-    }
-  }
-
+  @UseGuards(AuthGuardSession(), RolesGuard)
+  @Roles(Role.Admin)
   @Get("/slug")
   async slugTest() {
-    let article: Articles | null = await this._articles.indexOneWhere({ id: 4});
+    let article: Articles | null = await this._articles.indexOneWhere({ id: 4 });
     if (!article) return null;
     return this._slug.generateSlugFromArticleTitle(article.title, article.id);
   }
 
   @Get("/slug/:slug_title")
-  async slugTestWithID(@Param('slug_title') slug: string): Promise<Message<Articles | null>> {
-    if (!this._slug.isValidateSlug(slug))
-      throw new HttpException(
-        makeMessage(
-          `Error Param slug : '${slug}' is invalid.`,
-          `Le paramètre : '${slug}' n'est pas valide.`,
-          null,
-        ),
-        HttpStatus.BAD_REQUEST,
-      );
+  async slugTestWithID(@Param('slug_title') slug: string): Promise<Message<Articles>> {
+    const article = await this._slug.getPostWithSlug(slug);
+    return makeMessage(
+      'Post found !',
+      'Article trouvé !',
+      article,
+    );
+  }
 
-      try {
-        const article = await this._slug.getPostWithSlug(slug);
-        return makeMessage(
-        'Post found !',
-        'Article trouvé !',
-        article,
-      );
-      } catch (error) {
-        switch (true) {
-        case error instanceof NotFoundException:
-          throw new HttpException(
-            makeMessage(
-              'Post not found!',
-              `Aucun article correspond...`,
-              null,
-            ),
-            HttpStatus.NOT_FOUND,
-          );
-        
-          case error instanceof NumberNotCorrectFormat:
-            throw new HttpException(
-            makeMessage(
-              'Param invalid!',
-              `Aucun article correspond...`,
-              null,
-            ),
-            HttpStatus.BAD_REQUEST,
-          );
+  @Get('/:id')
+  async show(@Param('id', ParseIntPipe) id: number): Promise<Message<Articles>> {
+    const article = await this._articles.show({ id });
+    return makeMessage(
+      `Post found with ID: ${article.id}!`,
+      `La publication ${article.id} a bien été trouvé.`,
+      article,
+    );
+  }
 
-        default:
-          throw new HttpException(
-            makeMessage(
-              'Fatal Error',
-              "Une erreur est survenue, essayer de contacter l'administrateur ou réessayer ultérieurement.",
-              error,
-              { level: 'Fatal' },
-            ),
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-      }
-    }
+  @UseGuards(AuthGuardSession())
+  @Post()
+  @ApiBody({
+    type: CreatePostDto,
+  })
+  @SerializeOptions({
+    ignoreDecorators: true,
+  })
+  async store(
+    @Body() payload: CreatePostDto,
+  ): Promise<Message<Articles>> {
+    const author = await this._user.show({ id: payload.authorId });
+    const created_post = await this._articles.store(payload, author);
+    return makeMessage(
+      'Post created !',
+      "La publication a été créee !",
+      created_post,
+    );
+  }
+
+  @UseGuards(AuthGuardSession(), PostOwnerOrAdminGuard)
+  @Patch('/:id')
+  async updatePost(@Param('id', ParseIntPipe) id: number,
+    @Body() payload: UpdatePostDto,
+    @Session() session: secureSession.Session): Promise<Message<Articles>> {
+    const updated_post = await this._articles.update({ id }, payload, session.get('user').id);
+    return makeMessage(
+      'Post updated !',
+      "La publication a été modifiée !",
+      updated_post,
+    );
+  }
+
+  @UseGuards(AuthGuardSession(), PostOwnerOrAdminGuard)
+  @Delete(':id')
+  async destroy(@Param('id', ParseIntPipe) id: number): Promise<Message<null>> {
+      await this._articles.destroy({ id });
+      return makeMessage(
+        'Post deleted !',
+        'La suppression de votre publication est un succès !',
+        null,
+      );
   }
 }
-  

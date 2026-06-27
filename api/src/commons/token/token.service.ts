@@ -1,10 +1,11 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { VerificationTokens } from '@prisma/client';
 import { randomBytes } from 'node:crypto';
-import { VerificationEmailDto } from 'src/commons/verifications_email/verification_email.dto';
 import { TOKEN } from 'src/commons/types/token.types';
-import { TokenExpiredOrInvalidException } from 'src/commons/exceptions/TokenIsExpired.error';
+import { VerificationEmailDto } from 'src/commons/verifications_email/verification_email.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { ResetTokenAlreadyActiveException } from 'src/modules/handle-password/exceptions/reset-token-already-active.exception';
+import { TokenExpiredOrInvalidException } from 'src/modules/handle-password/exceptions/token-expired-or-invalid.exception';
 
 @Injectable()
 export class TokenService {
@@ -25,46 +26,46 @@ export class TokenService {
   }
 
   async set(tokenDto: VerificationEmailDto): Promise<VerificationTokens> {
-    try {
-      const verifEmail = await this._prisma.verificationTokens.findFirst({
-        where: { email: tokenDto.email },
-      });
-      if (verifEmail !== null) {
-        if (this.tokenIsExpired(verifEmail)) {
-          await this.delete(tokenDto.email);
-        }
+    const existingToken = await this._prisma.verificationTokens.findFirst({
+      where: { email: tokenDto.email },
+    });
+
+    if (existingToken) {
+      if (!this.tokenIsExpired(existingToken)) {
+        throw new ResetTokenAlreadyActiveException();
       }
-      return await this._prisma.verificationTokens.create({ data: tokenDto });
-    } catch (error) {
-      throw new BadRequestException();
+
+      await this.delete(tokenDto.email);
     }
+
+    return this._prisma.verificationTokens.create({
+      data: tokenDto,
+    });
   }
 
   async delete(email: string): Promise<void> {
-    try {
-      await this._prisma.verificationTokens.delete({
-        where: { email },
-      });
-      return;
-    } catch (error) {
-      throw error;
-    }
+    await this._prisma.verificationTokens.deleteMany({
+      where: { email },
+    });
   }
 
   async assertVerificationTokenIsValid(
     email: string,
     code: TOKEN,
   ): Promise<void> {
-    const verifEmail = await this._prisma.verificationTokens.findUnique({
-      where: { email, code: code.getToken },
+    const verificationToken = await this._prisma.verificationTokens.findFirst({
+      where: {
+        email,
+        code: code.getToken,
+      },
     });
 
-    if (!verifEmail || this.tokenIsExpired(verifEmail)) {
+    if (!verificationToken || this.tokenIsExpired(verificationToken)) {
       throw new TokenExpiredOrInvalidException();
     }
   }
 
-  private tokenIsExpired(verifEmail: VerificationTokens): boolean {
-    return verifEmail.expired_at.getTime() < new Date(Date.now()).getTime();
+  private tokenIsExpired(verificationToken: VerificationTokens): boolean {
+    return verificationToken.expired_at.getTime() < Date.now();
   }
 }

@@ -60,7 +60,6 @@ export class MailingService {
       const html = this.render(content, { username: user.pseudo, email: user.email });
       return { to: user.email, subject: 'Bienvenue !', html };
     } catch (e) {
-      console.error('error reading file (welcome)', e);
       throw new FailSendingMail();
     }
   }

@@ -4,115 +4,65 @@ import {
   Delete,
   Get,
   HttpCode,
-  HttpException,
-  HttpStatus,
-  NotFoundException,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   SerializeOptions,
-  UseInterceptors,
-  ValidationError,
+  UseGuards,
+  UseInterceptors
 } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
-import { User } from '@prisma/client';
-import { UserEntity } from './entities/user.entities';
-import { TransformDataMessageIntoObjectSerialization } from '../../commons/interceptors/transform_data_message_into_object_serialization.interceptor';
-import { ID } from '../../commons/types/id.types';
+import { Roles } from 'src/commons/decorators/role.decorator';
+import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
+import { RolesGuard } from 'src/commons/guards/role.guard';
+import { UserOwnerOrAdminGuard } from 'src/commons/guards/user-owner-or-admin.guard';
+import { Role } from 'src/commons/roles/role.enum';
+import { Message } from 'src/commons/types/dto/message/message';
 import { makeMessage } from '../../commons/helpers/logger.helper';
-import { UserService } from './user.service';
-import { UserAlreadyExistWithEmail } from '../../commons/exceptions/userAlreadyExist.error';
-import { dtoIsValid } from 'src/commons/helpers/dto/dto-validations.helper';
+import { TransformDataMessageIntoObjectSerialization } from '../../commons/interceptors/transform_data_message_into_object_serialization.interceptor';
 import { UserUpdateDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
-import { Message } from 'src/commons/types/dto/message/message';
+import { UserEntity } from './entities/user.entities';
+import { userSelectPayload, UserService } from './user.service';
 
 @ApiTags('Gestion des utilisateurs')
 @Controller('user')
 @UseInterceptors(new TransformDataMessageIntoObjectSerialization([UserEntity]))
 export class UserController {
-  constructor(private readonly _user: UserService) {}
+  constructor(private readonly _user: UserService) { }
 
+  @UseGuards(AuthGuardSession(), RolesGuard)
+  @Roles(Role.Admin)
   @Get()
   @HttpCode(200)
-  async index(): Promise<Message<User[] | null>> {
-    try {
-      const users: User[] = await this._user.index();
-      return users.length == 0
-        ? makeMessage(
-            'List of all users is empty.',
-            'La liste des utilisateurs est vide',
-            null,
-          )
-        : makeMessage(
-            'List of all users',
-            'Liste de tous les utilisateurs',
-            users,
-          );
-    } catch (error) {
-      switch (true) {
-        default:
-          throw new HttpException(
-            makeMessage(
-              'Fatal Error',
-              "Une erreur est survenue, essayer de contacter l'administrateur ou réessayer ultérieurement.",
-              error,
-              { level: 'Fatal' },
-            ),
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-      }
-    }
+  async index(): Promise<Message<userSelectPayload[] | null>> {
+    const users: userSelectPayload[] = await this._user.index();
+    return users.length == 0
+      ? makeMessage(
+        'List of all users is empty.',
+        'La liste des utilisateurs est vide',
+        null,
+      )
+      : makeMessage(
+        'List of all users',
+        'Liste de tous les utilisateurs',
+        users,
+      );
   }
 
+  @UseGuards(AuthGuardSession(), UserOwnerOrAdminGuard)
   @Get('/:id')
-  async show(@Param('id') id: number): Promise<Message<User | null>> {
-    if (!ID.hasValid(id))
-      throw new HttpException(
-        makeMessage(
-          `Error Param ID : '${id}' is invalid.`,
-          "L'id doit être un nombre entier.",
-          null,
-        ),
-        HttpStatus.BAD_REQUEST,
-      );
-
-    let type_id = ID.add(id);
-    try {
-      const user = await this._user.show({ id: type_id.value() });
-      return makeMessage(
-        `User found with ID: ${user.id}!`,
-        `L'utilisateur ${user.id} a bien été trouvé.`,
-        user,
-      );
-    } catch (error) {
-      switch (true) {
-        case error instanceof NotFoundException:
-          throw new HttpException(
-            makeMessage(
-              `User Not Found with id ${type_id.value()}`,
-              `L'utilisateur ${type_id.value()} n'a pas été trouvé.`,
-              null,
-            ),
-            HttpStatus.NOT_FOUND,
-          );
-
-        default:
-          throw new HttpException(
-            makeMessage(
-              'Fatal Error',
-              "Une erreur est survenue, essayer de contacter l'administrateur ou réessayer ultérieurement.",
-              error,
-              { level: 'Fatal' },
-            ),
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-      }
-    }
+  async show(@Param('id', ParseIntPipe) id: number): Promise<Message<userSelectPayload | null>> {
+    const user = await this._user.show({ id });
+    return makeMessage(
+      `User found with ID: ${user.id}!`,
+      `L'utilisateur ${user.id} a bien été trouvé.`,
+      user,
+    );
   }
 
   @Post()
-  // @Roles(Role.Admin)
   @ApiBody({
     type: UserDto,
   })
@@ -121,158 +71,45 @@ export class UserController {
   })
   async store(
     @Body() createData: UserDto,
-  ): Promise<Message<User | null | ValidationError[]>> {
-    const errors: ValidationError[] = await dtoIsValid(createData);
-
-    if (errors.length > 0) {
-      throw new HttpException(
-        makeMessage(
-          'User created failed !',
-          'Les données sont incorrectes !',
-          errors,
-        ),
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    try {
-      const created_user = await this._user.create(createData);
-      return makeMessage(
-        'User created !',
-        "L'utilisateur est bien enregistré !",
-        created_user,
-      );
-    } catch (error) {
-      switch (true) {
-        case error instanceof UserAlreadyExistWithEmail:
-          throw new HttpException(
-            makeMessage(
-              'User created failed',
-              'Ce compte existe déjà, connectez-vous.',
-              null,
-            ),
-            HttpStatus.CONFLICT,
-          );
-
-        default:
-          throw new HttpException(
-            makeMessage(
-              'Fatal Error',
-              "Une erreur est survenue, essayer de contacter l'administrateur ou réessayer ultérieurement.",
-              error,
-              { level: 'Fatal' },
-            ),
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-      }
-    }
+  ): Promise<Message<userSelectPayload>> {
+    const created_user = await this._user.create(createData);
+    return makeMessage(
+      'User created !',
+      "L'utilisateur est bien enregistré !",
+      created_user,
+    );
   }
 
+  
   @ApiBody({
     type: UserUpdateDto,
   })
+  @UseGuards(AuthGuardSession(), UserOwnerOrAdminGuard)
   @Put('/:id')
   async update(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateData: UserUpdateDto,
-  ): Promise<Message<User | null | ValidationError[]>> {
-    const errors: ValidationError[] = await dtoIsValid(
+  ): Promise<Message<userSelectPayload>> {
+    let updated_user = await this._user.update(
+      { id },
       updateData,
-      UserUpdateDto,
     );
-
-    if (errors.length > 0) {
-      throw new HttpException(
-        makeMessage(
-          'User created failed !',
-          'Les données sont incorrectes !',
-          errors,
-        ),
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    if (!ID.hasValid(id))
-      throw new HttpException(
-        makeMessage(
-          `Error Param ID : '${id}' is invalid.`,
-          "L'id doit être un nombre entier.",
-          null,
-        ),
-        HttpStatus.BAD_REQUEST,
-      );
-    let id_type: ID = ID.add(id);
-    try {
-      let updated_user = await this._user.update(
-        { id: id_type.value() },
-        updateData,
-      );
-      return makeMessage(
-        'User updated !',
-        'La modification de vos informations est bien sauvegardé !',
-        updated_user,
-      );
-    } catch (error) {
-      switch (true) {
-        case error instanceof NotFoundException:
-          throw new HttpException(
-            makeMessage('User updated failed', `Ce compte n'existe pas.`, null),
-            HttpStatus.NOT_FOUND,
-          );
-
-        default:
-          throw new HttpException(
-            makeMessage(
-              'Fatal Error',
-              "Une erreur est survenue, essayer de contacter l'administrateur ou réessayer ultérieurement.",
-              error,
-              { level: 'Fatal' },
-            ),
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-      }
-    }
+    return makeMessage(
+      'User updated !',
+      'La modification de vos informations est bien sauvegardée !',
+      updated_user,
+    );
   }
 
+  @UseGuards(AuthGuardSession(), RolesGuard)
+  @Roles(Role.Admin)
   @Delete(':id')
-  async destroy(@Param('id') id: number): Promise<Message<null>> {
-    if (!ID.hasValid(id))
-      throw new HttpException(
-        makeMessage(
-          `Error Param ID : '${id}' is invalid.`,
-          "L'id doit être un nombre entier.",
-          null,
-        ),
-        HttpStatus.BAD_REQUEST,
-      );
-
-    let id_type: ID = ID.add(id);
-
-    try {
-      await this._user.destroy({ id: id_type.value() });
+  async destroy(@Param('id', ParseIntPipe) id: number): Promise<Message<null>> {
+      await this._user.destroy({ id });
       return makeMessage(
         'User deleted !',
-        'La suppression de votre compte utilisateur est un succée !',
+        'La suppression de votre compte utilisateur est un succès !',
         null,
       );
-    } catch (error) {
-      switch (true) {
-        case error instanceof NotFoundException:
-          throw new HttpException(
-            makeMessage('User deleted failed', `Ce compte n'existe pas.`, null),
-            HttpStatus.NOT_FOUND,
-          );
-        default:
-          throw new HttpException(
-            makeMessage(
-              'Fatal Error',
-              "Une erreur est survenue, essayer de contacter l'administrateur ou réessayer ultérieurement.",
-              error,
-              { level: 'Fatal' },
-            ),
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-      }
-    }
   }
 }

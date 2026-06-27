@@ -14,6 +14,9 @@ import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { UserLoginCredentials } from './dto/user-login-credentials.dto';
 import { UserSession } from './dto/user-session.dto';
 import { PasswordService } from 'src/commons/services/password.service';
+import { UserNotFoundException } from '../user/exceptions/user-not-found.exception';
+import { EmailOrPasswordNotMatchException } from './exceptions/email-or-password-not-match.exception';
+import { userSelect, userSelectPayload } from '../user/user.service';
 
 @Injectable()
 export class AuthService {
@@ -22,23 +25,20 @@ export class AuthService {
   private readonly _passwordManager: PasswordService) {}
 
   async login(logginDto: UserLoginCredentials): Promise<User> {
-    try {
+    
       const user = await this.prisma.user.findUnique({
         where: { email: logginDto.email },
       });
-      if (!user) throw new NotFoundException();
+      if (!user) throw new EmailOrPasswordNotMatchException();
 
       let hasSamePassword: boolean = await this.comparePassword(
         logginDto.password,
         user.password,
       );
 
-      if (!hasSamePassword) throw new PasswordNotMatchException();
+      if (!hasSamePassword) throw new EmailOrPasswordNotMatchException();
 
       return user;
-    } catch (error) {
-      throw error;
-    }
   }
 
   setUserSession(session: Session, user: UserSession): void {
@@ -46,7 +46,6 @@ export class AuthService {
       throw new UserAlreadyActiveSession();
     }
     session.set('user', user);
-    return;
   }
 
   private async comparePassword(

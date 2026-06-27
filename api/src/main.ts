@@ -7,9 +7,12 @@ import {
 } from '@nestjs/platform-fastify';
 import fastifySecureSession from '@fastify/secure-session';
 import fs from 'node:fs';
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { PrismaService } from './commons/prisma/prisma.service';
 import helmet from '@fastify/helmet';
+import { ValidationError } from 'class-validator';
+import { makeMessage } from './commons/helpers/logger.helper';
+import { PrismaExceptionFilter } from './commons/filters/prisma.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -29,6 +32,7 @@ async function bootstrap() {
   app.get(PrismaService);
   await app.register(helmet);
   app.useGlobalPipes();
+  app.useGlobalFilters(new PrismaExceptionFilter());
 
   const config = new DocumentBuilder()
     .setTitle('Blog')
@@ -46,6 +50,15 @@ async function bootstrap() {
         target: true,
         value: true,
       },
+      exceptionFactory: (errors: ValidationError[]) => {
+      return new BadRequestException(
+        makeMessage(
+          'Validation failed',
+          'Les données envoyées sont incorrectes.',
+          errors,
+        ),
+      );
+    },
     }),
   );
   app.enableCors({

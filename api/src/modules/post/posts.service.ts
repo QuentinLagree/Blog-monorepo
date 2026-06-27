@@ -1,132 +1,124 @@
 import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
+  Injectable
 } from '@nestjs/common';
+import { Post as Article, Post, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/commons/prisma/prisma.service';
-import { CreatePostDto } from './dto/create.post.dto';
-import { Prisma, User, Post as Article, Post } from '@prisma/client';
-import { PaginationDto } from '../pagination/pagination.dto';
-import { UpdatePostDto } from './dto/update.post.dto';
 import { Role } from 'src/commons/roles/role.enum';
+import { PaginationDto } from '../pagination/pagination.dto';
+import { UserNotFoundException } from '../user/exceptions/user-not-found.exception';
+import { UserNotHaveAuthorisation } from '../user/exceptions/user-not-have-authorisation.exception';
+import { userSelect } from '../user/user.service';
+import { CreatePostDto } from './dto/create.post.dto';
 import { PublishedPostDto } from './dto/published-post.dto';
+import { UpdatePostDto } from './dto/update.post.dto';
+import { PostNotFoundException } from './exceptions/post-not-found.exception';
 
 @Injectable()
 export class ArticleService {
-  constructor(private readonly _prisma: PrismaService) {}
+  constructor(private readonly _prisma: PrismaService) { }
 
-  async countAll(published: boolean = false): Promise<number> {
-  return await this._prisma.post.count({
-    where: {
-      published_at: (published) ? { not: null} : null
-    }
-  });
-}
-  
+  async countAll(): Promise<number> {
+    return this._prisma.post.count();
+  }
 
-  async index(paginationDto?: PaginationDto): Promise<Article[]> {
-  return await this._prisma.post.findMany({
-    
-    take: paginationDto.limit,
-    skip: (paginationDto.page * paginationDto.limit) - paginationDto.limit,
-    where: paginationDto.published === false
-      ? {}
-      : {
-          published_at: paginationDto.published ? { not: null } : null
-        },
-        
-  });
-}
+  async countByPublishedStatus(published: boolean = false): Promise<number> {
+    return this._prisma.post.count({
+      where: {
+        published_at: (published) ? { not: null } : null
+      }
+    });
+  }
+
+
+  async index(paginationDto: PaginationDto): Promise<Article[]> {
+    const page = paginationDto.page ?? 1;
+    const limit = paginationDto.limit ?? 10;
+
+    return this._prisma.post.findMany({
+      take: limit,
+      skip: (page - 1) * limit,
+      where:
+        paginationDto.published === undefined
+          ? {}
+          : {
+            published_at: paginationDto.published ? { not: null } : null,
+          },
+    });
+  }
+
   async indexWhere(where: Prisma.PostWhereInput) {
-    try {
-      return await this._prisma.post.findMany({ where });
-    } catch (error) {
-      throw error;
-    }
+    return this._prisma.post.findMany({ where });
   }
 
   async indexOneWhere(where: Prisma.PostWhereUniqueInput): Promise<Article | null> {
-    try {
-      return await this._prisma.post.findUnique({ where });
-    } catch (error) {
-      throw error;
-    }
+    return this._prisma.post.findUnique({ where });
   }
 
   async show(
     uniqueProperties: Prisma.PostWhereUniqueInput,
   ): Promise<Article> {
-    try {
-      const post = await this._prisma.post.findUnique({
-        where: uniqueProperties,
-      });
-      if (!post) throw new NotFoundException();
-      return post;
-    } catch (error) {
-      throw error;
-    }
+    const post = await this._prisma.post.findUnique({
+      where: uniqueProperties,
+    });
+    if (!post) throw new PostNotFoundException(uniqueProperties.id ??
+      'unknown');
+    return post;
   }
 
-  async store(createdData: CreatePostDto, author: User): Promise<Article> {
+  async store(createdData: CreatePostDto, author: Prisma.UserGetPayload<{ select: typeof userSelect }>): Promise<Article> {
     //TODO faire un test de markdown
 
-    try {
-      return await this._prisma.post.create({
-        data: {
-          title: createdData.title,
-          content: createdData.content,
-          description: createdData.description,
-          published_at: null,
-          author: {
-            connect: { id: author.id }
-          }
-        },
-      });
-    } catch (error) {
-      throw new BadRequestException();
-    }
+    return this._prisma.post.create({
+      data: {
+        title: createdData.title,
+        content: createdData.content,
+        description: createdData.description,
+        published_at: null,
+        author: {
+          connect: { id: author.id }
+        }
+      },
+    });
   }
 
-  async update (where: Prisma.PostWhereUniqueInput, updatePostDto: UpdatePostDto | PublishedPostDto, role: string): Promise<Article | null> {
-    try {
-      console.log(updatePostDto)
-      const post = await this.show(where);
-      if (!post) {
-        throw new NotFoundException('Post Not Found');
+  async update(where: Prisma.PostWhereUniqueInput, updatePostDto: UpdatePostDto | PublishedPostDto, userId: number): Promise<Article> {
+    const post = await this.show(where);
+
+    const user = await this._prisma.user.findUnique({
+      where: {
+        id: userId
+      },
+      select: {
+        role: true
       }
+    })
+    if (!user) {
+      throw new UserNotFoundException(userId)
+    }
 
-      if (where.authorId !== post.authorId && role != 'admin') {
-        throw new UnauthorizedException("You do not have the necessary authorization")
-      }
+    const isAdmin = user.role === Role.Admin;
+    const isAuthor = userId === post.authorId;
 
-     return await this._prisma.post.update({
-        where: {
-          id: post.id
-        },
-        data: updatePostDto
-      })
+    if (!isAdmin && !isAuthor) {
+      throw new UserNotHaveAuthorisation();
+    }
 
-    } catch (error) {
-      throw error;
-    } 
+    return this._prisma.post.update({
+      where: {
+        id: post.id
+      },
+      data: updatePostDto
+    })
+
   }
 
   async destroy(where: Prisma.PostWhereUniqueInput): Promise<void> {
-    try {
-      const post = await this.show(where);
+    await this.show(where);
 
-      if (!post) {
-        throw new NotFoundException('Post Not Found');
-      }
-      await this._prisma.post.delete({ where });
-    } catch (error) {
-      throw error;
-    }
+    await this._prisma.post.delete({ where });
   }
 
-  async isPublished(post: Post): Promise<boolean> {
-    console.log(post.published_at !== null)
+  isPublished(post: Post): boolean {
     return post.published_at !== null;
   }
 }

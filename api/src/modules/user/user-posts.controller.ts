@@ -1,313 +1,155 @@
 import * as secureSession from '@fastify/secure-session';
 
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
-  HttpException,
-  HttpStatus,
-  NotFoundException,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Session,
-  UnauthorizedException,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { Post as Articles, User } from '@prisma/client';
-import { ValidationError } from 'class-validator';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { Post as Article } from '@prisma/client';
+
 import { PostIsAlreadyPublish } from 'src/commons/exceptions/PostAlreadyPublished.errors';
-import { dtoIsValid } from 'src/commons/helpers/dto/dto-validations.helper';
+import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
+import { PostOwnerOrAdminGuard } from 'src/commons/guards/post-owner-or-admin.guard';
+import { UserOwnerOrAdminGuard } from 'src/commons/guards/user-owner-or-admin.guard';
 import { makeMessage } from 'src/commons/helpers/logger.helper';
 import { TransformDataMessageIntoObjectSerialization } from 'src/commons/interceptors/transform_data_message_into_object_serialization.interceptor';
 import { Message } from 'src/commons/types/dto/message/message';
-import { ID } from 'src/commons/types/id.types';
+
 import { CreatePostDto } from '../post/dto/create.post.dto';
 import { PublishedPostDto } from '../post/dto/published-post.dto';
 import { PostsEntity } from '../post/entities/posts.entities';
 import { ArticleService } from '../post/posts.service';
 import { UserEntity } from './entities/user.entities';
-import { UserService } from './user.service';
+import { userSelectPayload, UserService } from './user.service';
 
-@ApiTags('Gestion des Publications en fonction des utilisateurs')
+@ApiTags('Gestion des publications en fonction des utilisateurs')
 @Controller('users/posts')
 @UseInterceptors(
   new TransformDataMessageIntoObjectSerialization([UserEntity, PostsEntity]),
 )
-export class userToPostController {
+export class UserToPostController {
   constructor(
     private readonly _user: UserService,
     private readonly _posts: ArticleService,
   ) {}
 
-  @Get(':id')
-  async getAllPostOfUser(
-    @Param('id') id: number,
-  ): Promise<Message<Articles[] | null>> {
-    if (!ID.hasValid(id))
-      throw new HttpException(
-        makeMessage(
-          `Error Param ID : '${id}' is invalid.`,
-          "L'id doit être un nombre entier.",
-          null,
-        ),
-        HttpStatus.BAD_REQUEST,
-      );
+  @UseGuards(AuthGuardSession(), UserOwnerOrAdminGuard)
+  @Get('drafts/:id')
+  async getAllUserDrafts(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Message<Article[] | null>> {
+    const user: userSelectPayload = await this._user.show({ id });
+    const fullName = `${user.nom} ${user.prenom}`;
 
-    let type_id = ID.add(id);
+    const posts = await this._posts.indexWhere({
+      authorId: id,
+      published_at: null,
+    });
 
-    try {
-      let user: User = await this._user.show({ id: type_id.value() });
-      let allName: string = `${user.nom} ${user.prenom}`;
-
-      const rawPosts = await this._posts.indexWhere({
-        authorId: type_id.value(),
-      });
-      const posts: Articles[] = rawPosts.map(post => ({
-        ...post,
-        author: user,
-      }));
-
-      return posts.length == 0
-        ? makeMessage(
-            `List of all published posts of ${allName} is empty.`,
-            `La liste des publications publiées de l'utilisateur ${allName} est vide`,
-            null,
-          )
-        : makeMessage(
-            `List of all published posts of user ${allName}`,
-            `Liste de toutes les publications publiées de ${allName}`,
-            posts,
-          );
-    } catch (error) {
-      switch (true) {
-        case error instanceof NotFoundException:
-          throw new HttpException(
-            makeMessage(
-              'User Not Exist',
-              `L'utilisateur ${id} n'existe pas.`,
-              null,
-            ),
-            HttpStatus.NOT_FOUND,
-          );
-        default:
-          throw new HttpException(
-            makeMessage(
-              'Fatal Error',
-              "Une erreur est survenue, essayer de contacter l'administrateur ou réessayer ultérieurement.",
-              error,
-              { level: 'Fatal' },
-            ),
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-      }
-    }
-  }
-
-  @Post()
-  async createPost(
-    @Body() createdPost: CreatePostDto,
-  ): Promise<Message<Articles | ValidationError[] | null>> {
-    const errors: ValidationError[] = await dtoIsValid(createdPost);
-
-    if (errors.length > 0) {
-      throw new HttpException(
-        makeMessage(
-          'User created failed !',
-          'Les données sont incorrectes !',
-          errors,
-        ),
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    try {
-      let author: User = await this._user.show({ id: createdPost.authorId });
-      let storedPost = await this._posts.store(createdPost, author);
-      const postWithAuthor: Articles = {
-        ...storedPost,
-        authorId: author.id,
-      };
-      return makeMessage(
-        'Post created success',
-        `La publication est créer, aller sur votre compte pour la visualiser.`,
-        postWithAuthor,
-      );
-    } catch (error) {
-      switch (true) {
-        case error instanceof NotFoundException:
-          throw new HttpException(
-            makeMessage(
-              'Post created failed',
-              `Ce compte n'existe pas. La création de la publication a été interrompue`,
-              null,
-            ),
-            HttpStatus.NOT_FOUND,
-          );
-
-        case error instanceof BadRequestException:
-          throw new HttpException(
-            makeMessage(
-              'Post created failed',
-              `Une erreur lors de la création de votre publication s'est produite, si cela recommence, contactez un administrateur.`,
-              null,
-            ),
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-
-        default:
-          throw new HttpException(
-            makeMessage(
-              'Fatal Error',
-              "Une erreur est survenue, essayer de contacter l'administrateur ou réessayer ultérieurement.",
-              error,
-              { level: 'Fatal' },
-            ),
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-      }
-    }
-  }
-
-  @Patch('/publish')
-  async publishPost (@Body() publishedDto: PublishedPostDto, @Session() session: secureSession.Session): Promise<Message<null>>  {
-    if (!ID.hasValid(+publishedDto.id))
-      throw new HttpException(
-        makeMessage(
-          `Error Param ID : '${publishedDto.id}' is invalid.`,
-          "L'id doit être un nombre entier.",
-          null,
-        ),
-        HttpStatus.BAD_REQUEST,
-      );
-
-      let type_id = ID.add(publishedDto.id);
-
-      try {
-        let post: Articles = await this._posts.show({ id: type_id.value() })
-        let author: User = await this._user.show({ id: post.authorId });
-        if (session.get('user') == null) throw new UnauthorizedException()
-        const role = session.get('user').role
-
-        console.log(this._posts.isPublished(post))
-
-         if (await this._posts.isPublished(post)) throw new PostIsAlreadyPublish()
-
-         this._posts.update({
-          id: post.id,
-          authorId: author.id
-         }, publishedDto, role)
-
-         return makeMessage(
-          `Post publish`,
-          "La publication a été publié.",
+    return posts.length === 0
+      ? makeMessage(
+          `List of all draft posts of ${fullName} is empty.`,
+          `La liste des brouillons de l'utilisateur ${fullName} est vide.`,
           null,
         )
-      } catch (error) {
-        switch (true) {
-                  case error instanceof NotFoundException:
-                  throw new HttpException(
-                    makeMessage(
-                      `Post Not Found with id ${publishedDto.id}`,
-                      `L'article ${publishedDto.id} n'existe pas.`,
-                      null,
-                    ),
-                    HttpStatus.NOT_FOUND,
-                  );
-                  case error instanceof PostIsAlreadyPublish:
-                    throw new HttpException(
-                    makeMessage(
-                    `Post with id '${publishedDto.id}' is already published.`,
-                    `L'article '${publishedDto.id}' est déjà publié !`,
-                    null,
-                    ),
-                    HttpStatus.BAD_REQUEST,
-                  );
-                  case error instanceof UnauthorizedException:
-                    throw new HttpException(
-                    makeMessage(
-                      error.message,
-                      `Vous n'avez pas l'autorisation d'accéder à cette ressource.`,
-                      null,
-                    ),
-                    HttpStatus.UNAUTHORIZED,
-                  );
-                  default:
-                    throw new HttpException(
-                      makeMessage(
-                        'Fatal Error',
-                        "Une erreur est survenue, essayer de contacter l'administrateur ou réessayer ultérieurement.",
-                        error,
-                        { level: 'Fatal' },
-                      ),
-                      HttpStatus.INTERNAL_SERVER_ERROR,
-                    );
-                }
-      }
+      : makeMessage(
+          `List of all draft posts of user ${fullName}`,
+          `Liste de tous les brouillons de ${fullName}.`,
+          posts,
+        );
   }
-  
-  @Get("/drafts/:id")
-  async getAllUserDraft (@Param("id") id:number): Promise<Message<Articles[] | null>> {
-if (!ID.hasValid(id))
-      throw new HttpException(
-        makeMessage(
-          `Error Param ID : '${id}' is invalid.`,
-          "L'id doit être un nombre entier.",
+
+  @Get(':id')
+  async getAllPublishedPostsOfUser(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Message<Article[] | null>> {
+    const user: userSelectPayload = await this._user.show({ id });
+    const fullName = `${user.nom} ${user.prenom}`;
+
+    const posts = await this._posts.indexWhere({
+      authorId: id,
+      published_at: {
+        not: null,
+      },
+    });
+
+    return posts.length === 0
+      ? makeMessage(
+          `List of all published posts of ${fullName} is empty.`,
+          `La liste des publications publiées de l'utilisateur ${fullName} est vide.`,
           null,
-        ),
-        HttpStatus.BAD_REQUEST,
-      );
+        )
+      : makeMessage(
+          `List of all published posts of user ${fullName}`,
+          `Liste de toutes les publications publiées de ${fullName}.`,
+          posts,
+        );
+  }
 
-    let type_id = ID.add(id);
+  @UseGuards(AuthGuardSession())
+  @ApiBody({
+    type: CreatePostDto,
+  })
+  @Post()
+  async createPost(
+    @Body() payload: CreatePostDto,
+    @Session() session: secureSession.Session,
+  ): Promise<Message<Article>> {
+    const sessionUser = session.get('user');
 
-    try {
-      let user: User = await this._user.show({ id: type_id.value() });
-      let allName: string = `${user.nom} ${user.prenom}`;
+    const author = await this._user.show({
+      id: sessionUser.id,
+    });
 
-      const rawPosts = await this._posts.indexWhere({
-        authorId: type_id.value(),
-        published_at: null
-      });
-      const posts: Articles[] = rawPosts.map(post => ({
-        ...post,
-        author: user,
-      }));
+    const createdPost = await this._posts.store(
+      {
+        ...payload,
+        authorId: sessionUser.id,
+      },
+      author,
+    );
 
-      return posts.length == 0
-        ? makeMessage(
-            `List of all drafts posts of ${allName} is empty.`,
-            `La liste des brouillons de l'utilisateur ${allName} est vide`,
-            null,
-          )
-        : makeMessage(
-            `List of all drafts posts of user ${allName}`,
-            `Liste de tous les brouillons de ${allName}`,
-            posts,
-          );
-    } catch (error) {
-      switch (true) {
-        case error instanceof NotFoundException:
-          throw new HttpException(
-            makeMessage(
-              'User Not Exist',
-              `L'utilisateur ${id} n'existe pas.`,
-              null,
-            ),
-            HttpStatus.NOT_FOUND,
-          );
-        default:
-          throw new HttpException(
-            makeMessage(
-              'Fatal Error',
-              "Une erreur est survenue, essayer de contacter l'administrateur ou réessayer ultérieurement.",
-              error,
-              { level: 'Fatal' },
-            ),
-            HttpStatus.INTERNAL_SERVER_ERROR,
-          );
-      }
+    return makeMessage(
+      'Post created success',
+      'La publication est créée, allez sur votre compte pour la visualiser.',
+      createdPost,
+    );
+  }
+
+  @UseGuards(AuthGuardSession(), PostOwnerOrAdminGuard)
+  @ApiBody({
+    type: PublishedPostDto,
+  })
+  @Patch(':id/publish')
+  async publishPost(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() payload: PublishedPostDto,
+    @Session() session: secureSession.Session,
+  ): Promise<Message<Article>> {
+    const post = await this._posts.show({ id });
+
+    if (this._posts.isPublished(post)) {
+      throw new PostIsAlreadyPublish();
     }
-    
+
+    const updatedPost = await this._posts.update(
+      { id },
+      payload,
+      session.get('user').id,
+    );
+
+    return makeMessage(
+      'Post published',
+      'La publication a été publiée.',
+      updatedPost,
+    );
   }
 }

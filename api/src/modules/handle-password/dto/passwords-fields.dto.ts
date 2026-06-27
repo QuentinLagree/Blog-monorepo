@@ -20,4 +20,6 @@ export class UserPasswordFields {
   @MinLength(4)
   @IsString()
   confirm_password: string;
+  @ApiProperty()
+  token: string
 }

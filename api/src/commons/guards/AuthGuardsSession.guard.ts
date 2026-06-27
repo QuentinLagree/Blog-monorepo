@@ -1,48 +1,40 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  mixin,
-  UnauthorizedException,
-} from '@nestjs/common';
-
-import { FastifyReply, FastifyRequest } from 'fastify';
-import { Url } from 'src/commons/types/url.types';
-import { makeMessage } from '../helpers/logger.helper';
-import { Message } from '../types/dto/message/message';
+import { CanActivate, ExecutionContext, UnauthorizedException, mixin } from "@nestjs/common";
+import { FastifyRequest, FastifyReply } from "fastify";
+import { makeMessage } from "../helpers/logger.helper";
+import { Message } from "../types/dto/message/message";
+import { Url } from "../types/url.types";
 
 export const AuthGuardSession = (
   urlRedirect?: Url,
   outputMessage?: Message<any>,
 ) => {
   class UserGuardSession implements CanActivate {
-    canActivate(context: ExecutionContext): boolean | Promise<boolean> {
+    canActivate(context: ExecutionContext): boolean {
       const request: FastifyRequest = context.switchToHttp().getRequest();
       const response: FastifyReply = context.switchToHttp().getResponse();
-      console.log(request.session['user'])
 
-      if (!request.session['user']) {
-        urlRedirect = !urlRedirect ? Url.create('/') : urlRedirect;
+      const sessionUser = request.session['user'];
 
-          response.send(
-            outputMessage
-              ? makeMessage(
-                  outputMessage?.log ?? '',
-                  outputMessage.message,
-                  outputMessage.data,
-                )
-              : makeMessage(
-                  'Redirect Success',
-                  `Redirect to http://${request.headers.host}${urlRedirect}`,
-                  null,
-                ),
-          );
+      if (!sessionUser) {
+        if (urlRedirect) {
           response.redirect(urlRedirect.value());
-          throw new UnauthorizedException('Session Invalid/Expired');
+          return false;
         }
-        return true;
+
+        throw new UnauthorizedException(
+          outputMessage
+            ? makeMessage(
+                outputMessage?.log ?? '',
+                outputMessage.message,
+                outputMessage.data,
+              )
+            : 'Session Invalid/Expired',
+        );
+      }
+
+      return true;
     }
   }
 
-  const guard = mixin(UserGuardSession);
-  return guard;
+  return mixin(UserGuardSession);
 };
