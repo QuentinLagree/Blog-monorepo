@@ -48,7 +48,7 @@ export class UserService {
   }
 
   logout(options?: HttpOptions) {
-    return this._http.getData('auth/logout', {
+    return this._http.postData('auth/logout', {
       credentials: true,
       ...options
     });
