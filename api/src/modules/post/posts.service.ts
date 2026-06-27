@@ -7,7 +7,7 @@ import { Role } from 'src/commons/roles/role.enum';
 import { PaginationDto } from '../pagination/pagination.dto';
 import { UserNotFoundException } from '../user/exceptions/user-not-found.exception';
 import { UserNotHaveAuthorisation } from '../user/exceptions/user-not-have-authorisation.exception';
-import { userSelect } from '../user/user.service';
+import { userSelect, userSelectPayload } from '../user/user.service';
 import { CreatePostDto } from './dto/create.post.dto';
 import { PublishedPostDto } from './dto/published-post.dto';
 import { UpdatePostDto } from './dto/update.post.dto';
@@ -65,9 +65,10 @@ export class ArticleService {
     return post;
   }
 
-  async store(createdData: CreatePostDto, author: Prisma.UserGetPayload<{ select: typeof userSelect }>): Promise<Article> {
-    //TODO faire un test de markdown
-
+  async store(
+    createdData: CreatePostDto,
+    author: userSelectPayload,
+  ): Promise<Article> {
     return this._prisma.post.create({
       data: {
         title: createdData.title,
@@ -75,8 +76,15 @@ export class ArticleService {
         description: createdData.description,
         published_at: null,
         author: {
-          connect: { id: author.id }
-        }
+          connect: {
+            id: author.id,
+          },
+        },
+      },
+      include: {
+        author: {
+          select: userSelect,
+        },
       },
     });
   }

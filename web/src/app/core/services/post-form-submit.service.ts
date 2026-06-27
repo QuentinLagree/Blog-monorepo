@@ -47,6 +47,8 @@ export class PostFormSubmitService {
       switchMap((message) => {
         const createdPost = message.data as Post;
 
+        console.log("CREATE")
+
         if (mode === 'draft') {
           return of(message);
         }

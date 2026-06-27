@@ -43,11 +43,11 @@ export class PostService {
     }
 
     createPost(post: CreatePostPayload, options?: HttpOptions) {
-        return this._http.postData('posts', post, options)
+        return this._http.postData('users/posts', post, options)
     }
 
     publishPost(post: PublishPost, options?: HttpOptions) {
-        return this._http.postData('users/posts', post, options) 
+        return this._http.patchData(`users/posts/${post.id}/publish`, post, options)
     }
 
     getPostWithID(id: number, options?: HttpOptions): Observable<Message<Post>> {

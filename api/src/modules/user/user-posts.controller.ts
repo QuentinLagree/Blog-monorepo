@@ -95,34 +95,28 @@ export class UserToPostController {
   }
 
   @UseGuards(AuthGuardSession())
-  @ApiBody({
-    type: CreatePostDto,
-  })
-  @Post()
-  async createPost(
-    @Body() payload: CreatePostDto,
-    @Session() session: secureSession.Session,
-  ): Promise<Message<Article>> {
-    const sessionUser = session.get('user');
+@ApiBody({
+  type: CreatePostDto,
+})
+@Post()
+async createPost(
+  @Body() payload: CreatePostDto,
+  @Session() session: secureSession.Session,
+): Promise<Message<Article>> {
+  const sessionUser = session.get('user');
 
-    const author = await this._user.show({
-      id: sessionUser.id,
-    });
+  const author = await this._user.show({
+    id: sessionUser.id,
+  });
 
-    const createdPost = await this._posts.store(
-      {
-        ...payload,
-        authorId: sessionUser.id,
-      },
-      author,
-    );
+  const createdPost = await this._posts.store(payload, author);
 
-    return makeMessage(
-      'Post created success',
-      'La publication est créée, allez sur votre compte pour la visualiser.',
-      createdPost,
-    );
-  }
+  return makeMessage(
+    'Post created success',
+    'La publication est créée, allez sur votre compte pour la visualiser.',
+    createdPost,
+  );
+}
 
   @UseGuards(AuthGuardSession(), PostOwnerOrAdminGuard)
   @ApiBody({

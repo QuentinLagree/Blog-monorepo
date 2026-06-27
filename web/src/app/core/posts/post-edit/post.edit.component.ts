@@ -1,13 +1,12 @@
-import { Component, computed, inject, OnInit, resource } from "@angular/core";
-import { PostFormComponent } from "../post-form/post-form";
-import { Post, PostService } from "../../services/post.service";
-import { ToastService } from "../../toasts/toaster.service";
-import { toSignal } from "@angular/core/rxjs-interop";
-import { ActivatedRoute, Router } from "@angular/router";
 import { HttpContext } from "@angular/common/http";
-import { SUCCESS_MESSAGE } from "../../toasts/models/toasts.config";
+import { Component, inject, OnInit, resource } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 import { firstValueFrom } from "rxjs";
 import { Message } from "../../models/message.model";
+import { Post, PostService } from "../../services/post.service";
+import { SUCCESS_MESSAGE } from "../../toasts/models/toasts.config";
+import { ToastService } from "../../toasts/toaster.service";
+import { PostFormComponent } from "../post-form/post-form";
 
 @Component({
     selector: 'app-edit-post',
@@ -32,9 +31,6 @@ export class PostEditComponent implements OnInit {
     private _toastService: ToastService = inject(ToastService)
     private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
 
-    private queryParamsMap = toSignal(this._activatedRoute.queryParamMap, {
-        initialValue: this._activatedRoute.snapshot.queryParamMap
-    })
     ngOnInit() {
         this._activatedRoute.params.subscribe(params => { this.id = params['id']; })
     }
@@ -44,8 +40,6 @@ export class PostEditComponent implements OnInit {
         }),
 
         loader: async ({ params }) => {
-            console.log('reload article with id ' + params.id);
-
             const context: HttpContext = new HttpContext()
                 .set(SUCCESS_MESSAGE, false);
 
@@ -54,7 +48,7 @@ export class PostEditComponent implements OnInit {
             );
 
             if (!res.data) {
-                this._toastService.error("Erreur lors de la récupération des articles, mauvaise page.", {
+                this._toastService.error("Erreur lors de la récupération de l'article, mauvaise page.", {
                     duration: 5000
                 });
                 return null;
