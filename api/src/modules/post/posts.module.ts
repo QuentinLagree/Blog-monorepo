@@ -3,7 +3,7 @@ import { PostController } from './posts.controller';
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { ArticleService } from './posts.service';
 import { UserService } from '../user/user.service';
-import { PasswordService } from 'src/commons/services/password.service';
+import { PasswordService } from 'src/commons/services/argon.service';
 import { SlugService } from 'src/commons/services/slug.service';
 
 @Module({

@@ -11,15 +11,12 @@ export class UserPasswordFields {
   @ApiProperty()
   @MinLength(4)
   @IsString()
-  old_password: string;
-  @ApiProperty()
-  @MinLength(4)
-  @IsString()
   password: string;
   @ApiProperty()
   @MinLength(4)
   @IsString()
   confirm_password: string;
   @ApiProperty()
+  @IsString()
   token: string
 }

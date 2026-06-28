@@ -3,6 +3,8 @@ import chalk from 'chalk';
 
 import { PrismaClient } from '@prisma/client';
 
+export const PEPPER = process.env["ARGON2_PEPPER"]
+
 @Injectable()
 export class PrismaService
   extends PrismaClient

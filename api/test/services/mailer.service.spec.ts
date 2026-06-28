@@ -5,7 +5,7 @@ import {
   CreatePackageMailerService,
   MailerPackageServiceMockType,
 } from '../mocks/services/auth/create_mailer_package.service.mocks';
-import * as HtmlReader from 'src/commons/helpers/HTML_reader';
+import * as HtmlReader from 'src/commons/mailing/mail/HTML_reader';
 
 describe('MailService', () => {
   let service: MailService;

@@ -1,7 +1,6 @@
-import 'dotenv/config';
 import { Injectable } from "@nestjs/common";
 import argon2, { argon2id } from 'argon2';
-import { PEPPER } from "../constants/pepper";
+import { PEPPER } from "../prisma/prisma.service";
 
 @Injectable()
 export class PasswordService {
@@ -29,7 +28,6 @@ export class PasswordService {
     }
 
     async hashPassword(plainPassword: string): Promise<string> {
-        console.log(PEPPER?.length)
         return argon2.hash(plainPassword + PEPPER, this.getOptions())
     }
 
@@ -42,7 +40,7 @@ export class PasswordService {
     }
 
     async needsRehash(storedHash: string): Promise<boolean> {
-    // note : argon2.needsRehash peut parfois réclamer un cast selon la version de la lib
+    
     return await (argon2 as any).needsRehash(storedHash, this.getOptions());
   }
 

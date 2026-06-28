@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { Post, Prisma, User } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { UserDto } from './dto/user.dto';
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { UserUpdateDto } from './dto/update-user.dto';
-import { PasswordService } from 'src/commons/services/password.service';
+import { PasswordService } from 'src/commons/services/argon.service';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { UserAlreadyExistException } from './exceptions/user-already-exist.exception';
 import { Role } from 'src/commons/roles/role.enum';

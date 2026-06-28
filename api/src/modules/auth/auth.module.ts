@@ -4,7 +4,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { TokenService } from 'src/commons/token/token.service';
 import { PrismaService } from 'src/commons/prisma/prisma.service';
-import { PasswordService } from 'src/commons/services/password.service';
+import { PasswordService } from 'src/commons/services/argon.service';
 
 @Module({
   controllers: [AuthController],

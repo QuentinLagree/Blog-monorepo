@@ -25,6 +25,13 @@ export class MailingService {
     'templates',
   );
 
+
+  private resolveTemplatePath(...segments: string[]) {
+    const distPath = join(__dirname, '../../templates', ...segments);
+    return distPath;
+  }
+
+
   private async loadTemplate(relPath: string): Promise<string> {
     try {
       return await fs.readFile(join(this.distTemplatesDir, relPath), 'utf8');

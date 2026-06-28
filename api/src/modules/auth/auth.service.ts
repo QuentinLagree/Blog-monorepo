@@ -13,16 +13,18 @@ import { PasswordNotSameException } from 'src/commons/exceptions/PasswordNotSame
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { UserLoginCredentials } from './dto/user-login-credentials.dto';
 import { UserSession } from './dto/user-session.dto';
-import { PasswordService } from 'src/commons/services/password.service';
+import { PasswordService } from 'src/commons/services/argon.service';
 import { UserNotFoundException } from '../user/exceptions/user-not-found.exception';
 import { EmailOrPasswordNotMatchException } from './exceptions/email-or-password-not-match.exception';
 import { userSelect, userSelectPayload } from '../user/user.service';
+import { HttpsOptions } from '@nestjs/common/interfaces/external/https-options.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
   private readonly _passwordManager: PasswordService) {}
+  
 
   async login(logginDto: UserLoginCredentials): Promise<User> {
     
@@ -59,7 +61,6 @@ export class AuthService {
     password: string,
     confirm_password: string,
   ): Promise<void> {
-    console.log('Same password');
     if (password !== confirm_password) {
       throw new PasswordNotSameException();
     }

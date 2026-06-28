@@ -11,7 +11,6 @@ import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { VerificationTokens } from '@prisma/client';
 import { FastifyRequest } from 'fastify';
 
-import { RESET_PASSWORD_ROUTE } from 'src/commons/constants/routes';
 import { makeMessage } from 'src/commons/helpers/logger.helper';
 import { TransformDataMessageIntoObjectSerialization } from 'src/commons/interceptors/transform_data_message_into_object_serialization.interceptor';
 import { MailingService } from 'src/commons/mailing/mailing.service';
@@ -65,14 +64,10 @@ export class PasswordRecoveryController {
 async changePassword(
   @Body() payload: UserPasswordFields,
 ): Promise<Message<unknown>> {
+  
   const tokenId = TOKEN.add(payload.token);
 
   await this._token.assertVerificationTokenIsValid(payload.email, tokenId);
-
-  await this._auth.login({
-    email: payload.email,
-    password: payload.old_password,
-  });
 
   await this._auth.throwAnNotSamePasswordExceptionIfNotSame(
     payload.password,
@@ -96,7 +91,7 @@ async changePassword(
   @ApiBody({
     type: UserEmail,
   })
-  @Post('forgot')
+  @Post('/forgot')
   async requestPasswordReset(
     @Body() payload: UserEmail,
     @Req() request: FastifyRequest,
@@ -116,11 +111,11 @@ async changePassword(
 
     const origin = request.raw.headers.origin || 'http://localhost:3000';
 
-    const resetUrl = `${origin}${RESET_PASSWORD_ROUTE}?token=${token.getToken}&email=${email}`;
+    const resetUrl = `${origin}/auth/reset?token=${token.getToken}&email=${email}`;
 
     await this.__mails_queue.add(
       'mail',
-      this._mailer.getOptionRecoveryEmail(verificationToken, resetUrl),
+      await this._mailer.getOptionRecoveryEmail(verificationToken, resetUrl),
     );
 
     return makeMessage(

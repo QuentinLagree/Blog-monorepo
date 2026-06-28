@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 
-import { PasswordService } from '../../../commons/services/password.service'
+import { PasswordService } from '../../../commons/services/argon.service'
 
 const prisma = new PrismaClient();
 

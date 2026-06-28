@@ -8,5 +8,5 @@ export class UserEmail extends PartialType(
   @IsNotEmpty()
   @IsString()
   @IsEmail()
-  email: string;
+  override email: string;
 }

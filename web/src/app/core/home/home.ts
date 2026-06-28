@@ -48,7 +48,6 @@ export class HomeComponent {
   }),
 
   loader: async ({ params }) => {
-    console.log('reload articles');
 
     const context: HttpContext = new HttpContext()
       .set(SUCCESS_MESSAGE, false);

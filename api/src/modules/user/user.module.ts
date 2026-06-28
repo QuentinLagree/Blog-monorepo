@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { UserService } from './user.service';
-import { PasswordService } from 'src/commons/services/password.service';
+import { PasswordService } from 'src/commons/services/argon.service';
 import { UserToPostController } from './user-posts.controller';
 import { ArticleService } from '../post/posts.service';
 
