@@ -9,10 +9,11 @@ import { UserService } from '@src/app/core/services/user.service';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { SessionService } from '@src/app/core/services/session.service';
+import { ContextMenuTriggerDirective } from "src/app/shared/ui/context-menu/context-menu.directive";
 
 @Component({
   selector: 'app-login-page',
-  imports: [ReactiveFormsModule, EmailInputComponent, InputPassswordComponent, BaseButtonComponent],
+  imports: [ReactiveFormsModule, EmailInputComponent, InputPassswordComponent, BaseButtonComponent, ContextMenuTriggerDirective],
   standalone: true,
   templateUrl: './login.html',
   styleUrls: ['./login.scss']
@@ -33,6 +34,7 @@ export class LoginPageComponent {
 
   passwordControl = new FormControl('', [
     PasswordInputValidatorFactory({
+      validate: false,
       options: {
         useStrengthCheck: false
       }

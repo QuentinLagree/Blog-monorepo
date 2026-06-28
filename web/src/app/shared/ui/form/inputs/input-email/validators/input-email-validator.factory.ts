@@ -10,11 +10,12 @@ export function EmailInputValidatorFactory(
       type: 'email',
       value: (control.value || '').toString(),
       required: true,
+      validate: true,
       minlength: 5,
       options: {
         hasValidEmail: true
       },
-      ...config
+      ...config,
     };
     return validateInput(context);
   };

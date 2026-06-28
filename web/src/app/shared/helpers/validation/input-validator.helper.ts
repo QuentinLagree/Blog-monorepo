@@ -8,6 +8,7 @@ export function validateInput(context: InputValidationContext | TextAreaValidati
 
   const value = context.value.trim() || '';
 
+
   if (!context.validate) return [];
 
 

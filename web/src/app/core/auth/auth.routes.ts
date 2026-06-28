@@ -1,4 +1,5 @@
   import { Routes } from '@angular/router';
+import { resetPasswordGuard } from './guards/token-and-email-verification.guard';
 
   export const authRoutes: Routes = [
     {
@@ -14,6 +15,19 @@
       loadComponent: () =>
         import('./pages/register/register').then((m) => m.RegisterPageComponent),
       data: { type: 'Register' },
+    },
+    {
+      path: 'forget-password',
+      title: 'Mot de passe oublié',
+      loadComponent: () =>
+          import('./pages/forget-password/forget-password').then((m) => m.ForgetPasswordComponent),
+    },
+    {
+      path: 'reset',
+      title: 'Nouveau mot de passe',
+      loadComponent: () =>
+        import('./pages/new-password/new-password').then((m) => m.NewPasswordComponent),
+      canActivate: [resetPasswordGuard]
     },
     {
       path: '',

@@ -21,7 +21,12 @@
   type: 'password',
   showPassword: true,
 }"
-      />
+      >
+      <a href="/auth/forget-password" class="main-container-form-link-password">
+      Mot de passe oublié ?
+      </a>
+  </app-input-password>
+      
       <app-button
           [full]="true"
         (clicked)="submit()"

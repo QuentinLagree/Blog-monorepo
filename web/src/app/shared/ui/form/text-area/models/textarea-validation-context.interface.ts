@@ -2,6 +2,7 @@ import { InputType } from "../../inputs/input.model";
 
 export interface OptionalValidations {
   acceptSpecialCaracters?: boolean;
+  hasValidEmail?: boolean;
 }
 
 

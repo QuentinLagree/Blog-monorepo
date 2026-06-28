@@ -4,7 +4,6 @@ import {
   EventEmitter,
   Input,
   Output,
-  WritableSignal,
   computed,
   signal,
 } from '@angular/core';

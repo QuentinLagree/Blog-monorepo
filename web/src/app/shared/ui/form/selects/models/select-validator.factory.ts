@@ -9,6 +9,7 @@ export function SelectValidatorFactory(
     const context: SelectValidationContext = {
       type: 'select',
       required: true,
+      validate: true,
       value: (control.value || '').toString(),
       ...config
     };

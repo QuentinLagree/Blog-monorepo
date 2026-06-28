@@ -9,9 +9,10 @@ export function PasswordInputValidatorFactory(
     const context: InputValidationContext = {
       type: 'password',
       minlength: 8,
+      validate: true,
       required: true,
       value: (control.value || '').toString(),
-      options: {
+      options: {  
         useStrengthCheck: true,
         acceptSpecialCaracters: true
       },

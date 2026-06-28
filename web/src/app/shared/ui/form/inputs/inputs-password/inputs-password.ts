@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { InputPasswordMeterComponent } from './components/input-password-meter/input-password-meter';
 import { InputPasswordToggleComponent } from './components/input-password-toggle/input-password-toggle';
 import { InputErrorComponent } from '../inputs-error/inputs-error';
+import { ɵEmptyOutletComponent } from "@angular/router";
 
 @Component({
   selector: 'app-input-password',
@@ -14,8 +15,8 @@ import { InputErrorComponent } from '../inputs-error/inputs-error';
     ReactiveFormsModule,
     InputPasswordMeterComponent,
     InputPasswordToggleComponent,
-    InputErrorComponent
-  ],
+    InputErrorComponent,
+],
   standalone: true
 })
 export class InputPassswordComponent extends BaseFormElementComponent<InputPasswordConfig> {

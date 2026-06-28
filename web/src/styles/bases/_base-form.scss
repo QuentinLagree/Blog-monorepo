@@ -121,6 +121,13 @@ input:not(:placeholder-shown) {
     justify-content: space-between;
     padding-right: 25px;
   }
+
+  a {
+    color: rgba($color: $black, $alpha: 0.8);
+    padding-left: 0.9em;
+    cursor: pointer;
+    font-size: 1em;
+  }
 }
 
 /* ERROR */
