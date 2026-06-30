@@ -45,7 +45,7 @@ export class AuthService {
 
   setUserSession(session: Session, user: UserSession): void {
     if (session.get('user')) {
-      throw new UserAlreadyActiveSession();
+      throw new UserAlreadyActiveSession(); 
     }
     session.set('user', user);
   }

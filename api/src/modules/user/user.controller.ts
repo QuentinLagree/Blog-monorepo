@@ -51,7 +51,7 @@ export class UserController {
       );
   }
 
-  @UseGuards(AuthGuardSession(), UserOwnerOrAdminGuard)
+  @UseGuards(AuthGuardSession())
   @Get('/:id')
   async show(@Param('id', ParseIntPipe) id: number): Promise<Message<userSelectPayload | null>> {
     const user = await this._user.show({ id });

@@ -47,8 +47,7 @@ export class PostController {
   @ApiQuery({
     name: 'PaginationDto', type: PaginationDto
   })
-  @UseGuards(AuthGuardSession(), RolesGuard)
-  @Roles(Role.Admin)
+  @UseGuards(AuthGuardSession())
   async index(
 
     @Query() payload: PaginationDto

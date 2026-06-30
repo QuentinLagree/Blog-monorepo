@@ -43,28 +43,44 @@ export class HomeComponent {
 
     posts = resource<Post[], PostsParams>({
   params: () => ({
-    page: +this.page(),
-    limit: +this.limit(),
+    page: Number(this.page()),
+    limit: Number(this.limit()),
   }),
 
   loader: async ({ params }) => {
+    try {
+      const context = new HttpContext().set(SUCCESS_MESSAGE, false);
 
-    const context: HttpContext = new HttpContext()
-      .set(SUCCESS_MESSAGE, false);
+      const res = await firstValueFrom(
+        this._post.getAllPublishedPost(params.page, params.limit, { context })
+      );
 
-    const res: Message<Post[]> = await firstValueFrom(
-      this._post.getAllPublishedPost(params.page, params.limit, { context })
-    );
+      console.log(res.data)
+      
+      if (!res.data) {
+        this._toastService.error(
+          'Erreur lors de la récupération des articles, mauvaise page.',
+          { duration: 5000 }
+        );
 
-    if (res.data == null) {
-      this._toastService.error("Erreur lors de la récupération des articles, mauvaise page.", {
-      duration: 5000
-    });
-    return [];
-  }
-  if (res.meta) this.totalArticle.set(res.meta.totalArticle);
+        return [];
+      }
 
-    return res.data;
+      this.totalArticle.set(res.meta?.totalArticle ?? 0);
+
+      return res.data;
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Erreur lors de la récupération des articles.';
+
+      this._toastService.error(message, { duration: 5000 });
+
+      throw error instanceof Error
+        ? error
+        : new Error(message, { cause: error });
+    }
   },
 });
 

@@ -28,6 +28,8 @@ export class UserOwnerOrAdminGuard implements CanActivate {
 
     const isAdmin = sessionUser.role === Role.Admin;
     const isOwner = sessionUser.id === userIdFromParams;
+    console.log(userIdFromParams)
+    console.log(isOwner)
 
     if (!isAdmin && !isOwner) {
       throw new ForbiddenException(
