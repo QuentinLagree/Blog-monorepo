@@ -17,7 +17,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
 import { Message } from 'src/commons/types/dto/message/message';
 import { SessionType } from 'src/commons/types/session.type';
-import { makeMessage } from '../../commons/helpers/logger.helper';
+import { makeMessage } from '../../commons/logger/logger.helper';
 import { TransformDataMessageIntoObjectSerialization } from '../../commons/interceptors/transform_data_message_into_object_serialization.interceptor';
 import { UserDto } from '../user/dto/user.dto';
 import { UserEntity } from '../user/entities/user.entities';

@@ -14,12 +14,10 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Post as Article } from '@prisma/client';
-
-import { PostIsAlreadyPublish } from 'src/commons/exceptions/PostAlreadyPublished.errors';
 import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
 import { PostOwnerOrAdminGuard } from 'src/commons/guards/post-owner-or-admin.guard';
 import { UserOwnerOrAdminGuard } from 'src/commons/guards/user-owner-or-admin.guard';
-import { makeMessage } from 'src/commons/helpers/logger.helper';
+import { makeMessage } from 'src/commons/logger/logger.helper';
 import { TransformDataMessageIntoObjectSerialization } from 'src/commons/interceptors/transform_data_message_into_object_serialization.interceptor';
 import { Message } from 'src/commons/types/dto/message/message';
 
@@ -29,6 +27,7 @@ import { PostsEntity } from '../post/entities/posts.entities';
 import { ArticleService } from '../post/posts.service';
 import { UserEntity } from './entities/user.entities';
 import { userSelectPayload, UserService } from './user.service';
+import { PostAlreadyPublishException } from './exceptions/post-already-publish.exception';
 
 @ApiTags('Gestion des publications en fonction des utilisateurs')
 @Controller('users/posts')
@@ -131,7 +130,7 @@ async createPost(
     const post = await this._posts.show({ id });
 
     if (this._posts.isPublished(post)) {
-      throw new PostIsAlreadyPublish();
+      throw new PostAlreadyPublishException();
     }
 
     const updatedPost = await this._posts.update(

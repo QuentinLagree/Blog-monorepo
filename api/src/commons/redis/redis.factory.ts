@@ -12,7 +12,7 @@ export const RedisProvider: Provider = {
     if (client) return client; // ioredis gère déjà l'état de connexion
 
     if (!client) {
-      client = new Redis(process.env.REDIS_URL ?? 'redis://localhost:6379', {
+      client = new Redis(process.env['REDIS_URL'] ?? 'redis://localhost:6379', {
         // options utiles :
         retryStrategy: (times) => Math.min(times * 500, 5000), // backoff jusqu’à 5s
         reconnectOnError: (err) => {

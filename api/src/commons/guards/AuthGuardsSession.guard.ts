@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, UnauthorizedException, mixin } from "@nestjs/common";
 import { FastifyRequest, FastifyReply } from "fastify";
-import { makeMessage } from "../helpers/logger.helper";
+import { makeMessage } from "../logger/logger.helper";
 import { Message } from "../types/dto/message/message";
 import { Url } from "../types/url.types";
 

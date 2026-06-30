@@ -7,6 +7,7 @@ import { PasswordService } from 'src/commons/services/argon.service';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { UserAlreadyExistException } from './exceptions/user-already-exist.exception';
 import { Role } from 'src/commons/roles/role.enum';
+import { PasswordNotMatchException } from '../auth/exceptions/password-not-same.exception';
 
 export const userSelect = {
   id: true,
@@ -93,6 +94,8 @@ export class UserService {
   ): Promise<userSelectPayload> {
     const { posts, ...userData } = data as UserUpdateDto & { posts?: unknown };
     await this.show(where);
+
+    
 
     if (userData.password) {
       userData.password = await this._passwordManager.hashPassword(userData.password);

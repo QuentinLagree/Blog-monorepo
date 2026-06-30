@@ -1,7 +1,7 @@
 // src/commons/exceptions/reset-token-already-active.exception.ts
 
 import { HttpStatus } from '@nestjs/common';
-import { AppException } from 'src/commons/exceptions/app.exception';
+import { AppException } from 'src/commons/app.exception';
 
 export class TokenExpiredOrInvalidException extends AppException {
   constructor() {

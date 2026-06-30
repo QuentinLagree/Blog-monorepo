@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { cpSync } from 'fs';
-import { AppException } from 'src/commons/exceptions/app.exception';
+import { AppException } from 'src/commons/app.exception';
 
 type Property = 'email' | 'pseudo'
 

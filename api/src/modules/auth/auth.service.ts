@@ -5,19 +5,15 @@ declare module '@fastify/secure-session' {
     set(key: 'user', value: UserSession): void;
   }
 }
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { PasswordNotMatchException } from '../../commons/exceptions/PasswordNotMatchException.error';
-import { UserAlreadyActiveSession } from '../../commons/exceptions/UserAlreadyActiveSession.error';
-import { PasswordNotSameException } from 'src/commons/exceptions/PasswordNotSame.error';
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { UserLoginCredentials } from './dto/user-login-credentials.dto';
 import { UserSession } from './dto/user-session.dto';
 import { PasswordService } from 'src/commons/services/argon.service';
-import { UserNotFoundException } from '../user/exceptions/user-not-found.exception';
 import { EmailOrPasswordNotMatchException } from './exceptions/email-or-password-not-match.exception';
-import { userSelect, userSelectPayload } from '../user/user.service';
-import { HttpsOptions } from '@nestjs/common/interfaces/external/https-options.interface';
+import { UserAlreadySessionActive } from './exceptions/user-already-session-active.exception';
+import { PasswordNotMatchException } from './exceptions/password-not-same.exception';
 
 @Injectable()
 export class AuthService {
@@ -45,7 +41,7 @@ export class AuthService {
 
   setUserSession(session: Session, user: UserSession): void {
     if (session.get('user')) {
-      throw new UserAlreadyActiveSession(); 
+      throw new UserAlreadySessionActive();
     }
     session.set('user', user);
   }
@@ -61,8 +57,6 @@ export class AuthService {
     password: string,
     confirm_password: string,
   ): Promise<void> {
-    if (password !== confirm_password) {
-      throw new PasswordNotSameException();
-    }
+    
   }
 }

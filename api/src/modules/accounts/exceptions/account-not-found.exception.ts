@@ -1,11 +1,11 @@
 import { HttpStatus } from '@nestjs/common';
 import { AppException } from 'src/commons/app.exception';
 
-export class UserNotFoundException extends AppException {
+export class AccountNotFoundException extends AppException {
   constructor(uniqueProperties: any) {
     super(
-      `User Not Found with ${uniqueProperties}`,
-      `l'utilisateur : ${uniqueProperties} n'existe pas.`,
+      `Account Not Found with ${uniqueProperties}`,
+      `le compte utilisateur : ${uniqueProperties} n'existe pas.`,
       null,
       HttpStatus.NOT_FOUND,
     );

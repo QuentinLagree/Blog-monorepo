@@ -2,7 +2,7 @@ import {
   CreatePrismaServiceMock,
   PrismaUserServiceMockType,
 } from 'test/mocks/services/database/create.prisma.service.mocks';
-import { TokenService } from '../../src/commons/token/token.service';
+import { TokenService } from '../../src/commons/services/token.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TOKEN } from '../../src/commons/types/token.types';
 import { VerificationTokens } from '@prisma/client';

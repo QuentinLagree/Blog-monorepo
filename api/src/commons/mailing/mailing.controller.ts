@@ -5,7 +5,7 @@ import { MailingService } from './mailing.service';
 import { MAIL_QUEUE } from 'src/commons/mailing/bullmq/bullmq.token';
 import { Queue } from 'bullmq';
 import { Message } from '../types/dto/message/message';
-import { makeMessage } from '../helpers/logger.helper';
+import { makeMessage } from '../logger/logger.helper';
 
 @Controller('mailing')
 export class MailingController {

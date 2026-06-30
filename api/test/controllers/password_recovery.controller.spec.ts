@@ -6,7 +6,7 @@ import { createUserServiceMock } from '../../usecases/mocks/services/auth/create
 import { UserService } from '../user/user.service';
 import { MailService } from 'src/config/mail/mailer.service';
 import { createMailerServiceMock } from '../../usecases/mocks/services/auth/create_mailer.service.mocks';
-import { TokenService } from 'src/commons/token/token.service';
+import { TokenService } from 'src/commons/services/token.service';
 import { createTokenServiceMock } from '../../usecases/mocks/services/auth/create_token.service.mocks';
 import {
   createVerificatioEmailParamSetTokenMock,
@@ -22,7 +22,6 @@ import {
   createWrongFieldsPasswordManagerDto,
 } from '../../usecases/mocks/create.user.mocks';
 import { makeMessage, Message } from 'src/commons/helpers/logger.helper';
-import { isFieldsInvalid } from 'src/commons/exceptions/isFieldsInvalids.error';
 import { ValidationError } from 'class-validator';
 import { UserEmail } from 'src/modules/handle-password/dto/user-email.dto';
 import {

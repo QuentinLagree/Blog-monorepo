@@ -1,11 +1,10 @@
-// src/commons/mailing/mailing.service.ts
 import { Injectable } from '@nestjs/common';
 import { promises as fs } from 'fs';
 import { join } from 'path';
 import Handlebars from 'handlebars';
 import { VerificationEmailDto } from '../verifications_email/verification_email.dto';
-import { FailSendingMail } from '../exceptions/failSendingMail.error';
 import { User } from '@prisma/client';
+import { FailSendingMailException } from './exceptions/fail-sending-mail.exception';
 
 @Injectable()
 export class MailingService {
@@ -57,7 +56,7 @@ export class MailingService {
       return { to: verificationEmailData.email, subject: 'Réinitialiser votre mot de passe.', html };
     } catch (e) {
       console.error('error reading file (recovery)', e);
-      throw new FailSendingMail();
+      throw new FailSendingMailException();
     }
   }
 
@@ -67,7 +66,7 @@ export class MailingService {
       const html = this.render(content, { username: user.pseudo, email: user.email });
       return { to: user.email, subject: 'Bienvenue !', html };
     } catch (e) {
-      throw new FailSendingMail();
+      throw new FailSendingMailException();
     }
   }
 }

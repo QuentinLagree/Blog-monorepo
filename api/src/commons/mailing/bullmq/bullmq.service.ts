@@ -17,7 +17,6 @@ export class BullMQService implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   onModuleInit() {
-    // démarre le worker au boot
     this.worker = new Worker(
       'mail', // nom de la queue
       async (job: Job<{ to: string; subject: string; html: string }>) => {

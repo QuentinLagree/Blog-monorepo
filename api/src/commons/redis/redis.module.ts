@@ -7,7 +7,7 @@ import { RedisService } from './redis.service';
 const RedisProvider: Provider = {
   provide: REDIS,
   useFactory: () => {
-    const url = process.env.REDIS_URL ?? 'redis://redis:6379';
+    const url = process.env['REDIS_URL'] ?? 'redis://redis:6379';
     const options: RedisOptions = {
       // ⬇️ BullMQ exige ceci
       maxRetriesPerRequest: null,

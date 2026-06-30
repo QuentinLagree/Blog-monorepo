@@ -1,11 +1,11 @@
 import { HttpStatus } from '@nestjs/common';
 import { AppException } from 'src/commons/app.exception';
 
-export class EmailOrPasswordNotMatchException extends AppException {
+export class UserAlreadySessionActive extends AppException {
   constructor() {
     super(
-      `User logged failed`,
-      `L'email ou le mot de passe sont incorrect.`,
+      `User Session already exist`,
+      `Votre session est déjà active.`,
       null,
       HttpStatus.UNAUTHORIZED,
     );

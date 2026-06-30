@@ -19,7 +19,7 @@ import { RolesGuard } from 'src/commons/guards/role.guard';
 import { UserOwnerOrAdminGuard } from 'src/commons/guards/user-owner-or-admin.guard';
 import { Role } from 'src/commons/roles/role.enum';
 import { Message } from 'src/commons/types/dto/message/message';
-import { makeMessage } from '../../commons/helpers/logger.helper';
+import { makeMessage } from '../../commons/logger/logger.helper';
 import { TransformDataMessageIntoObjectSerialization } from '../../commons/interceptors/transform_data_message_into_object_serialization.interceptor';
 import { UserUpdateDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
@@ -92,7 +92,7 @@ export class UserController {
   ): Promise<Message<userSelectPayload>> {
     let updated_user = await this._user.update(
       { id },
-      updateData,
+      updateData
     );
     return makeMessage(
       'User updated !',

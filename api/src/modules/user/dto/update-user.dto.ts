@@ -6,29 +6,29 @@ export class UserUpdateDto extends PartialType(UserEntity) {
   @IsOptional()
   @IsString()
   //   @Length(3, 50)
-  nom?: string;
+  override nom?: string;
 
   @IsOptional()
   @IsString()
   @Length(3, 50)
-  prenom?: string;
+  override prenom?: string;
 
   @IsOptional()
   @IsString()
   @Length(2, 16)
-  pseudo?: string;
+  override pseudo?: string;
 
   @IsOptional()
   @IsString()
   @MinLength(4)
-  email?: string;
+  override email?: string;
 
   @IsOptional()
   @IsString()
   @MinLength(4)
-  password?: string;
+  override password?: string;
 
   @IsOptional()
   @IsString()
-  role?: string;
+  override role?: string;
 }

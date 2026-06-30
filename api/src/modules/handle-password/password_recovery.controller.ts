@@ -11,11 +11,10 @@ import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { VerificationTokens } from '@prisma/client';
 import { FastifyRequest } from 'fastify';
 
-import { makeMessage } from 'src/commons/helpers/logger.helper';
 import { TransformDataMessageIntoObjectSerialization } from 'src/commons/interceptors/transform_data_message_into_object_serialization.interceptor';
 import { MailingService } from 'src/commons/mailing/mailing.service';
 import { MAIL_QUEUE } from 'src/commons/mailing/bullmq/bullmq.token';
-import { TokenService } from 'src/commons/token/token.service';
+import { TokenService } from 'src/commons/services/token.service';
 import { Message } from 'src/commons/types/dto/message/message';
 import { TOKEN } from 'src/commons/types/token.types';
 import { UserEntity } from 'src/modules/user/entities/user.entities';
@@ -27,6 +26,8 @@ import { AuthService } from '../auth/auth.service';
 import { UserService } from '../user/user.service';
 import { UserEmail } from './dto/user-email.dto';
 import { UserPasswordFields } from './dto/passwords-fields.dto';
+import { makeMessage } from 'src/commons/logger/logger.helper';
+import { PasswordNotMatchException } from '../auth/exceptions/password-not-same.exception';
 
 @ApiTags('Gestion du mot de passe')
 @UseInterceptors(new TransformDataMessageIntoObjectSerialization([UserEntity]))
@@ -69,14 +70,15 @@ async changePassword(
 
   await this._token.assertVerificationTokenIsValid(payload.email, tokenId);
 
-  await this._auth.throwAnNotSamePasswordExceptionIfNotSame(
-    payload.password,
-    payload.confirm_password,
-  );
+  if (payload.password !== payload.confirm_password) {
+      throw new PasswordNotMatchException();
+    }
 
   const updatedUser = await this._user.update(
     { email: payload.email },
-    { password: payload.confirm_password },
+    {
+      password: payload.confirm_password,
+    }
   );
 
   await this._token.delete(payload.email);

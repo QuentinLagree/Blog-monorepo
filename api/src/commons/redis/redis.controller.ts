@@ -7,7 +7,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import Redis from 'ioredis';
 import { Message } from '../types/dto/message/message';
-import { makeMessage } from '../helpers/logger.helper';
+import { makeMessage } from '../logger/logger.helper';
 import { AuthGuardSession } from '../guards/AuthGuardsSession.guard';
 import { Url } from '../types/url.types';
 import { REDIS } from './redis.token';
