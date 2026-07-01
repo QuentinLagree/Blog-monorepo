@@ -6,7 +6,7 @@ export const createPostMock = (overrides: Partial<Post> = {}) => ({
   authorId: 1,
   title: 'Titre de la publication',
   content: 'Contenue de la publication',
-  published: false,
+  published_at: new Date(),
   created_at: new Date(),
   updated_at: new Date(),
   author: createUserMock(),

@@ -55,7 +55,6 @@ export class MailingService {
       });
       return { to: verificationEmailData.email, subject: 'Réinitialiser votre mot de passe.', html };
     } catch (e) {
-      console.error('error reading file (recovery)', e);
       throw new FailSendingMailException();
     }
   }

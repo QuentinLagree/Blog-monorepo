@@ -19,7 +19,7 @@ export class SlugService {
         
     }
 
-    private isValidateSlug(slug: string): boolean {
+    public isValidateSlug(slug: string): boolean {
         return VALIDATE_SLUG.test(slug);
     }
 
@@ -35,12 +35,14 @@ export class SlugService {
 
     public async getPostWithSlug(slug: string): Promise<Articles | null> {
 
-        if (this.isValidateSlug(slug)) throw new SlugInvalidFormat(slug);
+        if (!this.isValidateSlug(slug)) {
+            throw new SlugInvalidFormat(slug);
+        }
 
         const id: number = this.getIdFromSlug(slug);
-        
-        const article: Articles | null = await this._post.indexOneWhere({ id });
-        if (!article) throw new PostNotFoundException(article.id);
+
+        const article = await this._post.indexOneWhere({ id });
+        if (!article) throw new PostNotFoundException(id);
         
         if (this.generateSlugFromArticleTitle(article.title, article.id) !== slug) {
             throw new PostNotFoundWithSlugException(slug);
@@ -53,7 +55,7 @@ export class SlugService {
         const slug_parts: String[] = slug.split('-');
         const id_not_checked = slug_parts[slug_parts.length - 1]
         if (!Number.isSafeInteger(Number(id_not_checked))) {
-            throw new SlugInvalidNumber(Number(id_not_checked));
+            throw new SlugInvalidFormat(slug);
         }
 
         return Number(id_not_checked);

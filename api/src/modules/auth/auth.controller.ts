@@ -29,7 +29,7 @@ import { UserSession } from './dto/user-session.dto';
 @ApiTags('Authentification')
 @Controller('auth')
 @UseInterceptors(new TransformDataMessageIntoObjectSerialization([UserEntity]))
-@UsePipes(ValidationPipe)
+@UsePipes(new ValidationPipe())
 export class AuthController {
   constructor(
     private readonly _auth: AuthService,

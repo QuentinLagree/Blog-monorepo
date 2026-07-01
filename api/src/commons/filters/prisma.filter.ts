@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { FastifyReply } from 'fastify';
 import { Prisma } from '@prisma/client';
-import { makeMessage } from '../helpers/logger.helper';
+import { makeMessage } from '../logger/logger.helper';
 
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaExceptionFilter implements ExceptionFilter {

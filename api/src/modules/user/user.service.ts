@@ -31,7 +31,6 @@ export class UserService {
     private readonly _passwordManager: PasswordService) {
 
   }
-  @HttpCode(200)
   async index(): Promise<userSelectPayload[]> {
 
     return this._prisma.user.findMany({
@@ -105,7 +104,6 @@ export class UserService {
       },
       include: { posts: true },
     });
-
   }
 
   async destroy(where: Prisma.UserWhereUniqueInput): Promise<void> {

@@ -1,6 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "types": ["node", "jest"],
     "paths": {
       "src/*": ["./src/*"],
       "@src/*": ["./src/*"],
