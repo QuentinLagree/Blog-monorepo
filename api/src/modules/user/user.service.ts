@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpCode, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { UserDto } from './dto/user.dto';
 import { PrismaService } from 'src/commons/prisma/prisma.service';
@@ -31,17 +31,14 @@ export class UserService {
     private readonly _passwordManager: PasswordService) {
 
   }
-  
-
-
-
+  @HttpCode(200)
   async index(): Promise<userSelectPayload[]> {
 
     return this._prisma.user.findMany({
       select: userSelect
     });
   }
-
+  @HttpCode(200)
   async show(uniqueProperties: Prisma.UserWhereUniqueInput): Promise<userSelectPayload> {
     const user = await this._prisma.user.findUnique({
       where: uniqueProperties,
@@ -54,7 +51,7 @@ export class UserService {
       'unknown');
     return user;
   }
-
+  @HttpCode(201)
   async create(data: UserDto & { posts?: Prisma.PostCreateWithoutAuthorInput[] }): Promise<Promise<userSelectPayload>> {
     const { email, pseudo, posts, password, ...userData } = data;
 

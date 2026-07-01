@@ -30,7 +30,7 @@ import { userSelectPayload, UserService } from './user.service';
 @Controller('user')
 @UseInterceptors(new TransformDataMessageIntoObjectSerialization([UserEntity]))
 export class UserController {
-  constructor(private readonly _user: UserService) { }
+  constructor(private readonly _user: UserService) {}
 
   @UseGuards(AuthGuardSession(), RolesGuard)
   @Roles(Role.Admin)
@@ -70,9 +70,9 @@ export class UserController {
     ignoreDecorators: true,
   })
   async store(
-    @Body() createData: UserDto,
+    @Body() payload: UserDto,
   ): Promise<Message<userSelectPayload>> {
-    const created_user = await this._user.create(createData);
+    const created_user = await this._user.create(payload);
     return makeMessage(
       'User created !',
       "L'utilisateur est bien enregistré !",
@@ -88,11 +88,11 @@ export class UserController {
   @Put('/:id')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateData: UserUpdateDto,
+    @Body() payload: UserUpdateDto,
   ): Promise<Message<userSelectPayload>> {
     let updated_user = await this._user.update(
       { id },
-      updateData
+      payload
     );
     return makeMessage(
       'User updated !',

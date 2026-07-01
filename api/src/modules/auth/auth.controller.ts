@@ -68,10 +68,10 @@ export class AuthController {
 
   @Post('/login')
   async login(
-    @Body() loginDto: UserLoginCredentials,
+    @Body() payload: UserLoginCredentials,
     @Session() session: secureSession.Session,
   ): Promise<Message<UserSession>> {
-    const logged_user = await this._auth.login(loginDto);
+    const logged_user = await this._auth.login(payload);
 
     this._auth.setUserSession(session, {
       id: logged_user.id,
@@ -94,11 +94,11 @@ export class AuthController {
     ignoreDecorators: true,
   })
   @Post('/register')
-  async register(@Body() createData: UserDto): Promise<Message<userSelectPayload>> {
+  async register(@Body() payload: UserDto): Promise<Message<userSelectPayload>> {
       return makeMessage(
         'User register !',
         "L'enregistrement de ton compte s'est déroulé avec succès. Maintenant tu peux te connecter.",
-        await this._user.create(createData),
+        await this._user.create(payload),
       );
   }
 }

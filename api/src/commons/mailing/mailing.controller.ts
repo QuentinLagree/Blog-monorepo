@@ -6,6 +6,7 @@ import { MAIL_QUEUE } from 'src/commons/mailing/bullmq/bullmq.token';
 import { Queue } from 'bullmq';
 import { Message } from '../types/dto/message/message';
 import { makeMessage } from '../logger/logger.helper';
+import { Role } from '../roles/role.enum';
 
 @Controller('mailing')
 export class MailingController {
@@ -23,7 +24,7 @@ export class MailingController {
             nom: 'Lagree',
             prenom: 'Quentin',
             password: 'XXXX',
-            role: 'admin',
+            role: Role.Admin,
             created_at: new Date(),
             updated_at: new Date(),
         } as any); // adapte le type selon ton User

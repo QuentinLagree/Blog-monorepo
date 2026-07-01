@@ -89,15 +89,6 @@ export class PostController {
         );
   }
 
-  @UseGuards(AuthGuardSession(), RolesGuard)
-  @Roles(Role.Admin)
-  @Get("/slug")
-  async slugTest() {
-    let article: Articles | null = await this._articles.indexOneWhere({ id: 4 });
-    if (!article) return null;
-    return this._slug.generateSlugFromArticleTitle(article.title, article.id);
-  }
-
   @Get("/slug/:slug_title")
   async slugTestWithID(@Param('slug_title') slug: string): Promise<Message<Articles>> {
     const article = await this._slug.getPostWithSlug(slug);
