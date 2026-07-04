@@ -11,8 +11,8 @@ import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { PrismaService } from './commons/prisma/prisma.service';
 import helmet from '@fastify/helmet';
 import { ValidationError } from 'class-validator';
-import { makeMessage } from './commons/helpers/logger.helper';
 import { PrismaExceptionFilter } from './commons/filters/prisma.filter';
+import { makeMessage } from './commons/logger/logger.helper';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(

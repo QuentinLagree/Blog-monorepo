@@ -13,6 +13,7 @@ export class PrismaService
   private static isInitiated: boolean = false;
 
   async onModuleInit() {
+    
     if (!PrismaService.isInitiated)
       try {
         await this.$connect();
@@ -27,14 +28,17 @@ export class PrismaService
         console.log(
           `${chalk.red('> ')} ${chalk.bold.bgRed(' ERROR ')} ${chalk.red('Erreur : ' + error)}`,
         );
-        PrismaService.isInitiated = true;
+        throw error;
       }
   }
 
   async onModuleDestroy() {
     await this.$disconnect();
-    console.log(
-      `${chalk.blue('> ')} ${chalk.bold.bgBlue(' INFO ')} ${chalk.white('La déconnection de la base de donnée est un succée.')}`,
-    );
+    if (process.env['NODE_ENV'] == 'dev') {
+
+      console.log(
+        `${chalk.blue('> ')} ${chalk.bold.bgBlue(' INFO ')} ${chalk.white('La déconnection de la base de donnée est un succée.')}`,
+      );
+    }
   }
 }

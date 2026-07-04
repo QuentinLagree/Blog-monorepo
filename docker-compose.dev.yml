@@ -1,4 +1,17 @@
 services:
+  mysql-test:
+    image: mysql:8
+    container_name: blog-test-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: blog_test
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_test_data:/var/lib/mysql
+
+
   db:
     image: mysql:8.0
     container_name: blog-mysql
@@ -8,7 +21,7 @@ services:
       # (optionnel) jeu de caractères conseillé
       # MYSQL_INITDB_SKIP_TZINFO: 1
     ports:
-      - "3307:3306"
+      - "3308:3306"
     command:
       [
         "mysqld",
@@ -149,3 +162,4 @@ volumes:
   mysqldata:
   redisdata:
   redisinsightdata:
+  mysql_test_data:
