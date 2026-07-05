@@ -1,5 +1,6 @@
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
+import { UnauthorizedSessionInactive } from 'src/modules/auth/exceptions/unautorisation-session-inactive.exception';
 
 describe('AuthGuardSession', () => {
   const createExecutionContextMock = (
@@ -32,16 +33,16 @@ describe('AuthGuardSession', () => {
     expect(response).toBe(true);
   });
 
-  it('should throw UnauthorizedException if session does not contain user', () => {
+  it('should throw UnauthorizedSessionInactive if session does not contain user', () => {
     const GuardClass = AuthGuardSession();
     const guard = new GuardClass();
 
     const context = createExecutionContextMock({});
 
-    expect(() => guard.canActivate(context)).toThrow(UnauthorizedException);
+    expect(() => guard.canActivate(context)).toThrow(UnauthorizedSessionInactive);
   });
 
-  it('should throw UnauthorizedException with custom output message', () => {
+  it('should throw UnauthorizedSessionInactive with custom output message', () => {
     const GuardClass = AuthGuardSession(undefined, {
       log: 'Session expired',
       message: 'Votre session a expiré.',
@@ -53,7 +54,7 @@ describe('AuthGuardSession', () => {
 
     const context = createExecutionContextMock({});
 
-    expect(() => guard.canActivate(context)).toThrow(UnauthorizedException);
+    expect(() => guard.canActivate(context)).toThrow(UnauthorizedSessionInactive);
   });
 
   it('should redirect and return false if urlRedirect is provided and session is missing', () => {

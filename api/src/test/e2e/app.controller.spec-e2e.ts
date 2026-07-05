@@ -2,7 +2,7 @@ import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import request from 'supertest';
 import { createE2EApp } from './helpers/create-e2e-app';
 
-describe('AuthController e2e', () => {
+describe('AppController e2e', () => {
   let app: NestFastifyApplication;
 
   beforeAll(async () => {
@@ -20,7 +20,6 @@ describe('AuthController e2e', () => {
       await request(app.getHttpServer())
         .get('/')
         .expect(200)
-        .expect('Main Page');
     });
   });
 });

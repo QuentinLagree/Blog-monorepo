@@ -63,7 +63,7 @@ export class UserController {
   }
 
   @Post()
-  @ApiBody({
+  @ApiBody({ 
     type: UserDto,
   })
   @SerializeOptions({

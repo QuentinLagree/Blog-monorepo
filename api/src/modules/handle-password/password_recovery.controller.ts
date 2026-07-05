@@ -93,7 +93,7 @@ async changePassword(
   @ApiBody({
     type: UserEmail,
   })
-  @Post('/forgot')
+  @Post('forgot')
   async requestPasswordReset(
     @Body() payload: UserEmail,
     @Req() request: FastifyRequest,

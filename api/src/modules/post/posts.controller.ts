@@ -49,7 +49,6 @@ export class PostController {
   })
   @UseGuards(AuthGuardSession())
   async index(
-
     @Query() payload: PaginationDto
   ): Promise<Message<Articles[] | null, MetaPaginationDto>> {
     const posts: Articles[] = await this._articles.index(payload);
@@ -120,7 +119,7 @@ export class PostController {
   async store(
     @Body() payload: CreatePostDto,
   ): Promise<Message<Articles>> {
-    const author = await this._user.show({ id: payload.authorId });
+    const author = await this._user.show({ id: payload.authorId ?? 0 });
     const created_post = await this._articles.store(payload, author);
     return makeMessage(
       'Post created !',

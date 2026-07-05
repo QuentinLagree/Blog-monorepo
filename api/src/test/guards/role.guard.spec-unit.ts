@@ -1,11 +1,11 @@
 import {
   ExecutionContext,
-  ForbiddenException,
-  UnauthorizedException,
-} from '@nestjs/common';
+  } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { RolesGuard } from 'src/commons/guards/role.guard';
 import { Role } from 'src/commons/roles/role.enum';
+import { UnauthorizedSessionInactive } from 'src/modules/auth/exceptions/unautorisation-session-inactive.exception';
+import { UserNotHaveAuthorisation } from 'src/modules/user/exceptions/user-not-have-authorisation.exception';
 import { UserService } from 'src/modules/user/user.service';
 
 describe('RolesGuard', () => {
@@ -62,13 +62,13 @@ describe('RolesGuard', () => {
     expect(userServiceMock.show).not.toHaveBeenCalled();
   });
 
-  it('should throw UnauthorizedException if session does not contain user', async () => {
+  it('should throw UnauthorizedSessionInactive if session does not contain user', async () => {
     reflectorMock.getAllAndOverride.mockReturnValue([Role.Admin]);
 
     const context = createExecutionContextMock({});
 
     await expect(rolesGuard.canActivate(context)).rejects.toThrow(
-      UnauthorizedException,
+      UnauthorizedSessionInactive,
     );
 
     expect(userServiceMock.show).not.toHaveBeenCalled();
@@ -102,7 +102,7 @@ describe('RolesGuard', () => {
     expect(response).toBe(true);
   });
 
-  it('should throw ForbiddenException if user role is insufficient', async () => {
+  it('should throw UserNotHaveAuthorisation if user role is insufficient', async () => {
     reflectorMock.getAllAndOverride.mockReturnValue([Role.Admin]);
 
     const sessionUser = {
@@ -122,7 +122,7 @@ describe('RolesGuard', () => {
     });
 
     await expect(rolesGuard.canActivate(context)).rejects.toThrow(
-      ForbiddenException,
+      UserNotHaveAuthorisation,
     );
 
     expect(userServiceMock.show).toHaveBeenCalledWith({

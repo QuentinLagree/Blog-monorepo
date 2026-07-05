@@ -10,7 +10,7 @@ export class UserAlreadyExistException extends AppException {
       `${property} already use.`,
       `${property} déjà utilisé, connectez-vous si c'est bien vous.`,
       null,
-      HttpStatus.BAD_REQUEST,
+      HttpStatus.CONFLICT,
     );
   }
 }

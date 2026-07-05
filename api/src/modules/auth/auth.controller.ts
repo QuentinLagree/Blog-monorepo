@@ -10,8 +10,6 @@ import {
   Session,
   UseGuards,
   UseInterceptors,
-  UsePipes,
-  ValidationPipe
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
@@ -29,7 +27,6 @@ import { UserSession } from './dto/user-session.dto';
 @ApiTags('Authentification')
 @Controller('auth')
 @UseInterceptors(new TransformDataMessageIntoObjectSerialization([UserEntity]))
-@UsePipes(new ValidationPipe())
 export class AuthController {
   constructor(
     private readonly _auth: AuthService,
@@ -89,16 +86,16 @@ export class AuthController {
       },
     );
   }
-  
+
   @SerializeOptions({
     ignoreDecorators: true,
   })
   @Post('/register')
   async register(@Body() payload: UserDto): Promise<Message<userSelectPayload>> {
       return makeMessage(
-        'User register !',
-        "L'enregistrement de ton compte s'est déroulé avec succès. Maintenant tu peux te connecter.",
-        await this._user.create(payload),
-      );
+      'User register !',
+      "L'enregistrement de ton compte s'est déroulé avec succès. Maintenant tu peux te connecter.",
+      await this._user.create(payload),
+    );
   }
 }

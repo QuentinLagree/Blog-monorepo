@@ -7,12 +7,16 @@ import {
 import secureSession from '@fastify/secure-session';
 
 import { TestAppModule } from './test-app.module';
+import { MAIL_QUEUE } from 'src/commons/mailing/bullmq/bullmq.token';
+import { mailQueueMock } from './test.mock-module';
 
 export async function createE2EApp(): Promise<NestFastifyApplication> {
 
   const moduleFixture = await Test.createTestingModule({
     imports: [TestAppModule],
-  }).compile();
+  })
+  .overrideProvider(MAIL_QUEUE)
+  .useValue(mailQueueMock).compile();
 
 
   const app = moduleFixture.createNestApplication<NestFastifyApplication>(
@@ -22,14 +26,11 @@ export async function createE2EApp(): Promise<NestFastifyApplication> {
 
   await app.register(secureSession, {
     salt: 'mq9hDxBVDbspDR6n',
-    key: Buffer.from(
-      process.env['SECRET_KEY'] ||
-        Buffer.from('12345678901234567890123456789012').toString('base64'),
-      'base64',
-    ),
+    key: Buffer.from(process.env["SECRET_KEY"]!, 'base64'),
     cookie: {
       path: '/',
       httpOnly: true,
+      sameSite: 'lax',
     },
   });
 

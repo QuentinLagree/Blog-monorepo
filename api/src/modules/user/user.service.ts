@@ -37,7 +37,6 @@ export class UserService {
       select: userSelect
     });
   }
-  @HttpCode(200)
   async show(uniqueProperties: Prisma.UserWhereUniqueInput): Promise<userSelectPayload> {
     const user = await this._prisma.user.findUnique({
       where: uniqueProperties,
@@ -50,7 +49,6 @@ export class UserService {
       'unknown');
     return user;
   }
-  @HttpCode(201)
   async create(data: UserDto & { posts?: Prisma.PostCreateWithoutAuthorInput[] }): Promise<Promise<userSelectPayload>> {
     const { email, pseudo, posts, password, ...userData } = data;
 
@@ -60,7 +58,6 @@ export class UserService {
       },
       select: userSelect
     });
-
     if (existingUser?.email === email) {
       throw new UserAlreadyExistException('email');
     }
@@ -80,7 +77,10 @@ export class UserService {
         password: hashedPassword,
         posts: posts && posts.length > 0 ? { create: posts } : undefined,
       },
-      include: { posts: true },
+      select: {
+        ...userSelect,
+        posts: true
+      }
     });
   }
 
@@ -102,7 +102,10 @@ export class UserService {
       data: {
         ...userData,
       },
-      include: { posts: true },
+      select: {
+        ...userSelect,
+        posts: true
+      }
     });
   }
 

@@ -17,6 +17,7 @@ export class PrismaService
     if (!PrismaService.isInitiated)
       try {
         await this.$connect();
+        if (process.env['NODE_ENV'] === 'test') return;
         console.log(
           `\n${chalk.green('> ')} ${chalk.bold.bgGreen(' GOOD ')} ${chalk.green('Connection établie avec la base de donnée.')}\n`,
         );

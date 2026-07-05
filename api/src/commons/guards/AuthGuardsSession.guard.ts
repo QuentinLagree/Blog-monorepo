@@ -3,6 +3,7 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { makeMessage } from "../logger/logger.helper";
 import { Message } from "../types/dto/message/message";
 import { Url } from "../types/url.types";
+import { UnauthorizedSessionInactive } from "src/modules/auth/exceptions/unautorisation-session-inactive.exception";
 
 export const AuthGuardSession = (
   urlRedirect?: Url,
@@ -21,15 +22,7 @@ export const AuthGuardSession = (
           return false;
         }
 
-        throw new UnauthorizedException(
-          outputMessage
-            ? makeMessage(
-                outputMessage?.log ?? '',
-                outputMessage.message,
-                outputMessage.data,
-              )
-            : 'Session Invalid/Expired',
-        );
+        throw new UnauthorizedSessionInactive();
       }
 
       return true;

@@ -1,4 +1,4 @@
-import { UserService } from 'src/modules/user/user.service';
+import { userSelect, UserService } from 'src/modules/user/user.service';
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { PasswordService } from 'src/commons/services/argon.service';
 import { UserNotFoundException } from 'src/modules/user/exceptions/user-not-found.exception';
@@ -153,9 +153,10 @@ describe('UserService', () => {
           role: Role.User,
           password: hashedPassword,
         }),
-        include: {
-          posts: true,
-        },
+        select: {
+          ...userSelect,
+          posts: true
+        }
       });
 
       expect(response).toEqual(createdUser);
@@ -230,9 +231,10 @@ describe('UserService', () => {
             create: dto.posts,
           },
         }),
-        include: {
-          posts: true,
-        },
+        select: {
+          ...userSelect,
+          posts: true
+        }
       });
 
       expect(response).toEqual(createdUser);
@@ -270,9 +272,10 @@ describe('UserService', () => {
         data: {
           nom: 'Updated',
         },
-        include: {
+        select: {
+          ...userSelect,
           posts: true,
-        },
+        }
       });
 
       expect(response).toEqual(updatedUser);
@@ -305,9 +308,10 @@ describe('UserService', () => {
         data: {
           password: 'new-hashed-password',
         },
-        include: {
+        select: {
+          ...userSelect,
           posts: true,
-        },
+        }
       });
 
       expect(response).toEqual(updatedUser);
