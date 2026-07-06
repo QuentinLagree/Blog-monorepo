@@ -17,9 +17,15 @@ Ce projet a pour objectif de reproduire une application de blog moderne tout en 
 
 ---
 
-# 📸 Aperçu
+# 📸 Aperçu 
+> Attention, le style générale du site va changé
+---
 
-> *(Ajouter ici des captures d'écran de l'application)*
+<img width="320" height="200" alt="image" src="https://github.com/user-attachments/assets/2db88383-2959-4b78-b45c-89327f82b6b0" />
+<img width="320" height="200" alt="image" src="https://github.com/user-attachments/assets/8af7d2a8-e655-40c7-97b7-8711c524d2fd" />
+
+---
+
 
 - Accueil
 - Connexion
@@ -138,7 +144,7 @@ Blog-monorepo
 
 - Git
 - PNPM
-- Postman
+- SwaggerUI
 - Figma
 
 ---
@@ -344,7 +350,8 @@ Au travers de ce projet, j'ai approfondi plusieurs notions importantes :
 - [ ] Profils utilisateurs
 - [ ] Notifications
 - [ ] Upload cloud
-- [ ] Tests unitaires
+- [ ] Lecture d'article
+- [x] Tests unitaires
 - [ ] CI/CD
 
 ---
