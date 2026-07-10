@@ -1,0 +1,32 @@
+@use 'variables' as *;
+
+.app-header {
+  width: 100%;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  margin-bottom: 2em;
+  padding: 0.2em 0.8em;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  box-shadow: $card-shadow;
+}
+
+.app-header nav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 2em;
+}
+
+.app-header nav a {
+  color: $text-secondary;
+  text-decoration: none;
+}
+
+.app-header nav a:hover {
+  color: $primary;
+}

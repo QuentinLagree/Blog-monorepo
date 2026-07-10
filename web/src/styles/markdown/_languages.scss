@@ -1,0 +1,1074 @@
+@use 'variables' as *;
+
+/* =========================
+   MARKDOWN CONTENT
+========================= */
+
+.markdown-content {
+  color: $text-primary;
+}
+
+/* =========================
+   TEXT
+========================= */
+
+.markdown-content p {
+  margin: 1rem 0;
+
+  color: $text-primary;
+
+  font-size: 1.03rem;
+  font-weight: 400;
+  line-height: 1.8;
+}
+
+.markdown-content p:first-child {
+  margin-top: 0;
+}
+
+.markdown-content p:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-content strong,
+.markdown-content b {
+  color: $text-primary;
+  font-weight: 700;
+}
+
+.markdown-content em {
+  font-style: italic;
+}
+
+.markdown-content a {
+  color: $primary;
+
+  font-weight: 550;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+
+  transition: color 0.16s ease;
+}
+
+.markdown-content a:hover {
+  color: $primary-hover;
+}
+
+/* =========================
+   HEADINGS
+========================= */
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  color: $text-primary;
+
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+
+.markdown-content h1 {
+  margin: 2rem 0 1rem;
+  font-size: 2rem;
+}
+
+.markdown-content h2 {
+  margin: 1.8rem 0 0.9rem;
+  font-size: 1.65rem;
+}
+
+.markdown-content h3 {
+  margin: 1.6rem 0 0.8rem;
+  font-size: 1.35rem;
+}
+
+.markdown-content h4 {
+  margin: 1.4rem 0 0.7rem;
+  font-size: 1.15rem;
+}
+
+.markdown-content h5,
+.markdown-content h6 {
+  margin: 1.2rem 0 0.6rem;
+  font-size: 1rem;
+}
+
+.markdown-content h1:first-child,
+.markdown-content h2:first-child,
+.markdown-content h3:first-child {
+  margin-top: 0;
+}
+/* =========================
+   LISTS
+========================= */
+
+.markdown-content ul,
+.markdown-content ol {
+  margin: 1rem 0;
+  padding-left: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.markdown-content li {
+  position: relative;
+
+  color: $text-primary;
+
+  font-size: 1.03rem;
+  line-height: 1.75;
+}
+
+/* =========================
+   UNORDERED LISTS
+========================= */
+
+.markdown-content ul {
+  list-style: none;
+}
+
+.markdown-content ul > li {
+  padding-left: 1.45rem;
+}
+
+.markdown-content ul > li::before {
+  content: "";
+
+  position: absolute;
+  top: 0.78em;
+  left: 0.15rem;
+
+  width: 0.42rem;
+  height: 0.42rem;
+
+  background: $primary;
+  border-radius: $radius-full;
+
+  transform: translateY(-50%);
+}
+
+/* Sous-listes */
+.markdown-content ul ul {
+  margin-top: 0.45rem;
+  margin-bottom: 0.2rem;
+  padding-left: 0.15rem;
+
+  border-left: 1px solid $border;
+}
+
+.markdown-content ul ul > li {
+  padding-left: 1.35rem;
+  color: $text-secondary;
+}
+
+.markdown-content ul ul > li::before {
+  left: 0.45rem;
+
+  width: 0.38rem;
+  height: 0.38rem;
+
+  background: transparent;
+  border: 1.5px solid $primary;
+}
+
+.markdown-content ul ul ul > li::before {
+  width: 0.36rem;
+  height: 0.36rem;
+
+  border-radius: 0.18rem;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+/* =========================
+   ORDERED LISTS
+========================= */
+
+.markdown-content ol {
+  list-style: none;
+  counter-reset: markdown-counter;
+}
+
+.markdown-content ol > li {
+  min-height: 1.8rem;
+  padding-left: 2.25rem;
+
+  counter-increment: markdown-counter;
+}
+
+.markdown-content ol > li::before {
+  content: counter(markdown-counter);
+
+  position: absolute;
+  top: 0.9em;
+  left: 0;
+
+  width: 1.55rem;
+  height: 1.55rem;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: $primary-soft;
+  color: $primary;
+
+  border: 1px solid rgba($primary, 0.16);
+  border-radius: $radius-full;
+
+  font-size: 0.78rem;
+  font-weight: 750;
+  line-height: 1;
+
+  transform: translateY(-50%);
+}
+
+.markdown-content ol ol {
+  margin-top: 0.45rem;
+  margin-bottom: 0.2rem;
+  padding-left: 0.1rem;
+
+  border-left: 1px solid $border;
+  counter-reset: markdown-sub-counter;
+}
+
+.markdown-content ol ol > li {
+  padding-left: 2.1rem;
+
+  color: $text-secondary;
+  counter-increment: markdown-sub-counter;
+}
+
+.markdown-content ol ol > li::before {
+  content: counter(markdown-sub-counter);
+
+  left: 0.45rem;
+
+  width: 1.35rem;
+  height: 1.35rem;
+
+  background: $surface;
+  color: $text-secondary;
+
+  border-color: $border-strong;
+
+  font-size: 0.72rem;
+}
+
+/* =========================
+   MIXED NESTED LISTS
+========================= */
+
+.markdown-content li > ul,
+.markdown-content li > ol {
+  margin-top: 0.45rem;
+}
+/* =========================
+   TASK LISTS
+========================= */
+
+.markdown-content li:has(> input[type='checkbox']) {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+
+  padding-left: 0;
+  margin: 0.5rem 0;
+
+  list-style: none;
+
+  color: $text-primary;
+}
+
+.markdown-content li:has(> input[type='checkbox'])::before {
+  display: none;
+  content: none;
+}
+
+.markdown-content li > input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+
+  width: 1.05rem;
+  height: 1.05rem;
+
+  flex: 0 0 auto;
+  margin: 0.42rem 0 0;
+
+  background: $surface;
+  border: 1.5px solid $border-strong;
+  border-radius: 0.28rem;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.markdown-content li > input[type='checkbox']:hover:not(:disabled) {
+  border-color: $primary;
+}
+
+.markdown-content li > input[type='checkbox']:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px $focus-ring;
+}
+
+.markdown-content li > input[type='checkbox']:checked {
+  background: $primary;
+  border-color: $primary;
+}
+
+.markdown-content li > input[type='checkbox']:checked::after {
+  content: "";
+
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  background: $white;
+
+  mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E");
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: 82%;
+
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: 82%;
+}
+
+.markdown-content li > input[type='checkbox']:disabled {
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.markdown-content li > input[type='checkbox']:disabled + * {
+  opacity: 0.75;
+}
+/* =========================
+   TABLES
+========================= */
+
+.markdown-content table {
+  width: 100%;
+  margin: 1.25rem 0;
+
+  border-collapse: separate;
+  border-spacing: 0;
+
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  overflow: hidden;
+
+  font-size: 0.95rem;
+}
+
+.markdown-content thead {
+  background: $surface-soft;
+}
+
+.markdown-content th {
+  padding: 0.75rem;
+
+  text-align: left;
+
+  color: $text-primary;
+  font-weight: 700;
+
+  border-bottom: 1px solid $border;
+}
+
+.markdown-content td {
+  padding: 0.75rem;
+
+  color: $text-primary;
+  border-bottom: 1px solid $border;
+}
+
+.markdown-content tr:last-child td {
+  border-bottom: none;
+}
+
+/* =========================
+   INLINE CODE
+========================= */
+
+.markdown-content code {
+  font-family: 'Geist Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-style: normal;
+}
+
+.markdown-content :not(pre) > code {
+  padding: 0.12em 0.38em;
+
+  background: $primary-soft;
+  color: $primary;
+
+  border: 1px solid rgba($primary, 0.16);
+  border-radius: 0.35rem;
+
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+/* =========================
+   CODE BLOCKS
+========================= */
+
+.markdown-content pre {
+  position: relative;
+
+  margin: 1.25rem 0;
+  padding: 1rem 1.1rem;
+
+  overflow-x: auto;
+
+  background: #1f2421;
+  color: #d8d3c7;
+
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: $radius-md;
+
+  font-family: 'Geist Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.markdown-content pre code {
+  display: block;
+
+  padding: 0;
+
+  background: transparent;
+  color: inherit;
+
+  border: none;
+  border-radius: 0;
+
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  white-space: pre;
+
+  text-shadow: none;
+}
+
+.markdown-content pre,
+.markdown-content pre code {
+  font-weight: 400;
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
+  text-rendering: optimizeLegibility;
+}
+
+/* Scrollbar code */
+
+.markdown-content pre::-webkit-scrollbar {
+  height: 8px;
+}
+
+.markdown-content pre::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.markdown-content pre::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: $radius-full;
+}
+
+.markdown-content pre::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* =========================
+   PRISM TOKEN COLORS
+========================= */
+
+.markdown-content .token.comment,
+.markdown-content .token.prolog,
+.markdown-content .token.doctype,
+.markdown-content .token.cdata {
+  color: #8a968f;
+}
+
+.markdown-content .token.punctuation {
+  color: #d8d3c7;
+}
+
+.markdown-content .token.namespace {
+  opacity: 0.75;
+}
+
+.markdown-content .token.property,
+.markdown-content .token.tag,
+.markdown-content .token.constant,
+.markdown-content .token.symbol,
+.markdown-content .token.deleted {
+  color: #ffb86b;
+}
+
+.markdown-content .token.boolean,
+.markdown-content .token.number {
+  color: #d6a85a;
+}
+
+.markdown-content .token.selector,
+.markdown-content .token.attr-name,
+.markdown-content .token.string,
+.markdown-content .token.char,
+.markdown-content .token.builtin,
+.markdown-content .token.inserted {
+  color: #8bd7b0;
+}
+
+.markdown-content .token.operator,
+.markdown-content .token.entity,
+.markdown-content .token.url,
+.markdown-content .language-css .token.string,
+.markdown-content .style .token.string {
+  color: #f4f2ec;
+  background: none;
+}
+
+.markdown-content .token.atrule,
+.markdown-content .token.attr-value,
+.markdown-content .token.keyword {
+  color: #9fc7ff;
+}
+
+.markdown-content .token.function,
+.markdown-content .token.class-name {
+  color: #f4d06f;
+}
+
+.markdown-content .token.regex,
+.markdown-content .token.important,
+.markdown-content .token.variable {
+  color: #ff9f8a;
+}
+
+.markdown-content .token.important,
+.markdown-content .token.bold {
+  font-weight: 700;
+}
+
+.markdown-content .token.italic {
+  font-style: italic;
+}
+
+/* =========================
+   HIGHLIGHT.JS TOKEN COLORS
+========================= */
+
+.markdown-content .hljs {
+  background: transparent;
+  color: #f4f2ec;
+}
+
+.markdown-content .hljs-comment,
+.markdown-content .hljs-quote {
+  color: #8a968f;
+}
+
+.markdown-content .hljs-keyword,
+.markdown-content .hljs-selector-tag,
+.markdown-content .hljs-subst {
+  color: #9fc7ff;
+}
+
+.markdown-content .hljs-number,
+.markdown-content .hljs-literal,
+.markdown-content .hljs-variable,
+.markdown-content .hljs-template-variable,
+.markdown-content .hljs-tag .hljs-attr {
+  color: #d6a85a;
+}
+
+.markdown-content .hljs-string,
+.markdown-content .hljs-doctag {
+  color: #8bd7b0;
+}
+
+.markdown-content .hljs-title,
+.markdown-content .hljs-section,
+.markdown-content .hljs-selector-id {
+  color: #f4d06f;
+}
+
+.markdown-content .hljs-type,
+.markdown-content .hljs-class .hljs-title {
+  color: #ffb86b;
+}
+
+.markdown-content .hljs-tag,
+.markdown-content .hljs-name,
+.markdown-content .hljs-attribute {
+  color: #ffb86b;
+}
+
+.markdown-content .hljs-regexp,
+.markdown-content .hljs-link {
+  color: #ff9f8a;
+}
+
+.markdown-content .hljs-symbol,
+.markdown-content .hljs-bullet {
+  color: #c9b8ff;
+}
+
+.markdown-content .hljs-built_in,
+.markdown-content .hljs-builtin-name {
+  color: #8bd7b0;
+}
+
+.markdown-content .hljs-meta {
+  color: #9fc7ff;
+}
+
+.markdown-content .hljs-deletion {
+  color: #ff9f8a;
+}
+
+.markdown-content .hljs-addition {
+  color: #8bd7b0;
+}
+
+.markdown-content .hljs-emphasis {
+  font-style: italic;
+}
+
+.markdown-content .hljs-strong {
+  font-weight: 700;
+}
+
+/* =========================
+   BLOCKQUOTES
+========================= */
+
+.markdown-content blockquote {
+  margin: 1.5rem 0;
+  padding: 1rem 1.1rem;
+
+  background: $surface-soft;
+  color: $text-secondary;
+
+  border-left: 4px solid $primary;
+  border-radius: $radius-sm;
+
+  font-style: italic;
+}
+
+.markdown-content blockquote p {
+  margin: 0.4rem 0;
+  color: $text-secondary;
+}
+
+.markdown-content blockquote p:first-child {
+  margin-top: 0;
+}
+
+.markdown-content blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* =========================
+   CALLOUTS
+   Usage possible :
+   <div class="md-callout md-success">...</div>
+   <blockquote class="md-success">...</blockquote>
+========================= */
+
+.markdown-content .md-callout,
+.markdown-content blockquote.md-success,
+.markdown-content blockquote.md-error,
+.markdown-content blockquote.md-warning,
+.markdown-content blockquote.md-info {
+  margin: 1.5rem 0;
+  padding: 1rem 1.1rem;
+
+  border-left: 4px solid $primary;
+  border-radius: $radius-sm;
+
+  font-style: normal;
+}
+
+.markdown-content .md-callout p,
+.markdown-content blockquote.md-success p,
+.markdown-content blockquote.md-error p,
+.markdown-content blockquote.md-warning p,
+.markdown-content blockquote.md-info p {
+  margin: 0.45rem 0;
+}
+
+.markdown-content .md-callout p:first-child,
+.markdown-content blockquote.md-success p:first-child,
+.markdown-content blockquote.md-error p:first-child,
+.markdown-content blockquote.md-warning p:first-child,
+.markdown-content blockquote.md-info p:first-child {
+  margin-top: 0;
+}
+
+.markdown-content .md-callout p:last-child,
+.markdown-content blockquote.md-success p:last-child,
+.markdown-content blockquote.md-error p:last-child,
+.markdown-content blockquote.md-warning p:last-child,
+.markdown-content blockquote.md-info p:last-child {
+  margin-bottom: 0;
+}
+
+/* Success */
+
+.markdown-content .md-success,
+.markdown-content blockquote.md-success {
+  background: $success-soft;
+  color: $success;
+  border-left-color: $success;
+}
+
+.markdown-content .md-success p,
+.markdown-content blockquote.md-success p {
+  color: $text-primary;
+}
+
+.markdown-content .md-success strong,
+.markdown-content blockquote.md-success strong {
+  color: $success;
+}
+
+/* Error */
+
+.markdown-content .md-error,
+.markdown-content blockquote.md-error {
+  background: $danger-soft;
+  color: $danger;
+  border-left-color: $danger;
+}
+
+.markdown-content .md-error p,
+.markdown-content blockquote.md-error p {
+  color: $text-primary;
+}
+
+.markdown-content .md-error strong,
+.markdown-content blockquote.md-error strong {
+  color: $danger;
+}
+
+/* Warning */
+
+.markdown-content .md-warning,
+.markdown-content blockquote.md-warning {
+  background: $warning-soft;
+  color: $warning;
+  border-left-color: $warning;
+}
+
+.markdown-content .md-warning p,
+.markdown-content blockquote.md-warning p {
+  color: $text-primary;
+}
+
+.markdown-content .md-warning strong,
+.markdown-content blockquote.md-warning strong {
+  color: $warning;
+}
+
+/* Info */
+
+.markdown-content .md-info,
+.markdown-content blockquote.md-info {
+  background: $info-soft;
+  color: $info;
+  border-left-color: $info;
+}
+
+.markdown-content .md-info p,
+.markdown-content blockquote.md-info p {
+  color: $text-primary;
+}
+
+.markdown-content .md-info strong,
+.markdown-content blockquote.md-info strong {
+  color: $info;
+}
+
+/* Optional callout title */
+
+.markdown-content .md-callout-title {
+  display: block;
+  margin-bottom: 0.35rem;
+
+  font-size: 0.85rem;
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.markdown-content .md-success .md-callout-title {
+  color: $success;
+}
+
+.markdown-content .md-error .md-callout-title {
+  color: $danger;
+}
+
+.markdown-content .md-warning .md-callout-title {
+  color: $warning;
+}
+
+.markdown-content .md-info .md-callout-title {
+  color: $info;
+}
+
+/* =========================
+   IMAGES
+========================= */
+
+.markdown-content img {
+  max-width: 100%;
+  height: auto;
+
+  display: block;
+  margin: 1.5rem auto;
+
+  border: 1px solid $border;
+  border-radius: $radius-md;
+}
+
+/* =========================
+   MATH
+========================= */
+
+.markdown-content .math-block {
+  margin: 1.5rem 0;
+  padding: 1rem 1.1rem;
+
+  background: $primary-soft;
+  color: $text-primary;
+
+  border-left: 4px solid $primary;
+  border-radius: $radius-sm;
+
+  font-family: 'STIX Two Math', 'Times New Roman', serif;
+  font-size: 1.05rem;
+}
+
+.markdown-content .math-block .katex-display,
+.markdown-content .math-block .MathJax_Display {
+  margin: 0;
+}
+
+/* KaTeX */
+
+.markdown-content .katex-display {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.markdown-content .katex {
+  color: $text-primary;
+}
+
+/* =========================
+   HORIZONTAL RULE
+========================= */
+
+.markdown-content hr {
+  margin: 2rem 0;
+
+  border: none;
+  border-top: 1px solid $border;
+}
+
+/* =========================
+   PREVIEW
+========================= */
+
+.preview .markdown-content {
+  padding: 1.5rem;
+}
+
+.preview .markdown-content p:first-child,
+.preview .markdown-content h1:first-child,
+.preview .markdown-content h2:first-child,
+.preview .markdown-content h3:first-child {
+  margin-top: 0;
+}
+
+/* =========================
+   CODE LANGUAGE BADGE
+========================= */
+
+.markdown-content pre[class*='language-'] {
+  padding-top: 2.4rem;
+  text-shadow: none;
+}
+
+.markdown-content pre[class*='language-']::before {
+  content: "CODE";
+
+  position: absolute;
+  top: 0.65rem;
+  right: 0.75rem;
+  z-index: 1;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0.28rem 0.55rem;
+
+  background: rgba(255, 255, 255, 0.08);
+  color: #d8d3c7;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $radius-full;
+
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+
+  pointer-events: none;
+}
+
+/* TypeScript */
+.markdown-content pre.language-ts::before,
+.markdown-content pre.language-typescript::before,
+.markdown-content pre:has(code.language-ts)::before,
+.markdown-content pre:has(code.language-typescript)::before {
+  content: "TypeScript";
+}
+
+/* JavaScript */
+.markdown-content pre.language-js::before,
+.markdown-content pre.language-javascript::before,
+.markdown-content pre:has(code.language-js)::before,
+.markdown-content pre:has(code.language-javascript)::before {
+  content: "JavaScript";
+}
+
+/* HTML */
+.markdown-content pre.language-html::before,
+.markdown-content pre:has(code.language-html)::before {
+  content: "HTML";
+}
+
+/* CSS */
+.markdown-content pre.language-css::before,
+.markdown-content pre:has(code.language-css)::before {
+  content: "CSS";
+}
+
+/* SCSS */
+.markdown-content pre.language-scss::before,
+.markdown-content pre:has(code.language-scss)::before {
+  content: "SCSS";
+}
+
+/* JSON */
+.markdown-content pre.language-json::before,
+.markdown-content pre:has(code.language-json)::before {
+  content: "JSON";
+}
+
+/* Bash / Shell */
+.markdown-content pre.language-bash::before,
+.markdown-content pre.language-shell::before,
+.markdown-content pre:has(code.language-bash)::before,
+.markdown-content pre:has(code.language-shell)::before {
+  content: "Shell";
+}
+
+/* Markdown */
+.markdown-content pre.language-md::before,
+.markdown-content pre.language-markdown::before,
+.markdown-content pre:has(code.language-md)::before,
+.markdown-content pre:has(code.language-markdown)::before {
+  content: "Markdown";
+}
+
+/* Python */
+.markdown-content pre.language-py::before,
+.markdown-content pre.language-python::before,
+.markdown-content pre:has(code.language-py)::before,
+.markdown-content pre:has(code.language-python)::before {
+  content: "Python";
+}
+
+/* SQL */
+.markdown-content pre.language-sql::before,
+.markdown-content pre:has(code.language-sql)::before {
+  content: "SQL";
+}
+
+/* Java */
+.markdown-content pre.language-java::before,
+.markdown-content pre:has(code.language-java)::before {
+  content: "Java";
+}
+
+/* C# */
+.markdown-content pre.language-csharp::before,
+.markdown-content pre.language-cs::before,
+.markdown-content pre:has(code.language-csharp)::before,
+.markdown-content pre:has(code.language-cs)::before {
+  content: "C#";
+}
+
+/* PHP */
+.markdown-content pre.language-php::before,
+.markdown-content pre:has(code.language-php)::before {
+  content: "PHP";
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 640px) {
+  .markdown-content p,
+  .markdown-content li {
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  .markdown-content h1 {
+    font-size: 1.7rem;
+  }
+
+  .markdown-content h2 {
+    font-size: 1.45rem;
+  }
+
+  .markdown-content h3 {
+    font-size: 1.25rem;
+  }
+
+  .markdown-content pre {
+    margin: 1rem -0.25rem;
+    padding: 0.9rem;
+
+    border-radius: $radius-sm;
+
+    font-size: 0.85rem;
+  }
+
+  .preview .markdown-content {
+    padding: 1rem;
+  }
+}

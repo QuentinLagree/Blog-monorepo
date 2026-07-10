@@ -8,6 +8,7 @@ import { BaseButtonComponent } from "src/app/shared/ui/form/buttons/base-button"
 @Component({
   selector: 'app-header',
   templateUrl: './header.html',
+  styleUrls: ['./header.scss'],
   standalone: true,
   imports: [BaseButtonComponent]
 })

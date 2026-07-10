@@ -1,132 +1,50 @@
 @use 'variables' as *;
-@use 'mixins/mixins' as *;
-@use './bases/base-text' as *;
-@use './bases/base-flex' as *;
-@use './bases/base-card' as *;
-@use './bases/base-form' as *;
-@use './bases/base-grid' as *;
-@use './bases/base-button' as *;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@use './bases/base-text';
+@use './bases/base-flex';
+@use './bases/base-card';
+@use './bases/base-form';
+@use './bases/base-grid';
+@use './bases/base-button';
+@use './bases/base-select';
+
+html {
+  min-height: 100%;
 }
 
 body {
+  min-height: 100vh;
+
   background: $background;
   color: $text-primary;
 
-  padding: 2em;
-  min-height: 100vh;
+  text-rendering: optimizeLegibility;
 }
 
-header {
-  width: 100%;
-  background: $surface;
-  border: 1px solid $border;
-  border-radius: $radius-sm;
-  margin-bottom: 2em;
-  padding: 0.2em 0.8em;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  box-shadow: $card-shadow;
-}
-
-header nav {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 2em;
-}
-
-header nav a {
-  color: $text-secondary;
-  text-decoration: none;
-}
-
-header nav a:hover {
-  color: $primary;
-}
-
-.main-container {
-  padding: 1.2em;
-  position: relative;
-  min-width: 500px;
-  width: 100%;
-
-  background: $container-background;
-  border: 1px solid $border;
-  border-radius: $radius-md;
-  box-shadow: $card-shadow;
-}
-
-/* Table markdown minimaliste */
-markdown table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1rem 0;
-  font-size: 0.95rem;
-
-  background: $surface;
-  border: 1px solid $border;
-  border-radius: $radius-sm;
-  overflow: hidden;
-}
-
-/* En-tête */
-markdown th {
-  text-align: left;
-  font-weight: 600;
-  padding: 8px;
-  border-bottom: 2px solid $primary;
-  color: $text-primary;
-  background: $surface-soft;
-}
-
-/* Cellules */
-markdown td {
-  padding: 8px;
-  border-bottom: 1px solid $border;
-  color: $text-primary;
-}
-
-/* Code inline léger */
-markdown td code {
-  background: $primary-soft;
-  padding: 2px 4px;
-  border-radius: 3px;
-  font-family: Consolas, monospace;
-  font-size: 0.9rem;
-  border: 1px solid $border-strong;
-  color: $primary;
-}
-
-.math-block {
-  margin: 1.5rem 0;
-  padding: 12px 16px;
-  border-left: 3px solid $primary;
-  background: $primary-soft;
-  color: $text-primary;
-
-  font-family: "STIX Two Math", "Times New Roman", serif;
-  font-size: 1.05rem;
-}
-
-.math-block .katex-display,
-.math-block .MathJax_Display {
-  margin: 0;
-}
-
-markdown img {
+img,
+picture,
+svg,
+canvas {
   max-width: 100%;
-  height: auto;
-  display: block;
-  margin: 1rem auto;
+}
 
-  border-radius: $radius-sm;
-  border: 1px solid $border;
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: $primary-soft;
+  color: $primary;
+}
+
+.app-shell {
+  min-height: 100vh;
+  padding: 2em;
 }

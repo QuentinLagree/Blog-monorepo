@@ -194,31 +194,6 @@ a {
   font-weight: 500;
 }
 
-/* CODE */
-
-code,
-pre {
-  font-family: "Geist Mono", "SFMono-Regular", Consolas, monospace;
-}
-
-code {
-  color: $primary;
-  background: $primary-soft;
-  border: 1px solid $border;
-  border-radius: 0.35rem;
-  padding: 0.1em 0.35em;
-  font-size: 0.9em;
-}
-
-pre {
-  color: $text-primary;
-  background: $surface-soft;
-  border: 1px solid $border;
-  border-radius: $radius-sm;
-  padding: 1em;
-  overflow-x: auto;
-}
-
 /* SELECTION */
 
 ::selection {

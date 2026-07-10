@@ -1,4 +1,5 @@
-@use 'variables' as *;
+@use './variables' as *;
+@use './markdown/languages' as *;
 
 .article-editor-page {
   width: 100%;
