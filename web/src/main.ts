@@ -6,8 +6,8 @@ import { appRoutes } from './app/app.routes';
 import { authRoutes } from './app/core/auth/auth.routes';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { inject, SecurityContext } from '@angular/core';
-import { FlashInterceptor } from './app/core/toasts/toaster.interceptors';
-import { TOAST_CONFIG, DEFAULT_TOAST_CONFIG } from './app/core/toasts/models/toasts.config';
+import { FlashInterceptor } from './app/shared/helpers/toasts/toaster.interceptors';
+import { TOAST_CONFIG, DEFAULT_TOAST_CONFIG } from './app/shared/helpers/toasts/models/toasts.config';
 import { CLIPBOARD_OPTIONS, ClipboardButtonComponent, MARKED_OPTIONS, provideMarkdown, SANITIZE } from 'ngx-markdown';
 import { markedOptionsFactory } from './app/shared/helpers/markdown/markdown.factory';
 

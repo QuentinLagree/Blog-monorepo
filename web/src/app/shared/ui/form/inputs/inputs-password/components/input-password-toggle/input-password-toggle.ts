@@ -1,7 +1,7 @@
 import { Component, inject, Input } from '@angular/core';
 import { slideDown } from 'src/app/shared/animations/eyeAnimation.animation';
 import { InputPasswordConfig } from '../../models/input-password-config.model';
-import { IconLoaderService } from '@src/app/shared/helpers/icons/services/icons-loader';
+import { IconLoaderService } from 'src/app/shared/services/icons-loader';
 
 @Component({
   selector: 'app-input-password-toggle',

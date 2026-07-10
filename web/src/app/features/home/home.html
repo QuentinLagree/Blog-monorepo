@@ -1,0 +1,65 @@
+<div class="home-container">
+  <section class="home-hero">
+    <p class="home-eyebrow">Encyclopédie communautaire</p>
+
+    <h1>Découvre, partage et enrichis les savoirs.</h1>
+
+    <p class="home-baseline">
+      Explore des articles, des idées et des découvertes publiés par la communauté.
+      Contribue à une base de connaissances claire, utile et vivante.
+    </p>
+
+    <div class="home-actions">
+      <app-button
+        icon="icon-plus"
+        label="Créer un article"
+        (clicked)="this._router.navigate(['/post/add'])">
+      </app-button>
+
+      <app-button
+        type="secondary"
+        label="Voir les contributeurs"
+        (clicked)="this._router.navigate(['/account/users'])">
+      </app-button>
+    </div>
+  </section>
+
+  <section class="home-content">
+    <div class="home-content-header">
+      <div>
+        <p class="home-section-label">Dernières contributions</p>
+        <h2>Articles récents</h2>
+      </div>
+    </div>
+
+    
+
+        <div class="home-posts">
+        @for (post of posts.value(); track post.id) {
+            <app-post-card [post]="post" />
+        } @empty {
+            <div class="home-empty-state">
+            <div class="home-empty-state__icon">✦</div>
+
+            <h3>Aucun article pour le moment</h3>
+
+            <p>
+                Sois le premier à partager une découverte avec la communauté.
+            </p>
+
+            <app-button
+                icon="icon-plus"
+                label="Créer un article"
+                (clicked)="this._router.navigate(['/post/add'])">
+            </app-button>
+            </div>
+        }
+    </div>
+    <ng-paginator
+      class="home-paginator"
+      [CurrentPage]="+page()"
+      [PageSize]="+limit()"
+      [TotalItems]="totalArticle()"
+      (pageChange)="updatePage($event)" />
+  </section>
+</div>

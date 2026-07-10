@@ -1,20 +1,27 @@
 @if (this.visible) {
-<div class="context-menu" #menu
-[style.left.px]="pos.x"
-  [style.top.px]="pos.y">
-    <ul>
-        @for (syntax of this.getAllOptions(); track $index) {
-            <li
-            (click)="onSelect(syntax.name)"
-          #optionRef
+  <div
+    class="context-menu"
+    #menu
+    [style.left.px]="pos.x"
+    [style.top.px]="pos.y"
+    role="menu">
+
+    <ul class="context-menu__list">
+      @for (syntax of this.getAllOptions(); track $index) {
+        <li
+          class="context-menu__item"
+          role="menuitem"
           tabindex="0"
+          #optionRef
           #optionselectother
-          (keyup.enter)="$event.preventDefault()"
-          class="py-2 pl-2"
-        >
-          {{ syntax.display }}
+          (click)="onSelect(syntax.name)"
+          (keyup.enter)="onSelect(syntax.name)">
+
+          <span class="context-menu__label">
+            {{ syntax.display }}
+          </span>
         </li>
-        }
+      }
     </ul>
-</div>
+  </div>
 }

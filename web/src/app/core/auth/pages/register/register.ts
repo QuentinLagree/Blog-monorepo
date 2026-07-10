@@ -8,7 +8,7 @@ import { EmailInputComponent } from "@src/app/shared/ui/form/inputs/input-email/
 import { InputComponent } from "@src/app/shared/ui/form/inputs/input/input";
 import { InputPassswordComponent } from "@src/app/shared/ui/form/inputs/inputs-password/inputs-password";
 import { Router } from '@angular/router';
-import { UserService } from '@src/app/core/services/user.service';
+import { UserService } from 'src/app/shared/services/user.service';
 import { userLogin } from '../../models/user-login.model';
 import { userRegister } from '../../models/user-register.model';
 import { finalize } from 'rxjs';

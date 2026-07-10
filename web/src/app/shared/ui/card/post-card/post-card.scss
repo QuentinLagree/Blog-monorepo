@@ -1,71 +1,188 @@
 @use 'fonts' as *;
 @use 'mixins/mixins' as *;
 @use 'variables' as *;
+
 .post_detail {
-    text-decoration: none;
-    cursor: default;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: default;
 }
 
 .main-container {
-    min-width: 100%;
-    width: 60em;
+  min-width: 100%;
+  width: 60em;
 }
 
 .post-container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    justify-content: space-between;
-    border: 1.5px solid transparent;
-    border-bottom: 6px solid $primary;
-    border-radius: 0.5em;
-    color: $black;
-    @include box-shadow();
-    transition: .3s;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 2em;
 
-    &:hover  {
-        border-color: $primary;
-        .post-container__infos .title h3 {
-            text-decoration: underline;
-        }
+  width: 100%;
+  padding: 1.25em 1.35em;
+
+  background: $card-background;
+  color: $text-primary;
+
+  border: 1px solid $card-border;
+  border-left: 4px solid $primary;
+
+  border-radius: $radius-md;
+  box-shadow: $card-shadow;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease,
+    background-color 0.18s ease;
+
+  &:hover {
+    background: $surface;
+    border-color: $card-border-hover;
+    border-left-color: $primary-hover;
+    box-shadow: $card-shadow-hover;
+    transform: translateY(-2px);
+
+    .post-container__infos .title h3 {
+      color: $primary;
+      text-decoration: none;
     }
+  }
 }
 
 .post-container__infos {
-    flex: 5;
+  flex: 1;
+  min-width: 0;
 }
 
-
-
 .post-container__infos .title {
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-    gap: 1em;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 1em;
+  margin-bottom: 0.45em;
 }
 
 .post-container__infos .title h3 {
-    flex: 5;
+  flex: 1;
+  color: $text-primary;
+  font-size: 1.35rem;
+  font-weight: 650;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 .post-container__infos .title p {
-    width: 100%;
-    flex: 2;
-    justify-self: flex-end;
+  width: 100%;
+  flex: 2;
+  justify-self: flex-end;
 }
 
 .post-container__infos-description {
-    color: $black;
-    opacity: 0.7;
+  max-width: 68ch;
+  color: $text-secondary;
+  opacity: 1;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.likes {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+
+  margin-top: 0.85em;
+  padding: 0.35em 0.65em;
+
+  background: $primary-soft;
+  color: $primary;
+
+  border: 1px solid rgba($primary, 0.14);
+  border-radius: $radius-full;
+
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 .post-container__callactions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    justify-content: space-between;
+  min-width: 13em;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.25em;
+
+  text-align: right;
+}
+
+.post-container__callactions .text-muted {
+  color: $text-muted;
+}
+
+.post-container__callactions .baseline,
+.post-container__callactions .text {
+  color: $text-secondary;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.post-container__callactions strong {
+  color: $text-primary;
+  font-weight: 650;
 }
 
 .post-container__callactions .buttons {
+  width: 100%;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75em;
+}
+
+/* Version draft : tu peux ajouter une classe si besoin */
+.post-container.is-draft {
+  border-left-color: $secondary;
+  background: $surface;
+
+  .likes {
+    background: $secondary-soft;
+    color: $secondary-hover;
+    border-color: rgba($secondary, 0.18);
+  }
+
+  &:hover {
+    border-left-color: $secondary-hover;
+
+    .post-container__infos .title h3 {
+      color: $secondary-hover;
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-container {
     width: 100%;
+    min-width: 0;
+  }
+
+  .post-container {
+    flex-direction: column;
+    gap: 1.25em;
+  }
+
+  .post-container__callactions {
+    min-width: 0;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .post-container__callactions .buttons {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
 }

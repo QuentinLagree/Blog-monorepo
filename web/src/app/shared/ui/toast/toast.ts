@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
-import { TOAST_CONFIG } from '@src/app/core/toasts/models/toasts.config';
-import { ToastService } from '@src/app/core/toasts/toaster.service';
-import { IconLoaderService } from '../../helpers/icons/services/icons-loader';
+import { TOAST_CONFIG } from 'src/app/shared/helpers/toasts/models/toasts.config';
+import { ToastService } from 'src/app/shared/helpers/toasts/toaster.service';
+import { IconLoaderService } from '../../services/icons-loader';
 
 @Component({
   selector: 'app-toast-container',

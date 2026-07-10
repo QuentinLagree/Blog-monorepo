@@ -7,159 +7,205 @@ button.btn-select {
   position: relative;
   width: 100%;
   height: 100%;
-  padding: 15px 25px;
-  background: none;
-  border: 0.5px solid transparent;
-  border-radius: 7px;
-  outline: none;
-  transition: border-color 0.2s;
-  text-align: left;
-  font-family: Poppins, sans-serif !important;
-  font-size: 1em;
-  font-weight: 500;
+  padding: 14px 18px;
+
+  background: $surface;
   color: $input-placeholder;
 
-  @include box-inset-shadow;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  outline: none;
 
-  &:focus {
+  text-align: left;
+  font-family: Inter, system-ui, sans-serif !important;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.4;
+
+  box-shadow: none;
+  cursor: pointer;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease,
+    color 0.18s ease;
+
+  &:hover {
+    border-color: $border-strong;
+    background: $surface;
+  }
+
+  &:focus,
+  &:focus-visible {
     border-color: $primary;
+    box-shadow: 0 0 0 4px $focus-ring;
   }
 
   &.fill {
-    color: $black;
+    color: $text-primary;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    background: $surface-soft;
+    color: $text-muted;
+    border-color: $border;
+    box-shadow: none;
   }
 }
 
 .select-list {
   position: absolute;
-  z-index: 5;
-  top: 100%;
+  z-index: 20;
+  top: calc(100% + 0.5em);
   left: 0;
-  height: auto;
+
   width: 100%;
-  max-height: 15em;
-  margin-top: 0.5em;
-  border: 0.5px solid transparent;
-  border-radius: 7px;
+  height: auto;
+  max-height: 16em;
+  overflow: hidden;
+
+  background: $surface;
+  color: $text-primary;
+
+  border: 1px solid $border;
+  border-radius: $radius-sm;
   outline: none;
-  background-color: $white;
-  color: $black;
   list-style-type: none;
 
-  @include box-inset-shadow;
+  box-shadow: $card-shadow-hover;
 
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  animation: hide 0.2s ease-in 0s 1 normal forwards;
+
+  transform: translateY(-0.25rem) scale(0.98);
+  transform-origin: top;
+
+  transition:
+    opacity 0.16s ease,
+    visibility 0.16s ease,
+    transform 0.16s ease;
 
   &.open {
-    pointer-events: all;
     opacity: 1;
-    animation: show 0.2s ease-in 0s 1 normal forwards;
+    visibility: visible;
+    pointer-events: all;
+    transform: translateY(0) scale(1);
   }
 }
 
 .select-list input {
-  top: 0;
   position: relative;
+  top: 0;
+
+  width: calc(100% - 1em);
+  margin: 0.5em;
+  padding: 10px 12px;
+
+  background: $surface-soft;
+  color: $text-primary;
+
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 0.95rem;
+
+  box-shadow: none;
+
+  &::placeholder {
+    color: $input-placeholder;
+  }
 
   &:focus {
-    border-color: transparent;
+    border-color: $primary;
+    box-shadow: 0 0 0 3px $focus-ring;
   }
 }
 
 .select-list ul {
-  overflow-y: scroll;
+  max-height: 12em;
+  overflow-y: auto;
+  padding: 0.35em;
 }
 
 .select-list.up {
-  animation: hide-up 0.2s ease-in 0s 1 normal forwards;
   top: auto;
-  bottom: 100%;
-  margin-bottom: 0.5em;
+  bottom: calc(100% + 0.5em);
+  margin-bottom: 0;
+
+  transform: translateY(0.25rem) scale(0.98);
+  transform-origin: bottom;
 
   &.open {
-    pointer-events: all;
-    opacity: 1;
-    animation: show-up 0.2s ease-in 0s 1 normal forwards;
+    transform: translateY(0) scale(1);
   }
 }
 
 .select-list li {
   display: flex;
   align-items: center;
-  font-size: 1em;
-  font-family: Poppins, sans-serif;
-  color: $black;
+  gap: 0.6em;
+
+  min-height: 2.45em;
+  padding: 0.55em 0.75em;
+
+  font-size: 0.95rem;
+  font-family: Inter, system-ui, sans-serif;
+  font-weight: 400;
+
+  color: $text-primary;
   cursor: pointer;
-  transition: background-color 0.3s;
 
-  &:hover,
-  &.selected {
-    background-color: $option-background;
+  border-radius: $radius-sm;
+
+  transition:
+    background-color 0.16s ease,
+    color 0.16s ease,
+    padding-left 0.16s ease;
+
+  &:hover {
+    background-color: $surface-soft;
+    color: $text-primary;
   }
 
-  &.selected {
-    padding-left: 2em;
-  }
-  
   &:focus {
-    background-color: $option-background-focus;
+    background-color: $primary-soft;
+    color: $primary;
+    outline: none;
+  }
+
+  &.selected {
+    background-color: $primary-soft;
+    color: $primary;
+    font-weight: 600;
+  }
+
+  &.selected::before {
+    content: "✓";
+    color: $primary;
+    font-weight: 700;
+    line-height: 1;
   }
 }
 
-@keyframes show {
-  0% {
-    opacity: 0;
-    transform: rotateX(70deg);
-    transform-origin: top;
-  }
+/* Scrollbar discrète */
 
-  100% {
-    opacity: 1;
-    transform: rotateX(0deg);
-    transform-origin: top;
-  }
+.select-list ul::-webkit-scrollbar {
+  width: 8px;
 }
 
-@keyframes hide {
-  0% {
-    opacity: 1;
-    transform: rotateX(0deg);
-    transform-origin: top;
-  }
-
-  100% {
-    opacity: 0;
-    transform: rotateX(70deg);
-    transform-origin: top;
-  }
+.select-list ul::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-@keyframes hide-up {
-  0% {
-    opacity: 1;
-    transform: rotateX(0);
-    transform-origin: bottom;
-  }
-
-  100% {
-    opacity: 0;
-    transform: rotateX(100deg);
-    transform-origin: bottom;
-  }
+.select-list ul::-webkit-scrollbar-thumb {
+  background: $border-strong;
+  border-radius: $radius-full;
 }
 
-@keyframes show-up {
-  0% {
-    opacity: 0;
-    transform: rotateX(-70deg);
-    transform-origin: bottom;
-  }
-
-  100% {
-    opacity: 1;
-    transform: rotateX(0);
-    transform-origin: bottom;
-  }
+.select-list ul::-webkit-scrollbar-thumb:hover {
+  background: $text-muted;
 }

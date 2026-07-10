@@ -1,6 +1,6 @@
 import { Component, input, InputSignal } from '@angular/core';
 import { BaseButtonComponent, ButtonSize, ButtonType } from '../base-button';
-import { IconLoaderService } from '@src/app/shared/helpers/icons/services/icons-loader';
+import { IconLoaderService } from 'src/app/shared/services/icons-loader';
 
 @Component({
   selector: 'app-button-edit',

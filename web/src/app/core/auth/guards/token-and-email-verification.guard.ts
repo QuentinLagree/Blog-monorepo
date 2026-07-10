@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../data-access/auth.service';
 
 
 export const resetPasswordGuard: CanActivateFn = async (route) => {

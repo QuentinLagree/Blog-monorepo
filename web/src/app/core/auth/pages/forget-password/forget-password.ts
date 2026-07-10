@@ -4,9 +4,9 @@ import { EmailInputComponent } from 'src/app/shared/ui/form/inputs/input-email/i
 import { EmailInputValidatorFactory } from 'src/app/shared/ui/form/inputs/input-email/validators/input-email-validator.factory';
 import { InputPassswordComponent } from 'src/app/shared/ui/form/inputs/inputs-password/inputs-password';
 import { BaseButtonComponent } from '@src/app/shared/ui/form/buttons/base-button';
-import { UserService } from '@src/app/core/services/user.service';
+import { UserService } from 'src/app/shared/services/user.service';
 import { ContextMenuTriggerDirective } from "src/app/shared/ui/context-menu/context-menu.directive";
-import { AuthService } from 'src/app/core/services/auth.service';
+import { AuthService } from 'src/app/core/auth/data-access/auth.service';
 import { finalize } from 'rxjs';
 
 @Component({

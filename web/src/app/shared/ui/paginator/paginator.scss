@@ -1,2 +1,53 @@
-@use 'mixins/mixins' as *;
 @use 'variables' as *;
+
+.paginator {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1em;
+
+  padding: 0.75em;
+
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  box-shadow: $card-shadow;
+}
+
+.paginator__pages,
+.paginator__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.paginator__pages {
+  flex-wrap: wrap;
+}
+
+.paginator__controls {
+  justify-content: flex-end;
+}
+
+/* Style spécifique si tes app-button génèrent bien des boutons internes */
+.paginator app-button {
+  display: inline-flex;
+}
+
+/* Alternative si tu veux des boutons numéros plus discrets */
+.paginator__pages app-button {
+  min-width: 2.25rem;
+}
+
+@media (max-width: 720px) {
+  .paginator {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .paginator__controls {
+    justify-content: flex-start;
+  }
+}

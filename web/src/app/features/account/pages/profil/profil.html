@@ -1,0 +1,75 @@
+<section class="profile-page">
+<header class="profile-header">
+  <div class="profile-header__identity">
+    <div class="profile-avatar">
+      {{ user()?.pseudo?.charAt(0) || user()?.prenom?.charAt(0) || '?' }}
+    </div>
+
+    <div class="profile-identity">
+      <p class="profile-eyebrow">Espace personnel</p>
+
+      <h1>{{ user()?.pseudo || 'Mon profil' }}</h1>
+
+      <p class="profile-fullname">
+        {{ user()?.prenom || 'Prénom non renseigné' }}
+        {{ user()?.nom || 'Nom non renseigné' }}
+      </p>
+
+      <p class="profile-joined">
+        Inscrit depuis le {{ user()?.created_at | date:'dd/MM/yyyy' }}
+      </p>
+    </div>
+  </div>
+
+  <div class="profile-header__infos">
+    <div class="profile-info">
+      <span>Email</span>
+      <strong>{{ user()?.email || 'Non renseigné' }}</strong>
+    </div>
+
+    <div class="profile-info">
+      <span>Pseudo</span>
+      <strong>{{ user()?.pseudo || 'Non renseigné' }}</strong>
+    </div>
+  </div>
+</header>
+
+  <div class="profile-container">
+    <section class="profile-section">
+      <div class="profile-section__header">
+        <div>
+          <h2>Brouillons</h2>
+          <p>Retrouve les articles que tu as commencés mais pas encore publiés.</p>
+        </div>
+
+        <app-button
+          type="secondary"
+          [label]="`${this.showDraftsPosts ? 'Masquer' : 'Afficher'} les brouillons`"
+          (clicked)="this.showDraftsPosts = !this.showDraftsPosts">
+        </app-button>
+      </div>
+
+      @if (this.showDraftsPosts) {
+        <div class="profile-drafts">
+          @for (post of drafts.value(); track post.id) {
+            <app-post-card [post]="post" />
+          } @empty {
+            <div class="profile-empty-state">
+              <h3>Aucun brouillon</h3>
+              <p>Tu n’as aucun article en cours de rédaction pour le moment.</p>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="profile-danger-zone">
+      <div>
+        <h2>Zone sensible</h2>
+        <p>Cette action est définitive. Supprime ton profil uniquement si tu es sûr de toi.</p>
+      </div>
+
+      <app-button-danger label="Supprimer le profil"></app-button-danger>
+    </section>
+  </div>
+</section>

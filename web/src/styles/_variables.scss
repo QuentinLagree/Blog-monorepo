@@ -1,28 +1,107 @@
 /* GLOBAL STYLE */
 
-$white: #fff;
-$black: #210242;
-$input-placeholder: rgb(33 2 66 / 35%);
-$border: #af94cc;
-$container-background: rgb(220 220 220 / 20%);
+$white: #ffffff;
+$black: #1c1c1a;
+
+$text-primary: #1c1c1a;
+$text-secondary: #6f6f68;
+$text-muted: #9a978e;
+
+$background: #fafaf7;
+$surface: #ffffff;
+$surface-soft: #f4f2ec;
+
+$input-placeholder: rgb(154 151 142 / 75%);
+$border: #e6e3da;
+$border-strong: #d8d3c7;
+
+$container-background: #ffffff;
+$container-background-soft: #f4f2ec;
 
 /* BUTTON */
-$primary: #cb2fff;
-$primary-hover: #c421fa;
-$success: #3cda6c;
-$danger: #da3c3c;
-$error: #e96969;
-$warning: #da9b3c;
 
-/* UTNITS VARIABLES */
+$primary: #315c49;
+$primary-hover: #264a3a;
+$primary-active: #1f3d30;
+$primary-soft: #e4eee9;
+
+$secondary: #c47a35;
+$secondary-hover: #a9652a;
+$secondary-active: #8c5220;
+$secondary-soft: #f4e6d8;
+
+$success: #2f7d5b;
+$success-soft: #e1f1e9;
+
+$danger: #b42318;
+$danger-soft: #fde7e4;
+
+$error: #b42318;
+$error-soft: #fde7e4;
+
+$warning: #b7791f;
+$warning-soft: #f7ecd8;
+
+$info: #315c7c;
+$info-soft: #e2ecf3;
+
+/* UNITS VARIABLES */
 
 /* spacing */
 
-$gap-unit: 0.45em;
+$gap-unit: 0.5em;
 $spacing-unit: 0.5em;
-$blur-intensity: 2em;
+$blur-intensity: 1.25em;
 
 /* SELECT */
-$option-background: rgb(220 220 220 / 20%);
-$option-background-focus: rgb(220 220 220 / 45%);
+
+$option-background: #f4f2ec;
+$option-background-focus: #e4eee9;
 $switch-toggle: 2.4em;
+
+/* UI STATES */
+
+$hover-background: #f4f2ec;
+$active-background: #edeae2;
+$selected-background: #e4eee9;
+
+$focus-border: #315c49;
+$focus-ring: rgb(49 92 73 / 16%);
+
+/* CARDS */
+
+$card-background: #ffffff;
+$card-border: #e6e3da;
+$card-border-hover: #d8d3c7;
+$card-shadow: 0 1px 2px rgb(28 28 26 / 6%);
+$card-shadow-hover: 0 8px 24px rgb(28 28 26 / 8%);
+
+/* RADIUS */
+
+$radius-sm: 0.625rem;
+$radius-md: 0.875rem;
+$radius-lg: 1.25rem;
+$radius-full: 999px;
+
+/* BORDER */
+
+/* BORDERS */
+
+$border: #e6e3da;
+$border-light: #edeae2;
+$border-strong: #d8d3c7;
+$border-emphasis: #beb7a8;
+
+$border-focus: #315c49;
+
+$border-success: #a8d8bd;
+$border-warning: #e0c18d;
+$border-error: #f0a8a0;
+$border-info: #afc6d8;
+
+/* ALIASES utiles si tu veux garder les noms déjà utilisés */
+
+$success-border: $border-success;
+$warning-border: $border-warning;
+$error-border: $border-error;
+$info-border: $border-info;

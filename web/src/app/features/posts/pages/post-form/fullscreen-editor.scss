@@ -1,0 +1,336 @@
+@use 'variables' as *;
+
+.article-editor-page {
+  width: 100%;
+  padding: 2em 0 4em;
+}
+
+.article-editor-container {
+  width: 100%;
+  max-width: 76em;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.25em;
+}
+
+.article-editor-header {
+  padding: 2.5em;
+
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  box-shadow: $card-shadow;
+}
+
+.article-editor-eyebrow {
+  color: $primary;
+
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.article-editor-header h1 {
+  margin-top: 0.25em;
+
+  color: $text-primary;
+
+  font-size: clamp(2.25rem, 5vw, 4.75rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.article-editor-baseline {
+  max-width: 44em;
+  margin-top: 1em;
+
+  color: $text-secondary;
+
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.article-editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25em;
+}
+
+.article-editor-section {
+  padding: 1.5em;
+
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  box-shadow: $card-shadow;
+}
+
+.article-editor-section__header {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.2em;
+
+  margin-bottom: 1.25em;
+}
+
+.article-editor-section__header h2 {
+  color: $text-primary;
+
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+.article-editor-section__header p {
+  max-width: 48em;
+  margin-top: 0.35em;
+
+  color: $text-secondary;
+
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.article-editor-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.article-editor-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.5em;
+}
+
+/* =========================
+   EDITOR
+========================= */
+
+.article-editor-section--content {
+  padding-bottom: 1.25em;
+}
+
+/* =========================
+   MARKDOWN EDITOR / PREVIEW
+========================= */
+
+.fullscreen-editor {
+  width: 100%;
+  min-height: 34em;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 1px minmax(0, 1fr);
+  overflow: hidden;
+
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  box-shadow: $card-shadow;
+}
+
+.editor-pane,
+.preview {
+  min-width: 0;
+  min-height: 34em;
+  position: relative;
+
+  background: $surface;
+  border-radius: 0;
+}
+
+.editor-pane {
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-pane__label {
+  height: 2.75em;
+  padding: 0 1em;
+
+  display: flex;
+  align-items: center;
+
+  color: $text-muted;
+  background: $surface-soft;
+
+  border-bottom: 1px solid $border;
+
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+
+  border-top-left-radius: $radius-lg;
+}
+
+.preview__header {
+  height: 2.75em;
+  padding: 0 1em;
+
+  display: flex;
+  align-items: center;
+
+  color: $text-muted;
+  background: $surface-soft;
+
+  border-bottom: 1px solid $border;
+
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+
+  border-top-right-radius: $radius-lg;
+}
+
+.line {
+  width: 1px;
+  height: 100%;
+  background: $border;
+}
+
+.fullscreen-editor .markdown {
+  flex: 1;
+  min-height: 31em;
+  border-radius: 0 0 0 $radius-lg;
+  overflow: hidden;
+}
+
+.fullscreen-editor .markdown textarea,
+.fullscreen-editor textarea {
+  min-height: 31em;
+
+  background: $surface;
+  color: $text-primary;
+
+  border: none;
+  border-radius: 0 0 0 $radius-lg;
+  box-shadow: none;
+
+  font-family: "Geist Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.95rem;
+  line-height: 1.7;
+
+  resize: none;
+}
+
+.fullscreen-editor .markdown textarea:focus,
+.fullscreen-editor textarea:focus {
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.preview {
+  overflow-y: auto;
+  padding-bottom: 1.5em;
+  border-radius: 0 0 $radius-lg 0;
+}
+
+.preview.hide {
+  display: none;
+}
+
+.preview markdown {
+  display: block;
+  padding: 1.5em;
+
+  color: $text-primary;
+  border-radius: 0 0 $radius-lg 0;
+}
+/* =========================
+   ACTIONBAR
+========================= */
+
+.actionbar {
+  position: sticky;
+  bottom: 1em;
+  z-index: 10;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1em;
+
+  padding: 0.85em;
+
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  box-shadow: $card-shadow-hover;
+
+  backdrop-filter: blur(12px);
+}
+
+.actionbar__left,
+.actionbar__right {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+}
+
+.actionbar__right {
+  justify-content: flex-end;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+  .article-editor-section__header {
+    flex-direction: column;
+  }
+
+  .article-editor-toolbar {
+    justify-content: flex-start;
+  }
+
+  .fullscreen-editor {
+    grid-template-columns: 1fr;
+  }
+
+  .line {
+    display: none;
+  }
+
+  .preview.hide {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .article-editor-page {
+    padding: 1em 0 3em;
+  }
+
+  .article-editor-header,
+  .article-editor-section {
+    padding: 1.25em;
+  }
+
+  .article-editor-header h1 {
+    font-size: clamp(2rem, 12vw, 3.25rem);
+  }
+
+  .actionbar {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .actionbar__left,
+  .actionbar__right {
+    width: 100%;
+    justify-content: stretch;
+    flex-wrap: wrap;
+  }
+}

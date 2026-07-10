@@ -1,95 +1,101 @@
 <div
-  class="toast-wrapper"
-  [class.top-left]="pos==='top-left'"
-  [class.bottom-right]="pos==='bottom-right'"
-  [class.bottom-left]="pos==='bottom-left'"
+  class="toast-stack"
+  [class.toast-stack--top-left]="pos === 'top-left'"
+  [class.toast-stack--bottom-right]="pos === 'bottom-right'"
+  [class.toast-stack--bottom-left]="pos === 'bottom-left'"
   role="region"
   aria-label="Notifications"
 >
   @for (t of service.toasts(); track t.id) {
+    <section
+      class="toast"
+      [class.toast--closing]="t._closed"
+      [class.toast--success]="t.variant === 'success'"
+      [class.toast--error]="t.variant === 'error'"
+      [class.toast--info]="t.variant === 'info'"
+      [class.toast--warning]="t.variant === 'warning'"
+      [attr.role]="t.variant === 'error' ? 'alert' : 'status'"
+      [attr.aria-live]="t.variant === 'error' ? 'assertive' : 'polite'"
+      aria-atomic="true"
+      (transitionend)="onTransitionEnd($event, t.id)"
+      (mouseenter)="service.pause(t.id)"
+      (mouseleave)="service.resume(t.id)"
+    >
+      <div class="toast__accent" aria-hidden="true"></div>
 
-  <div
-    class="toast"
-    (transitionend)="onTransitionEnd($event, t.id)"
-    [class.closing]="t._closed"
-    [class.success]="t.variant==='success'"
-    [class.error]="t.variant==='error'"
-    [class.info]="t.variant==='info'"
-    [class.warning]="t.variant==='warning'"
-    [attr.role]="t.variant==='error' ? 'alert' : 'status'"
-    [attr.aria-live]="t.variant==='error' ? 'assertive' : 'polite'"
-    aria-atomic="true"
-    (mouseenter)="service.pause(t.id)"
-    (mouseleave)="service.resume(t.id)"
-  >
-    <div class="wrapper">
-      <div class="toast-icon-container" aria-hidden="true">
-        @if (t.variant==='success') {
-        <i>
-          <svg viewBox="0 0 24 24" class="toast-icon">
+      <div class="toast__icon" aria-hidden="true">
+        @if (t.variant === 'success') {
+          <svg viewBox="0 0 24 24">
             <use href="#icon-check" />
           </svg>
-        </i>
-        } @if (t.variant==='error') {
-        <i>
-          <svg viewBox="0 0 24 24" class="toast-icon">
+        }
+
+        @if (t.variant === 'error') {
+          <svg viewBox="0 0 24 24">
             <use href="#icon-cancel" />
           </svg>
-        </i>
-        } @if (t.variant==='info') {
-        <i>
-          <svg viewBox="0 0 24 24" class="toast-icon">
+        }
+
+        @if (t.variant === 'info') {
+          <svg viewBox="0 0 24 24">
             <use href="#icon-info" />
           </svg>
-        </i>
-        } @if (t.variant==='warning') {
-        <i>
-          <svg viewBox="0 0 24 24" class="toast-icon">
+        }
+
+        @if (t.variant === 'warning') {
+          <svg viewBox="0 0 24 24">
             <use href="#icon-warn-triangle" />
           </svg>
-        </i>
         }
       </div>
-      <div class="toast-content-wrapper">
-        <div class="toast-content">
-          <div class="content">
-            @if (t.title) {
-            <h5 class="baseline title">{{ t.title }}</h5>
-            }
-            <p class="message baseline">{{ t.message }}</p>
-          </div>
+
+      <div class="toast__body">
+        <div class="toast__content">
+          @if (t.title) {
+            <h5 class="toast__title">{{ t.title }}</h5>
+          }
+
+          <p class="toast__message">{{ t.message }}</p>
         </div>
+
+        @if (t.actions.length) {
+          <div class="toast__actions">
+            @for (a of t.actions; track a.value) {
+              <button
+                type="button"
+                class="toast__action"
+                [class.toast__action--primary]="a.buttonType === 'primary'"
+                [class.toast__action--secondary]="a.buttonType === 'secondary'"
+                [class.toast__action--danger]="a.buttonType === 'danger'"
+                [class.toast__action--outlined]="a.buttonType === 'outlined'"
+                (click)="service.action(t.id, a.value)"
+                [attr.aria-label]="a.ariaLabel || a.label"
+              >
+                {{ a.label }}
+              </button>
+            }
+          </div>
+        }
 
         @if (!t.sticky) {
-        <div class="progress" [class.paused]="t._paused">
-          <div
-            class="bar"
-            [style.animation-duration.ms]="t.duration"
-            [style.animation-play-state]="t._paused ? 'paused' : 'running'"
-          ></div>
-        </div>
+          <div class="toast__progress" [class.toast__progress--paused]="t._paused">
+            <span
+              class="toast__progress-bar"
+              [style.animation-duration.ms]="t.duration"
+              [style.animation-play-state]="t._paused ? 'paused' : 'running'"
+            ></span>
+          </div>
         }
       </div>
-      <button type="button" class="close" (click)="service.close(t.id)" aria-label="Fermer">
-        ×
-      </button>
-    </div>
 
-    @if (t.actions.length) {
-    <div class="actions">
-      @for (a of t.actions; track a.value) {
       <button
         type="button"
-        [className]="'action btn sm p-1 btn-' + a.buttonType"
-        (click)="service.action(t.id, a.value)"
-        [attr.aria-label]="a.ariaLabel || a.label"
+        class="toast__close"
+        (click)="service.close(t.id)"
+        aria-label="Fermer la notification"
       >
-        {{ a.label }}
+        ×
       </button>
-      }
-    </div>
-    }
-  </div>
-
+    </section>
   }
 </div>

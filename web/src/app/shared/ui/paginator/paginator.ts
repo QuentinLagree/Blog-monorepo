@@ -18,34 +18,37 @@ import { BaseButtonComponent } from '../form/buttons/base-button';
   imports: [BaseButtonComponent],
   template: `
     @if (pageCount() > 1) {
-      <div class="flex between paginator">
-        <div class="frow gap-2">
-          @for (page of pages(); track page) {
-            <app-button
-              [type]="page === currentPage() ? 'secondary' : 'primary'"
-              [label]="page.toString()"
-              (click)="goToPage(page)"
-            />
-          }
-        </div>
+  <nav class="paginator" aria-label="Pagination">
+    <div class="paginator__pages">
+      @for (page of pages(); track page) {
+        <app-button
+          size="sm"
+          [type]="page === currentPage() ? 'secondary' : 'ghost'"
+          [label]="page.toString()"
+          (click)="goToPage(page)">
+        </app-button>
+      }
+    </div>
 
-        <div class="frow gap-2 buttons flex-end">
-          <app-button
-            type="primary"
-            label="<"
-            (click)="previous()"
-            [disabled]="currentPage() === 1"
-          />
+    <div class="paginator__controls">
+      <app-button
+        size="sm"
+        type="secondary"
+        label="Précédent"
+        (click)="previous()"
+        [disabled]="currentPage() === 1">
+      </app-button>
 
-          <app-button
-            type="primary"
-            label=">"
-            (click)="next()"
-            [disabled]="currentPage() === pageCount()"
-          />
-        </div>
-      </div>
-    }
+      <app-button
+        size="sm"
+        type="secondary"
+        label="Suivant"
+        (click)="next()"
+        [disabled]="currentPage() === pageCount()">
+      </app-button>
+    </div>
+  </nav>
+}
   `,
 })
 export class PaginatorComponent {

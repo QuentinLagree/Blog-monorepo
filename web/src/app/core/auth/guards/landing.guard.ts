@@ -2,7 +2,7 @@
 import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { map, take } from 'rxjs';
-import { SessionService } from '../../services/session.service';
+import { SessionService } from '../../../shared/services/session.service';
 
 export const landingGuard: CanActivateFn = () => {
   const session = inject(SessionService);

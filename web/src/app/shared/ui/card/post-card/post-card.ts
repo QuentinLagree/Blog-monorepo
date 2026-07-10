@@ -1,14 +1,14 @@
 import { DatePipe } from "@angular/common";
 import { HttpContext } from "@angular/common/http";
-import { AfterViewInit, Component, effect, inject, input, Input, InputSignal, OnInit, signal, Signal, WritableSignal } from "@angular/core";
-import { Post } from "@src/app/core/services/post.service";
-import { User, UserService } from "@src/app/core/services/user.service";
-import { SUCCESS_MESSAGE } from "@src/app/core/toasts/models/toasts.config";
-import { finalize, firstValueFrom, shareReplay } from "rxjs";
-import { BaseButtonComponent } from "../../form/buttons/base-button";
+import { Component, effect, inject, input, InputSignal, signal, WritableSignal } from "@angular/core";
 import { Router } from "@angular/router";
+import { SessionService } from "src/app/shared/services/session.service";
+import { User, UserService } from "src/app/shared/services/user.service";
+import { SUCCESS_MESSAGE } from "src/app/shared/helpers/toasts/models/toasts.config";
+import { firstValueFrom } from "rxjs";
+import { BaseButtonComponent } from "../../form/buttons/base-button";
 import { EditButtonComponent } from "../../form/buttons/button-edit/button-edit";
-import { SessionService } from "@src/app/core/services/session.service";
+import { Post } from "src/app/features/posts/model/post.model";
 
 @Component({
     selector: 'app-post-card',
@@ -73,17 +73,6 @@ export class PostCard {
 
     getSlugifyPath (noID: boolean = false): string {
        return (`${this.post().title.toLocaleLowerCase().replaceAll(/[*+~.()'"!:@]/g, "")} ${noID == true ? " " : this.post().id}`).replaceAll("  ", " ").replaceAll(' ', '-')
-
-       /**
-        * Titre sympatique !
-        * titre sympatique !
-        * titre sympatique
-        * titre sympatique 2
-        * titre-sympatique-2
-        * 
-        * titre sympatique
-        * titre sympatique
-        */
     }
 
     getDetail () {

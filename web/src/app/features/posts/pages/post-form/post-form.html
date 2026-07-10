@@ -1,0 +1,169 @@
+<section class="article-editor-page">
+  <div class="article-editor-container">
+    <header class="article-editor-header">
+      <div>
+        <p class="article-editor-eyebrow">
+          {{ this.post() ? 'Modification' : 'Nouvelle contribution' }}
+        </p>
+
+        <h1>
+          {{ this.post() ? 'Modifier ton article' : 'Rédige une découverte' }}
+        </h1>
+
+        <p class="article-editor-baseline">
+          Structure ton idée, ajoute du contexte et partage une connaissance utile avec la communauté.
+        </p>
+      </div>
+    </header>
+
+    <form [formGroup]="form" class="article-editor-form">
+      <section class="article-editor-section">
+        <div class="article-editor-section__header">
+          <div>
+            <h2>Informations principales</h2>
+            <p>Ces informations aideront les lecteurs à comprendre rapidement le sujet.</p>
+          </div>
+        </div>
+
+        <div class="article-editor-fields">
+          <app-input
+            [control]="titleControl"
+            [configuration]="{
+              label: 'Titre',
+              placeholder: 'Ex : Pourquoi les arbres communiquent entre eux ?',
+              required: true,
+              type: 'text'
+            }">
+          </app-input>
+
+          <app-textarea
+            [control]="descriptionControl"
+            [configuration]="{
+              label: 'Description',
+              placeholder: 'Résume ton article en quelques lignes.',
+              required: true
+            }">
+          </app-textarea>
+        </div>
+      </section>
+
+      <section class="article-editor-section article-editor-section--content">
+        <div class="article-editor-section__header">
+          <div>
+            <h2>Contenu</h2>
+            <p>Rédige ton article en Markdown. Tu peux ajouter des images et prévisualiser le rendu.</p>
+          </div>
+
+          <div class="article-editor-toolbar">
+            <app-button
+              icon="icon-eye"
+              size="sm"
+              label="Aperçu"
+              type="secondary"
+              (clicked)="togglePreview()">
+            </app-button>
+
+            <input
+              #imagePicker
+              type="file"
+              accept="image/*"
+              hidden
+              (change)="onPickImage($event)" />
+
+            <app-button
+              icon="icon-image-picker"
+              size="sm"
+              label="Image"
+              type="secondary"
+              (clicked)="imagePicker.click()">
+            </app-button>
+
+            <app-button
+              icon="icon-save"
+              size="sm"
+              label="Sauvegarder"
+              type="secondary"
+              (clicked)="saveManual()">
+            </app-button>
+          </div>
+        </div>
+
+        <div class="fullscreen-editor">
+          <div class="editor-pane">
+            <div class="editor-pane__label">Markdown</div>
+
+            <app-textarea
+              [noShadow]="true"
+              [contextMenuTrigger]="''"
+              [contextMenuAction]="formatFromContextMenu"
+              class="markdown"
+              (scrolled)="onEditorScroll($event)"
+              (keydown)="onTabPress($event)"
+              #markdownEditor
+              [control]="contentControl"
+              [configuration]="{
+                label: '',
+                required: false,
+                placeholder: 'Commence à écrire ton article...'
+              }">
+            </app-textarea>
+          </div>
+
+          <span class="line"></span>
+
+          <div
+            #preview
+            class="preview"
+            [class.hide]="showPreview()"
+            (wheel)="blockScroll($event)"
+            (click)="onPreviewClick($event)">
+
+            <div class="preview__header">
+              <span>Aperçu</span>
+            </div>
+
+            <markdown class="variable-binding" [data]="resolvedMarkdown()" katex>
+            </markdown>
+          </div>
+
+          <input
+            #relinkPicker
+            type="file"
+            accept="image/*"
+            hidden
+            (change)="onRelinkPicked($event)" />
+        </div>
+      </section>
+    </form>
+
+    <footer class="actionbar">
+      <div class="actionbar__left">
+        <app-button
+          (clicked)="goBack()"
+          size="sm"
+          type="ghost"
+          label="Annuler">
+        </app-button>
+      </div>
+
+      <div class="actionbar__right">
+        @if (!this.post()) {
+          <app-button
+            size="sm"
+            type="outlined"
+            label="Enregistrer en brouillon"
+            (clicked)="submit('draft')">
+          </app-button>
+        }
+
+        <app-button
+          (clicked)="submit('publish')"
+          [loading]="loading()"
+          size="sm"
+          type="primary"
+          [label]="this.post() ? 'Enregistrer les modifications' : 'Publier l’article'">
+        </app-button>
+      </div>
+    </footer>
+  </div>
+</section>

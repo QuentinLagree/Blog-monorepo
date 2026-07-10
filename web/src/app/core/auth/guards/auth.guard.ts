@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { map, take } from 'rxjs/operators';
-import { SessionService } from 'src/app/core/services/session.service';
+import { SessionService } from 'src/app/shared/services/session.service';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const session = inject(SessionService);

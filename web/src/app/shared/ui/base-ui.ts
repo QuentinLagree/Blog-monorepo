@@ -6,18 +6,16 @@ import { SelectComponent } from './form/selects/selects';
 import { MutliSelectValidatorFactory } from './form/selects/models/multi-select-validator.factory';
 import { SwitchButtonComponent } from './form/switch-button/switch-button';
 import { InputPassswordComponent } from './form/inputs/inputs-password/inputs-password';
-import { ToastService } from '@src/app/core/toasts/toaster.service';
+import { ToastService } from 'src/app/shared/helpers/toasts/toaster.service';
 import { SubmitButtonComponent } from "./form/buttons/button-submit/button-submit";
 import { SelectValidatorFactory } from './form/selects/models/select-validator.factory';
-import { PostCard } from "./card/post-card/post-card";
-import { Post } from '@src/app/core/services/post.service';
 import { TextAreaValidatorFactory } from './form/text-area/validators/textarea-validator.factory';
 import { TextAreaComponent } from "./form/text-area/text-area";
-import { ContextMenuTriggerDirective } from "./context-menu/context-menu.directive";
 import { MarkdownSyntaxOptions } from './context-menu/config/context-menu-options';
 import { EditButtonComponent } from "./form/buttons/button-edit/button-edit";
 import { DangerButtonComponent } from "./form/buttons/button-danger/button-danger";
 import { ButtonAddComponent } from "./form/buttons/button-add/button-add";
+import { Post } from 'src/app/features/posts/model/post.model';
 
 @Component({
   selector: 'app-generic-ui',
@@ -30,9 +28,7 @@ import { ButtonAddComponent } from "./form/buttons/button-add/button-add";
     SwitchButtonComponent,
     InputPassswordComponent,
     SubmitButtonComponent,
-    PostCard,
     TextAreaComponent,
-    ContextMenuTriggerDirective,
     EditButtonComponent,
     DangerButtonComponent,
     ButtonAddComponent
@@ -102,7 +98,16 @@ export class UIComponent implements AfterViewInit {
 };
 
   ngAfterViewInit(): void {
+    this._toastService.info("Un problème s'est déroulé lors de la connection.", {
+      duration: 1000000
+    });
+    this._toastService.success("Un problème s'est déroulé lors de la connection.", {
+      duration: 1000000
+    });
     this._toastService.error("Un problème s'est déroulé lors de la connection.", {
+      duration: 1000000
+    });
+    this._toastService.warning("Un problème s'est déroulé lors de la connection.", {
       duration: 1000000
     });
     setTimeout(() => {

@@ -8,46 +8,82 @@
   flex-direction: row-reverse;
   align-items: center;
   justify-content: flex-end;
+  gap: 0.75em;
 }
 
 .input-container-switch-button {
   position: relative;
+
   width: calc(2 * $switch-toggle);
-  height: $switch-toggle + 0.1em;
-  background: none;
-  border: 0.5px solid transparent;
-  border-radius: $switch-toggle;
+  height: $switch-toggle;
+
+  padding: 0.2em;
+
+  background: $surface-soft;
+  border: 1px solid $border;
+  border-radius: $radius-full;
   outline: none;
-  background-color: $container-background;
+
   cursor: pointer;
-  transition: background-color 0.4s;
+  box-shadow: none;
 
-  @include box-inset-shadow;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
 
-  &:focus {
-    border-width: 0.2px;
-    outline: 0.2px solid transparent;
+  &:hover {
+    background: $primary-soft;
+    border-color: $border-strong;
+  }
+
+  &:focus-visible {
     border-color: $primary;
+    box-shadow: 0 0 0 4px $focus-ring;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
   }
 }
 
 .input-container-switch-button.checked {
   background-color: $primary;
+  border-color: $primary;
+
+  &:hover {
+    background-color: $primary-hover;
+    border-color: $primary-hover;
+  }
 }
 
 .input-container-switch-button span {
-  transition: 0.3s;
   position: absolute;
-  border-radius: calc(2.5 * $switch-toggle);
-  top: 0;
-  left: 0;
-  width: $switch-toggle;
-  height: $switch-toggle - 0.1em;
-  background-color: $white;
+  top: 50%;
+  left: 0.22em;
 
-  @include box-inset-shadow;
+  width: calc($switch-toggle - 0.45em);
+  height: calc($switch-toggle - 0.45em);
+
+  transform: translateY(-50%);
+
+  background-color: $white;
+  border: 1px solid rgba($black, 0.08);
+  border-radius: $radius-full;
+  box-shadow: 0 1px 3px rgba($black, 0.14);
+
+  transition:
+    left 0.18s ease,
+    background-color 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
 .input-container-switch-button.checked span {
-  left: calc(100% - $switch-toggle);
+  left: calc(100% - #{$switch-toggle} + 0.22em);
+  background-color: $white;
+}
+
+.input-container-switch-button:disabled span {
+  box-shadow: none;
 }

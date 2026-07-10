@@ -5,15 +5,15 @@ import { EmailInputValidatorFactory } from 'src/app/shared/ui/form/inputs/input-
 import { InputPassswordComponent } from 'src/app/shared/ui/form/inputs/inputs-password/inputs-password';
 import { PasswordInputValidatorFactory } from 'src/app/shared/ui/form/inputs/inputs-password/validators/input-password-validator.factory';
 import { BaseButtonComponent } from '@src/app/shared/ui/form/buttons/base-button';
-import { UserService } from '@src/app/core/services/user.service';
+import { UserService } from 'src/app/shared/services/user.service';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
-import { SessionService } from '@src/app/core/services/session.service';
+import { SessionService } from 'src/app/shared/services/session.service';
 import { ContextMenuTriggerDirective } from "src/app/shared/ui/context-menu/context-menu.directive";
 
 @Component({
   selector: 'app-login-page',
-  imports: [ReactiveFormsModule, EmailInputComponent, InputPassswordComponent, BaseButtonComponent, ContextMenuTriggerDirective],
+  imports: [ReactiveFormsModule, EmailInputComponent, InputPassswordComponent, BaseButtonComponent],
   standalone: true,
   templateUrl: './login.html',
   styleUrls: ['./login.scss']

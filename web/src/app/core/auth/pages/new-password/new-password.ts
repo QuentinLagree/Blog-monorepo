@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { EmailInputComponent } from 'src/app/shared/ui/form/inputs/input-email/input-email';
 import { EmailInputValidatorFactory } from 'src/app/shared/ui/form/inputs/input-email/validators/input-email-validator.factory';
 import { BaseButtonComponent } from '@src/app/shared/ui/form/buttons/base-button';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { AuthService } from 'src/app/core/auth/data-access/auth.service';
 import { finalize } from 'rxjs';
 import { InputPassswordComponent } from 'src/app/shared/ui/form/inputs/inputs-password/inputs-password';
 import { PasswordInputValidatorFactory } from 'src/app/shared/ui/form/inputs/inputs-password/validators/input-password-validator.factory';

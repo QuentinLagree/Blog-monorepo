@@ -7,7 +7,7 @@ export class UpdatePostDto extends PartialType(
   OmitType(PostsEntity, ['id', 'updated_at', 'created_at', 'author', 'authorId', 'published_at'] as const),
 ) {
   @IsString()
-  @Length(5, 35)
+  @Length(5, 85)
   override title?: string;
 
   @IsString()

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { environment } from 'src/environments/environment';
-import { HeaderComponent } from './core/layouts/templates/header/header';
+import { HeaderComponent } from './core/layouts/header/header';
 import { ToastContainerComponent } from "./shared/ui/toast/toast";
 import { ContextMenuComponent } from "./shared/ui/context-menu/context-menu";
 

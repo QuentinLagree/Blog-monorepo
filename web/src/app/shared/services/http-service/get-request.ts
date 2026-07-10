@@ -1,9 +1,10 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Message } from '@src/app/core/models/message.model';
+import { Message } from 'src/app/shared/types/message.type';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
-const API_URL = 'http://localhost:3000/';
+const API_URL = environment.apiUrl;
 
 export interface HttpOptions {
   credentials?: boolean,

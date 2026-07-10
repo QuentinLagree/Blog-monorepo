@@ -1,5 +1,5 @@
 import { Component, EventEmitter, HostBinding, inject, input, InputSignal, Output } from '@angular/core';
-import { IconLoaderService } from '@src/app/shared/helpers/icons/services/icons-loader';
+import { IconLoaderService } from 'src/app/shared/services/icons-loader';
 
 export type ButtonType = 'primary' | 'secondary' | 'danger' | 'ghost' | 'success' | 'outlined' | 'warn';
 export type ButtonSize = 'sm' | 'md' | 'lg';

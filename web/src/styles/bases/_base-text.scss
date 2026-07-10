@@ -1,90 +1,227 @@
 @use 'variables' as *;
 
 * {
-  font-family: Poppins, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
+
+body {
+  color: $text-primary;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* TITLES */
 
 h1,
 h2,
 h3,
 h4,
 h5,
-h6,
-p {
-  color: $black;
-  font-weight: 500;
-  line-height: 1.4em;
+h6 {
+  color: $text-primary;
+  font-weight: 650;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
 }
 
 h1 {
-  font-size: 2.5em;
+  font-size: clamp(2.2rem, 5vw, 4rem);
 }
 
 h2 {
-  font-size: 2.1em;
+  font-size: clamp(1.8rem, 3.5vw, 3rem);
 }
 
 h3 {
-  font-size: 1.8em;
+  font-size: clamp(1.5rem, 2.5vw, 2.25rem);
 }
 
 h4 {
-  font-size: 1.5em;
+  font-size: 1.45rem;
 }
 
 h5 {
-  font-size: 1.3em;
+  font-size: 1.2rem;
 }
+
+h6 {
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+/* TEXT */
 
 p {
-  font-size: 1.2em;
+  color: $text-secondary;
+  font-size: 1rem;
   font-weight: 400;
-  line-height: 1.4em;
+  line-height: 1.65;
 }
 
+small {
+  color: $text-muted;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+strong,
+b {
+  color: $text-primary;
+  font-weight: 650;
+}
+
+/* HERO */
+
 h1.hero-title {
-  font-size: 3.5em;
+  color: $text-primary;
+  font-size: clamp(3rem, 8vw, 6.5rem);
   font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.06em;
 }
 
 p.hero-baseline,
 label.hero-baseline {
-  font-size: 2em;
+  color: $text-secondary;
+  font-size: clamp(1.25rem, 2.5vw, 2rem);
   font-weight: 400;
-  line-height: 1.4em;
+  line-height: 1.45;
+  letter-spacing: -0.02em;
 }
 
-p.text-danger {
+/* TEXT STATES */
+
+p.text-danger,
+.text-danger {
   color: $danger;
 }
 
-p.text-muted {
-  color: $border;
+p.text-success,
+.text-success {
+  color: $success;
 }
 
-input {
-  font-family: Poppins, sans-serif;
-  color: $input-placeholder;
-  font-weight: 500;
-  font-size: 1em;
+p.text-warning,
+.text-warning {
+  color: $warning;
+}
+
+p.text-muted,
+.text-muted {
+  color: $text-muted;
+}
+
+p.text-secondary,
+.text-secondary {
+  color: $text-secondary;
+}
+
+/* FORMS */
+
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+}
+
+input,
+textarea,
+select {
+  color: $text-primary;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.4;
 
   &::placeholder {
-    font-weight: 500;
+    font-weight: 400;
     color: $input-placeholder;
   }
 
   &:not(:placeholder-shown) {
-    color: $black;
+    color: $text-primary;
   }
 }
 
+/* LINKS */
+
 a {
-  text-decoration: none;
-   font-size: 1.2em;
-  font-weight: 400;
-  line-height: 1.4em;
   color: $primary;
+  text-decoration: none;
+  font-size: inherit;
+  font-weight: 500;
+  line-height: inherit;
+  text-underline-offset: 0.18em;
+  transition: color 0.2s ease;
+
   &:hover {
+    color: $primary-hover;
     text-decoration: underline;
   }
+}
+
+/* ARTICLE / READING */
+
+.article-title {
+  color: $text-primary;
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.article-lead {
+  color: $text-secondary;
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  line-height: 1.6;
+}
+
+.article-body {
+  color: $text-primary;
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.article-body p {
+  color: $text-primary;
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.article-meta {
+  color: $text-muted;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* CODE */
+
+code,
+pre {
+  font-family: "Geist Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+code {
+  color: $primary;
+  background: $primary-soft;
+  border: 1px solid $border;
+  border-radius: 0.35rem;
+  padding: 0.1em 0.35em;
+  font-size: 0.9em;
+}
+
+pre {
+  color: $text-primary;
+  background: $surface-soft;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  padding: 1em;
+  overflow-x: auto;
+}
+
+/* SELECTION */
+
+::selection {
+  background: $primary-soft;
+  color: $primary;
 }

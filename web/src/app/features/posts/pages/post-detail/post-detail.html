@@ -1,0 +1,121 @@
+<section class="post-detail-page">
+  @if (post.value()) {
+    <article class="post-detail">
+      <header class="post-detail__header">
+        <div class="post-detail__main">
+          <div class="post-detail__topline">
+            <span class="post-detail__badge">Article</span>
+
+            <span class="post-detail__date">
+              {{ post.value()?.published_at || post.value()?.created_at | date:'dd/MM/yyyy' }}
+            </span>
+
+            <span class="post-detail__reading-time">
+              {{ readingTime() }} min de lecture
+            </span>
+          </div>
+
+          <h1>{{ post.value()?.title }}</h1>
+
+          @if (post.value()?.description) {
+            <p class="post-detail__description">
+              {{ post.value()?.description }}
+            </p>
+          }
+
+          <div class="post-detail__author">
+            <div class="post-detail__author-avatar">
+              {{ author()?.pseudo?.charAt(0) || author()?.prenom?.charAt(0) || '?' }}
+            </div>
+
+            <div class="post-detail__author-content">
+              <span>Écrit par</span>
+              <strong>{{ author()?.pseudo || 'Auteur inconnu' }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <aside class="post-detail__aside">
+          <div class="post-detail__aside-section">
+            <p class="post-detail__aside-label">À propos</p>
+
+            <div class="post-detail__aside-row">
+              <span>Format</span>
+              <strong>Découverte</strong>
+            </div>
+
+            <div class="post-detail__aside-row">
+              <span>Lecture</span>
+              <strong>{{ readingTime() }} min</strong>
+            </div>
+
+            <div class="post-detail__aside-row">
+              <span>Auteur</span>
+              <strong>{{ author()?.pseudo || 'Inconnu' }}</strong>
+            </div>
+          </div>
+
+          <div class="post-detail__aside-actions">
+            <app-button
+              size="sm"
+              type="primary"
+              label="Contribuer"
+              icon="icon-plus"
+              (clicked)="contribute()">
+            </app-button>
+
+            <app-button
+              size="sm"
+              type="secondary"
+              label="Partager"
+              icon="icon-share"
+              (clicked)="sharePost()">
+            </app-button>
+          </div>
+        </aside>
+      </header>
+
+      <main class="post-detail__content">
+        <markdown
+          class="variable-binding"
+          [data]="post.value()?.content"
+          katex>
+        </markdown>
+      </main>
+
+      <section class="post-detail__cta">
+        <div class="post-detail__cta-content">
+          <p class="post-detail__cta-label">Contribution communautaire</p>
+
+          <h2>Tu peux enrichir cette découverte.</h2>
+
+          <p>
+            Ajoute une source, propose une correction ou complète l’article avec une idée liée.
+          </p>
+        </div>
+
+        <div class="post-detail__cta-actions">
+          <app-button
+            type="primary"
+            size="sm"
+            label="Proposer une amélioration"
+            icon="icon-plus"
+            (clicked)="contribute()">
+          </app-button>
+
+          <app-button
+            type="outlined"
+            size="sm"
+            label="Retour aux articles"
+            (clicked)="goBack()">
+          </app-button>
+        </div>
+      </section>
+    </article>
+  } @else {
+    <div class="post-detail-empty">
+      <h1>Article introuvable</h1>
+      <p>Ce contenu n’existe pas ou n’est plus disponible.</p>
+    </div>
+  }
+</section>

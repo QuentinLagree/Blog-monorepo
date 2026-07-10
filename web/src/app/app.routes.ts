@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { LandingComponent } from './core/landing/landing';
 import { loginGuard } from './core/auth/guards/login.guard';
 import { authGuard } from './core/auth/guards/auth.guard';
+import { LandingComponent } from './core/layouts/landing/landing';
 
 export const appRoutes: Routes = [
   { path: '', component: LandingComponent, pathMatch: 'full' },
@@ -10,7 +10,7 @@ export const appRoutes: Routes = [
     path: 'account',
     canActivate: [authGuard],
     loadChildren: () =>
-      import('./core/account/account.routes').then((m) => m.accountRoutes),
+      import('./features/account/account.routes').then((m) => m.accountRoutes),
   },
 
   {
@@ -22,17 +22,13 @@ export const appRoutes: Routes = [
   {
     path: 'post',
     loadChildren: () =>
-      import('./core/posts/posts.routes').then((m) => m.postsRoutes),
+      import('./features/posts/posts.routes').then((m) => m.postsRoutes),
   },
   {
     path: 'home',
     loadComponent: () =>
-      import('./core/home/home').then((m) => m.HomeComponent),
+      import('./features/home/home').then((m) => m.HomeComponent),
     canActivate: [authGuard],
-  },
-  {
-    path: 'post/edit/:id',
-    loadComponent: () => import('./core/posts/post-form/post-form').then((m) => m.PostFormComponent),
   },
   { path: 'ui', loadComponent: () => import('./shared/ui/base-ui').then((m) => m.UIComponent)},
   { path: '**', redirectTo: '' },
