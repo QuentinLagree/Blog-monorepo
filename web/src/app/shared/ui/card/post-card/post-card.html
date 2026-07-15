@@ -40,8 +40,8 @@
   </article>
 </a>
 } @else {
-<a class="post_detail" [href]="detailPath">
-  <article class="post-container post-container--draft p-2 mb-8" (click)="this.getDraftDetail()">
+<a class="post_detail" [href]="updatePost">
+  <article class="post-container post-container--draft p-2 mb-8" (click)="this.updatePost()">
     <div class="post-container__infos">
       <div class="title">
         <h3>{{ post().title }}</h3>

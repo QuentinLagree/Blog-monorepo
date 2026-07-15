@@ -98,7 +98,6 @@ export class PostCard {
     updatePost () {
         const id = this.post().id;
         const detailPath = `/post/edit/${id}`
-        console.log("UPDATED")
         this._router.navigate([detailPath])
         
     }

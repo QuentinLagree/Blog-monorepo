@@ -9,7 +9,6 @@ model User {
 
   posts   Post[]
   likes   Like[]
-  Account Account?
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

@@ -1,7 +1,7 @@
 import { AppComponent } from './app/app';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { appRoutes } from './app/app.routes';
 import { authRoutes } from './app/core/auth/auth.routes';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -35,7 +35,8 @@ bootstrapApplication(AppComponent, {
     provideHttpClient(
       withInterceptors([
         (req, next) => inject(FlashInterceptor).intercept(req, {handle: next}),
-      ])
+      ]),
+      withFetch()
     ),
     { provide: TOAST_CONFIG, useValue: DEFAULT_TOAST_CONFIG },
   ]

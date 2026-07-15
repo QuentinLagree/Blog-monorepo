@@ -13,43 +13,6 @@ datasource db {
 
 // Base Prisma : datasource + generator (pas de model ici)
 
-// ----- models/account.prisma.part -----
-model Account {
-  id              Int     @id @default(autoincrement())
-  user            User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_id         Int     @unique
-  followees_count Int
-  followers_count Int
-  avatar_profil   String? @db.Text
-  theme           String  @default("dark")
-  language        String  @default("fr")
-
-  followees Follows[] @relation("Followee")
-  followers Follows[] @relation("Follower")
-
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
-
-  @@map("account")
-}
-
-// ----- models/follows.prisma.part -----
-model Follows {
-  id Int @id @default(autoincrement())
-
-  // Utilisateur suivi
-  followee_id Int     @unique
-  followee    Account @relation("Followee", fields: [followee_id], references: [id], onDelete: Cascade)
-
-  // Utilisateur qui suit
-  follower_id Int     @unique
-  follower    Account @relation("Follower", fields: [follower_id], references: [id], onDelete: Cascade)
-
-  created_at DateTime @default(now())
-
-  @@map("follows")
-}
-
 // ----- models/likes.prisma.part -----
 model Like {
   userId Int
@@ -93,9 +56,8 @@ model User {
   password String
   role     String
 
-  posts   Post[]
-  likes   Like[]
-  Account Account?
+  posts Post[]
+  likes Like[]
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

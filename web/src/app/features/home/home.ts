@@ -40,8 +40,6 @@ export class HomeComponent {
     loader: async ({ params }) => {
       try {
         const context = new HttpContext().set(SUCCESS_MESSAGE, false);
-
-        console.log(params)
         const res = await firstValueFrom(
           
           this._post.getAllPublishedPost(params.page, params.limit, { context })

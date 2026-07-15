@@ -52,7 +52,7 @@
       @if (this.showDraftsPosts) {
         <div class="profile-drafts">
           @for (post of drafts.value(); track post.id) {
-            <app-post-card [post]="post" />
+            <app-post-card [post]="post" [isDraft]="true" />
           } @empty {
             <div class="profile-empty-state">
               <h3>Aucun brouillon</h3>
