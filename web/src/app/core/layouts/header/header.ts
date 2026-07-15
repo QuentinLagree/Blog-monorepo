@@ -1,5 +1,5 @@
 import { Component, inject, input, InputSignal, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { SessionService, UserSession } from 'src/app/shared/services/session.service';
 import { UserService } from 'src/app/shared/services/user.service';
@@ -10,7 +10,7 @@ import { BaseButtonComponent } from "src/app/shared/ui/form/buttons/base-button"
   templateUrl: './header.html',
   styleUrls: ['./header.scss'],
   standalone: true,
-  imports: [BaseButtonComponent]
+  imports: [BaseButtonComponent, RouterLink]
 })
 export class HeaderComponent {
 

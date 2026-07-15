@@ -21,6 +21,7 @@
     "test:e2e:watch": "dotenv -e .env.test -- jest --config src/test/e2e/jest-e2e.json --watch",
     "test:e2e:cov": "dotenv -e .env.test -- jest --config src/test/e2e/jest-e2e.json --coverage",
     "test:db:push": "dotenv -e .env.test -- prisma db push --schema src/config/database/schema.merged.prisma",
+    "test:db:studio": "dotenv -e .env.test -- prisma studio --schema src/config/database/schema.merged.prisma",
     "test:all": "dotenv -e .env.test -- jest && dotenv -e .env.test -- jest --config src/test/e2e/jest-e2e.json",
 
     "prisma:build": "tsx scripts/merge-prisma.ts && prisma format --schema src/config/database/schema.merged.prisma",

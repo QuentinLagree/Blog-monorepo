@@ -1,87 +1,76 @@
 @if (!isDraft()) {
-  <a class="post_detail" [href]="detailPath">
-    <article class="post-container p-2">
-      <div class="post-container__infos">
-        <div class="title" (click)="this.getDetail()">
-          <h3>{{ post().title }}</h3>
-        </div>
-
-        <p class="post-container__infos-description baseline">
-          {{ post().description }}
-        </p>
-
-        <div class="likes pt-2">
-          25 J'aimes
-        </div>
+<a class="post_detail" [href]="detailPath">
+  <article class="post-container p-2">
+    <div class="post-container__infos">
+      <div class="title" (click)="this.getDetail()">
+        <h3>{{ post().title }}</h3>
       </div>
 
-      <div class="post-container__callactions">
-        <p class="text-muted text-small">
-          {{ post().published_at| date:'dd/MM/yyyy' }}
-        </p>
+      <p class="post-container__infos-description baseline">
+        {{ post().description }}
+      </p>
 
-        <p class="baseline text">
-          <strong>Auteur:</strong> {{ this.author()?.pseudo }}
-        </p>
-
-        <div class="buttons frow flex.between gap-3">
-          @if (this.sessionId === this.post().authorId || this.sessionRole === 'admin') {
-            <app-button-edit
-              style="z-index: 5;"
-              (clicked)="updatePost()"
-              icon="icon-info">
-            </app-button-edit>
-          }
-
-          <app-button
-            size="sm"
-            type="primary"
-            label="Lire l'article"
-            (clicked)="this.getDetail()">
-          </app-button>
-        </div>
+      <div class="likes pt-2">
+        {{ likesCount() }}
+        {{
+        `J'aime${likesCount() > 1 ? 's' : ''} `
+        }}
       </div>
-    </article>
-  </a>
-} @else {
-  <a class="post_detail" [href]="detailPath">
-    <article class="post-container post-container--draft p-2 mb-8" (click)="this.getDraftDetail()">
-      <div class="post-container__infos">
-        <div class="title">
-          <h3>{{ post().title }}</h3>
-        </div>
+    </div>
 
-        <p class="post-container__infos-description baseline">
-          {{ post().description }}
-        </p>
-      </div>
+    <div class="post-container__callactions">
+      <p class="text-muted text-small">
+        {{ post().published_at| date:'dd/MM/yyyy' }}
+      </p>
 
-      <div class="post-container__callactions">
-        <p class="text-muted text-small">
-          {{ post().published_at| date:'dd/MM/yyyy' }}
-        </p>
+      <p class="baseline text">
+        <strong>Auteur:</strong> {{ this.author()?.pseudo }}
+      </p>
 
-        @if (!isAdminAndNoAuthor) {
-          <p class="baseline text">
-            <strong>Auteur:</strong> {{ this.author()?.pseudo }}
-          </p>
+      <div class="buttons frow flex.between gap-3">
+        @if (this.sessionId === this.post().authorId || this.sessionRole === 'admin') {
+        <app-button-edit style="z-index: 5;" (clicked)="updatePost()" icon="icon-info">
+        </app-button-edit>
         }
 
-        <div class="buttons frow flex.between gap-3">
-          <app-button-edit
-            (clicked)="updatePost()"
-            icon="icon-info"
-            label="Continuer la modification">
-          </app-button-edit>
-
-          <app-button
-            size="sm"
-            type="primary"
-            label="Lire l'article"
-            (clicked)="this.getDetail()">
-          </app-button>
-        </div>
+        <app-button size="sm" type="primary" label="Lire l'article" (clicked)="this.getDetail()">
+        </app-button>
       </div>
-    </article>
-  </a>
+    </div>
+  </article>
+</a>
+} @else {
+<a class="post_detail" [href]="detailPath">
+  <article class="post-container post-container--draft p-2 mb-8" (click)="this.getDraftDetail()">
+    <div class="post-container__infos">
+      <div class="title">
+        <h3>{{ post().title }}</h3>
+      </div>
+
+      <p class="post-container__infos-description baseline">
+        {{ post().description }}
+      </p>
+    </div>
+
+    <div class="post-container__callactions">
+      <p class="text-muted text-small">
+        {{ post().published_at| date:'dd/MM/yyyy' }}
+      </p>
+
+      @if (!isAdminAndNoAuthor) {
+      <p class="baseline text">
+        <strong>Auteur:</strong> {{ this.author()?.pseudo }}
+      </p>
+      }
+
+      <div class="buttons frow flex.between gap-3">
+        <app-button-edit (clicked)="updatePost()" icon="icon-info" label="Continuer la modification">
+        </app-button-edit>
+
+        <app-button size="sm" type="primary" label="Lire l'article" (clicked)="this.getDetail()">
+        </app-button>
+      </div>
+    </div>
+  </article>
+</a>
 }

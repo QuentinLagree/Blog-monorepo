@@ -1,13 +1,12 @@
 import { HttpContext } from '@angular/common/http';
 import { Component, computed, inject, resource, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
-import { BaseButtonComponent } from "@src/app/shared/ui/form/buttons/base-button";
-import { PaginatorComponent } from "@src/app/shared/ui/paginator/paginator";
+import { Router } from '@angular/router';
+import { BaseButtonComponent } from '@src/app/shared/ui/form/buttons/base-button';
+import { PaginatorComponent } from '@src/app/shared/ui/paginator/paginator';
 import { firstValueFrom } from 'rxjs';
 import { SUCCESS_MESSAGE } from 'src/app/shared/helpers/toasts/models/toasts.config';
 import { ToastService } from 'src/app/shared/helpers/toasts/toaster.service';
-import { PostCard } from "src/app/shared/ui/card/post-card/post-card";
+import { PostCard } from 'src/app/shared/ui/card/post-card/post-card';
 import { PostService } from '../posts/data-access/post.service';
 import { Post } from '../posts/model/post.model';
 
@@ -17,84 +16,71 @@ type PostsParams = {
 };
 
 @Component({
-    selector: 'app-home',
-    templateUrl: './home.html',
-    styleUrls: ['./home.scss'],
-    imports: [BaseButtonComponent, PaginatorComponent, PostCard]
+  selector: 'app-home',
+  templateUrl: './home.html',
+  styleUrls: ['./home.scss'],
+  imports: [BaseButtonComponent, PaginatorComponent, PostCard],
 })
-
-
 export class HomeComponent {
-    constructor() { }
+  private readonly _post = inject(PostService);
+  public readonly _router = inject(Router);
+  private readonly _toastService = inject(ToastService);
 
-    private _post: PostService = inject(PostService)
-    public _router: Router = inject(Router)
-    private _activatedRoute = inject(ActivatedRoute)
-    private _toastService = inject(ToastService)
+  page = signal(1);
+  limit = signal(5);
 
-    private queryParamsMap = toSignal(this._activatedRoute.queryParamMap, {
-        initialValue: this._activatedRoute.snapshot.queryParamMap    })
-    page = computed(() =>this.queryParamsMap()?.get('page') ?? 1);
-    limit = computed(() =>this.queryParamsMap()?.get('limit') ?? 2);
+  totalArticle = signal(0);
 
-    totalArticle = signal(0);
+  posts = resource<Post[], PostsParams>({
+    params: () => ({
+      page: this.page(),
+      limit: this.limit(),
+    }),
 
-    
+    loader: async ({ params }) => {
+      try {
+        const context = new HttpContext().set(SUCCESS_MESSAGE, false);
 
-    posts = resource<Post[], PostsParams>({
-  params: () => ({
-    page: Number(this.page()),
-    limit: Number(this.limit()),
-  }),
-
-  loader: async ({ params }) => {
-    try {
-      const context = new HttpContext().set(SUCCESS_MESSAGE, false);
-
-      const res = await firstValueFrom(
-        this._post.getAllPublishedPost(params.page, params.limit, { context })
-      );
-
-      console.log(res.data)
-      
-      if (!res.data) {
-        this._toastService.error(
-          'Erreur lors de la récupération des articles, mauvaise page.',
-          { duration: 5000 }
+        console.log(params)
+        const res = await firstValueFrom(
+          
+          this._post.getAllPublishedPost(params.page, params.limit, { context })
         );
+
+
+        if (!res.data) {
+          this._toastService.error(
+            'La liste est vide ou une erreur est survenue lors de la récupération des articles.',
+            { duration: 5000 }
+          );
+
+          this.totalArticle.set(0);
+          return [];
+        }
+
+        this.totalArticle.set(res.meta?.totalArticle ?? 0);
+
+        return res.data;
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : 'Erreur lors de la récupération des articles.';
+
+        this._toastService.error(message, { duration: 5000 });
 
         return [];
       }
+    },
+  });
 
-      this.totalArticle.set(res.meta?.totalArticle ?? 0);
+  updatePage(currentPage: number): void {
+    if (currentPage === this.page()) return;
 
-      return res.data;
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Erreur lors de la récupération des articles.';
-
-      this._toastService.error(message, { duration: 5000 });
-
-      throw error instanceof Error
-        ? error
-        : new Error(message, { cause: error });
-    }
-  },
-});
-
-  updatePage(currentPage: number) {
-    this.reload()
-    this._router.navigate(['/home'], {
-      queryParams: { page: currentPage, limit: this.limit() }
-    });
+    this.page.set(currentPage);
   }
 
-  reload() { this.posts.reload(); }
-
-  
-    
-
-    
+  reload(): void {
+    this.posts.reload();
+  }
 }

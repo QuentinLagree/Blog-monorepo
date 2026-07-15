@@ -9,6 +9,14 @@ import { firstValueFrom } from "rxjs";
 import { BaseButtonComponent } from "../../form/buttons/base-button";
 import { EditButtonComponent } from "../../form/buttons/button-edit/button-edit";
 import { Post } from "src/app/features/posts/model/post.model";
+import { Message } from "src/app/shared/types/message.type";
+import { PostLikeStatus } from "src/app/features/posts/model/post-like-status.model";
+import { PostService } from "src/app/features/posts/data-access/post.service";
+
+const SILENT_CONTEXT = new HttpContext().set(
+  SUCCESS_MESSAGE,
+  false,
+);
 
 @Component({
     selector: 'app-post-card',
@@ -25,6 +33,7 @@ export class PostCard {
     post: InputSignal<Post> = input.required<Post>()
     author: WritableSignal<User | undefined> = signal(undefined);
     isDraft: InputSignal<boolean> = input(false)
+    likesCount = signal(0);
 
     detailPath: string = "";
 
@@ -35,7 +44,9 @@ export class PostCard {
 
     isAdminAndNoAuthor: boolean = this.sessionId != this.author()?.id && this.sessionRole == 'admin'
     
-   constructor () {
+   constructor (
+    private readonly _postService: PostService,
+   ) {
     effect(() => {
         const currentPost = this.post()
         const authorId = currentPost.authorId
@@ -47,6 +58,8 @@ export class PostCard {
         }
 
         void this.loadAuthor(authorId)
+
+        void this.loadLikeStatus(this.post()?.id ?? 0)
         
     })
     }
@@ -98,5 +111,33 @@ export class PostCard {
 
     private getDetailPath () {
         return `/post/detail/${this.getSlugifyPath()}`
+    }
+
+    private async loadLikeStatus(
+      postId: number,
+    ): Promise<void> {
+      try {
+        const response: Message<PostLikeStatus> =
+          await firstValueFrom(
+            this._postService.getStatusLike(postId, {
+              context: SILENT_CONTEXT,
+            }),
+          );
+    
+        if (!response.data) {
+          throw new Error(
+            "La réponse de l'API ne contient pas le statut du like.",
+          );
+        }
+    
+        this.likesCount.set(response.data.likesCount);
+      } catch (error) {
+        this.likesCount.set(0);
+    
+        console.error(
+          'Impossible de charger le statut du like.',
+          error,
+        );
+      }
     }
 }

@@ -3,16 +3,18 @@ import * as secureSession from '@fastify/secure-session';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   Session,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Post as Article } from '@prisma/client';
 import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
 import { PostOwnerOrAdminGuard } from 'src/commons/guards/post-owner-or-admin.guard';
@@ -28,6 +30,9 @@ import { ArticleService } from '../post/posts.service';
 import { UserEntity } from './entities/user.entities';
 import { userSelectPayload, UserService } from './user.service';
 import { PostAlreadyPublishException } from './exceptions/post-already-publish.exception';
+import { LikedPostDto } from './dto/liked-post.dto';
+import { PostId } from '../post/dto/post-id.post.dto';
+import { StatusLikeDto } from '../post/dto/status-like.dto';
 
 @ApiTags('Gestion des publications en fonction des utilisateurs')
 @Controller('users/posts')
@@ -145,4 +150,74 @@ async createPost(
       updatedPost,
     );
   }
+
+  @UseGuards(AuthGuardSession())
+@Post(':id/add-like')
+async likePost(
+  @Param('id', ParseIntPipe) postId: number,
+  @Session() session: secureSession.Session,
+): Promise<Message<StatusLikeDto>> {
+  const sessionUser = session.get('user');
+
+  await this._user.addLike({
+    user_id: sessionUser.id,
+    post_id: postId,
+  });
+
+  const status = await this._posts.getLikeStatus(
+    sessionUser.id,
+    postId,
+  );
+
+  return makeMessage(
+    `Like post ${postId}`,
+    'Le like a été effectué avec succès.',
+    status,
+  );
+}
+
+@UseGuards(AuthGuardSession())
+@Delete(':id/unlike')
+async unlikePost(
+  @Param('id', ParseIntPipe) postId: number,
+  @Session() session: secureSession.Session,
+): Promise<Message<StatusLikeDto>> {
+  const sessionUser = session.get('user');
+
+  await this._user.unlikePost({
+    user_id: sessionUser.id,
+    post_id: postId,
+  });
+
+  const status = await this._posts.getLikeStatus(
+    sessionUser.id,
+    postId,
+  );
+
+  return makeMessage(
+    `Unlike post ${postId}`,
+    'Le like a été supprimé avec succès.',
+    status,
+  );
+}
+
+@UseGuards(AuthGuardSession())
+@Get(':id/like-status')
+async getLikeStatus(
+  @Param('id', ParseIntPipe) postId: number,
+  @Session() session: secureSession.Session,
+): Promise<Message<StatusLikeDto>> {
+  const sessionUser = session.get('user');
+
+  const status = await this._posts.getLikeStatus(
+    sessionUser.id,
+    postId,
+  );
+
+  return makeMessage(
+    `Post like status ${postId}`,
+    "Statut du like de l'article.",
+    status,
+  );
+}
 }

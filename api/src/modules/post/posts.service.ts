@@ -12,6 +12,7 @@ import { CreatePostDto } from './dto/create.post.dto';
 import { PublishedPostDto } from './dto/published-post.dto';
 import { UpdatePostDto } from './dto/update.post.dto';
 import { PostNotFoundException } from './exceptions/post-not-found.exception';
+import { StatusLikeDto } from './dto/status-like.dto';
 
 @Injectable()
 export class ArticleService {
@@ -129,4 +130,31 @@ export class ArticleService {
   isPublished(post: Post): boolean {
     return post.published_at !== null;
   }
+
+  async getLikeStatus(
+  userId: number,
+  postId: number,
+): Promise<StatusLikeDto> {
+  const [like, likesCount] = await this._prisma.$transaction([
+    this._prisma.like.findUnique({
+      where: {
+        userId_postId: {
+          userId,
+          postId,
+        },
+      },
+    }),
+
+    this._prisma.like.count({
+      where: {
+        postId,
+      },
+    }),
+  ]);
+
+  return {
+    liked: like !== null,
+    likesCount,
+  };
+}
 }

@@ -19,7 +19,7 @@ export async function createTestPost(
       title: options.title ?? `Post ${unique}`,
       content: options.content ?? `Content ${unique}`,
       description: options.description ?? `Description ${unique}`,
-      published_at: options.published_at ?? new Date(),
+      published_at: options.published_at !== undefined ? options.published_at : new Date(),
       authorId: userId,
     },
   });

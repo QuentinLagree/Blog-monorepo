@@ -98,16 +98,7 @@ export class UIComponent implements AfterViewInit {
 };
 
   ngAfterViewInit(): void {
-    this._toastService.info("Un problème s'est déroulé lors de la connection.", {
-      duration: 1000000
-    });
-    this._toastService.success("Un problème s'est déroulé lors de la connection.", {
-      duration: 1000000
-    });
-    this._toastService.error("Un problème s'est déroulé lors de la connection.", {
-      duration: 1000000
-    });
-    this._toastService.warning("Un problème s'est déroulé lors de la connection.", {
+    this._toastService.info("Toast information", {
       duration: 1000000
     });
     setTimeout(() => {

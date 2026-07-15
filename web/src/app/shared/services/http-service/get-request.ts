@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Message } from 'src/app/shared/types/message.type';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { options } from 'marked';
 
 const API_URL = environment.apiUrl;
 
@@ -45,8 +46,15 @@ export class HttpRequestService {
     };
     return this.http.put<Message>(API_URL + url, data, options);
   }
-  deleteData(url: string): Observable<Message> {
-    return this.http.delete<Message>(API_URL + url);
+  deleteData(url: string, optionsParam?: HttpOptions): Observable<Message> {
+    let options = {}
+
+    options = {
+      withCredentials: true,
+      ...optionsParam,
+    };
+    
+    return this.http.delete<Message>(API_URL + url, options);
   }
   patchData(url: string, data: any, optionsParam?: HttpOptions): Observable<Message> {
     let options = {}

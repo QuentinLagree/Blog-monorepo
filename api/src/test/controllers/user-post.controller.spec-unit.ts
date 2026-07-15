@@ -5,7 +5,7 @@ import { CreatePostDto } from 'src/modules/post/dto/create.post.dto';
 import { PublishedPostDto } from 'src/modules/post/dto/published-post.dto';
 import { PostAlreadyPublishException } from 'src/modules/user/exceptions/post-already-publish.exception';
 import { UserNotFoundException } from 'src/modules/user/exceptions/user-not-found.exception';
-import { postServiceMock } from '../mocks/mocks';
+import { postServiceMock, userServiceMock } from '../mocks/mocks';
 import { createUserMock } from '../mocks/create.user.mocks';
 import { UserToPostController } from 'src/modules/user/user-posts.controller';
 import { createPostMock } from '../mocks/create_post.mocks';
@@ -13,9 +13,7 @@ import { createPostMock } from '../mocks/create_post.mocks';
 describe('UserToPostController', () => {
   let userToPostController: UserToPostController;
 
-  const userServiceMock = {
-    show: jest.fn(),
-  };
+  const _userServiceMock = userServiceMock;
 
   const createPostDtoMock = (override = {}) => ({
     title: 'Post test',
@@ -32,7 +30,7 @@ describe('UserToPostController', () => {
     jest.clearAllMocks();
 
     userToPostController = new UserToPostController(
-      userServiceMock as unknown as UserService,
+      _userServiceMock as unknown as UserService,
       postServiceMock as unknown as ArticleService,
     );
   });
@@ -42,12 +40,12 @@ describe('UserToPostController', () => {
       const id = 1;
       const user = createUserMock({ id });
 
-      userServiceMock.show.mockResolvedValue(user);
+      _userServiceMock.show.mockResolvedValue(user);
       postServiceMock.indexWhere.mockResolvedValue([]);
 
       const response = await userToPostController.getAllUserDrafts(id);
 
-      expect(userServiceMock.show).toHaveBeenCalledWith({ id });
+      expect(_userServiceMock.show).toHaveBeenCalledWith({ id });
 
       expect(postServiceMock.indexWhere).toHaveBeenCalledWith({
         authorId: id,
@@ -71,12 +69,12 @@ describe('UserToPostController', () => {
         createPostMock({ id: 2, authorId: id, published_at: null }),
       ];
 
-      userServiceMock.show.mockResolvedValue(user);
+      _userServiceMock.show.mockResolvedValue(user);
       postServiceMock.indexWhere.mockResolvedValue(posts);
 
       const response = await userToPostController.getAllUserDrafts(id);
 
-      expect(userServiceMock.show).toHaveBeenCalledWith({ id });
+      expect(_userServiceMock.show).toHaveBeenCalledWith({ id });
 
       expect(postServiceMock.indexWhere).toHaveBeenCalledWith({
         authorId: id,
@@ -95,7 +93,7 @@ describe('UserToPostController', () => {
     it('should throw UserNotFoundException if user is not found', async () => {
       const id = 1;
 
-      userServiceMock.show.mockRejectedValue(
+      _userServiceMock.show.mockRejectedValue(
         new UserNotFoundException(id),
       );
 
@@ -103,7 +101,7 @@ describe('UserToPostController', () => {
         userToPostController.getAllUserDrafts(id),
       ).rejects.toThrow(UserNotFoundException);
 
-      expect(userServiceMock.show).toHaveBeenCalledWith({ id });
+      expect(_userServiceMock.show).toHaveBeenCalledWith({ id });
       expect(postServiceMock.indexWhere).not.toHaveBeenCalled();
     });
   });
@@ -113,12 +111,12 @@ describe('UserToPostController', () => {
       const id = 1;
       const user = createUserMock({ id });
 
-      userServiceMock.show.mockResolvedValue(user);
+      _userServiceMock.show.mockResolvedValue(user);
       postServiceMock.indexWhere.mockResolvedValue([]);
 
       const response = await userToPostController.getAllPublishedPostsOfUser(id);
 
-      expect(userServiceMock.show).toHaveBeenCalledWith({ id });
+      expect(_userServiceMock.show).toHaveBeenCalledWith({ id });
 
       expect(postServiceMock.indexWhere).toHaveBeenCalledWith({
         authorId: id,
@@ -146,12 +144,12 @@ describe('UserToPostController', () => {
         createPostMock({ id: 2, authorId: id, published_at: publishedDate }),
       ];
 
-      userServiceMock.show.mockResolvedValue(user);
+      _userServiceMock.show.mockResolvedValue(user);
       postServiceMock.indexWhere.mockResolvedValue(posts);
 
       const response = await userToPostController.getAllPublishedPostsOfUser(id);
 
-      expect(userServiceMock.show).toHaveBeenCalledWith({ id });
+      expect(_userServiceMock.show).toHaveBeenCalledWith({ id });
 
       expect(postServiceMock.indexWhere).toHaveBeenCalledWith({
         authorId: id,
@@ -172,7 +170,7 @@ describe('UserToPostController', () => {
     it('should throw UserNotFoundException if user is not found', async () => {
       const id = 1;
 
-      userServiceMock.show.mockRejectedValue(
+      _userServiceMock.show.mockRejectedValue(
         new UserNotFoundException(id),
       );
 
@@ -180,7 +178,7 @@ describe('UserToPostController', () => {
         userToPostController.getAllPublishedPostsOfUser(id),
       ).rejects.toThrow(UserNotFoundException);
 
-      expect(userServiceMock.show).toHaveBeenCalledWith({ id });
+      expect(_userServiceMock.show).toHaveBeenCalledWith({ id });
       expect(postServiceMock.indexWhere).not.toHaveBeenCalled();
     });
   });
@@ -202,7 +200,7 @@ describe('UserToPostController', () => {
         authorId: sessionUser.id,
       });
 
-      userServiceMock.show.mockResolvedValue(author);
+      _userServiceMock.show.mockResolvedValue(author);
       postServiceMock.store.mockResolvedValue(createdPost);
 
       const response = await userToPostController.createPost(
@@ -212,7 +210,7 @@ describe('UserToPostController', () => {
 
       expect(sessionMock.get).toHaveBeenCalledWith('user');
 
-      expect(userServiceMock.show).toHaveBeenCalledWith({
+      expect(_userServiceMock.show).toHaveBeenCalledWith({
         id: sessionUser.id,
       });
 
@@ -241,7 +239,7 @@ describe('UserToPostController', () => {
 
       const dto = createPostDtoMock() as CreatePostDto;
 
-      userServiceMock.show.mockRejectedValue(
+      _userServiceMock.show.mockRejectedValue(
         new UserNotFoundException(sessionUser.id),
       );
 
@@ -251,7 +249,7 @@ describe('UserToPostController', () => {
 
       expect(sessionMock.get).toHaveBeenCalledWith('user');
 
-      expect(userServiceMock.show).toHaveBeenCalledWith({
+      expect(_userServiceMock.show).toHaveBeenCalledWith({
         id: sessionUser.id,
       });
 
@@ -271,7 +269,7 @@ describe('UserToPostController', () => {
       const author = createUserMock({ id: sessionUser.id });
       const error = new Error('Post creation failed');
 
-      userServiceMock.show.mockResolvedValue(author);
+      _userServiceMock.show.mockResolvedValue(author);
       postServiceMock.store.mockRejectedValue(error);
 
       await expect(
@@ -280,7 +278,7 @@ describe('UserToPostController', () => {
 
       expect(sessionMock.get).toHaveBeenCalledWith('user');
 
-      expect(userServiceMock.show).toHaveBeenCalledWith({
+      expect(_userServiceMock.show).toHaveBeenCalledWith({
         id: sessionUser.id,
       });
 
@@ -437,6 +435,448 @@ describe('UserToPostController', () => {
         { id },
         dto,
         sessionUser.id,
+      );
+    });
+  });
+
+  describe('likePost', () => {
+    it('should add a like and return the updated like status', async () => {
+      const userId = 1;
+      const postId = 10;
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue({
+          id: userId,
+        }),
+      };
+
+      const status = {
+        liked: true,
+        likesCount: 1,
+      };
+
+      _userServiceMock.addLike.mockResolvedValue(undefined);
+      postServiceMock.getLikeStatus.mockResolvedValue(status);
+
+      const response = await userToPostController.likePost(
+        postId,
+        sessionMock as any,
+      );
+
+      expect(sessionMock.get).toHaveBeenCalledWith('user');
+
+      expect(_userServiceMock.addLike).toHaveBeenCalledWith({
+        user_id: userId,
+        post_id: postId,
+      });
+
+      expect(postServiceMock.getLikeStatus).toHaveBeenCalledWith(
+        userId,
+        postId,
+      );
+
+      expect(response).toEqual(
+        makeMessage(
+          `Like post ${postId}`,
+          'Le like a été effectué avec succès.',
+          status,
+        ),
+      );
+    });
+
+    it('should return the total number of likes after adding a like', async () => {
+      const userId = 1;
+      const postId = 10;
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue({
+          id: userId,
+        }),
+      };
+
+      const status = {
+        liked: true,
+        likesCount: 5,
+      };
+
+      _userServiceMock.addLike.mockResolvedValue(undefined);
+      postServiceMock.getLikeStatus.mockResolvedValue(status);
+
+      const response = await userToPostController.likePost(
+        postId,
+        sessionMock as any,
+      );
+
+      expect(response.data).toEqual({
+        liked: true,
+        likesCount: 5,
+      });
+    });
+
+    it('should not get like status if adding the like fails', async () => {
+      const userId = 1;
+      const postId = 10;
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue({
+          id: userId,
+        }),
+      };
+
+      const error = new Error('Like creation failed');
+
+      _userServiceMock.addLike.mockRejectedValue(error);
+
+      await expect(
+        userToPostController.likePost(
+          postId,
+          sessionMock as any,
+        ),
+      ).rejects.toThrow(error);
+
+      expect(sessionMock.get).toHaveBeenCalledWith('user');
+
+      expect(_userServiceMock.addLike).toHaveBeenCalledWith({
+        user_id: userId,
+        post_id: postId,
+      });
+
+      expect(
+        postServiceMock.getLikeStatus,
+      ).not.toHaveBeenCalled();
+    });
+
+    it('should throw an error if like status retrieval fails after adding the like', async () => {
+      const userId = 1;
+      const postId = 10;
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue({
+          id: userId,
+        }),
+      };
+
+      const error = new Error(
+        'Like status retrieval failed',
+      );
+
+      _userServiceMock.addLike.mockResolvedValue(undefined);
+      postServiceMock.getLikeStatus.mockRejectedValue(error);
+
+      await expect(
+        userToPostController.likePost(
+          postId,
+          sessionMock as any,
+        ),
+      ).rejects.toThrow(error);
+
+      expect(_userServiceMock.addLike).toHaveBeenCalledWith({
+        user_id: userId,
+        post_id: postId,
+      });
+
+      expect(postServiceMock.getLikeStatus).toHaveBeenCalledWith(
+        userId,
+        postId,
+      );
+    });
+  });
+
+  describe('unlikePost', () => {
+    it('should remove a like and return the updated like status', async () => {
+      const userId = 1;
+      const postId = 10;
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue({
+          id: userId,
+        }),
+      };
+
+      const status = {
+        liked: false,
+        likesCount: 2,
+      };
+
+      _userServiceMock.unlikePost.mockResolvedValue(undefined);
+      postServiceMock.getLikeStatus.mockResolvedValue(status);
+
+      const response = await userToPostController.unlikePost(
+        postId,
+        sessionMock as any,
+      );
+
+      expect(sessionMock.get).toHaveBeenCalledWith('user');
+
+      expect(_userServiceMock.unlikePost).toHaveBeenCalledWith({
+        user_id: userId,
+        post_id: postId,
+      });
+
+      expect(postServiceMock.getLikeStatus).toHaveBeenCalledWith(
+        userId,
+        postId,
+      );
+
+      expect(response).toEqual(
+        makeMessage(
+          `Unlike post ${postId}`,
+          'Le like a été supprimé avec succès.',
+          status,
+        ),
+      );
+    });
+
+    it('should return zero likes after removing the last like', async () => {
+      const userId = 1;
+      const postId = 10;
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue({
+          id: userId,
+        }),
+      };
+
+      const status = {
+        liked: false,
+        likesCount: 0,
+      };
+
+      _userServiceMock.unlikePost.mockResolvedValue(undefined);
+      postServiceMock.getLikeStatus.mockResolvedValue(status);
+
+      const response = await userToPostController.unlikePost(
+        postId,
+        sessionMock as any,
+      );
+
+      expect(response.data).toEqual({
+        liked: false,
+        likesCount: 0,
+      });
+    });
+
+    it('should not get like status if removing the like fails', async () => {
+      const userId = 1;
+      const postId = 10;
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue({
+          id: userId,
+        }),
+      };
+
+      const error = new Error('Unlike failed');
+
+      _userServiceMock.unlikePost.mockRejectedValue(error);
+
+      await expect(
+        userToPostController.unlikePost(
+          postId,
+          sessionMock as any,
+        ),
+      ).rejects.toThrow(error);
+
+      expect(sessionMock.get).toHaveBeenCalledWith('user');
+
+      expect(_userServiceMock.unlikePost).toHaveBeenCalledWith({
+        user_id: userId,
+        post_id: postId,
+      });
+
+      expect(
+        postServiceMock.getLikeStatus,
+      ).not.toHaveBeenCalled();
+    });
+
+    it('should throw an error if like status retrieval fails after removing the like', async () => {
+      const userId = 1;
+      const postId = 10;
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue({
+          id: userId,
+        }),
+      };
+
+      const error = new Error(
+        'Like status retrieval failed',
+      );
+
+      _userServiceMock.unlikePost.mockResolvedValue(undefined);
+      postServiceMock.getLikeStatus.mockRejectedValue(error);
+
+      await expect(
+        userToPostController.unlikePost(
+          postId,
+          sessionMock as any,
+        ),
+      ).rejects.toThrow(error);
+
+      expect(_userServiceMock.unlikePost).toHaveBeenCalledWith({
+        user_id: userId,
+        post_id: postId,
+      });
+
+      expect(postServiceMock.getLikeStatus).toHaveBeenCalledWith(
+        userId,
+        postId,
+      );
+    });
+  });
+
+  describe('getLikeStatus', () => {
+    it('should return liked true if connected user liked the post', async () => {
+      const userId = 1;
+      const postId = 10;
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue({
+          id: userId,
+        }),
+      };
+
+      const status = {
+        liked: true,
+        likesCount: 6,
+      };
+
+      postServiceMock.getLikeStatus.mockResolvedValue(status);
+
+      const response =
+        await userToPostController.getLikeStatus(
+          postId,
+          sessionMock as any,
+        );
+
+      expect(sessionMock.get).toHaveBeenCalledWith('user');
+
+      expect(postServiceMock.getLikeStatus).toHaveBeenCalledWith(
+        userId,
+        postId,
+      );
+
+      expect(response).toEqual(
+        makeMessage(
+          `Post like status ${postId}`,
+          "Statut du like de l'article.",
+          status,
+        ),
+      );
+    });
+
+    it('should return liked false if connected user did not like the post', async () => {
+      const userId = 1;
+      const postId = 10;
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue({
+          id: userId,
+        }),
+      };
+
+      const status = {
+        liked: false,
+        likesCount: 3,
+      };
+
+      postServiceMock.getLikeStatus.mockResolvedValue(status);
+
+      const response =
+        await userToPostController.getLikeStatus(
+          postId,
+          sessionMock as any,
+        );
+
+      expect(response.data).toEqual({
+        liked: false,
+        likesCount: 3,
+      });
+    });
+
+    it('should return zero when the post has no likes', async () => {
+      const userId = 1;
+      const postId = 10;
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue({
+          id: userId,
+        }),
+      };
+
+      const status = {
+        liked: false,
+        likesCount: 0,
+      };
+
+      postServiceMock.getLikeStatus.mockResolvedValue(status);
+
+      const response =
+        await userToPostController.getLikeStatus(
+          postId,
+          sessionMock as any,
+        );
+
+      expect(response.data).toEqual({
+        liked: false,
+        likesCount: 0,
+      });
+    });
+
+    it('should use the user id from the session and the post id from the route', async () => {
+      const userId = 25;
+      const postId = 75;
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue({
+          id: userId,
+        }),
+      };
+
+      postServiceMock.getLikeStatus.mockResolvedValue({
+        liked: false,
+        likesCount: 0,
+      });
+
+      await userToPostController.getLikeStatus(
+        postId,
+        sessionMock as any,
+      );
+
+      expect(sessionMock.get).toHaveBeenCalledWith('user');
+
+      expect(postServiceMock.getLikeStatus).toHaveBeenCalledWith(
+        userId,
+        postId,
+      );
+    });
+
+    it('should throw an error if like status retrieval fails', async () => {
+      const userId = 1;
+      const postId = 10;
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue({
+          id: userId,
+        }),
+      };
+
+      const error = new Error(
+        'Like status retrieval failed',
+      );
+
+      postServiceMock.getLikeStatus.mockRejectedValue(error);
+
+      await expect(
+        userToPostController.getLikeStatus(
+          postId,
+          sessionMock as any,
+        ),
+      ).rejects.toThrow(error);
+
+      expect(postServiceMock.getLikeStatus).toHaveBeenCalledWith(
+        userId,
+        postId,
       );
     });
   });

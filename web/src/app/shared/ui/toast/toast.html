@@ -21,9 +21,9 @@
       (mouseenter)="service.pause(t.id)"
       (mouseleave)="service.resume(t.id)"
     >
-      <div class="toast__accent" aria-hidden="true"></div>
+      <div class="toast-accent" aria-hidden="true"></div>
 
-      <div class="toast__icon" aria-hidden="true">
+      <div class="toast-icon" aria-hidden="true">
         @if (t.variant === 'success') {
           <svg viewBox="0 0 24 24">
             <use href="#icon-check" />
@@ -49,21 +49,21 @@
         }
       </div>
 
-      <div class="toast__body">
-        <div class="toast__content">
+      <div class="toast-body">
+        <div class="toast-content">
           @if (t.title) {
-            <h5 class="toast__title">{{ t.title }}</h5>
+            <h5 class="toast-title">{{ t.title }}</h5>
           }
 
-          <p class="toast__message">{{ t.message }}</p>
+          <p class="toast-message">{{ t.message }}</p>
         </div>
 
         @if (t.actions.length) {
-          <div class="toast__actions">
+          <div class="toast-actions">
             @for (a of t.actions; track a.value) {
               <button
                 type="button"
-                class="toast__action"
+                class="toast-action"
                 [class.toast__action--primary]="a.buttonType === 'primary'"
                 [class.toast__action--secondary]="a.buttonType === 'secondary'"
                 [class.toast__action--danger]="a.buttonType === 'danger'"
@@ -78,9 +78,9 @@
         }
 
         @if (!t.sticky) {
-          <div class="toast__progress" [class.toast__progress--paused]="t._paused">
+          <div class="toast-progress" [class.toast__progress--paused]="t._paused">
             <span
-              class="toast__progress-bar"
+              class="toast-progress-bar"
               [style.animation-duration.ms]="t.duration"
               [style.animation-play-state]="t._paused ? 'paused' : 'running'"
             ></span>
@@ -90,7 +90,7 @@
 
       <button
         type="button"
-        class="toast__close"
+        class="toast-close"
         (click)="service.close(t.id)"
         aria-label="Fermer la notification"
       >

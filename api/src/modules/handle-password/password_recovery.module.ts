@@ -6,6 +6,7 @@ import { TokenService } from 'src/commons/services/token.service';
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { PasswordService } from 'src/commons/services/argon.service';
 import { MailModule } from 'src/commons/mailing/mail/mailer.module';
+import { ArticleService } from '../post/posts.service';
 
 @Module({
   imports: [MailModule], // ← c'est tout ce qu'il faut côté mail
@@ -16,6 +17,7 @@ import { MailModule } from 'src/commons/mailing/mail/mailer.module';
     UserService,
     TokenService,
     PasswordService,
+    ArticleService
   ],
   exports: [
     AuthService,
@@ -23,6 +25,7 @@ import { MailModule } from 'src/commons/mailing/mail/mailer.module';
     UserService,
     TokenService,
     PasswordService,
+    ArticleService
   ],
 })
 export class PasswordRecoveryModule {}

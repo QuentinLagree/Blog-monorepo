@@ -8,6 +8,7 @@ model User {
   role     String
 
   posts   Post[]
+  likes   Like[]
   Account Account?
 
   created_at DateTime @default(now())

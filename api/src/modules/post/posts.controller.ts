@@ -57,7 +57,7 @@ export class PostController {
       ? makeMessage(
         'List of all posts is empty.',
         'La liste des publications est vide',
-        null,
+        [],
       )
       : makeMessage<Articles[], MetaPaginationDto>(
         'List of all posts',

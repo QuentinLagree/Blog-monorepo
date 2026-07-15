@@ -10,16 +10,10 @@
     </p>
 
     <div class="home-actions">
-      <app-button
-        icon="icon-plus"
-        label="Créer un article"
-        (clicked)="this._router.navigate(['/post/add'])">
+      <app-button icon="icon-plus" label="Créer un article" (clicked)="this._router.navigate(['/post/add'])">
       </app-button>
 
-      <app-button
-        type="secondary"
-        label="Voir les contributeurs"
-        (clicked)="this._router.navigate(['/account/users'])">
+      <app-button type="secondary" label="Voir les contributeurs" (clicked)="this._router.navigate(['/account/users'])">
       </app-button>
     </div>
   </section>
@@ -32,34 +26,24 @@
       </div>
     </div>
 
-    
 
-        <div class="home-posts">
-        @for (post of posts.value(); track post.id) {
-            <app-post-card [post]="post" />
-        } @empty {
-            <div class="home-empty-state">
-            <div class="home-empty-state__icon">✦</div>
 
-            <h3>Aucun article pour le moment</h3>
-
-            <p>
-                Sois le premier à partager une découverte avec la communauté.
-            </p>
-
-            <app-button
-                icon="icon-plus"
-                label="Créer un article"
-                (clicked)="this._router.navigate(['/post/add'])">
-            </app-button>
-            </div>
-        }
-    </div>
-    <ng-paginator
-      class="home-paginator"
-      [CurrentPage]="+page()"
-      [PageSize]="+limit()"
-      [TotalItems]="totalArticle()"
+    <div class="home-posts">
+      <ng-paginator class="home-paginator" [CurrentPage]="+page()" [PageSize]="+limit()" [TotalItems]="totalArticle()"
       (pageChange)="updatePage($event)" />
+      @if (posts.isLoading()) {
+      <p>Chargement des articles...</p>
+      } @else {
+      @for (post of posts.value(); track post.id) {
+      <app-post-card [post]="post" />
+      } @empty {
+      <div class="home-empty-state">
+        <h3>Aucun article</h3>
+        <p>Aucune contribution n’est disponible pour le moment.</p>
+      </div>
+      }
+      }
+    </div>
+    
   </section>
 </div>

@@ -67,7 +67,7 @@
   transform: translateY(-0.35rem) scale(0.98);
 }
 
-.toast__accent {
+.toast-accent {
   position: absolute;
   inset: 0 auto 0 0;
 
@@ -76,7 +76,7 @@
   background: $primary;
 }
 
-.toast__icon {
+.toast-icon {
   width: 2.1rem;
   height: 2.1rem;
 
@@ -93,12 +93,12 @@
   border-radius: $radius-full;
 }
 
-.toast__icon svg {
+.toast-icon svg {
   width: 1rem;
   height: 1rem;
 }
 
-.toast__body {
+.toast-body {
   min-width: 0;
 
   display: flex;
@@ -106,11 +106,11 @@
   gap: 0.65rem;
 }
 
-.toast__content {
+.toast-content {
   min-width: 0;
 }
 
-.toast__title {
+.toast-title {
   margin: 0;
 
   color: $text-primary;
@@ -121,7 +121,7 @@
   letter-spacing: -0.02em;
 }
 
-.toast__message {
+.toast-message {
   margin: 0;
   margin-top: 0.18rem;
 
@@ -132,7 +132,7 @@
   line-height: 1.45;
 }
 
-.toast__close {
+.toast-close {
   width: 1.8rem;
   height: 1.8rem;
 
@@ -159,12 +159,12 @@
     color 0.16s ease;
 }
 
-.toast__close:hover {
+.toast-close:hover {
   background: $surface-soft;
   color: $text-primary;
 }
 
-.toast__close:focus-visible {
+.toast-close:focus-visible {
   outline: none;
   box-shadow: 0 0 0 4px $focus-ring;
 }
@@ -175,11 +175,11 @@
   border-color: $success-border;
 }
 
-.toast--success .toast__accent {
+.toast--success .toast-accent {
   background: $success;
 }
 
-.toast--success .toast__icon {
+.toast--success .toast-icon {
   background: $success-soft;
   color: $success;
   border-color: rgba($success, 0.18);
@@ -189,11 +189,11 @@
   border-color: $error-border;
 }
 
-.toast--error .toast__accent {
+.toast--error .toast-accent {
   background: $error;
 }
 
-.toast--error .toast__icon {
+.toast--error .toast-icon {
   background: $error-soft;
   color: $error;
   border-color: rgba($error, 0.18);
@@ -203,11 +203,11 @@
   border-color: $info-border;
 }
 
-.toast--info .toast__accent {
+.toast--info .toast-accent {
   background: $info;
 }
 
-.toast--info .toast__icon {
+.toast--info .toast-icon {
   background: $info-soft;
   color: $info;
   border-color: rgba($info, 0.18);
@@ -217,11 +217,11 @@
   border-color: $warning-border;
 }
 
-.toast--warning .toast__accent {
+.toast--warning .toast-accent {
   background: $warning;
 }
 
-.toast--warning .toast__icon {
+.toast--warning .toast-icon {
   background: $warning-soft;
   color: $warning;
   border-color: rgba($warning, 0.2);
@@ -229,14 +229,14 @@
 
 /* Actions */
 
-.toast__actions {
+.toast-actions {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 0.45rem;
 }
 
-.toast__action {
+.toast-action {
   padding: 0.45em 0.7em;
 
   background: $surface-soft;
@@ -258,43 +258,43 @@
     color 0.16s ease;
 }
 
-.toast__action:hover {
+.toast-action:hover {
   background: $primary-soft;
   color: $primary;
   border-color: rgba($primary, 0.22);
 }
 
-.toast__action:focus-visible {
+.toast-action:focus-visible {
   outline: none;
   box-shadow: 0 0 0 4px $focus-ring;
 }
 
-.toast__action--primary {
+.toast-action--primary {
   background: $primary;
   color: $white;
   border-color: $primary;
 }
 
-.toast__action--primary:hover {
+.toast-action--primary:hover {
   background: $primary-hover;
   color: $white;
   border-color: $primary-hover;
 }
 
-.toast__action--secondary,
-.toast__action--outlined {
+.toast-action--secondary,
+.toast-action--outlined {
   background: $surface;
   color: $primary;
   border-color: $border-strong;
 }
 
-.toast__action--danger {
+.toast-action--danger {
   background: $danger;
   color: $white;
   border-color: $danger;
 }
 
-.toast__action--danger:hover {
+.toast-action--danger:hover {
   background: $danger;
   color: $white;
   border-color: $danger;
@@ -302,7 +302,7 @@
 
 /* Progress */
 
-.toast__progress {
+.toast-progress {
   width: 100%;
   height: 0.22rem;
 
@@ -312,7 +312,7 @@
   border-radius: $radius-full;
 }
 
-.toast__progress-bar {
+.toast-progress-bar {
   display: block;
   width: 100%;
   height: 100%;
@@ -326,23 +326,23 @@
   animation-fill-mode: forwards;
 }
 
-.toast--success .toast__progress-bar {
+.toast--success .toast-progress-bar {
   background: $success;
 }
 
-.toast--error .toast__progress-bar {
+.toast--error .toast-progress-bar {
   background: $error;
 }
 
-.toast--info .toast__progress-bar {
+.toast--info .toast-progress-bar {
   background: $info;
 }
 
-.toast--warning .toast__progress-bar {
+.toast--warning .toast-progress-bar {
   background: $warning;
 }
 
-.toast__progress--paused .toast__progress-bar {
+.toast-progress--paused .toast-progress-bar {
   animation-play-state: paused;
 }
 
@@ -384,13 +384,13 @@
     grid-template-columns: auto minmax(0, 1fr);
   }
 
-  .toast__close {
+  .toast-close {
     position: absolute;
     top: 0.65rem;
     right: 0.65rem;
   }
 
-  .toast__body {
+  .toast-body {
     padding-right: 1.9rem;
   }
 }

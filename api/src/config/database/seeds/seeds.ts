@@ -55,21 +55,24 @@ async function main() {
         authorId: quentin.id,
         title: 'Salut je suis un titre très sympathique',
         content: 'Salut je suis un contenue',
-        description: 'Ceci est une description du post'
+        description: 'Ceci est une description du post',
+        published_at: new Date(Date.now()),
       },
       {
         authorId: quentin.id,
         title:
           'Salut je suis un deuxième titre super sympa aussi voir meilleur !',
         content: 'Encore du contenue, toujours du contenue',
-        description: "Ceci est la description de la deuxième publication."
+        description: "Ceci est la description de la deuxième publication.",
+        published_at: new Date(Date.now())
       },
       {
         authorId: quentin.id,
         title:
           'Je suis un titre custom sympatique',
         content: 'Est toujours du contenue',
-        description: "Une description toute mignonne."
+        description: "Une description toute mignonne.",
+        published_at: null
       },
     ],
   });

@@ -9,7 +9,8 @@ export const postServiceMock = {
         store: jest.fn(),
         update: jest.fn(),
         destroy: jest.fn(),
-        isPublished: jest.fn()
+        isPublished: jest.fn(),
+        getLikeStatus: jest.fn()
     };
 
 export const userServiceMock = {
@@ -17,7 +18,10 @@ export const userServiceMock = {
         show: jest.fn(),
         create: jest.fn(),
         update: jest.fn(),
-        destroy: jest.fn()
+        destroy: jest.fn(),
+        addLike: jest.fn(),
+        unlikePost: jest.fn(),
+        checkIfUserLikedPost: jest.fn()
     };
 
 export const slugServiceMock = {

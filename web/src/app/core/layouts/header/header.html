@@ -1,16 +1,16 @@
-<header class="app-header">
-  <a class="app-header__brand" href="/">
-    <span class="app-header__logo"></span>
+<header class="header">
+  <a class="header-brand" routerLink="/">
+    <span class="header-logo"></span>
     <h1>{{ title() }}</h1>
   </a>
 
-  <nav class="app-header__nav">
+  <nav class="header-nav">
     @let userId = this._session.getUserIdSync();
     @let role = this._session.getUserRoleSync();
 
     @if (userId != undefined) {
       @if (role == "admin") {
-        <span class="app-header__badge">Admin</span>
+        <span class="header-badge">Admin</span>
       }
 
       <app-button

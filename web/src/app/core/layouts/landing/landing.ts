@@ -47,7 +47,7 @@ export class LandingComponent implements OnInit {
       
       const [session] = await Promise.all([
         firstValueFrom(this.session.fetchSession().pipe(take(1))),
-        firstValueFrom(timer(5000)),
+        firstValueFrom(timer(1000)),
       ]);
 
       const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');

@@ -1,13 +1,29 @@
+@let currentPost = post.value();
+
 <section class="post-detail-page">
-  @if (post.value()) {
+  @if (post.isLoading()) {
+    <div class="post-detail-empty">
+      <p>Chargement de l’article...</p>
+    </div>
+  } @else if (post.error()) {
+    <div class="post-detail-empty">
+      <h1>Impossible de charger l’article</h1>
+      <p>Une erreur est survenue pendant le chargement du contenu.</p>
+    </div>
+  } @else if (currentPost) {
     <article class="post-detail">
       <header class="post-detail__header">
         <div class="post-detail__main">
           <div class="post-detail__topline">
-            <span class="post-detail__badge">Article</span>
+            <span class="post-detail__badge">
+              Article
+            </span>
 
             <span class="post-detail__date">
-              {{ post.value()?.published_at || post.value()?.created_at | date:'dd/MM/yyyy' }}
+              {{
+                currentPost.published_at || currentPost.created_at
+                  | date: 'dd/MM/yyyy'
+              }}
             </span>
 
             <span class="post-detail__reading-time">
@@ -15,29 +31,38 @@
             </span>
           </div>
 
-          <h1>{{ post.value()?.title }}</h1>
+          <h1>{{ currentPost.title }}</h1>
 
-          @if (post.value()?.description) {
+          @if (currentPost.description) {
             <p class="post-detail__description">
-              {{ post.value()?.description }}
+              {{ currentPost.description }}
             </p>
           }
 
           <div class="post-detail__author">
             <div class="post-detail__author-avatar">
-              {{ author()?.pseudo?.charAt(0) || author()?.prenom?.charAt(0) || '?' }}
+              {{
+                author()?.pseudo?.charAt(0) ||
+                author()?.prenom?.charAt(0) ||
+                '?'
+              }}
             </div>
 
             <div class="post-detail__author-content">
               <span>Écrit par</span>
-              <strong>{{ author()?.pseudo || 'Auteur inconnu' }}</strong>
+
+              <strong>
+                {{ author()?.pseudo || 'Auteur inconnu' }}
+              </strong>
             </div>
           </div>
         </div>
 
         <aside class="post-detail__aside">
           <div class="post-detail__aside-section">
-            <p class="post-detail__aside-label">À propos</p>
+            <p class="post-detail__aside-label">
+              À propos
+            </p>
 
             <div class="post-detail__aside-row">
               <span>Format</span>
@@ -55,13 +80,56 @@
             </div>
           </div>
 
+          @if (!this.isAuthor()) {
+          <div class="post-detail__like-card">
+              <div class="post-detail__like-content">
+              <span class="post-detail__like-label">
+                Appréciation
+              </span>
+
+              <strong>
+                {{ likesCount() }}
+                {{
+                  `J'aime${likesCount() > 1 ? 's' : ''} `
+                }}
+              </strong>
+            </div>
+            
+            <app-button
+              size="sm"
+              [type]="hasLiked() ? 'primary' : 'secondary'"
+              [icon]="hasLiked() ? 'icon-full-heart' : 'icon-heart'"
+              [label]="hasLiked() ? 'Aimé' : 'J’aime'"
+              [loading]="likeLoading()"
+              (clicked)="toggleLike()"
+            >
+            </app-button>
+          </div>
+        } @else {
+          <div class="post-detail__like-card">
+              <div class="post-detail__like-content">
+              <span class="post-detail__like-label">
+                Appréciation
+              </span>
+
+              <strong>
+                {{ likesCount() }}
+                {{
+                  `J'aime${likesCount() > 1 ? 's' : ''} `
+                }}
+              </strong>
+            </div>
+          </div>
+        }
+          
           <div class="post-detail__aside-actions">
             <app-button
               size="sm"
               type="primary"
               label="Contribuer"
               icon="icon-plus"
-              (clicked)="contribute()">
+              (clicked)="contribute()"
+            >
             </app-button>
 
             <app-button
@@ -69,7 +137,8 @@
               type="secondary"
               label="Partager"
               icon="icon-share"
-              (clicked)="sharePost()">
+              (clicked)="sharePost()"
+            >
             </app-button>
           </div>
         </aside>
@@ -78,19 +147,25 @@
       <main class="post-detail__content">
         <markdown
           class="variable-binding"
-          [data]="post.value()?.content"
-          katex>
+          [data]="currentPost.content"
+          katex
+        >
         </markdown>
       </main>
 
       <section class="post-detail__cta">
         <div class="post-detail__cta-content">
-          <p class="post-detail__cta-label">Contribution communautaire</p>
+          <p class="post-detail__cta-label">
+            Contribution communautaire
+          </p>
 
-          <h2>Tu peux enrichir cette découverte.</h2>
+          <h2>
+            Tu peux enrichir cette découverte.
+          </h2>
 
           <p>
-            Ajoute une source, propose une correction ou complète l’article avec une idée liée.
+            Ajoute une source, propose une correction ou complète
+            l’article avec une idée liée.
           </p>
         </div>
 
@@ -100,14 +175,16 @@
             size="sm"
             label="Proposer une amélioration"
             icon="icon-plus"
-            (clicked)="contribute()">
+            (clicked)="contribute()"
+          >
           </app-button>
 
           <app-button
             type="outlined"
             size="sm"
             label="Retour aux articles"
-            (clicked)="goBack()">
+            (clicked)="goBack()"
+          >
           </app-button>
         </div>
       </section>
@@ -115,7 +192,10 @@
   } @else {
     <div class="post-detail-empty">
       <h1>Article introuvable</h1>
-      <p>Ce contenu n’existe pas ou n’est plus disponible.</p>
+
+      <p>
+        Ce contenu n’existe pas ou n’est plus disponible.
+      </p>
     </div>
   }
 </section>

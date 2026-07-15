@@ -67,7 +67,7 @@ describe('PostController', () => {
         makeMessage(
           'List of all posts is empty.',
           'La liste des publications est vide',
-          null,
+          [],
         ),
       );
     });
