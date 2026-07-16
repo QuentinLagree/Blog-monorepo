@@ -56,6 +56,7 @@ button.btn-select {
 }
 
 .select-list {
+  z-index: 9999;
   position: absolute;
   z-index: 20;
   top: calc(100% + 0.5em);

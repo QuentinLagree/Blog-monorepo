@@ -10,6 +10,7 @@ import { AuthModule } from 'src/modules/auth/auth.module';
 import { TestMocksModule } from './test.mock-module';
 import { PostsModule } from 'src/modules/post/posts.module';
 import { TestPasswordRecoveryModule } from './test-password-recovery.module';
+import { UserPreferencesModule } from 'src/modules/user-preferences/user-preferences.module';
 
 
 @Module({
@@ -25,6 +26,7 @@ import { TestPasswordRecoveryModule } from './test-password-recovery.module';
     AuthModule,
     PostsModule,
     TestPasswordRecoveryModule,
+    UserPreferencesModule
   ],
   controllers: [AppController],
 })

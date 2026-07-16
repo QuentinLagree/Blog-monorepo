@@ -48,3 +48,19 @@ a {
   min-height: 100vh;
   padding: 2em;
 }
+
+.page--enter {
+  animation: page-enter 240ms ease-out both;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

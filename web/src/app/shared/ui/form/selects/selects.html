@@ -5,11 +5,13 @@
   (keydown.backspace)="deleteChoice(this.selectedValues[this.selectedValues.length - 1], $event)"
   tabindex="-1"
 >
-  <p class="baseline">
+  @if (mergeConfigs().label != ' ') {
+    <p class="baseline">
     <label class="input-container-label" [for]="mergeConfigs().label.trim()">
       {{ mergeConfigs().label }}{{ (mergeConfigs().required) ? '' : '*'}}
     </label>
   </p>
+  }
 
   <div
     #main_component

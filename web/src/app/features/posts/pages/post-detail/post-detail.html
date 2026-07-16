@@ -2,200 +2,173 @@
 
 <section class="post-detail-page">
   @if (post.isLoading()) {
-    <div class="post-detail-empty">
-      <p>Chargement de l’article...</p>
-    </div>
+  <div class="post-detail-empty">
+    <p>Chargement de l’article...</p>
+  </div>
   } @else if (post.error()) {
-    <div class="post-detail-empty">
-      <h1>Impossible de charger l’article</h1>
-      <p>Une erreur est survenue pendant le chargement du contenu.</p>
-    </div>
+  <div class="post-detail-empty">
+    <h1>Impossible de charger l’article</h1>
+    <p>Une erreur est survenue pendant le chargement du contenu.</p>
+  </div>
   } @else if (currentPost) {
-    <article class="post-detail">
-      <header class="post-detail__header">
-        <div class="post-detail__main">
-          <div class="post-detail__topline">
-            <span class="post-detail__badge">
-              Article
-            </span>
+  <article class="post-detail">
+    <header class="post-detail__header">
+      <div class="post-detail__main">
+        <div class="post-detail__topline">
+          <span class="post-detail__badge">
+            Article
+          </span>
 
-            <span class="post-detail__date">
-              {{
-                currentPost.published_at || currentPost.created_at
-                  | date: 'dd/MM/yyyy'
-              }}
-            </span>
-
+          <span class="post-detail__date">
+            {{
+            currentPost.published_at || currentPost.created_at
+            | date: 'dd/MM/yyyy'
+            }}
+          </span>
+          
+          @if (this.showReadingTime()) {
             <span class="post-detail__reading-time">
               {{ readingTime() }} min de lecture
             </span>
+          }
+        </div>
+
+        <h1>{{ currentPost.title }}</h1>
+
+        @if (currentPost.description) {
+        <p class="post-detail__description">
+          {{ currentPost.description }}
+        </p>
+        }
+
+        <div class="post-detail__author">
+          <div class="post-detail__author-avatar">
+            {{
+            author()?.pseudo?.charAt(0) ||
+            author()?.prenom?.charAt(0) ||
+            '?'
+            }}
           </div>
 
-          <h1>{{ currentPost.title }}</h1>
+          <div class="post-detail__author-content">
+            <span>Écrit par</span>
 
-          @if (currentPost.description) {
-            <p class="post-detail__description">
-              {{ currentPost.description }}
-            </p>
+            <strong>
+              {{ author()?.pseudo || 'Auteur inconnu' }}
+            </strong>
+          </div>
+        </div>
+      </div>
+
+      <aside class="post-detail__aside">
+        <div class="post-detail__aside-section">
+          <p class="post-detail__aside-label">
+            À propos
+          </p>
+
+          <div class="post-detail__aside-row">
+            <span>Format</span>
+            <strong>Découverte</strong>
+          </div>
+
+          @if (this.showReadingTime()) {
+          <div class="post-detail__aside-row">
+            <span>Lecture</span>
+            <strong>{{ readingTime() }} min</strong>
+          </div>
           }
 
-          <div class="post-detail__author">
-            <div class="post-detail__author-avatar">
+          <div class="post-detail__aside-row">
+            <span>Auteur</span>
+            <strong>{{ author()?.pseudo || 'Inconnu' }}</strong>
+          </div>
+        </div>
+
+        @if (!this.isAuthor()) {
+        <div class="post-detail__like-card">
+          <div class="post-detail__like-content">
+            <span class="post-detail__like-label">
+              Appréciation
+            </span>
+
+            <strong>
+              {{ likesCount() }}
               {{
-                author()?.pseudo?.charAt(0) ||
-                author()?.prenom?.charAt(0) ||
-                '?'
+              `J'aime${likesCount() > 1 ? 's' : ''} `
               }}
-            </div>
-
-            <div class="post-detail__author-content">
-              <span>Écrit par</span>
-
-              <strong>
-                {{ author()?.pseudo || 'Auteur inconnu' }}
-              </strong>
-            </div>
+            </strong>
           </div>
+
+          <app-button size="sm" [type]="hasLiked() ? 'primary' : 'secondary'"
+            [icon]="hasLiked() ? 'icon-full-heart' : 'icon-heart'" [label]="hasLiked() ? 'Aimé' : 'J’aime'"
+            [loading]="likeLoading()" (clicked)="toggleLike()">
+          </app-button>
         </div>
-
-        <aside class="post-detail__aside">
-          <div class="post-detail__aside-section">
-            <p class="post-detail__aside-label">
-              À propos
-            </p>
-
-            <div class="post-detail__aside-row">
-              <span>Format</span>
-              <strong>Découverte</strong>
-            </div>
-
-            <div class="post-detail__aside-row">
-              <span>Lecture</span>
-              <strong>{{ readingTime() }} min</strong>
-            </div>
-
-            <div class="post-detail__aside-row">
-              <span>Auteur</span>
-              <strong>{{ author()?.pseudo || 'Inconnu' }}</strong>
-            </div>
-          </div>
-
-          @if (!this.isAuthor()) {
-          <div class="post-detail__like-card">
-              <div class="post-detail__like-content">
-              <span class="post-detail__like-label">
-                Appréciation
-              </span>
-
-              <strong>
-                {{ likesCount() }}
-                {{
-                  `J'aime${likesCount() > 1 ? 's' : ''} `
-                }}
-              </strong>
-            </div>
-            
-            <app-button
-              size="sm"
-              [type]="hasLiked() ? 'primary' : 'secondary'"
-              [icon]="hasLiked() ? 'icon-full-heart' : 'icon-heart'"
-              [label]="hasLiked() ? 'Aimé' : 'J’aime'"
-              [loading]="likeLoading()"
-              (clicked)="toggleLike()"
-            >
-            </app-button>
-          </div>
         } @else {
-          <div class="post-detail__like-card">
-              <div class="post-detail__like-content">
-              <span class="post-detail__like-label">
-                Appréciation
-              </span>
+        <div class="post-detail__like-card">
+          <div class="post-detail__like-content">
+            <span class="post-detail__like-label">
+              Appréciation
+            </span>
 
-              <strong>
-                {{ likesCount() }}
-                {{
-                  `J'aime${likesCount() > 1 ? 's' : ''} `
-                }}
-              </strong>
-            </div>
+            <strong>
+              {{ likesCount() }}
+              {{
+              `J'aime${likesCount() > 1 ? 's' : ''} `
+              }}
+            </strong>
           </div>
+        </div>
         }
-          
-          <div class="post-detail__aside-actions">
-            <app-button
-              size="sm"
-              type="primary"
-              label="Contribuer"
-              icon="icon-plus"
-              (clicked)="contribute()"
-            >
-            </app-button>
 
-            <app-button
-              size="sm"
-              type="secondary"
-              label="Partager"
-              icon="icon-share"
-              (clicked)="sharePost()"
-            >
-            </app-button>
-          </div>
-        </aside>
-      </header>
-
-      <main class="post-detail__content">
-        <markdown
-          class="variable-binding"
-          [data]="currentPost.content"
-          katex
-        >
-        </markdown>
-      </main>
-
-      <section class="post-detail__cta">
-        <div class="post-detail__cta-content">
-          <p class="post-detail__cta-label">
-            Contribution communautaire
-          </p>
-
-          <h2>
-            Tu peux enrichir cette découverte.
-          </h2>
-
-          <p>
-            Ajoute une source, propose une correction ou complète
-            l’article avec une idée liée.
-          </p>
-        </div>
-
-        <div class="post-detail__cta-actions">
-          <app-button
-            type="primary"
-            size="sm"
-            label="Proposer une amélioration"
-            icon="icon-plus"
-            (clicked)="contribute()"
-          >
+        <div class="post-detail__aside-actions">
+          <app-button size="sm" type="primary" label="Contribuer" icon="icon-plus" (clicked)="contribute()">
           </app-button>
 
-          <app-button
-            type="outlined"
-            size="sm"
-            label="Retour aux articles"
-            (clicked)="goBack()"
-          >
+          <app-button size="sm" type="secondary" label="Partager" icon="icon-share" (clicked)="sharePost()">
           </app-button>
         </div>
-      </section>
-    </article>
+      </aside>
+    </header>
+
+    <main class="post-detail__content">
+      <markdown class="variable-binding" [data]="currentPost.content" katex>
+      </markdown>
+    </main>
+
+    <section class="post-detail__cta">
+      <div class="post-detail__cta-content">
+        <p class="post-detail__cta-label">
+          Contribution communautaire
+        </p>
+
+        <h2>
+          Tu peux enrichir cette découverte.
+        </h2>
+
+        <p>
+          Ajoute une source, propose une correction ou complète
+          l’article avec une idée liée.
+        </p>
+      </div>
+
+      <div class="post-detail__cta-actions">
+        <app-button type="primary" size="sm" label="Proposer une amélioration" icon="icon-plus"
+          (clicked)="contribute()">
+        </app-button>
+
+        <app-button type="outlined" size="sm" label="Retour aux articles" (clicked)="goBack()">
+        </app-button>
+      </div>
+    </section>
+  </article>
   } @else {
-    <div class="post-detail-empty">
-      <h1>Article introuvable</h1>
+  <div class="post-detail-empty">
+    <h1>Article introuvable</h1>
 
-      <p>
-        Ce contenu n’existe pas ou n’est plus disponible.
-      </p>
-    </div>
+    <p>
+      Ce contenu n’existe pas ou n’est plus disponible.
+    </p>
+  </div>
   }
 </section>

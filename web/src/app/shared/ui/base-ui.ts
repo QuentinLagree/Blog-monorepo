@@ -70,7 +70,9 @@ export class UIComponent implements AfterViewInit {
       maxlength: 2
     })
   ]);
-  checkboxControl = new FormControl(false);
+  checkboxControl: FormControl<boolean> = new FormControl(true, {
+      nonNullable: true,
+    });
 
   textareaControl = new FormControl('', [TextAreaValidatorFactory({
     validate: false,

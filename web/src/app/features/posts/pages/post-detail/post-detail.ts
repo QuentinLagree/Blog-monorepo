@@ -1,18 +1,21 @@
 import { DatePipe } from '@angular/common';
 import { HttpContext } from '@angular/common/http';
 import {
-  AfterViewInit,
   Component,
   OnInit,
   resource,
   signal,
   WritableSignal,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import {
+  ActivatedRoute,
+  Router,
+} from '@angular/router';
 import { MarkdownComponent } from 'ngx-markdown';
 import { firstValueFrom } from 'rxjs';
 
-import { ERROR_MESSAGE, SUCCESS_MESSAGE } from 'src/app/shared/helpers/toasts/models/toasts.config';
+import { UserPreferencesService } from 'src/app/features/account/pages/profil/preferences.service';
+import { SUCCESS_MESSAGE } from 'src/app/shared/helpers/toasts/models/toasts.config';
 import { SessionService } from 'src/app/shared/services/session.service';
 import {
   User,
@@ -22,8 +25,9 @@ import { Message } from 'src/app/shared/types/message.type';
 import { BaseButtonComponent } from 'src/app/shared/ui/form/buttons/base-button';
 
 import { PostService } from '../../data-access/post.service';
-import { Post } from '../../model/post.model';
 import { PostLikeStatus } from '../../model/post-like-status.model';
+import { Post } from '../../model/post.model';
+import { environment } from 'src/environments/environment';
 
 const SILENT_CONTEXT = new HttpContext().set(
   SUCCESS_MESSAGE,
@@ -32,83 +36,153 @@ const SILENT_CONTEXT = new HttpContext().set(
 
 @Component({
   selector: 'app-post-detail',
-  templateUrl: './post-detail.html',
-  styleUrls: ['./post-detail.scss'],
+  standalone: true,
   imports: [
     MarkdownComponent,
     DatePipe,
     BaseButtonComponent,
   ],
-  standalone: true,
+  templateUrl: './post-detail.html',
+  styleUrls: ['./post-detail.scss'],
 })
 export class PostDetailComponent implements OnInit {
   slugTitle = '';
 
-  author: WritableSignal<User | undefined> =
-    signal<User | undefined>(undefined);
+  readonly author: WritableSignal<User | undefined> =
+    signal(undefined);
 
-  likesCount = signal(0);
-  hasLiked = signal(false);
-  likeLoading = signal(false);
-  isAuthor = signal(false)
+  readonly likesCount = signal(0);
+  readonly hasLiked = signal(false);
+  readonly likeLoading = signal(false);
+  readonly isAuthor = signal(false);
 
+  /**
+   * Cette préférence est déjà chargée globalement
+   * dans UserPreferencesService.
+   *
+   * Il ne faut pas faire de .set() dessus ici.
+   */
+
+  readonly showReadingTime =
+    this._preferences.showReadingTime;
+
+  readonly post = resource<Post, unknown>({
+    loader: async (): Promise<Post> => {
+      try {
+        this.resetLikeState();
+        this.author.set(undefined);
+
+        const title =
+          this._activatedRoute.snapshot.params['title'] ?? '';
+
+        const slug = title
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+
+        if (!slug) {
+          throw new Error(
+            "Le titre de l'article est manquant.",
+          );
+        }
+
+        const postResponse: Message<Post> =
+          await firstValueFrom(
+            this._postService.getPublishedDetail(
+              slug,
+              {
+                context: SILENT_CONTEXT,
+              },
+            ),
+          );
+
+        if (!postResponse?.data) {
+          throw new Error(
+            "L'article demandé est introuvable.",
+          );
+        }
+
+        const post = postResponse.data;
+
+        const sessionId =
+          this._sessionService.getUserIdSync();
+
+        if (
+          post.published_at == null &&
+          sessionId !== post.authorId
+        ) {
+          await this._router.navigate([
+            '/home',
+          ]);
+
+          throw new Error(
+            "Vous n'êtes pas autorisé à consulter cet article.",
+          );
+        }
+
+        await this.loadAuthor(post);
+
+        if (post.id) {
+          await this.loadLikeStatus(post.id);
+        }
+
+        return post;
+      } catch (error: unknown) {
+        console.error(
+          "Erreur lors du chargement de l'article :",
+          error,
+        );
+
+        if (error instanceof Error) {
+          throw error;
+        }
+
+        if (
+          typeof error === 'object' &&
+          error !== null
+        ) {
+          const httpError = error as {
+            message?: string;
+            error?: {
+              message?: string;
+            };
+          };
+
+          throw new Error(
+            httpError.error?.message ??
+            httpError.message ??
+            "Impossible de charger l'article.",
+            {
+              cause: error,
+            },
+          );
+        }
+
+        throw new Error(
+          "Impossible de charger l'article.",
+          {
+            cause: error,
+          },
+        );
+      }
+    },
+  });
   constructor(
     private readonly _activatedRoute: ActivatedRoute,
     private readonly _router: Router,
     private readonly _userService: UserService,
     private readonly _postService: PostService,
     private readonly _sessionService: SessionService,
-  ) {}
+    private readonly _preferences: UserPreferencesService,
+  ) { }
 
   ngOnInit(): void {
     this.slugTitle =
       this._activatedRoute.snapshot.params['title'] ?? '';
   }
-
-  post = resource<Post, Error>({
-    loader: async (): Promise<Post> => {
-      this.resetLikeState();
-      this.author.set(undefined);
-
-      const title =
-        this._activatedRoute.snapshot.params['title'] ?? '';
-
-      const slug = title
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '');
-
-      const postResponse: Message<Post> =
-        await firstValueFrom(
-          this._postService.getPublishedDetail(slug, {
-            context: SILENT_CONTEXT,
-          }),
-        );
-
-      const post = postResponse.data;
-      const sessionId =
-        this._sessionService.getUserIdSync();
-
-      if (
-        post.published_at == null &&
-        sessionId !== post.authorId
-      ) {
-        await this._router.navigate(['/home']);
-
-        throw new Error(
-          "Vous n'êtes pas autorisé à consulter cet article.",
-        );
-      }
-
-      await this.loadAuthor(post);
-
-      if (post.id) {
-        await this.loadLikeStatus(post.id);
-      }
-
-      return post;
-    },
-  });
-
 
   private resetLikeState(): void {
     this.likesCount.set(0);
@@ -116,7 +190,9 @@ export class PostDetailComponent implements OnInit {
     this.likeLoading.set(false);
   }
 
-  private async loadAuthor(post: Post): Promise<void> {
+  private async loadAuthor(
+    post: Post,
+  ): Promise<void> {
     if (!post.authorId) {
       return;
     }
@@ -130,102 +206,141 @@ export class PostDetailComponent implements OnInit {
           },
         ),
       );
-      this.isAuthor.set(userResponse.data.id === this._sessionService.getUserIdSync())
 
+    const sessionId =
+      this._sessionService.getUserIdSync();
 
-    this.author.set(userResponse.data);
-    
+    this.isAuthor.set(
+      userResponse.data.id === sessionId,
+    );
+
+    this.author.set(
+      userResponse.data,
+    );
   }
 
   private async loadLikeStatus(
-  postId: number,
-): Promise<void> {
-  try {
-    const response: Message<PostLikeStatus> =
-      await firstValueFrom(
-        this._postService.getStatusLike(postId, {
-          context: SILENT_CONTEXT,
-        }),
+    postId: number,
+  ): Promise<void> {
+    try {
+      const response: Message<PostLikeStatus> =
+        await firstValueFrom(
+          this._postService.getStatusLike(
+            postId,
+            {
+              context: SILENT_CONTEXT,
+            },
+          ),
+        );
+
+      if (!response.data) {
+        throw new Error(
+          "La réponse de l'API ne contient pas le statut du like.",
+        );
+      }
+
+      this.hasLiked.set(
+        response.data.liked,
       );
 
-    if (!response.data) {
-      throw new Error(
-        "La réponse de l'API ne contient pas le statut du like.",
+      this.likesCount.set(
+        response.data.likesCount,
+      );
+    } catch (error) {
+      this.hasLiked.set(false);
+      this.likesCount.set(0);
+
+      console.error(
+        'Impossible de charger le statut du like.',
+        error,
       );
     }
-
-    this.hasLiked.set(response.data.liked);
-    this.likesCount.set(response.data.likesCount);
-  } catch (error) {
-    this.hasLiked.set(false);
-    this.likesCount.set(0);
-
-    console.error(
-      'Impossible de charger le statut du like.',
-      error,
-    );
   }
-}
 
   async toggleLike(): Promise<void> {
-  if (this.likeLoading()) {
-    return;
-  }
-
-  const postId = this.post.value()?.id;
-
-  if (!postId) {
-    return;
-  }
-
-  const previousLiked = this.hasLiked();
-  const previousCount = this.likesCount();
-  const nextLiked = !previousLiked;
-
-  this.likeLoading.set(true);
-
-  this.hasLiked.set(nextLiked);
-  this.likesCount.set(
-    nextLiked
-      ? previousCount + 1
-      : Math.max(0, previousCount - 1),
-  );
-
-  try {
-    const response: Message<PostLikeStatus> =
-      nextLiked
-        ? await firstValueFrom(
-            this._postService.likePost(postId, {
-              context: SILENT_CONTEXT,
-            }),
-          )
-        : await firstValueFrom(
-            this._postService.unlikePost(postId, {
-              context: SILENT_CONTEXT,
-            }),
-          );
-
-    if (!response.data) {
-      throw new Error(
-        "L'API n'a pas retourné le nouveau statut du like.",
-      );
+    if (this.likeLoading()) {
+      return;
     }
 
-    // Synchronisation avec la vraie valeur en base
-    this.hasLiked.set(response.data.liked);
-    this.likesCount.set(response.data.likesCount);
-  } catch (error) {
-    this.hasLiked.set(previousLiked);
-    this.likesCount.set(previousCount);
+    const postId =
+      this.post.value()?.id;
 
-    console.error(
-      'Impossible de modifier le like.',
-      error,
+    if (!postId) {
+      return;
+    }
+
+    const previousLiked =
+      this.hasLiked();
+
+    const previousCount =
+      this.likesCount();
+
+    const nextLiked =
+      !previousLiked;
+
+    this.likeLoading.set(true);
+
+    this.hasLiked.set(nextLiked);
+
+    this.likesCount.set(
+      nextLiked
+        ? previousCount + 1
+        : Math.max(
+          0,
+          previousCount - 1,
+        ),
     );
-  } finally {
-    this.likeLoading.set(false);
+
+    try {
+      const response: Message<PostLikeStatus> =
+        nextLiked
+          ? await firstValueFrom(
+            this._postService.likePost(
+              postId,
+              {
+                context: SILENT_CONTEXT,
+              },
+            ),
+          )
+          : await firstValueFrom(
+            this._postService.unlikePost(
+              postId,
+              {
+                context: SILENT_CONTEXT,
+              },
+            ),
+          );
+
+      if (!response.data) {
+        throw new Error(
+          "L'API n'a pas retourné le nouveau statut du like.",
+        );
+      }
+
+      this.hasLiked.set(
+        response.data.liked,
+      );
+
+      this.likesCount.set(
+        response.data.likesCount,
+      );
+    } catch (error) {
+      this.hasLiked.set(
+        previousLiked,
+      );
+
+      this.likesCount.set(
+        previousCount,
+      );
+
+      console.error(
+        'Impossible de modifier le like.',
+        error,
+      );
+    } finally {
+      this.likeLoading.set(false);
+    }
   }
-}
 
   readingTime(): number {
     const content =
@@ -234,7 +349,8 @@ export class PostDetailComponent implements OnInit {
     const words = content
       .trim()
       .split(/\s+/)
-      .filter(Boolean).length;
+      .filter(Boolean)
+      .length;
 
     return Math.max(
       1,
@@ -243,14 +359,20 @@ export class PostDetailComponent implements OnInit {
   }
 
   contribute(): void {
-    throw new Error('Method not implemented.');
+    throw new Error(
+      'Method not implemented.',
+    );
   }
 
   sharePost(): void {
-    throw new Error('Method not implemented.');
+    throw new Error(
+      'Method not implemented.',
+    );
   }
 
   goBack(): void {
-    void this._router.navigate(['']);
+    void this._router.navigate([
+      '',
+    ]);
   }
 }

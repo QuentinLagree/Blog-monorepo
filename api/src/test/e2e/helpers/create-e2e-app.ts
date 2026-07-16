@@ -40,6 +40,7 @@ export async function createE2EApp(): Promise<NestFastifyApplication> {
       transform: true,
       whitelist: true,
       stopAtFirstError: true,
+      forbidNonWhitelisted: true
     }),
   );
 
