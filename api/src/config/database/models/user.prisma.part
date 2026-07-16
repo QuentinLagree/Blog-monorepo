@@ -9,6 +9,8 @@ model User {
 
   posts   Post[]
   likes   Like[]
+  preference UserPreference?
+
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

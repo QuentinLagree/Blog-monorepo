@@ -46,6 +46,32 @@ model Post {
   @@map("post")
 }
 
+// ----- models/user-preferences.prisma.part -----
+model UserPreference {
+  id     Int @id @default(autoincrement())
+  userId Int @unique
+
+  theme                String  @default("system")
+  language             String  @default("fr")
+  fontSize             String  @default("medium")
+  reduceAnimations     Boolean @default(false)
+  showReadingTime      Boolean @default(true)
+  showAuthorDetails    Boolean @default(true)
+  hideReadPosts        Boolean @default(false)
+  notifyOnLike         Boolean @default(true)
+  notifyOnContribution Boolean @default(true)
+  emailNotifications   Boolean @default(false)
+  newsletter           Boolean @default(false)
+  profileVisible       Boolean @default(true)
+  showLikedPosts       Boolean @default(false)
+  showContributions    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 // ----- models/user.prisma.part -----
 model User {
   id       Int    @id @default(autoincrement())
@@ -56,8 +82,9 @@ model User {
   password String
   role     String
 
-  posts Post[]
-  likes Like[]
+  posts      Post[]
+  likes      Like[]
+  preference UserPreference?
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
