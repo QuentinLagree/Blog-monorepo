@@ -1,24 +1,21 @@
-<div class="input-container">
-  @if (mergeConfigs().label) {
-  <p class="baseline">
-    <label class="input-container-label" [for]="mergeConfigs().label.trim()"
-      >{{ mergeConfigs().label }}</label
-    >
-  </p>
-  }
+<label
+  class="switch-button"
+  [class.switch-button--checked]="control.value"
+  [class.switch-button--disabled]="control.disabled"
+>
   <input
+    class="switch-button__input"
+    type="checkbox"
     [formControl]="control"
-    type="hidden"
-    [value]="isChecked()"
-    [attr.id]="mergeConfigs().label.trim()"
-    required="{{ mergeConfigs().required }}"
-    [checked]="isChecked()"
   />
-  <button
-    class="input-container-switch-button"
-    [class.checked]="this.isChecked()"
-    (click)="toggleChecked()"
-  >
-    <span></span>
-  </button>
-</div>
+
+  <span class="switch-button__track">
+    <span class="switch-button__thumb"></span>
+  </span>
+
+  @if (mergeConfigs().label) {
+    <span class="switch-button__label">
+      {{ mergeConfigs().label }}
+    </span>
+  }
+</label>
