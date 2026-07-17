@@ -11,7 +11,14 @@ export interface User {
   nom?: string
   prenom?: string
   created_at: Date
+  role: 'user' | 'admin'
 }
+
+export const Role = {
+  user: 'Utilisateur',
+  admin: 'Administrateur',
+}
+
 
 @Injectable({ providedIn: 'root' })
 export class UserService {

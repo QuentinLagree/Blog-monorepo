@@ -45,6 +45,10 @@ export class PostService {
     return this._http.getData(`users/posts/drafts/${userId}`, options);
   }
 
+  getAllPostOfUser(userId: number, options?: HttpOptions): Observable<Message<Post[]>> {
+    return this._http.getData(`users/posts/${userId}`, options);
+  }
+
   updatePost(id: number, updatedPost: UpdatedPost, options?: HttpOptions) {
     return this._http.patchData(`posts/${id}`, updatedPost, options);
   }

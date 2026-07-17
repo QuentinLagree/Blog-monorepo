@@ -8,10 +8,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import {
-  ActivatedRoute,
-  Router,
-} from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MarkdownComponent } from 'ngx-markdown';
 import {
   firstValueFrom,
@@ -44,7 +41,8 @@ const SILENT_CONTEXT = new HttpContext().set(
     MarkdownComponent,
     DatePipe,
     BaseButtonComponent,
-  ],
+    RouterLink
+],
   templateUrl: './post-detail.html',
   styleUrls: ['./post-detail.scss', '../../../../core/layouts/landing/landing.scss'],
 })

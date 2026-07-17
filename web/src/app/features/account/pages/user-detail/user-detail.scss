@@ -1,0 +1,380 @@
+@use 'variables' as *;
+
+.user-detail-page {
+  width: 100%;
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 2rem 0 4rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.user-detail-header {
+  padding: 2rem;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(20rem, 0.9fr);
+  align-items: center;
+  gap: 2rem;
+
+  background:
+    radial-gradient(circle at top left, rgba($primary, 0.08), transparent 24rem),
+    radial-gradient(circle at bottom right, rgba($secondary, 0.07), transparent 22rem),
+    $surface;
+
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  box-shadow: $card-shadow;
+}
+
+.user-detail-header__identity {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.user-detail-avatar {
+  width: 5rem;
+  height: 5rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  background:
+    radial-gradient(circle at 30% 25%, rgba($secondary, 0.22), transparent 44%),
+    $primary-soft;
+
+  color: $primary;
+
+  border: 1px solid rgba($primary, 0.16);
+  border-radius: $radius-full;
+
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.user-detail-identity {
+  min-width: 0;
+}
+
+.user-detail-eyebrow {
+  color: $primary;
+
+  font-size: 0.78rem;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.user-detail-identity h1 {
+  margin-top: 0.35rem;
+
+  color: $text-primary;
+
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 740;
+  line-height: 1;
+  letter-spacing: -0.055em;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-detail-fullname {
+  margin-top: 0.55rem;
+
+  color: $text-secondary;
+
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.user-detail-joined {
+  margin-top: 0.35rem;
+
+  color: $text-muted;
+
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.user-detail-header__infos {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+}
+
+.user-detail-info {
+  min-width: 0;
+
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+
+  padding: 0.85rem 1rem;
+
+  background: rgba($surface, 0.72);
+  border: 1px solid $border;
+  border-radius: $radius-md;
+}
+
+.user-detail-info span {
+  color: $text-muted;
+
+  font-size: 0.7rem;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.user-detail-info strong {
+  color: $text-primary;
+
+  font-size: 0.95rem;
+  font-weight: 650;
+  line-height: 1.35;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.user-detail-content {
+  padding: 1.5rem;
+
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  box-shadow: $card-shadow;
+}
+
+.user-detail-section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+
+  margin-bottom: 1.25rem;
+}
+
+.user-detail-section-header h2 {
+  margin-top: 0.35rem;
+
+  color: $text-primary;
+
+  font-size: clamp(1.6rem, 3vw, 2.35rem);
+  font-weight: 720;
+  line-height: 1.1;
+  letter-spacing: -0.045em;
+}
+
+.user-posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.user-posts-loading {
+  padding: 2rem;
+
+  text-align: center;
+
+  color: $text-secondary;
+
+  background: $surface-soft;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.user-detail-loading {
+  min-height: 24rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+
+  padding: 2rem;
+
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  box-shadow: $card-shadow;
+}
+
+.user-detail-loading__spinner {
+  width: 3rem;
+  height: 3rem;
+
+  flex: 0 0 auto;
+
+  border: 1px solid rgba($primary, 0.16);
+  border-top-color: $primary;
+  border-radius: $radius-full;
+
+  animation: user-detail-spin 1s linear infinite;
+}
+
+.user-detail-loading h1 {
+  color: $text-primary;
+
+  font-size: 1.35rem;
+  font-weight: 720;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+
+.user-detail-loading p {
+  margin-top: 0.35rem;
+
+  color: $text-secondary;
+
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+@keyframes user-detail-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.user-detail-empty-state {
+  min-height: 20rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+
+  padding: 3rem 2rem;
+
+  text-align: center;
+
+  background: $surface;
+  border: 1px dashed $border-strong;
+  border-radius: $radius-lg;
+  box-shadow: $card-shadow;
+}
+
+.user-detail-empty-state__icon {
+  width: 3rem;
+  height: 3rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: $primary-soft;
+  color: $primary;
+
+  border: 1px solid rgba($primary, 0.16);
+  border-radius: $radius-full;
+
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.user-detail-empty-state h1,
+.user-detail-empty-state h3 {
+  color: $text-primary;
+
+  font-size: 1.4rem;
+  font-weight: 720;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+
+.user-detail-empty-state p {
+  max-width: 32rem;
+
+  color: $text-secondary;
+
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+  .user-detail-header {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+  }
+
+  .user-detail-header__infos {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .user-detail-page {
+    padding: 1rem 0 3rem;
+  }
+
+  .user-detail-header,
+  .user-detail-content {
+    padding: 1.25rem;
+  }
+
+  .user-detail-header__identity {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .user-detail-avatar {
+    width: 4rem;
+    height: 4rem;
+    font-size: 1.55rem;
+  }
+
+  .user-detail-identity h1 {
+    white-space: normal;
+  }
+
+  .user-detail-info {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+
+  .user-detail-section-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .user-detail-loading {
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+  }
+}

@@ -70,7 +70,7 @@
             '?'
             }}
           </div>
-
+          <a [routerLink]="['/account/users', currentPost.authorId]">
           <div class="post-detail__author-content">
             <span>Écrit par</span>
 
@@ -78,6 +78,7 @@
               {{ author()?.pseudo || 'Auteur inconnu' }}
             </strong>
           </div>
+          </a>
         </div>
       </div>
 

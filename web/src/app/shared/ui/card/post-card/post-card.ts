@@ -1,7 +1,7 @@
 import { DatePipe } from "@angular/common";
 import { HttpContext } from "@angular/common/http";
 import { Component, effect, inject, input, InputSignal, signal, WritableSignal } from "@angular/core";
-import { Router } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import { SessionService } from "src/app/shared/services/session.service";
 import { User, UserService } from "src/app/shared/services/user.service";
 import { SUCCESS_MESSAGE } from "src/app/shared/helpers/toasts/models/toasts.config";
@@ -22,7 +22,7 @@ const SILENT_CONTEXT = new HttpContext().set(
     selector: 'app-post-card',
     templateUrl: 'post-card.html',
     styleUrls: ['./post-card.scss'],
-    imports: [DatePipe, BaseButtonComponent, EditButtonComponent]
+    imports: [DatePipe, BaseButtonComponent, EditButtonComponent, RouterLink]
 })
 export class PostCard {
 
