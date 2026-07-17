@@ -23,9 +23,11 @@
         {{ post().published_at| date:'dd/MM/yyyy' }}
       </p>
 
-      <p class="baseline text">
-        <strong>Auteur:</strong> {{ this.author()?.pseudo }}
+      
+        <p class="baseline text">
+        <strong>Auteur:</strong> <a [routerLink]="['/account/users', this.post().authorId]">{{ this.author()?.pseudo }}</a>
       </p>
+    
 
       <div class="buttons frow flex.between gap-3">
         @if (this.sessionId === this.post().authorId || this.sessionRole === 'admin') {
