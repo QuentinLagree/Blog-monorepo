@@ -42,3 +42,36 @@
     </p>
   </div>
 </div>
+  @if (!prod) {
+  <a (click)="setFormWithMode('admin')">
+    <p class="baseline" style="
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    z-index: 99999;
+    background-color: black;
+    color: rgb(226, 226, 9);
+    font-size: 0.8em;
+    user-select: none;
+    padding: 0.2em 2em;
+  ">
+      Connection Admin
+    </p>
+  </a>
+
+  <a (click)="setFormWithMode('user')">
+    <p class="baseline" style="
+    position: fixed;
+    bottom: 40px;
+    left: 10px;
+    z-index: 99999;
+    background-color: black;
+    color: rgb(226, 226, 9);
+    font-size: 0.8em;
+    user-select: none;
+    padding: 0.2em 2em;
+  ">
+      Connection User
+    </p>
+  </a>
+  }

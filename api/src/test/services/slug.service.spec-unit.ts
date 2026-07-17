@@ -1,4 +1,3 @@
-import { NotFoundException } from '@nestjs/common';
 import { SlugService } from 'src/commons/services/slug.service';
 import { PostNotFoundWithSlugException } from 'src/modules/post/exceptions/post-not-found-with-slug.exception';
 import { PostNotFoundException } from 'src/modules/post/exceptions/post-not-found.exception';

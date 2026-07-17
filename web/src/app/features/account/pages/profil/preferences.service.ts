@@ -130,11 +130,6 @@ readonly preferences =
     )
     .pipe(
       tap(({ data }) => {
-        console.log(
-          'Préférences reçues :',
-          data,
-        );
-
         this._preferences.set(data);
         this._loaded.set(true);
       }),

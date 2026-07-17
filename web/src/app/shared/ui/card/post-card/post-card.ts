@@ -84,13 +84,22 @@ export class PostCard {
     }
   }
 
-    getSlugifyPath (noID: boolean = false): string {
-       return (`${this.post().title.toLocaleLowerCase().replaceAll(/[*+~.()'"!:@]/g, "")} ${noID == true ? " " : this.post().id}`).replaceAll("  ", " ").replaceAll(' ', '-')
+    getSlugifyPath (): string {
+       const slug = this.post().title
+    .normalize('NFC')
+    .toLocaleLowerCase('fr-FR')
+    .trim()
+    .replace(/['’`]+/gu, '-')
+    .replace(/[^\p{L}\p{N}]+/gu, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  return `${slug}-${this.post().id}`;
     }
 
     getDetail () {
         const id = this.post().id;
-        const detailPath = `/post/detail/${this.getSlugifyPath(true)}?id=${id}`
+        const detailPath = `/post/detail/${this.getSlugifyPath()}`
         this._router.navigate([detailPath])
         
     }
@@ -104,7 +113,7 @@ export class PostCard {
 
     getDraftDetail () {
       const id = this.post().id;
-        const detailPath = `/draft/detail/${this.getSlugifyPath(true)}?id=${id}`
+        const detailPath = `/draft/detail/${this.getSlugifyPath()}`
         this._router.navigate([detailPath])
     }
 

@@ -335,10 +335,6 @@ loadPreferences(): void {
     .loadPreferences(true)
     .subscribe({
       next: ({ data }) => {
-        console.log(
-          'Préférences reçues dans le profil :',
-          data,
-        );
 
         this.fillPreferencesForm(data);
       },

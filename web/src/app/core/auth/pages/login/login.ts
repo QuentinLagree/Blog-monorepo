@@ -9,7 +9,7 @@ import { UserService } from 'src/app/shared/services/user.service';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { SessionService } from 'src/app/shared/services/session.service';
-import { ContextMenuTriggerDirective } from "src/app/shared/ui/context-menu/context-menu.directive";
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-login-page',
@@ -25,6 +25,8 @@ export class LoginPageComponent {
   private _session: SessionService = inject(SessionService)
 
   loading = false;
+
+  readonly prod: boolean = environment.production;
 
   emailControl = new FormControl('', [
     EmailInputValidatorFactory({
@@ -73,4 +75,15 @@ export class LoginPageComponent {
         });
     }, 2000);
   };
+
+  setFormWithMode(mode: 'admin' | 'user') {
+    let data = {
+      admin: ['lagreequentindev21@gmail.com', 'Salut1234!'],
+      user: ['johhdoe@gmail.com', 'Salut1234!']
+    }
+
+    this.emailControl.setValue(data[mode][0])
+    this.passwordControl.setValue(data[mode][1])
+    
+  }
 }

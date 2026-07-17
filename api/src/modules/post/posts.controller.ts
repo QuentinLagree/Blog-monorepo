@@ -17,13 +17,10 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Post as Articles } from '@prisma/client';
-import { Roles } from 'src/commons/decorators/role.decorator';
 import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
 import { PostOwnerOrAdminGuard } from 'src/commons/guards/post-owner-or-admin.guard';
-import { RolesGuard } from 'src/commons/guards/role.guard';
-import { makeMessage } from 'src/commons/logger/logger.helper';
 import { TransformDataMessageIntoObjectSerialization } from 'src/commons/interceptors/transform_data_message_into_object_serialization.interceptor';
-import { Role } from 'src/commons/roles/role.enum';
+import { makeMessage } from 'src/commons/logger/logger.helper';
 import { SlugService } from 'src/commons/services/slug.service';
 import { Message } from 'src/commons/types/dto/message/message';
 import { PostsEntity } from 'src/modules/post/entities/posts.entities';

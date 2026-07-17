@@ -11,5 +11,5 @@
       path: 'users',
       title: "Liste de tous les utilisateurs",
       loadComponent: () => import('./pages/accounts/accounts').then(m => m.AccountsComponent)   
-    }
+    },
   ];

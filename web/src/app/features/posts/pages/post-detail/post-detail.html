@@ -2,9 +2,30 @@
 
 <section class="post-detail-page">
   @if (post.isLoading()) {
-  <div class="post-detail-empty">
-    <p>Chargement de l’article...</p>
+  <section class="session-loading-page" aria-label="Vérification de la session">
+  <div class="session-loading-card">
+    <div class="session-loading-logo" aria-hidden="true">
+      <span class="session-loading-logo__ring"></span>
+      <span class="session-loading-logo__mark"></span>
+    </div>
+
+    <div class="session-loading-content">
+      <p class="session-loading-eyebrow">Recherche de l'article</p>
+
+      <h1>Récupération de l'article</h1>
+
+      <p>
+        Nous récupérons l'article depuis le serveur. Bonne découverte et bonne lecture.
+      </p>
+    </div>
+
+    <div class="session-loading-steps" aria-hidden="true">
+      <span class="session-loading-step session-loading-step--active"></span>
+      <span class="session-loading-step"></span>
+      <span class="session-loading-step"></span>
+    </div>
   </div>
+</section>`,
   } @else if (post.error()) {
   <div class="post-detail-empty">
     <h1>Impossible de charger l’article</h1>

@@ -45,7 +45,5 @@ export class AppComponent implements OnInit {
     this._preferences
       .loadPreferences()
       .subscribe();
-
-    console.log(this._preferences.getPreference('showReadingTime'))
   }
 }
