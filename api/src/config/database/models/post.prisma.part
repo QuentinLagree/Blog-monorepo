@@ -3,7 +3,7 @@ model Post {
   authorId    Int
   title       String
   description String
-  content     String
+  content     String @db.Text
   likes       Like[]
 
   created_at DateTime @default(now())

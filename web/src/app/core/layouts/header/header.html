@@ -28,10 +28,21 @@
       <app-button
         type="danger"
         size="sm"
-        [loading]="loading"
         label="Se déconnecter"
-        (clicked)="this.logout()">
+        (clicked)="openModal()">
       </app-button>
     }
   </nav>
 </header>
+
+<app-confirm-modal
+  [open]="modalOpen"
+  title="Se déconnecter ?"
+  message="Tu vas quitter ton espace personnel. Tu pourras te reconnecter à tout moment pour retrouver tes articles, tes brouillons et ton profil."
+  confirmLabel="Se déconnecter"
+  cancelLabel="Rester connecté"
+  variant="danger"
+  [loading]="loading"
+  (cancelled)="modalOpen = false"
+  (confirmed)="logout()">
+</app-confirm-modal>

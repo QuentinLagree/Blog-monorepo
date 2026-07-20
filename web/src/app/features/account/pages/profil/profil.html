@@ -50,9 +50,6 @@
   </header>
 
   <div class="profile-container">
-    <!-- =========================
-         BROUILLONS
-    ========================== -->
 
     <section class="profile-section">
       <div class="profile-section__header">
@@ -93,10 +90,6 @@
       </div>
     </section>
 
-    <!-- =========================
-         PRÉFÉRENCES
-    ========================== -->
-
     <section class="profile-section">
       <div class="profile-section__header">
         <div>
@@ -120,9 +113,6 @@
         <div class="profile-collapse__inner">
           <form class="profile-preferences profile-reveal-panel" animate.enter="profile-reveal-panel--enter"
             animate.leave="profile-reveal-panel--leave" [formGroup]="preferencesForm">
-            <!-- =========================
-       APPARENCE
-  ========================== -->
 
             <section class="profile-preferences__group">
               <div class="profile-preferences__group-header">
@@ -206,10 +196,6 @@
                 </article>
               </div>
             </section>
-
-            <!-- =========================
-       LECTURE
-  ========================== -->
 
             <section class="profile-preferences__group">
               <div class="profile-preferences__group-header">
@@ -297,10 +283,6 @@
                 </article>
               </div>
             </section>
-
-            <!-- =========================
-       NOTIFICATIONS
-  ========================== -->
 
             <section class="profile-preferences__group">
               <div class="profile-preferences__group-header">
@@ -412,10 +394,6 @@
               </div>
             </section>
 
-            <!-- =========================
-       CONFIDENTIALITÉ
-  ========================== -->
-
             <section class="profile-preferences__group">
               <div class="profile-preferences__group-header">
                 <div>
@@ -524,10 +502,6 @@
       </div>
     </section>
 
-    <!-- =========================
-         ZONE SENSIBLE
-    ========================== -->
-
     <section class="profile-danger-zone">
       <div>
         <h2>Zone sensible</h2>
@@ -538,7 +512,13 @@
         </p>
       </div>
 
-      <app-button-danger label="Supprimer le profil" />
+      <app-button-danger label="Supprimer le profil" (clicked)="openDeleteProfileModal()" />
     </section>
   </div>
 </section>
+
+<app-confirm-modal [open]="deleteProfileModalOpen" title="Supprimer ton profil ?"
+        message="Cette action est définitive. Ton compte et tes informations personnelles seront supprimés."
+        confirmLabel="Supprimer" cancelLabel="Annuler" variant="danger" [loading]="deleteProfileLoading"
+        (cancelled)="closeDeleteProfileModal()" (confirmed)="deleteProfile()">
+      </app-confirm-modal>

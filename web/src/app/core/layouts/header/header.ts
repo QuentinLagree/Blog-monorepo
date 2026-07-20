@@ -5,13 +5,14 @@ import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
 import { SessionService, UserSession } from 'src/app/shared/services/session.service';
 import { UserService } from 'src/app/shared/services/user.service';
 import { BaseButtonComponent } from "src/app/shared/ui/form/buttons/base-button";
+import { ConfirmModalComponent } from "src/app/shared/helpers/modal/confirm-modal/confirm-modal";
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.html',
   styleUrls: ['./header.scss'],
   standalone: true,
-  imports: [BaseButtonComponent, RouterLink]
+  imports: [BaseButtonComponent, RouterLink, ConfirmModalComponent]
 })
 export class HeaderComponent {
 
@@ -22,9 +23,15 @@ export class HeaderComponent {
   protected _breadCrumb: BreadcrumbService = inject(BreadcrumbService)
   
   title: InputSignal<string> = input.required<string>();
-  loading = false;
   user: UserSession | undefined;
-  
+
+  modalOpen = false;
+  loading = false;
+
+  openModal(): void {
+    this.modalOpen = true;
+  }
+
   logout() {
         this.loading = true;
         setTimeout(() => {
@@ -35,6 +42,7 @@ export class HeaderComponent {
                 this.loading = false
             })
         ).subscribe(() => {
+            this.modalOpen = false;
             this._session.clearSession();
             this._router.navigate([''])
         })

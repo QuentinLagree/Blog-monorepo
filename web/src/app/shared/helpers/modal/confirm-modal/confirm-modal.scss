@@ -9,61 +9,175 @@
   align-items: center;
   justify-content: center;
 
-  padding: 1rem;
+  padding: 1.25rem;
 
-  background: rgba($black, 0.42);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background:
+    radial-gradient(circle at top left, rgba($primary, 0.12), transparent 28rem),
+    radial-gradient(circle at bottom right, rgba($secondary, 0.08), transparent 24rem),
+    rgba($black, 0.34);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .confirm-modal {
-  width: min(100%, 28rem);
+  width: min(100%, 29rem);
 
-  padding: 1.5rem;
+  padding: 2rem 1.75rem 1.5rem;
 
-  background: $surface;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  background: rgba($surface, 0.94);
   color: $text-primary;
 
-  border: 1px solid $border;
+  border: 1px solid rgba($border, 0.95);
   border-radius: $radius-lg;
-  box-shadow: $card-shadow-hover;
+  box-shadow: 0 18px 60px rgba($black, 0.14);
 
-  animation: confirm-modal-enter 0.16s ease-out;
+  text-align: center;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  animation: confirm-modal-enter 0.18s ease-out;
 }
 
+/* =========================
+   ICON
+========================= */
+
 .confirm-modal__icon {
-  width: 2.75rem;
-  height: 2.75rem;
+  position: relative;
+
+  width: 4.75rem;
+  height: 4.75rem;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 
+  color: $primary;
+
+  background:
+    radial-gradient(circle at 35% 30%, rgba($secondary, 0.2), transparent 42%),
+    $primary-soft;
+
+  border: 1px solid rgba($primary, 0.16);
+  border-radius: $radius-lg;
+
+  box-shadow:
+    inset 0 0 0 0.45rem rgba($surface, 0.62),
+    0 1px 2px rgba($black, 0.04);
+}
+
+.confirm-modal__icon::before {
+  content: "";
+
+  width: 0.82rem;
+  height: 0.82rem;
+
+  display: block;
+
+  background: currentColor;
   border-radius: $radius-full;
 
-  font-size: 1.2rem;
-  font-weight: 800;
-  line-height: 1;
+  box-shadow:
+    0.58rem 0.48rem 0 rgba($primary, 0.34),
+    -0.48rem 0.58rem 0 rgba($secondary, 0.55);
 }
+
+.confirm-modal__icon::after {
+  content: "";
+
+  position: absolute;
+  inset: 0.55rem;
+
+  border: 1px solid rgba($primary, 0.16);
+  border-radius: calc($radius-lg - 0.35rem);
+
+  pointer-events: none;
+}
+
+/* Supprime l'ancien mark si ton HTML l'a encore */
+.confirm-modal__icon-mark {
+  display: none;
+}
+
+/* PRIMARY */
 
 .confirm-modal__icon--primary {
-  background: $primary-soft;
   color: $primary;
-  border: 1px solid rgba($primary, 0.16);
+
+  background:
+    radial-gradient(circle at 35% 30%, rgba($secondary, 0.2), transparent 42%),
+    $primary-soft;
+
+  border-color: rgba($primary, 0.16);
 }
+
+.confirm-modal__icon--primary::after {
+  border-color: rgba($primary, 0.16);
+}
+
+/* WARNING */
 
 .confirm-modal__icon--warning {
-  background: $warning-soft;
   color: $warning;
-  border: 1px solid rgba($warning, 0.2);
+
+  background:
+    radial-gradient(circle at 35% 30%, rgba($secondary, 0.14), transparent 42%),
+    $warning-soft;
+
+  border-color: rgba($warning, 0.2);
 }
 
+.confirm-modal__icon--warning::before {
+  background: $warning;
+
+  box-shadow:
+    0.58rem 0.48rem 0 rgba($warning, 0.32),
+    -0.48rem 0.58rem 0 rgba($secondary, 0.45);
+}
+
+.confirm-modal__icon--warning::after {
+  border-color: rgba($warning, 0.18);
+}
+
+/* DANGER */
+
 .confirm-modal__icon--danger {
-  background: $danger-soft;
   color: $danger;
-  border: 1px solid rgba($danger, 0.18);
+
+  background:
+    radial-gradient(circle at 35% 30%, rgba($secondary, 0.12), transparent 42%),
+    $danger-soft;
+
+  border-color: rgba($danger, 0.18);
+}
+
+.confirm-modal__icon--danger::before {
+  background: $danger;
+
+  box-shadow:
+    0.58rem 0.48rem 0 rgba($danger, 0.28),
+    -0.48rem 0.58rem 0 rgba($secondary, 0.42);
+}
+
+.confirm-modal__icon--danger::after {
+  border-color: rgba($danger, 0.16);
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.confirm-modal__content {
+  width: 100%;
+  max-width: 24rem;
 }
 
 .confirm-modal__content h2 {
@@ -71,34 +185,71 @@
 
   color: $text-primary;
 
-  font-size: 1.45rem;
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.035em;
+  font-size: clamp(1.45rem, 4vw, 1.9rem);
+  font-weight: 720;
+  line-height: 1.05;
+  letter-spacing: -0.045em;
 }
 
 .confirm-modal__content p {
-  margin: 0.6rem 0 0;
+  margin: 0.75rem 0 0;
 
   color: $text-secondary;
 
-  font-size: 0.95rem;
-  line-height: 1.55;
+  font-size: 0.96rem;
+  line-height: 1.65;
 }
+
+.confirm-modal__notice {
+  width: 100%;
+  max-width: 24rem;
+
+  margin-top: 1.25rem;
+  padding: 0.9rem 1rem;
+
+  background: $surface-soft;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+
+  color: $text-secondary;
+
+  font-size: 0.88rem;
+  line-height: 1.55;
+  text-align: left;
+}
+
+.confirm-modal__notice strong {
+  color: $text-primary;
+  font-weight: 700;
+}
+
+/* =========================
+   ACTIONS
+========================= */
 
 .confirm-modal__actions {
+  width: 100%;
+
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 0.75rem;
 
-  margin-top: 1.5rem;
+  margin-top: 1.4rem;
 }
+
+.confirm-modal__actions app-button {
+  display: inline-flex;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
 
 @keyframes confirm-modal-enter {
   from {
     opacity: 0;
-    transform: translateY(0.35rem) scale(0.98);
+    transform: translateY(0.45rem) scale(0.985);
   }
 
   to {
@@ -107,10 +258,37 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .confirm-modal {
+    animation: none;
+  }
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
 @media (max-width: 520px) {
   .confirm-modal {
-    padding: 1.25rem;
+    padding: 1.6rem 1.15rem 1.15rem;
     border-radius: $radius-md;
+  }
+
+  .confirm-modal__icon {
+    width: 4.1rem;
+    height: 4.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .confirm-modal__icon-mark {
+    width: 2.35rem;
+    height: 2.35rem;
+
+    font-size: 1rem;
+  }
+
+  .confirm-modal__notice {
+    padding: 0.8rem;
   }
 
   .confirm-modal__actions {

@@ -43,6 +43,8 @@ import {
   UserPreferencesService,
 } from './preferences.service';
 import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
+import { ConfirmModalComponent } from "src/app/shared/helpers/modal/confirm-modal/confirm-modal";
+import { ToastService } from 'src/app/shared/helpers/toasts/toaster.service';
 
 type ThemeControlValue =
   | 'Système'
@@ -65,6 +67,7 @@ type FontSizeControlValue =
     PostCard,
     SelectComponent,
     SwitchButtonComponent,
+    ConfirmModalComponent
   ],
   templateUrl: './profil.html',
   styleUrls: ['./profil.scss'],
@@ -84,6 +87,9 @@ export class ProfilPageComponent {
 
   private readonly _breadCrumb =
     inject(BreadcrumbService)
+
+  private readonly _toast =
+    inject(ToastService)
 
   readonly sessionId =
     this._session.getUserIdSync();
@@ -292,20 +298,20 @@ export class ProfilPageComponent {
         label: 'Mon compte'
       }
     ])
-  effect(() => {
-    if (!this._preferences.loaded()) {
-      return;
-    }
+    effect(() => {
+      if (!this._preferences.loaded()) {
+        return;
+      }
 
-    const preferences =
-      this._preferences.preferences();
+      const preferences =
+        this._preferences.preferences();
 
-    this.fillPreferencesForm(preferences);
-  });
+      this.fillPreferencesForm(preferences);
+    });
 
-  void this.loadUser();
-  this.loadPreferences();
-}
+    void this.loadUser();
+    this.loadPreferences();
+  }
 
   private async loadUser(): Promise<void> {
     if (!this.sessionId) {
@@ -327,31 +333,31 @@ export class ProfilPageComponent {
 
     this.user.set(response.data);
   }
-  
-loadPreferences(): void {
-  if (
-    !this.sessionId ||
-    this._preferences.loading()
-  ) {
-    return;
+
+  loadPreferences(): void {
+    if (
+      !this.sessionId ||
+      this._preferences.loading()
+    ) {
+      return;
+    }
+
+    this._preferences
+      .loadPreferences(true)
+      .subscribe({
+        next: ({ data }) => {
+
+          this.fillPreferencesForm(data);
+        },
+
+        error: (error) => {
+          console.error(
+            'Impossible de charger les préférences.',
+            error,
+          );
+        },
+      });
   }
-
-  this._preferences
-    .loadPreferences(true)
-    .subscribe({
-      next: ({ data }) => {
-
-        this.fillPreferencesForm(data);
-      },
-
-      error: (error) => {
-        console.error(
-          'Impossible de charger les préférences.',
-          error,
-        );
-      },
-    });
-}
 
   savePreferences(
     cta = false,
@@ -491,5 +497,28 @@ loadPreferences(): void {
       SUCCESS_MESSAGE,
       false,
     );
+  }
+  deleteProfileModalOpen = false;
+  deleteProfileLoading = false;
+
+  openDeleteProfileModal(): void {
+    this.deleteProfileModalOpen = true;
+  }
+
+  closeDeleteProfileModal(): void {
+    this.deleteProfileModalOpen = false;
+  }
+
+  async deleteProfile(): Promise<void> {
+    this.deleteProfileLoading = true;
+
+    try {
+
+      this._toast.success("Compte supprimé")
+      this.deleteProfileModalOpen = false;
+
+    } finally {
+      this.deleteProfileLoading = false;
+    }
   }
 }

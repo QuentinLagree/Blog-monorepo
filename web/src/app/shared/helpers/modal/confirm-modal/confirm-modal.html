@@ -6,22 +6,33 @@
       aria-modal="true"
       [attr.aria-label]="title"
     >
-      <div class="confirm-modal__icon" [class.confirm-modal__icon--danger]="variant === 'danger'"
+      <div
+        class="confirm-modal__icon"
+        [class.confirm-modal__icon--danger]="variant === 'danger'"
         [class.confirm-modal__icon--warning]="variant === 'warning'"
-        [class.confirm-modal__icon--primary]="variant === 'primary'">
-        @if (variant === 'danger') {
-          !
-        } @else if (variant === 'warning') {
-          !
-        } @else {
-          ✓
-        }
+        [class.confirm-modal__icon--primary]="variant === 'primary'"
+        aria-hidden="true"
+      >
+        <span class="confirm-modal__icon-mark">
+          @if (variant === 'danger') {
+            !
+          } @else if (variant === 'warning') {
+            !
+          } @else {
+            ✓
+          }
+        </span>
       </div>
 
       <div class="confirm-modal__content">
         <h2>{{ title }}</h2>
         <p>{{ message }}</p>
       </div>
+
+      <p class="confirm-modal__notice">
+        <strong>À vérifier avant de continuer.</strong>
+        Cette action peut modifier l’état de ton espace ou de tes contenus.
+      </p>
 
       <div class="confirm-modal__actions">
         <app-button
