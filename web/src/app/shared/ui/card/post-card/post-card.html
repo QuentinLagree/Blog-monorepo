@@ -1,5 +1,29 @@
+@if (!isDeleted()) {
+  <app-confirm-modal
+  [open]="publishModalOpen"
+  title="Supprimer cette publication ?"
+  [message]="`Tu t’apprêtes à supprimer définitivement la publication « ${this.post().title} » de ${this.author()?.pseudo}, publiée le ${(this.post().published_at | date:'dd/MM/yyyy')}. Cette action est irréversible et le contenu ne sera plus accessible par la communauté.`"
+  confirmLabel="Supprimer la publication"
+  cancelLabel="Annuler"
+  variant="danger"
+  [loading]="publishModalLoading"
+  (cancelled)="closePostDeleteModal()"
+  (confirmed)="deletePost()">
+</app-confirm-modal>
+<app-confirm-modal
+  [open]="authorModalOpen"
+  title="Supprimer l'auteur de cette publication ?"
+  [message]="`Tu t’apprêtes à supprimer définitivement l'utilisateur ${this.author()?.pseudo}'. Cette action est irréversible et le contenu ne sera plus accessible par la communauté.`"
+  confirmLabel="Supprimer l'auteur"
+  cancelLabel="Annuler"
+  variant="danger"
+  [loading]="authorModalLoading"
+  (cancelled)="closeAuthorDeleteModal()"
+  (confirmed)="deleteUser()">
+</app-confirm-modal>
 @if (!isDraft()) {
-<a class="post_detail" [href]="detailPath">
+<a [contextMenuTrigger]="sessionRole === 'admin' ? options : null"
+              [contextMenuAction]="sessionRole === 'admin' ? formatFromContextMenu : null" class="post_detail" [href]="detailPath">
   <article class="post-container p-2">
     <div class="post-container__infos">
       <div class="title" (click)="this.getDetail()">
@@ -74,4 +98,6 @@
     </div>
   </article>
 </a>
+
+}
 }

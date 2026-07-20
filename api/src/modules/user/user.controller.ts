@@ -33,7 +33,7 @@ export class UserController {
   constructor(private readonly _user: UserService) {}
 
   @UseGuards(AuthGuardSession(), RolesGuard)
-  @Roles(Role.Admin)
+  @Roles(Role.Admin, Role.User)
   @Get()
   @HttpCode(200)
   async index(): Promise<Message<userSelectPayload[] | null>> {

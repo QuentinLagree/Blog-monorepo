@@ -156,3 +156,14 @@ export const MarkdownSyntaxOptions: MarkdownSyntax[] = [
     , bloc: true
   }
 ]
+
+export const AdminActionsMenu = [
+  {
+    name: 'delete-post',
+    display: 'Supprimer la publication',
+  },
+  {
+    name: 'delete-author',
+    display: "Supprimer l'auteur de la publication"
+  }
+]

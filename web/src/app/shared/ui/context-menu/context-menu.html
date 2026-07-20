@@ -7,7 +7,7 @@
     role="menu">
 
     <ul class="context-menu__list">
-      @for (syntax of this.getAllOptions(); track $index) {
+      @for (syntax of this.data; track $index) {
         <li
           class="context-menu__item"
           role="menuitem"

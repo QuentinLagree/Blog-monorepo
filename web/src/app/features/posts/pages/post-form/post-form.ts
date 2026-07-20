@@ -31,6 +31,7 @@ import { PostEditorImageService } from '../../data-access/post-image-editor.serv
 import { SessionService } from 'src/app/shared/services/session.service';
 import { Post } from '../../model/post.model';
 import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
+import { MarkdownSyntaxOptions } from 'src/app/shared/ui/context-menu/config/context-menu-options';
 
 @Component({
   selector: 'app-form-post',
@@ -65,6 +66,8 @@ export class PostFormComponent implements AfterViewInit {
   @ViewChild('relinkPicker') relinkPicker?: ElementRef<HTMLInputElement>;
 
   post: InputSignal<Post | undefined> = input();
+
+  options = MarkdownSyntaxOptions
 
   showPreview: WritableSignal<boolean> = signal(false);
   resolvedMarkdown = signal<string>('');

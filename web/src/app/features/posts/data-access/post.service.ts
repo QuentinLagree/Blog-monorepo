@@ -53,6 +53,10 @@ export class PostService {
     return this._http.patchData(`posts/${id}`, updatedPost, options);
   }
 
+  deletePost(id: number, options?: HttpOptions): Observable<Message<null>> {
+    return this._http.deleteData(`posts/${id}`, options)
+  }
+
   getStatusLike(
     postId: number,
     options?: HttpOptions,

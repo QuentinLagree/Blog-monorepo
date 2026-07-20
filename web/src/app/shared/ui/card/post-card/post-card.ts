@@ -5,7 +5,7 @@ import { Router, RouterLink } from "@angular/router";
 import { SessionService } from "src/app/shared/services/session.service";
 import { User, UserService } from "src/app/shared/services/user.service";
 import { SUCCESS_MESSAGE } from "src/app/shared/helpers/toasts/models/toasts.config";
-import { firstValueFrom } from "rxjs";
+import { firstValueFrom, timeout } from "rxjs";
 import { BaseButtonComponent } from "../../form/buttons/base-button";
 import { EditButtonComponent } from "../../form/buttons/button-edit/button-edit";
 import { Post } from "src/app/features/posts/model/post.model";
@@ -13,6 +13,10 @@ import { Message } from "src/app/shared/types/message.type";
 import { PostLikeStatus } from "src/app/features/posts/model/post-like-status.model";
 import { PostService } from "src/app/features/posts/data-access/post.service";
 import { DangerButtonComponent } from "../../form/buttons/button-danger/button-danger";
+import { ContextMenuTriggerDirective } from "../../context-menu/context-menu.directive";
+import { AdminActionsMenu } from "../../context-menu/config/context-menu-options";
+import { ToastService } from "src/app/shared/helpers/toasts/toaster.service";
+import { ConfirmModalComponent } from "src/app/shared/helpers/modal/confirm-modal/confirm-modal";
 
 const SILENT_CONTEXT = new HttpContext().set(
   SUCCESS_MESSAGE,
@@ -23,13 +27,15 @@ const SILENT_CONTEXT = new HttpContext().set(
     selector: 'app-post-card',
     templateUrl: 'post-card.html',
     styleUrls: ['./post-card.scss'],
-    imports: [DatePipe, BaseButtonComponent, EditButtonComponent, RouterLink, DangerButtonComponent]
+    imports: [DatePipe, BaseButtonComponent, EditButtonComponent, RouterLink, DangerButtonComponent,
+    ContextMenuTriggerDirective, ConfirmModalComponent]
 })
 export class PostCard {
 
     private _user: UserService = inject(UserService);
     private _router: Router = inject(Router)
     private _session: SessionService = inject(SessionService)
+    private _toast: ToastService = inject(ToastService)
     
     post: InputSignal<Post> = input.required<Post>()
     author: WritableSignal<User | undefined> = signal(undefined);
@@ -38,7 +44,11 @@ export class PostCard {
 
     detailPath: string = "";
 
+    isDeleted = signal(false)
+
     authorLoading = false;
+
+    options = AdminActionsMenu
 
     sessionId = this._session.getUserIdSync();
     sessionRole = this._session.getUserRoleSync();
@@ -82,6 +92,19 @@ export class PostCard {
       this.author.set(undefined);
     } finally {
       this.authorLoading = false;
+    }
+  }
+
+  formatFromContextMenu = (_data: unknown, option: string) =>  {
+    switch (option) {
+      case 'delete-post':
+        this.openPostDeleteModal()
+        break;
+
+      case 'delete-author':
+        this.openAuthorDeleteModal()
+        break;
+
     }
   }
 
@@ -149,4 +172,57 @@ export class PostCard {
         );
       }
     }
+
+    publishModalOpen = false;
+  publishModalLoading = false;
+
+  openPostDeleteModal(): void {
+    this.publishModalOpen = true;
+  }
+
+  closePostDeleteModal(): void {
+    this.publishModalOpen = false;
+  }
+
+  async deletePost(): Promise<void> {
+    this.publishModalLoading = true;
+
+    try {
+
+      this._postService.deletePost(this.post().id ?? 0).subscribe({
+        next: () => {
+          this.isDeleted.set(true)
+        }
+      })
+      this.publishModalOpen = false;
+
+    } finally {
+      this.publishModalLoading = false;
+    }
+  }
+
+  authorModalOpen = false;
+  authorModalLoading = false;
+
+  openAuthorDeleteModal(): void {
+    this.authorModalOpen = true;
+  }
+
+  closeAuthorDeleteModal(): void {
+    this.authorModalOpen = false;
+  }
+
+  async deleteUser(): Promise<void> {
+    this.authorModalLoading = true;
+
+    try {
+
+      setTimeout(() => {
+      this.authorModalOpen = false;
+      }, 3000)
+
+    } finally {
+      this.authorModalLoading = false;
+    }
+  }
 }

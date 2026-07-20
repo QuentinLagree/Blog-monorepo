@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
-import { MarkdownSyntaxOptions } from '../config/context-menu-options';
+import { AdminActionsMenu, MarkdownSyntaxOptions } from '../config/context-menu-options';
 
 @Injectable({ providedIn: 'root' })
 export class ContextMenuService {
-    options = MarkdownSyntaxOptions
   private openSubject = new Subject<{
     x: number;
     y: number;

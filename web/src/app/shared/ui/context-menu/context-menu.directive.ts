@@ -6,12 +6,13 @@ import { ContextMenuService } from './services/context-menu.service';
 })
 export class ContextMenuTriggerDirective {
   @Input('contextMenuTrigger') data: any;
-  @Input() contextMenuAction!: (data: any, optionName: string) => void;
+  @Input() contextMenuAction: ((data: any, optionName: string) => void) | null = null;
 
   constructor(private contextMenu: ContextMenuService) {}
 
   @HostListener('contextmenu', ['$event'])
   onRightClick(event: MouseEvent) {
+    if (this.contextMenuAction) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -22,5 +23,6 @@ export class ContextMenuTriggerDirective {
       data: this.data,
       action: this.contextMenuAction
     });
+    }
   }
 }

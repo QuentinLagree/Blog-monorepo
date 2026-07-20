@@ -14,10 +14,12 @@ import { ContextMenuService } from './services/context-menu.service';
 export class ContextMenuComponent {
   @ViewChild('menu') menuRef?: ElementRef<HTMLElement>;
 
+  mode: 'markdown' | 'admin' = 'markdown'
+
   visible = false;
   pos = { x: 0, y: 0 };
   data: any;
-  action: Function = () => {}
+  action: Function = () => { }
 
   private clickPoint = { x: 0, y: 0 };
 
@@ -37,8 +39,6 @@ export class ContextMenuComponent {
   private reposition() {
     const element = this.menuRef?.nativeElement;
     if (!element) return;
-
-    console.log('reposition OK');
 
     const menuW = element.offsetWidth;
     const menuH = element.offsetHeight;
@@ -75,5 +75,4 @@ export class ContextMenuComponent {
     this.visible = false
   }
 
-  getAllOptions() { return this._contextmenu.options }
 }
