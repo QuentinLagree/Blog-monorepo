@@ -12,6 +12,7 @@ import { Post } from "src/app/features/posts/model/post.model";
 import { Message } from "src/app/shared/types/message.type";
 import { PostLikeStatus } from "src/app/features/posts/model/post-like-status.model";
 import { PostService } from "src/app/features/posts/data-access/post.service";
+import { DangerButtonComponent } from "../../form/buttons/button-danger/button-danger";
 
 const SILENT_CONTEXT = new HttpContext().set(
   SUCCESS_MESSAGE,
@@ -22,7 +23,7 @@ const SILENT_CONTEXT = new HttpContext().set(
     selector: 'app-post-card',
     templateUrl: 'post-card.html',
     styleUrls: ['./post-card.scss'],
-    imports: [DatePipe, BaseButtonComponent, EditButtonComponent, RouterLink]
+    imports: [DatePipe, BaseButtonComponent, EditButtonComponent, RouterLink, DangerButtonComponent]
 })
 export class PostCard {
 

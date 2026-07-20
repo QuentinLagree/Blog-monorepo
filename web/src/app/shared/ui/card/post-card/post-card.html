@@ -66,11 +66,10 @@
       }
 
       <div class="buttons frow flex.between gap-3">
-        <app-button-edit (clicked)="updatePost()" icon="icon-info" label="Continuer la modification">
-        </app-button-edit>
-
-        <app-button size="sm" type="primary" label="Lire l'article" (clicked)="this.getDetail()">
+        <app-button type="primary" size="sm" (clicked)="updatePost()" label="Editer">
         </app-button>
+
+        <app-button-danger label="supprimer"></app-button-danger>
       </div>
     </div>
   </article>
