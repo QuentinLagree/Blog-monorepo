@@ -1,0 +1,136 @@
+@use 'variables' as *;
+
+.breadcrumb {
+  width: fit-content;
+  max-width: 100%;
+
+  margin: -0.6rem 0 1.25rem;
+  padding: 0;
+
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.breadcrumb__list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+.breadcrumb__item {
+  min-width: 0;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  color: $text-muted;
+
+  font-size: 0.78rem;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.breadcrumb__link,
+.breadcrumb__current {
+  max-width: 50rem;
+
+  display: inline-flex;
+  align-items: center;
+
+  padding: 0.28rem 0.45rem;
+
+  border-radius: $radius-full;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breadcrumb__link {
+  color: $text-muted;
+  text-decoration: none;
+
+  transition:
+    color 0.16s ease,
+    background-color 0.16s ease,
+    transform 0.16s ease;
+}
+
+.breadcrumb__link:hover {
+  color: $primary;
+  background: rgba($primary, 0.08);
+  text-decoration: none;
+}
+
+.breadcrumb__link:active {
+  transform: scale(0.98);
+}
+
+.breadcrumb__link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px $focus-ring;
+}
+
+.breadcrumb__current {
+  color: $text-secondary;
+  font-weight: 750;
+}
+
+.breadcrumb__item:last-child .breadcrumb__current {
+  color: $primary;
+  background: rgba($primary, 0.08);
+  border: 1px solid rgba($primary, 0.12);
+}
+
+.breadcrumb__separator {
+  color: $border-strong;
+  font-weight: 700;
+  user-select: none;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 720px) {
+  .breadcrumb {
+    width: 100%;
+    margin: -0.35rem 0 1rem;
+  }
+
+  .breadcrumb__list {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .breadcrumb__list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .breadcrumb__link,
+  .breadcrumb__current {
+    max-width: 11rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .breadcrumb__item {
+    font-size: 0.74rem;
+  }
+
+  .breadcrumb__link,
+  .breadcrumb__current {
+    max-width: 9rem;
+    padding: 0.24rem 0.38rem;
+  }
+}

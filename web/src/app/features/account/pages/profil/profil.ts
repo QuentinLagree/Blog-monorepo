@@ -42,6 +42,7 @@ import {
   UserPreferences,
   UserPreferencesService,
 } from './preferences.service';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
 
 type ThemeControlValue =
   | 'Système'
@@ -81,16 +82,15 @@ export class ProfilPageComponent {
   private readonly _preferences =
     inject(UserPreferencesService);
 
+  private readonly _breadCrumb =
+    inject(BreadcrumbService)
+
   readonly sessionId =
     this._session.getUserIdSync();
 
   readonly user: WritableSignal<User | undefined> =
     signal(undefined);
 
-  /*
-   * Les signaux loading et loaded proviennent directement
-   * du store global de préférences.
-   */
   readonly preferencesLoading =
     this._preferences.loading;
 
@@ -287,6 +287,11 @@ export class ProfilPageComponent {
   });
 
   constructor() {
+    this._breadCrumb.setWithHome([
+      {
+        label: 'Mon compte'
+      }
+    ])
   effect(() => {
     if (!this._preferences.loaded()) {
       return;

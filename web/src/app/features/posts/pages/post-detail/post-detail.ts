@@ -28,6 +28,7 @@ import { BaseButtonComponent } from 'src/app/shared/ui/form/buttons/base-button'
 import { PostService } from '../../data-access/post.service';
 import { PostLikeStatus } from '../../model/post-like-status.model';
 import { Post } from '../../model/post.model';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
 
 const SILENT_CONTEXT = new HttpContext().set(
   SUCCESS_MESSAGE,
@@ -42,7 +43,7 @@ const SILENT_CONTEXT = new HttpContext().set(
     DatePipe,
     BaseButtonComponent,
     RouterLink
-],
+  ],
   templateUrl: './post-detail.html',
   styleUrls: ['./post-detail.scss', '../../../../core/layouts/landing/landing.scss'],
 })
@@ -64,6 +65,8 @@ export class PostDetailComponent {
 
   private readonly _preferences =
     inject(UserPreferencesService);
+
+    private readonly _breadCrumb = inject(BreadcrumbService)
 
   readonly author: WritableSignal<User | undefined> =
     signal(undefined);
@@ -126,6 +129,16 @@ export class PostDetailComponent {
 
         const post =
           postResponse.data;
+
+        this._breadCrumb.setWithHome([
+          {
+            label: 'Articles',
+            url: '/home',
+          },
+          {
+            label: post.title,
+          },
+        ]);
 
         this.checkPostAccess(post);
 
@@ -322,30 +335,30 @@ export class PostDetailComponent {
       nextLiked
         ? previousCount + 1
         : Math.max(
-            0,
-            previousCount - 1,
-          ),
+          0,
+          previousCount - 1,
+        ),
     );
 
     try {
       const response: Message<PostLikeStatus> =
         nextLiked
           ? await firstValueFrom(
-              this._postService.likePost(
-                postId,
-                {
-                  context: SILENT_CONTEXT,
-                },
-              ),
-            )
+            this._postService.likePost(
+              postId,
+              {
+                context: SILENT_CONTEXT,
+              },
+            ),
+          )
           : await firstValueFrom(
-              this._postService.unlikePost(
-                postId,
-                {
-                  context: SILENT_CONTEXT,
-                },
-              ),
-            );
+            this._postService.unlikePost(
+              postId,
+              {
+                context: SILENT_CONTEXT,
+              },
+            ),
+          );
 
       if (!response?.data) {
         throw new Error(

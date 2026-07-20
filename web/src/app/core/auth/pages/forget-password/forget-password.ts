@@ -2,12 +2,10 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { EmailInputComponent } from 'src/app/shared/ui/form/inputs/input-email/input-email';
 import { EmailInputValidatorFactory } from 'src/app/shared/ui/form/inputs/input-email/validators/input-email-validator.factory';
-import { InputPassswordComponent } from 'src/app/shared/ui/form/inputs/inputs-password/inputs-password';
 import { BaseButtonComponent } from '@src/app/shared/ui/form/buttons/base-button';
-import { UserService } from 'src/app/shared/services/user.service';
-import { ContextMenuTriggerDirective } from "src/app/shared/ui/context-menu/context-menu.directive";
 import { AuthService } from 'src/app/core/auth/data-access/auth.service';
 import { finalize } from 'rxjs';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
 
 @Component({
   selector: 'app-login-page',
@@ -19,8 +17,20 @@ import { finalize } from 'rxjs';
 export class ForgetPasswordComponent {
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _auth: AuthService = inject(AuthService);
+  private _breadCrumb: BreadcrumbService = inject(BreadcrumbService)
 
   loading = false;
+
+  constructor () {
+    this._breadCrumb.set([
+      {
+        label: 'Authentification',
+      },
+      {
+        label: 'Mot de passe oublié'
+      }
+    ])
+  }
 
   emailControl = new FormControl('', [
     EmailInputValidatorFactory({

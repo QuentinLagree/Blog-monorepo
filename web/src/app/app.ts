@@ -11,6 +11,7 @@ import { ContextMenuComponent } from "./shared/ui/context-menu/context-menu";
 import { HeaderComponent } from "./core/layouts/header/header";
 import { ToastContainerComponent } from "./shared/ui/toast/toast";
 import { environment } from 'src/environments/environment';
+import { BreadcrumbComponent } from "./core/layouts/breadcrumb/breadcrumb";
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,8 @@ import { environment } from 'src/environments/environment';
     RouterOutlet,
     ContextMenuComponent,
     HeaderComponent,
-    ToastContainerComponent
+    ToastContainerComponent,
+    BreadcrumbComponent
 ],
   templateUrl: './app.html',
   styleUrl: './app.scss',

@@ -9,6 +9,7 @@ import { ToastService } from 'src/app/shared/helpers/toasts/toaster.service';
 import { PostCard } from 'src/app/shared/ui/card/post-card/post-card';
 import { PostService } from '../posts/data-access/post.service';
 import { Post } from '../posts/model/post.model';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
 
 type PostsParams = {
   page: number;
@@ -25,6 +26,14 @@ export class HomeComponent {
   private readonly _post = inject(PostService);
   public readonly _router = inject(Router);
   private readonly _toastService = inject(ToastService);
+  private readonly _breadCrumb = inject(BreadcrumbService)
+
+  constructor () {
+    this._breadCrumb.set([{
+      label: "Acceuil",
+      url: '/home'
+    }])
+  }
 
   page = signal(1);
   limit = signal(5);
@@ -71,6 +80,7 @@ export class HomeComponent {
       }
     },
   });
+  
 
   updatePage(currentPage: number): void {
     if (currentPage === this.page()) return;

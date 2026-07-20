@@ -12,6 +12,7 @@ import { ToastService } from 'src/app/shared/helpers/toasts/toaster.service';
 import { PostService } from '../../../posts/data-access/post.service';
 import { Post } from '../../../posts/model/post.model';
 import { Role, User, UserService } from 'src/app/shared/services/user.service';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
 
 @Component({
   selector: 'app-user-detail',
@@ -26,6 +27,7 @@ export class UserDetailComponent {
   private readonly _user = inject(UserService);
   private readonly _post = inject(PostService);
   private readonly _toastService = inject(ToastService);
+  private _breadCrumb = inject(BreadcrumbService)
 
   userId = computed(() => this._route.snapshot.params['id']);
 
@@ -45,8 +47,18 @@ export class UserDetailComponent {
         if (!res.data) {
           throw new Error('Utilisateur introuvable.');
         }
+        this._breadCrumb.setWithHome([
+          {
+            label: 'Contributeurs',
+            url: '/account/users',
+          },
+          {
+            label: res.data.pseudo,
+          },
+        ]);
 
         return res.data;
+        
       } catch (error) {
         const message =
           error instanceof Error
@@ -61,6 +73,7 @@ export class UserDetailComponent {
       }
     },
   });
+  
 
   posts = resource<Post[], number>({
     params: () => +this.userId(),

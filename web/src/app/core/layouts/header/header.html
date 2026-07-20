@@ -1,8 +1,13 @@
 <header class="header">
-  <a class="header-brand" routerLink="/">
-    <span class="header-logo"></span>
-    <h1>{{ title() }}</h1>
-  </a>
+  <div class="header-left">
+    <a class="header-brand" routerLink="/">
+      <span class="header-logo"></span>
+
+      <div class="header-brand__content">
+        <h1>{{ title() }}</h1>
+      </div>
+    </a>
+  </div>
 
   <nav class="header-nav">
     @let userId = this._session.getUserIdSync();

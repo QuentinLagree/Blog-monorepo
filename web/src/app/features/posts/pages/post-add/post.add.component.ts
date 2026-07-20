@@ -1,5 +1,6 @@
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { PostFormComponent } from "../post-form/post-form";
+import { BreadcrumbService } from "src/app/shared/services/breadcrumb";
 
 @Component({
   selector: 'app-add-post',
@@ -11,4 +12,6 @@ import { PostFormComponent } from "../post-form/post-form";
 ],
 })
 
-export class PostAddComponent {}
+export class PostAddComponent {
+  
+}

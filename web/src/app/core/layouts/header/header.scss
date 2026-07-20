@@ -1,6 +1,10 @@
 @use 'variables' as *;
 
 .header {
+  position: sticky;
+  top: 1rem;
+  z-index: 900;
+
   width: 100%;
   min-height: 4.25rem;
 
@@ -12,12 +16,13 @@
   padding: 0.75rem 1rem;
   margin-bottom: 2rem;
 
-  background: rgba($surface, 0.9);
-  border: 1px solid $border;
+  background: rgba($surface, 0.86);
+  border: 1px solid rgba($border, 0.9);
   border-radius: $radius-md;
   box-shadow: $card-shadow;
 
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 /* =========================
@@ -202,5 +207,89 @@
 
   .header-badge {
     width: fit-content;
+  }
+}
+
+.header-left {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+}
+
+.header-brand__content {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.header-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+
+  color: $text-muted;
+
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.header-breadcrumb a {
+  max-width: 14rem;
+
+  color: $text-secondary;
+  text-decoration: none;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  transition: color 0.16s ease;
+}
+
+.header-breadcrumb a:hover {
+  color: $primary;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.header-breadcrumb span {
+  color: $text-muted;
+}
+
+.header-breadcrumb .current {
+  max-width: 18rem;
+
+  color: $primary;
+  font-weight: 700;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-breadcrumb__separator {
+  color: $border-strong;
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .header-breadcrumb {
+    font-size: 0.75rem;
+  }
+
+  .header-breadcrumb a,
+  .header-breadcrumb .current {
+    max-width: 11rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-breadcrumb {
+    display: none;
   }
 }

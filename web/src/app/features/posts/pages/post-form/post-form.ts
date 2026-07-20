@@ -30,6 +30,7 @@ import { PostFormSubmitService, PostSaveMode } from '../../data-access/post-form
 import { PostEditorImageService } from '../../data-access/post-image-editor.service';
 import { SessionService } from 'src/app/shared/services/session.service';
 import { Post } from '../../model/post.model';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
 
 @Component({
   selector: 'app-form-post',
@@ -56,6 +57,8 @@ export class PostFormComponent implements AfterViewInit {
   private _draft = inject(PostDraftManager);
   private _editor_images = inject(PostEditorImageService);
   private _images = inject(ImageEditorService);
+  private readonly _breadCrumb = inject(BreadcrumbService)
+
 
   @ViewChild('markdownEditor') markdownEditorElement!: TextAreaComponent;
   @ViewChild('preview', { static: false }) preview?: ElementRef<HTMLElement>;
@@ -99,6 +102,7 @@ export class PostFormComponent implements AfterViewInit {
   });
 
   constructor() {
+   
     this.initPostOrDraft();
     this._draft.watch(this.form);
 
@@ -112,6 +116,11 @@ export class PostFormComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this._markdown.refreshPreview(this.preview?.nativeElement);
+     this._breadCrumb.setWithArticle([
+      {
+        label: (this.post() === undefined ? 'Ajouter un article' : 'Modifier un article'),
+      }
+    ])
   }
 
   ngOnDestroy(): void {

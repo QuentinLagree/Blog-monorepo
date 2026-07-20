@@ -12,6 +12,7 @@ import { UserService } from 'src/app/shared/services/user.service';
 import { userLogin } from '../../models/user-login.model';
 import { userRegister } from '../../models/user-register.model';
 import { finalize } from 'rxjs';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
 
 @Component({
   selector: 'app-register-page',
@@ -30,7 +31,19 @@ export class RegisterPageComponent {
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
   private _user: UserService = inject(UserService)
+  private _breadCrumb: BreadcrumbService = inject(BreadcrumbService)
 
+  constructor () {
+    this._breadCrumb.set([
+      {
+        label: 'Authentification',
+      },
+      {
+        label: 'Inscription'
+      }
+    ])
+  }
+  
   loading: boolean = false;
 
 

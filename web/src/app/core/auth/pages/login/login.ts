@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { SessionService } from 'src/app/shared/services/session.service';
 import { environment } from 'src/environments/environment';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
 
 @Component({
   selector: 'app-login-page',
@@ -23,10 +24,22 @@ export class LoginPageComponent {
   private _router: Router = inject(Router);
   private _user: UserService = inject(UserService);
   private _session: SessionService = inject(SessionService)
+  private _breadCrumb = inject(BreadcrumbService)
 
   loading = false;
 
   readonly prod: boolean = environment.production;
+
+  constructor () {
+    this._breadCrumb.set([
+      {
+        label: 'Authentification',
+      },
+      {
+        label: 'Connection'
+      }
+    ])
+  }
 
   emailControl = new FormControl('', [
     EmailInputValidatorFactory({
@@ -79,7 +92,7 @@ export class LoginPageComponent {
   setFormWithMode(mode: 'admin' | 'user') {
     let data = {
       admin: ['lagreequentindev21@gmail.com', 'Salut1234!'],
-      user: ['johhdoe@gmail.com', 'Salut1234!']
+      user: ['johndoe@gmail.com', 'Salut1234!']
     }
 
     this.emailControl.setValue(data[mode][0])

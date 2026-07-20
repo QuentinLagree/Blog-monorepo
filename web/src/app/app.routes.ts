@@ -18,18 +18,31 @@ export const appRoutes: Routes = [
     canActivate: [loginGuard],
     loadChildren: () =>
       import('./core/auth/auth.routes').then((m) => m.authRoutes),
+    data: {
+      breadcrumb: 'Authentification'
+    }
   },
   {
     path: 'post',
     loadChildren: () =>
       import('./features/posts/posts.routes').then((m) => m.postsRoutes),
+    data: {
+      breadcrumb: 'Articles'
+    }
   },
   {
     path: 'home',
     loadComponent: () =>
       import('./features/home/home').then((m) => m.HomeComponent),
+    data: {
+      breadcrumb: 'Accueil'
+    },
     canActivate: [authGuard],
   },
-  { path: 'ui', loadComponent: () => import('./shared/ui/base-ui').then((m) => m.UIComponent)},
+  { path: 'ui', loadComponent: () => import('./shared/ui/base-ui').then((m) => m.UIComponent),
+    data: {
+      breadcrumb: 'UI Elements'
+    }
+   },
   { path: '**', redirectTo: '' },
 ];

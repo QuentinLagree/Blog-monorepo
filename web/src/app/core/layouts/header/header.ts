@@ -1,6 +1,7 @@
 import { Component, inject, input, InputSignal, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
 import { SessionService, UserSession } from 'src/app/shared/services/session.service';
 import { UserService } from 'src/app/shared/services/user.service';
 import { BaseButtonComponent } from "src/app/shared/ui/form/buttons/base-button";
@@ -17,7 +18,8 @@ export class HeaderComponent {
   constructor () {}
   private _user: UserService = inject(UserService);
   protected _session: SessionService = inject(SessionService);
-  protected _router: Router = inject(Router)
+  protected _router: Router = inject(Router);
+  protected _breadCrumb: BreadcrumbService = inject(BreadcrumbService)
   
   title: InputSignal<string> = input.required<string>();
   loading = false;

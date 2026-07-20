@@ -1,7 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { EmailInputComponent } from 'src/app/shared/ui/form/inputs/input-email/input-email';
-import { EmailInputValidatorFactory } from 'src/app/shared/ui/form/inputs/input-email/validators/input-email-validator.factory';
 import { BaseButtonComponent } from '@src/app/shared/ui/form/buttons/base-button';
 import { AuthService } from 'src/app/core/auth/data-access/auth.service';
 import { finalize } from 'rxjs';
@@ -9,6 +7,7 @@ import { InputPassswordComponent } from 'src/app/shared/ui/form/inputs/inputs-pa
 import { PasswordInputValidatorFactory } from 'src/app/shared/ui/form/inputs/inputs-password/validators/input-password-validator.factory';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
 
 @Component({
   selector: 'app-login-page',
@@ -22,6 +21,7 @@ export class NewPasswordComponent {
   private _activatedRoute = inject(ActivatedRoute)
   private _router = inject(Router)
   private _auth: AuthService = inject(AuthService)
+  private _breadCrumb: BreadcrumbService = inject(BreadcrumbService)
 
       private queryParamsMap = toSignal(this._activatedRoute.queryParamMap, {
         initialValue: this._activatedRoute.snapshot.queryParamMap    })
@@ -29,6 +29,16 @@ export class NewPasswordComponent {
     email = computed(() =>this.queryParamsMap()?.get('email') ?? "");
 
   loading = false;
+  constructor () {
+    this._breadCrumb.set([
+      {
+        label: 'Authentification',
+      },
+      {
+        label: 'Modification de mot de passe'
+      }
+    ])
+  }
 
   passwordControl = new FormControl('Salut1234!', [PasswordInputValidatorFactory()]);
   
