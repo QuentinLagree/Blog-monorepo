@@ -1,0 +1,124 @@
+@use 'variables' as *;
+
+.confirm-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 1rem;
+
+  background: rgba($black, 0.42);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.confirm-modal {
+  width: min(100%, 28rem);
+
+  padding: 1.5rem;
+
+  background: $surface;
+  color: $text-primary;
+
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  box-shadow: $card-shadow-hover;
+
+  animation: confirm-modal-enter 0.16s ease-out;
+}
+
+.confirm-modal__icon {
+  width: 2.75rem;
+  height: 2.75rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 1rem;
+
+  border-radius: $radius-full;
+
+  font-size: 1.2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.confirm-modal__icon--primary {
+  background: $primary-soft;
+  color: $primary;
+  border: 1px solid rgba($primary, 0.16);
+}
+
+.confirm-modal__icon--warning {
+  background: $warning-soft;
+  color: $warning;
+  border: 1px solid rgba($warning, 0.2);
+}
+
+.confirm-modal__icon--danger {
+  background: $danger-soft;
+  color: $danger;
+  border: 1px solid rgba($danger, 0.18);
+}
+
+.confirm-modal__content h2 {
+  margin: 0;
+
+  color: $text-primary;
+
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+}
+
+.confirm-modal__content p {
+  margin: 0.6rem 0 0;
+
+  color: $text-secondary;
+
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.confirm-modal__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+
+  margin-top: 1.5rem;
+}
+
+@keyframes confirm-modal-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.35rem) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 520px) {
+  .confirm-modal {
+    padding: 1.25rem;
+    border-radius: $radius-md;
+  }
+
+  .confirm-modal__actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .confirm-modal__actions app-button {
+    width: 100%;
+  }
+}

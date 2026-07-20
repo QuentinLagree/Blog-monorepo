@@ -1,0 +1,44 @@
+@if (open) {
+  <div class="confirm-modal-backdrop" (click)="onBackdropClick($event)">
+    <section
+      class="confirm-modal"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="title"
+    >
+      <div class="confirm-modal__icon" [class.confirm-modal__icon--danger]="variant === 'danger'"
+        [class.confirm-modal__icon--warning]="variant === 'warning'"
+        [class.confirm-modal__icon--primary]="variant === 'primary'">
+        @if (variant === 'danger') {
+          !
+        } @else if (variant === 'warning') {
+          !
+        } @else {
+          ✓
+        }
+      </div>
+
+      <div class="confirm-modal__content">
+        <h2>{{ title }}</h2>
+        <p>{{ message }}</p>
+      </div>
+
+      <div class="confirm-modal__actions">
+        <app-button
+          size="sm"
+          type="secondary"
+          [label]="cancelLabel"
+          (clicked)="cancel()">
+        </app-button>
+
+        <app-button
+          size="sm"
+          [type]="variant === 'danger' ? 'danger' : 'primary'"
+          [label]="confirmLabel"
+          [loading]="loading"
+          (clicked)="confirm()">
+        </app-button>
+      </div>
+    </section>
+  </div>
+}
