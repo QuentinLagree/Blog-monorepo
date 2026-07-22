@@ -16,6 +16,9 @@ import { EditButtonComponent } from "./form/buttons/button-edit/button-edit";
 import { DangerButtonComponent } from "./form/buttons/button-danger/button-danger";
 import { ButtonAddComponent } from "./form/buttons/button-add/button-add";
 import { Post } from 'src/app/features/posts/model/post.model';
+import { HeaderComponent } from "src/app/core/layouts/header/header";
+import { HeaderContentComponent } from "./content/header-content/header-content";
+import { HeaderSectionComponent } from "./content/header-section/header-section";
 
 @Component({
   selector: 'app-generic-ui',
@@ -31,7 +34,10 @@ import { Post } from 'src/app/features/posts/model/post.model';
     TextAreaComponent,
     EditButtonComponent,
     DangerButtonComponent,
-    ButtonAddComponent
+    ButtonAddComponent,
+    HeaderComponent,
+    HeaderContentComponent,
+    HeaderSectionComponent
 ]
 })
 export class UIComponent implements AfterViewInit {

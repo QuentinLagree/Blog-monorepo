@@ -1,9 +1,13 @@
-/* You can add global styles to this file, and also import other style files */
-@use 'styles/reset';
-@use 'styles/fonts';
-@use 'styles/variables';
-@use 'styles/mixins/mixins';
-@use 'styles/mixins/space_mixins';
-@use 'styles/helpers';
-@use 'styles/base';
-@use 'styles/utils/spinner_icon';
+@use './styles/variables';
+@use './styles/reset';
+@use './styles/base';
+@use './styles/typography';
+@use './styles/layout';
+@use './styles/languages';
+
+@use './styles/components/buttons';
+@use './styles/components/forms';
+@use './styles/components/cards';
+@use './styles/components/modals';
+@use './styles/components/breadcrumb';
+@use './styles/components/toast';

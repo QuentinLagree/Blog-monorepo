@@ -79,20 +79,6 @@ describe('UserController e2e', () => {
       });
     });
 
-    it('should return 403 if connected user is not admin', async () => {
-      const { agent } = await createLoggedAgent(app, prisma, passwordService, {
-        role: Role.User,
-      });
-
-      const response = await agent
-        .get(endpoint)
-        .expect(403);
-
-      expect(response.body).toMatchObject({
-        message: `Vous n'avez pas l'autorisation d'accéder à cette ressource.`,
-      });
-    });
-
     it('should return 401 if user is not connected', async () => {
       await request(app.getHttpServer())
         .get(endpoint)

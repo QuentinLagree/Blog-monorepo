@@ -10,6 +10,8 @@ import { PostCard } from 'src/app/shared/ui/card/post-card/post-card';
 import { PostService } from '../posts/data-access/post.service';
 import { Post } from '../posts/model/post.model';
 import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
+import { HeaderContentComponent } from "src/app/shared/ui/content/header-content/header-content";
+import { HeaderSectionComponent } from "src/app/shared/ui/content/header-section/header-section";
 
 type PostsParams = {
   page: number;
@@ -20,7 +22,7 @@ type PostsParams = {
   selector: 'app-home',
   templateUrl: './home.html',
   styleUrls: ['./home.scss'],
-  imports: [BaseButtonComponent, PaginatorComponent, PostCard],
+  imports: [BaseButtonComponent, PaginatorComponent, PostCard, HeaderContentComponent, HeaderSectionComponent],
 })
 export class HomeComponent {
   private readonly _post = inject(PostService);

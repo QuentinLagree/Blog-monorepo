@@ -9,23 +9,6 @@
         Découvre les membres qui participent à la construction de la base de connaissances.
       </p>
     </div>
-
-    <div class="contributors-header__actions">
-      <app-button
-        type="secondary"
-        size="sm"
-        label="Retour"
-        (clicked)="goBack()">
-      </app-button>
-
-      <app-button
-        type="primary"
-        size="sm"
-        label="Actualiser"
-        icon="icon-refresh"
-        (clicked)="reload()">
-      </app-button>
-    </div>
   </header>
 
   <section class="contributors-toolbar">
@@ -110,6 +93,7 @@
             </div>
           </div>
         </article>
+        
       } @empty {
         <div class="contributors-empty-state">
           <div class="contributors-empty-state__icon">✦</div>
@@ -130,6 +114,13 @@
           }
         </div>
       }
+      <app-button
+        type="primary"
+        size="sm"
+        label="Actualiser"
+        icon="icon-refresh"
+        (clicked)="reload()">
+      </app-button>
     </section>
   }
 </section>

@@ -1,6 +1,6 @@
 @use 'variables' as *;
 
-.home-container {
+.main-container {
   width: 100%;
   max-width: 72em;
   margin: 0 auto;
@@ -11,71 +11,10 @@
   gap: 2.5em;
 }
 
-.home-hero {
-  padding: 3em 2.5em;
-
-  background: $surface;
-  border: 1px solid $border;
-  border-radius: $radius-lg;
-  box-shadow: $card-shadow;
-}
-
-.home-eyebrow,
-.home-section-label {
-  color: $primary;
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.home-hero h1 {
-  max-width: 11em;
-  margin-top: 0.25em;
-
-  color: $text-primary;
-  font-size: clamp(2.5rem, 6vw, 5.5rem);
-  font-weight: 700;
-  line-height: 0.98;
-  letter-spacing: -0.06em;
-}
-
-.home-baseline {
-  max-width: 42em;
-  margin-top: 1.2em;
-
-  color: $text-secondary;
-  font-size: 1.15rem;
-  line-height: 1.7;
-}
-
-.home-actions {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.85em;
-
-  margin-top: 2em;
-}
-
 .home-content {
   display: flex;
   flex-direction: column;
   gap: 1.25em;
-}
-
-.home-content-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1em;
-}
-
-.home-content-header h2 {
-  margin-top: 0.2em;
-  color: $text-primary;
-  font-size: clamp(1.7rem, 3vw, 2.5rem);
-  letter-spacing: -0.04em;
 }
 
 .home-paginator {

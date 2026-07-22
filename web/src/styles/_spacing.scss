@@ -1,0 +1,64 @@
+/* =========================
+   SPACING TOKENS
+========================= */
+
+$space-0: 0;
+
+$space-1: 0.25rem;  // 4px
+$space-2: 0.5rem;   // 8px
+$space-3: 0.75rem;  // 12px
+$space-4: 1rem;     // 16px
+$space-5: 1.25rem;  // 20px
+$space-6: 1.5rem;   // 24px
+$space-7: 1.75rem;  // 28px
+$space-8: 2rem;     // 32px
+
+$space-10: 2.5rem;  // 40px
+$space-12: 3rem;    // 48px
+$space-14: 3.5rem;  // 56px
+$space-16: 4rem;    // 64px
+$space-20: 5rem;    // 80px
+$space-24: 6rem;    // 96px;
+
+/* =========================
+   SEMANTIC SPACING
+========================= */
+
+/*
+  Espacements sémantiques.
+  Tu peux les utiliser pour éviter d’écrire directement $space-8 partout.
+*/
+
+$spacing-page-y: $space-8;
+$spacing-page-bottom: $space-16;
+
+$spacing-container-gap: $space-6;
+
+$spacing-section: $space-6;
+$spacing-section-sm: $space-4;
+$spacing-section-lg: $space-8;
+
+$spacing-card: $space-5;
+$spacing-card-sm: $space-4;
+$spacing-card-lg: $space-6;
+
+$spacing-field-gap: $space-4;
+$spacing-form-gap: $space-5;
+
+$spacing-button-x: $space-4;
+$spacing-button-y: $space-3;
+
+$spacing-inline-gap: $space-2;
+$spacing-stack-gap: $space-4;
+
+/* =========================
+   LEGACY ALIASES
+========================= */
+
+/*
+  Tu peux garder ces alias temporairement pour ne pas casser ton ancien code.
+  À terme, remplace progressivement $gap-unit et $spacing-unit par $space-*.
+*/
+
+$gap-unit: $space-2;
+$spacing-unit: $space-2;
