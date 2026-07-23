@@ -6,7 +6,7 @@ import { InputPassswordComponent } from 'src/app/shared/ui/form/inputs/inputs-pa
 import { PasswordInputValidatorFactory } from 'src/app/shared/ui/form/inputs/inputs-password/validators/input-password-validator.factory';
 import { BaseButtonComponent } from '@src/app/shared/ui/form/buttons/base-button';
 import { UserService } from 'src/app/shared/services/user.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { SessionService } from 'src/app/shared/services/session.service';
 import { environment } from 'src/environments/environment';
@@ -14,7 +14,7 @@ import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
 
 @Component({
   selector: 'app-login-page',
-  imports: [ReactiveFormsModule, EmailInputComponent, InputPassswordComponent, BaseButtonComponent],
+  imports: [ReactiveFormsModule, EmailInputComponent, InputPassswordComponent, BaseButtonComponent, RouterLink],
   standalone: true,
   templateUrl: './login.html',
   styleUrls: ['./login.scss']

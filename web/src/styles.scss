@@ -1,13 +1,17 @@
 @use './styles/variables';
+
 @use './styles/reset';
+
 @use './styles/base';
 @use './styles/typography';
 @use './styles/layout';
-@use './styles/languages';
+@use './styles/page-header';
+@use './styles/helpers';
 
-@use './styles/components/buttons';
-@use './styles/components/forms';
 @use './styles/components/cards';
-@use './styles/components/modals';
-@use './styles/components/breadcrumb';
+@use './styles/components/button';
+@use './styles/components/form';
 @use './styles/components/toast';
+
+/* À garder ensuite quand on les refera */
+@use './styles/components/spinner_icon';

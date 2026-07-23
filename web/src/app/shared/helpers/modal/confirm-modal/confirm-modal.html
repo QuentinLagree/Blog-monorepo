@@ -1,22 +1,23 @@
 @if (open) {
-  <div class="confirm-modal-backdrop" (click)="onBackdropClick($event)">
+  <div
+    class="confirm-modal-backdrop"
+    (click)="onBackdropClick($event)">
+
     <section
-      class="confirm-modal"
+      class="confirm-modal card card--md"
       role="dialog"
       aria-modal="true"
-      [attr.aria-label]="title"
-    >
+      [attr.aria-label]="title">
+
       <div
         class="confirm-modal__icon"
         [class.confirm-modal__icon--danger]="variant === 'danger'"
         [class.confirm-modal__icon--warning]="variant === 'warning'"
         [class.confirm-modal__icon--primary]="variant === 'primary'"
-        aria-hidden="true"
-      >
+        aria-hidden="true">
+
         <span class="confirm-modal__icon-mark">
-          @if (variant === 'danger') {
-            !
-          } @else if (variant === 'warning') {
+          @if (variant === 'danger' || variant === 'warning') {
             !
           } @else {
             ✓
@@ -25,16 +26,26 @@
       </div>
 
       <div class="confirm-modal__content">
-        <h2>{{ title }}</h2>
-        <p>{{ message }}</p>
+        <h2 class="confirm-modal__title">
+          {{ title }}
+        </h2>
+
+        <p class="confirm-modal__message">
+          {{ message }}
+        </p>
       </div>
 
-      <p class="confirm-modal__notice">
-        <strong>À vérifier avant de continuer.</strong>
-        Cette action peut modifier l’état de ton espace ou de tes contenus.
-      </p>
+      <div class="confirm-modal__notice card card--sm card--soft">
+        <strong>
+          À vérifier avant de continuer.
+        </strong>
 
-      <div class="confirm-modal__actions">
+        <span>
+          Cette action peut modifier l’état de ton espace ou de tes contenus.
+        </span>
+      </div>
+
+      <footer class="confirm-modal__actions btn-group btn-group--wrap">
         <app-button
           size="sm"
           type="secondary"
@@ -49,7 +60,7 @@
           [loading]="loading"
           (clicked)="confirm()">
         </app-button>
-      </div>
+      </footer>
     </section>
   </div>
 }

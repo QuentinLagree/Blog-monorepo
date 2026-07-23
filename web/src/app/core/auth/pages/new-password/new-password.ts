@@ -5,13 +5,13 @@ import { AuthService } from 'src/app/core/auth/data-access/auth.service';
 import { finalize } from 'rxjs';
 import { InputPassswordComponent } from 'src/app/shared/ui/form/inputs/inputs-password/inputs-password';
 import { PasswordInputValidatorFactory } from 'src/app/shared/ui/form/inputs/inputs-password/validators/input-password-validator.factory';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
 
 @Component({
   selector: 'app-login-page',
-  imports: [ReactiveFormsModule, InputPassswordComponent, BaseButtonComponent],
+  imports: [ReactiveFormsModule, InputPassswordComponent, BaseButtonComponent, RouterLink],
   standalone: true,
   templateUrl: './new-password.html',
   styleUrls: ['./new-password.scss']

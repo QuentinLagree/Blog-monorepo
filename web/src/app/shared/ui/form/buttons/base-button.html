@@ -1,21 +1,39 @@
 <button
+  class="btn"
+  [class.btn--primary]="type() === 'primary'"
+  [class.btn--secondary]="type() === 'secondary'"
+  [class.btn--success]="type() === 'success'"
+  [class.btn--danger]="type() === 'danger'"
+  [class.btn--warning]="type() === 'warn'"
+  [class.btn--outline]="type() === 'outlined'"
+  [class.btn--ghost]="type() === 'ghost'"
+  [class.btn--link]="type() === 'link'"
+  [class.btn--sm]="size() === 'sm'"
+  [class.btn--md]="size() === 'md'"
+  [class.btn--lg]="size() === 'lg'"
+  [class.btn--full]="full()"
+  [class.btn--icon]="icon() && !label()"
+  [class.btn--loading]="loading()"
   [disabled]="disabled() || loading()"
-  [attr.class]="[hostClasses + ' ' + ((loading()) ? ' loading' : '') + ((icon()) ? ' icon' : '') + (!label() ? ' noLabel' : '')]"
-  aria-label="Bouton secondaire"
-  [class.noLabel]="!label()"
-  (click)="onClick($event)"
->
+  [attr.aria-label]="label() || 'Bouton'"
+  type="button"
+  (click)="onClick($event)">
+  
+  @if (loading()) {
+    <span class="btn__spinner" aria-hidden="true"></span>
+  }
+
   @if (icon()) {
-    <i class="button-icon" [class.noLabel]="!label()">
+    <i class="btn__icon" aria-hidden="true">
       <svg viewBox="0 0 24 24">
-              <use [attr.href]="`#${icon()}`" />
-            </svg>
-          </i>
-        }
-          @if (this.label()) {
-            <span class="label">{{ label() }}</span>
-          }
-          @if (loading()) {
-            <span class="loader"></span>
-           }
+        <use [attr.href]="`#${icon()}`" />
+      </svg>
+    </i>
+  }
+
+  @if (label()) {
+    <span class="btn__label">
+      {{ label() }}
+    </span>
+  }
 </button>

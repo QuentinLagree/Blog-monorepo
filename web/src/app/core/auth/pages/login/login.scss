@@ -1,2 +1,261 @@
-@use 'bases/base-button' as *;
-@use 'bases/base-form' as *;
+@use 'variables' as *;
+
+:host {
+  display: block;
+  min-height: 100%;
+}
+
+/* =========================
+   LOGIN PAGE
+========================= */
+
+.login-page {
+  min-height: calc(100vh - 25rem);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: $space-6 $space-4;
+}
+
+.auth-page__container--wide {
+  width: 100%;
+  max-width: 76rem;
+}
+
+.login-card {
+  width: 100%;
+
+  padding: $space-6;
+}
+
+.login-card .form-card__header {
+  margin-bottom: $space-5;
+}
+
+.login-card .form-card__title {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+}
+
+.login-card .form-card__description {
+  max-width: 48rem;
+
+  font-size: $text-sm;
+  line-height: $leading-relaxed;
+}
+
+/* =========================
+   FORM
+========================= */
+.login-card__form.form {
+  margin-top: 0;
+
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: $space-4;
+}
+
+.login-card__form app-input-email,
+.login-card__password-field {
+  min-width: 0;
+}
+
+.login-card__actions {
+  grid-column: 1;
+  margin-top: $space-2;
+}
+/* =========================
+   FORGOT PASSWORD
+========================= */
+
+.login-card__password-field {
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.login-card__forgot-link {
+  position: relative;
+  z-index: 5;
+
+  width: fit-content;
+
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-end;
+
+  color: $primary;
+
+  font-size: $text-sm;
+  font-weight: $font-medium;
+  line-height: $leading-tight;
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    color 0.16s ease,
+    text-decoration-color 0.16s ease;
+}
+
+.login-card__forgot-link:hover {
+  color: $primary-hover;
+
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+}
+
+.login-card__forgot-link:focus-visible {
+  outline: none;
+
+  border-radius: $radius-xs;
+  box-shadow: 0 0 0 3px $focus-ring;
+}
+
+/* =========================
+   REGISTER LINK
+========================= */
+
+.auth-card__register {
+  margin-top: $space-5;
+  padding: $space-3 $space-4;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: $space-2;
+
+  background: $surface-soft;
+
+  border: 1px solid $border;
+  border-radius: $radius-xs;
+
+  color: $text-secondary;
+
+  font-size: $text-sm;
+  line-height: $leading-normal;
+  text-align: center;
+}
+
+.auth-card__register span {
+  color: $text-secondary;
+}
+
+.auth-card__register a {
+  display: inline-flex;
+  align-items: center;
+
+  color: $primary;
+
+  font-weight: $font-semibold;
+  text-decoration: none;
+}
+
+.auth-card__register a:hover {
+  color: $primary-hover;
+
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+}
+
+.auth-card__register a:focus-visible {
+  outline: none;
+
+  border-radius: $radius-xs;
+  box-shadow: 0 0 0 3px $focus-ring;
+}
+
+/* =========================
+   DEV SHORTCUTS
+========================= */
+
+.dev-auth-shortcuts {
+  position: fixed;
+  bottom: $space-4;
+  left: $space-4;
+  z-index: $z-toast;
+
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.dev-auth-shortcuts__button {
+  width: fit-content;
+
+  padding: $space-2 $space-4;
+
+  background: $black;
+  color: $warning-soft;
+
+  border: 1px solid rgb(255 255 255 / 16%);
+  border-radius: $radius-xs;
+
+  font-size: $text-xs;
+  font-weight: $font-semibold;
+  line-height: $leading-none;
+
+  cursor: pointer;
+  user-select: none;
+
+  box-shadow: $shadow-md;
+
+  transition:
+    opacity 0.16s ease,
+    transform 0.16s ease;
+}
+
+.dev-auth-shortcuts__button:hover {
+  opacity: 0.88;
+}
+
+.dev-auth-shortcuts__button:active {
+  transform: scale(0.98);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: $breakpoint-md) {
+  .login-page {
+    align-items: flex-start;
+    padding: $space-6 $space-3;
+  }
+
+  .auth-page__container--wide {
+    max-width: 100%;
+  }
+
+  .login-card {
+    padding: $space-5;
+  }
+
+  .login-card__form {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .login-page {
+    padding: $space-4 $space-3;
+  }
+
+  .login-card {
+    padding: $space-4;
+  }
+
+  .dev-auth-shortcuts {
+    right: $space-3;
+    left: $space-3;
+  }
+
+  .dev-auth-shortcuts__button {
+    width: 100%;
+  }
+}

@@ -7,7 +7,6 @@ import { InputErrorComponent } from '../inputs-error/inputs-error';
 @Component({
   selector: 'app-input-email',
   templateUrl: '../input/input.html',
-  styleUrls: ['../base-input.scss'],
   imports: [ReactiveFormsModule, InputErrorComponent],
   standalone: true
 })

@@ -1,23 +1,37 @@
 <div
-  class="input_container"
-  [class.error]="errorMessages"
-  [class.success]="!errorMessages && (control.value.length > 1)"
-  [class.disabled]="!control.disable"
->
-  <label class="input_container__label" [for]="mergeConfigs().label.trim()"
-    >{{ mergeConfigs().label }}{{ (mergeConfigs().required) ? '' : '*'}}</label
-  >
+  class="form-field input-field"
+  [class.form-field--error]="errorMessages"
+  [class.form-field--success]="!errorMessages && control.value?.length > 1"
+  [class.form-field--disabled]="control.disabled">
+
+  <div class="form-field__header">
+    <label
+      class="form-field__label"
+      [for]="mergeConfigs().label.trim()">
+      {{ mergeConfigs().label }}
+    </label>
+
+    @if (!mergeConfigs().required) {
+      <span class="form-field__optional">
+        Optionnel
+      </span>
+    }
+  </div>
 
   <input
+    class="form-control"
     [formControl]="control"
     [type]="mergeConfigs().type"
-    [attr.placeholder]="this.mergeConfigs().placeholder"
-    autocomplete="off"
+    [attr.placeholder]="mergeConfigs().placeholder"
     [attr.id]="mergeConfigs().label.trim()"
-    required="{{ mergeConfigs().required }}"
+    [attr.required]="mergeConfigs().required ? true : null"
+    autocomplete="off"
     (blur)="control.markAsTouched()"
   />
-  <div class="informations">
-    <app-input-error [control]="control"></app-input-error>
-  </div>
+
+  @if (this.control.errors != null) {
+    <div class="form-field__message form-field__message--error">
+      <app-input-error [control]="control"></app-input-error>
+    </div>
+  }
 </div>

@@ -1,40 +1,45 @@
 @use 'variables' as *;
 
+/* =========================
+   BACKDROP
+========================= */
+
 .confirm-modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 10000;
+  z-index: $z-modal;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  padding: 1.25rem;
+  padding: $space-5;
 
   background:
-    radial-gradient(circle at top left, rgba($primary, 0.12), transparent 28rem),
-    radial-gradient(circle at bottom right, rgba($secondary, 0.08), transparent 24rem),
-    rgba($black, 0.34);
+    radial-gradient(circle at top left, rgb(49 92 73 / 12%), transparent 28rem),
+    radial-gradient(circle at bottom right, rgb(196 122 53 / 8%), transparent 24rem),
+    rgb(28 28 26 / 34%);
 
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
 
+/* =========================
+   MODAL
+========================= */
+
 .confirm-modal {
   width: min(100%, 29rem);
-
-  padding: 2rem 1.75rem 1.5rem;
 
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: $space-5;
 
-  background: rgba($surface, 0.94);
+  padding: $space-8 $space-7 $space-6;
+
+  background: rgb(255 255 255 / 94%);
   color: $text-primary;
-
-  border: 1px solid rgba($border, 0.95);
-  border-radius: $radius-lg;
-  box-shadow: 0 18px 60px rgba($black, 0.14);
 
   text-align: center;
 
@@ -49,126 +54,61 @@
 ========================= */
 
 .confirm-modal__icon {
-  position: relative;
-
-  width: 4.75rem;
-  height: 4.75rem;
+  width: 4.25rem;
+  height: 4.25rem;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  margin-bottom: 1.25rem;
-
+  background: $primary-soft;
   color: $primary;
 
-  background:
-    radial-gradient(circle at 35% 30%, rgba($secondary, 0.2), transparent 42%),
-    $primary-soft;
-
-  border: 1px solid rgba($primary, 0.16);
-  border-radius: $radius-lg;
+  border: 1px solid rgb(49 92 73 / 16%);
+  border-radius: $radius-md;
 
   box-shadow:
-    inset 0 0 0 0.45rem rgba($surface, 0.62),
-    0 1px 2px rgba($black, 0.04);
+    inset 0 0 0 0.45rem rgb(255 255 255 / 62%),
+    0 1px 2px rgb(28 28 26 / 4%);
 }
 
-.confirm-modal__icon::before {
-  content: "";
+.confirm-modal__icon-mark {
+  width: 2.25rem;
+  height: 2.25rem;
 
-  width: 0.82rem;
-  height: 0.82rem;
-
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   background: currentColor;
-  border-radius: $radius-full;
+  color: $white;
 
-  box-shadow:
-    0.58rem 0.48rem 0 rgba($primary, 0.34),
-    -0.48rem 0.58rem 0 rgba($secondary, 0.55);
+  border-radius: $radius-xs;
+
+  font-size: $text-xl;
+  font-weight: $font-bold;
+  line-height: $leading-none;
 }
-
-.confirm-modal__icon::after {
-  content: "";
-
-  position: absolute;
-  inset: 0.55rem;
-
-  border: 1px solid rgba($primary, 0.16);
-  border-radius: calc($radius-lg - 0.35rem);
-
-  pointer-events: none;
-}
-
-/* Supprime l'ancien mark si ton HTML l'a encore */
-.confirm-modal__icon-mark {
-  display: none;
-}
-
-/* PRIMARY */
 
 .confirm-modal__icon--primary {
+  background: $primary-soft;
   color: $primary;
 
-  background:
-    radial-gradient(circle at 35% 30%, rgba($secondary, 0.2), transparent 42%),
-    $primary-soft;
-
-  border-color: rgba($primary, 0.16);
+  border-color: rgb(49 92 73 / 16%);
 }
-
-.confirm-modal__icon--primary::after {
-  border-color: rgba($primary, 0.16);
-}
-
-/* WARNING */
 
 .confirm-modal__icon--warning {
+  background: $warning-soft;
   color: $warning;
 
-  background:
-    radial-gradient(circle at 35% 30%, rgba($secondary, 0.14), transparent 42%),
-    $warning-soft;
-
-  border-color: rgba($warning, 0.2);
+  border-color: rgb(183 121 31 / 20%);
 }
-
-.confirm-modal__icon--warning::before {
-  background: $warning;
-
-  box-shadow:
-    0.58rem 0.48rem 0 rgba($warning, 0.32),
-    -0.48rem 0.58rem 0 rgba($secondary, 0.45);
-}
-
-.confirm-modal__icon--warning::after {
-  border-color: rgba($warning, 0.18);
-}
-
-/* DANGER */
 
 .confirm-modal__icon--danger {
+  background: $danger-soft;
   color: $danger;
 
-  background:
-    radial-gradient(circle at 35% 30%, rgba($secondary, 0.12), transparent 42%),
-    $danger-soft;
-
-  border-color: rgba($danger, 0.18);
-}
-
-.confirm-modal__icon--danger::before {
-  background: $danger;
-
-  box-shadow:
-    0.58rem 0.48rem 0 rgba($danger, 0.28),
-    -0.48rem 0.58rem 0 rgba($secondary, 0.42);
-}
-
-.confirm-modal__icon--danger::after {
-  border-color: rgba($danger, 0.16);
+  border-color: rgb(180 35 24 / 18%);
 }
 
 /* =========================
@@ -180,47 +120,54 @@
   max-width: 24rem;
 }
 
-.confirm-modal__content h2 {
+.confirm-modal__title {
   margin: 0;
 
   color: $text-primary;
 
   font-size: clamp(1.45rem, 4vw, 1.9rem);
-  font-weight: 720;
-  line-height: 1.05;
-  letter-spacing: -0.045em;
+  font-weight: $font-bold;
+  line-height: $leading-tight;
+  letter-spacing: $tracking-tight;
 }
 
-.confirm-modal__content p {
-  margin: 0.75rem 0 0;
+.confirm-modal__message {
+  margin: $space-3 0 0;
 
   color: $text-secondary;
 
-  font-size: 0.96rem;
-  line-height: 1.65;
+  font-size: $text-md;
+  line-height: $leading-relaxed;
 }
+
+/* =========================
+   NOTICE
+========================= */
 
 .confirm-modal__notice {
   width: 100%;
   max-width: 24rem;
 
-  margin-top: 1.25rem;
-  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
 
-  background: $surface-soft;
-  border: 1px solid $border;
-  border-radius: $radius-md;
-
-  color: $text-secondary;
-
-  font-size: 0.88rem;
-  line-height: 1.55;
   text-align: left;
 }
 
 .confirm-modal__notice strong {
   color: $text-primary;
-  font-weight: 700;
+
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  line-height: $leading-normal;
+}
+
+.confirm-modal__notice span {
+  color: $text-secondary;
+
+  font-size: $text-sm;
+  line-height: $leading-normal;
 }
 
 /* =========================
@@ -230,12 +177,9 @@
 .confirm-modal__actions {
   width: 100%;
 
-  display: flex;
   justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.75rem;
 
-  margin-top: 1.4rem;
+  margin-top: $space-1;
 }
 
 .confirm-modal__actions app-button {
@@ -243,13 +187,13 @@
 }
 
 /* =========================
-   ANIMATIONS
+   ANIMATION
 ========================= */
 
 @keyframes confirm-modal-enter {
   from {
     opacity: 0;
-    transform: translateY(0.45rem) scale(0.985);
+    transform: translateY(0.35rem) scale(0.985);
   }
 
   to {
@@ -258,37 +202,30 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .confirm-modal {
-    animation: none;
-  }
-}
-
 /* =========================
    RESPONSIVE
 ========================= */
 
-@media (max-width: 520px) {
+@media (max-width: $breakpoint-sm) {
+  .confirm-modal-backdrop {
+    padding: $space-4;
+  }
+
   .confirm-modal {
-    padding: 1.6rem 1.15rem 1.15rem;
+    padding: $space-6 $space-5 $space-5;
     border-radius: $radius-md;
   }
 
   .confirm-modal__icon {
-    width: 4.1rem;
-    height: 4.1rem;
-    margin-bottom: 1rem;
+    width: 3.8rem;
+    height: 3.8rem;
   }
 
   .confirm-modal__icon-mark {
-    width: 2.35rem;
-    height: 2.35rem;
+    width: 2rem;
+    height: 2rem;
 
-    font-size: 1rem;
-  }
-
-  .confirm-modal__notice {
-    padding: 0.8rem;
+    font-size: $text-lg;
   }
 
   .confirm-modal__actions {
@@ -298,5 +235,15 @@
 
   .confirm-modal__actions app-button {
     width: 100%;
+  }
+}
+
+/* =========================
+   REDUCED MOTION
+========================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .confirm-modal {
+    animation: none;
   }
 }

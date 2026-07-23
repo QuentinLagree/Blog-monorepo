@@ -1,48 +1,147 @@
-.flex {
+@use 'variables' as *;
+
+/* =========================
+   APP LAYOUT
+========================= */
+
+.app-shell {
+  min-height: 100vh;
+  padding: $space-8;
+
+  background: $background;
+}
+
+.app-content {
+  width: 100%;
+  max-width: 86rem;
+  margin: 0 auto;
+}
+
+/* =========================
+   PAGE LAYOUT
+========================= */
+
+.page {
+  width: 100%;
+  padding: $spacing-page-y 0 $spacing-page-bottom;
+}
+
+.page-container {
+  width: 100%;
+  max-width: 76rem;
+  margin: 0 auto;
+
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  flex-direction: row;
-  width: 100%;
+  flex-direction: column;
+  gap: $spacing-container-gap;
 }
 
-.flex > * {
-  flex: 1;
-  width: 100%;
+.page-container--narrow {
+  max-width: 54rem;
 }
 
-.flex.col {
+.page-container--wide {
+  max-width: 92rem;
+}
+
+/* =========================
+   SECTIONS
+========================= */
+
+.page-section {
+  padding: $spacing-section;
+
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-section;
+  box-shadow: $card-shadow;
+}
+
+.page-section--soft {
+  background: $surface-soft;
+}
+
+.page-section--flat {
+  box-shadow: none;
+}
+
+/* =========================
+   STACKS
+========================= */
+
+.stack {
+  display: flex;
   flex-direction: column;
 }
 
-.flex.between {
+.stack-xs {
+  gap: $space-2;
+}
+
+.stack-sm {
+  gap: $space-3;
+}
+
+.stack-md {
+  gap: $space-4;
+}
+
+.stack-lg {
+  gap: $space-6;
+}
+
+.stack-xl {
+  gap: $space-8;
+}
+
+/* =========================
+   INLINE
+========================= */
+
+.inline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $spacing-inline-gap;
+}
+
+.inline-between {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
+  gap: $space-4;
 }
 
-.flex-start {
-  justify-content: flex-start;
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: $breakpoint-md) {
+  .app-shell {
+    padding: $space-4;
+  }
+
+  .page {
+    padding: $space-6 0 $space-12;
+  }
+
+  .page-section {
+    padding: $space-5;
+  }
+
+  .inline-between {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 
-.flex-end {
-  justify-content: flex-end;
-}
+@media (max-width: $breakpoint-sm) {
+  .app-shell {
+    padding: $space-3;
+  }
 
-.frow {
-  display: flex;
-  flex-direction: row;
-}
-
-.frow-re {
-  display: flex;
-  flex-direction: row-reverse;
-}
-
-.fcol {
-  display: flex;
-  flex-direction: column;
-}
-
-.frow-center {
-  flex-direction: row;
-  justify-content: center;
+  .page-section {
+    padding: $space-4;
+    border-radius: $radius-md;
+  }
 }

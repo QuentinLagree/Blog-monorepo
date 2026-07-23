@@ -1,202 +1,133 @@
 @use 'variables' as *;
 
-* {
-  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+/* =========================
+   TYPOGRAPHY HELPERS
+========================= */
+
+.text-eyebrow {
+  color: $primary;
+
+  font-size: $text-xs;
+  font-weight: $font-black;
+  line-height: $leading-none;
+  letter-spacing: $tracking-eyebrow;
+  text-transform: uppercase;
 }
 
-body {
+.text-title-xl {
   color: $text-primary;
-  font-weight: 400;
-  line-height: 1.5;
+
+  font-size: clamp(2.6rem, 7vw, 5rem);
+  font-weight: $font-bold;
+  line-height: 0.96;
+  letter-spacing: -0.065em;
 }
 
-/* TITLES */
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+.text-title-lg {
   color: $text-primary;
-  font-weight: 650;
-  line-height: 1.15;
-  letter-spacing: -0.03em;
+
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: $font-bold;
+  line-height: 1;
+  letter-spacing: $tracking-title;
 }
 
-h1 {
-  font-size: clamp(2.2rem, 5vw, 4rem);
+.text-title-md {
+  color: $text-primary;
+
+  font-size: clamp(1.45rem, 3vw, 2.25rem);
+  font-weight: $font-bold;
+  line-height: $leading-tight;
+  letter-spacing: $tracking-tight;
 }
 
-h2 {
-  font-size: clamp(1.8rem, 3.5vw, 3rem);
+.text-title-sm {
+  color: $text-primary;
+
+  font-size: $text-xl;
+  font-weight: $font-bold;
+  line-height: $leading-tight;
+  letter-spacing: -0.025em;
 }
 
-h3 {
-  font-size: clamp(1.5rem, 2.5vw, 2.25rem);
-}
-
-h4 {
-  font-size: 1.45rem;
-}
-
-h5 {
-  font-size: 1.2rem;
-}
-
-h6 {
-  font-size: 1rem;
-  letter-spacing: -0.01em;
-}
-
-/* TEXT */
-
-p {
+.text-body {
   color: $text-secondary;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.65;
+
+  font-size: $text-md;
+  font-weight: $font-regular;
+  line-height: $leading-relaxed;
 }
 
-small {
+.text-body-lg {
+  color: $text-secondary;
+
+  font-size: $text-lg;
+  font-weight: $font-regular;
+  line-height: $leading-relaxed;
+}
+
+.text-muted {
   color: $text-muted;
-  font-size: 0.875rem;
-  line-height: 1.45;
+
+  font-size: $text-sm;
+  line-height: $leading-normal;
 }
 
-strong,
-b {
-  color: $text-primary;
-  font-weight: 650;
-}
-
-/* HERO */
-
-h1.hero-title {
-  color: $text-primary;
-  font-size: clamp(3rem, 8vw, 6.5rem);
-  font-weight: 700;
-  line-height: 0.98;
-  letter-spacing: -0.06em;
-}
-
-p.hero-baseline,
-label.hero-baseline {
-  color: $text-secondary;
-  font-size: clamp(1.25rem, 2.5vw, 2rem);
-  font-weight: 400;
-  line-height: 1.45;
-  letter-spacing: -0.02em;
-}
-
-/* TEXT STATES */
-
-p.text-danger,
 .text-danger {
   color: $danger;
 }
 
-p.text-success,
 .text-success {
   color: $success;
 }
 
-p.text-warning,
 .text-warning {
   color: $warning;
 }
 
-p.text-muted,
-.text-muted {
-  color: $text-muted;
+.text-info {
+  color: $info;
 }
 
-p.text-secondary,
-.text-secondary {
+/* =========================
+   CONTENT DEFAULTS
+========================= */
+
+.content-title {
+  margin: 0;
+
+  color: $text-primary;
+
+  font-size: clamp(1.7rem, 4vw, 3rem);
+  font-weight: $font-bold;
+  line-height: $leading-tight;
+  letter-spacing: $tracking-title;
+}
+
+.content-description {
+  max-width: 42rem;
+  margin: $space-3 0 0;
+
   color: $text-secondary;
+
+  font-size: $text-md;
+  line-height: $leading-relaxed;
 }
 
-/* FORMS */
+/* =========================
+   RESPONSIVE
+========================= */
 
-input,
-textarea,
-select,
-button {
-  font-family: inherit;
-}
-
-input,
-textarea,
-select {
-  color: $text-primary;
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 1.4;
-
-  &::placeholder {
-    font-weight: 400;
-    color: $input-placeholder;
+@media (max-width: $breakpoint-sm) {
+  .text-title-xl {
+    font-size: clamp(2.2rem, 14vw, 3.4rem);
   }
 
-  &:not(:placeholder-shown) {
-    color: $text-primary;
+  .text-title-lg {
+    font-size: clamp(1.9rem, 12vw, 3rem);
   }
-}
 
-/* LINKS */
-
-a {
-  color: $primary;
-  text-decoration: none;
-  font-size: inherit;
-  font-weight: 500;
-  line-height: inherit;
-  text-underline-offset: 0.18em;
-  transition: color 0.2s ease;
-
-  &:hover {
-    color: $primary-hover;
-    text-decoration: underline;
+  .text-body-lg {
+    font-size: $text-md;
   }
-}
-
-/* ARTICLE / READING */
-
-.article-title {
-  color: $text-primary;
-  font-size: clamp(2.25rem, 5vw, 4.5rem);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.05em;
-}
-
-.article-lead {
-  color: $text-secondary;
-  font-size: clamp(1.15rem, 2vw, 1.45rem);
-  line-height: 1.6;
-}
-
-.article-body {
-  color: $text-primary;
-  font-size: 1.05rem;
-  line-height: 1.8;
-}
-
-.article-body p {
-  color: $text-primary;
-  font-size: 1.05rem;
-  line-height: 1.8;
-}
-
-.article-meta {
-  color: $text-muted;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-/* SELECTION */
-
-::selection {
-  background: $primary-soft;
-  color: $primary;
 }

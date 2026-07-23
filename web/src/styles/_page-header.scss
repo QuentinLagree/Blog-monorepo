@@ -1,0 +1,96 @@
+@use 'variables' as *;
+
+/* =========================
+   PAGE HEADER
+========================= */
+
+.page-header {
+  padding: $space-8;
+
+  background:
+    radial-gradient(circle at top left, rgba($primary, 0.07), transparent 24rem),
+    radial-gradient(circle at bottom right, rgba($secondary, 0.06), transparent 22rem),
+    $surface;
+
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  box-shadow: $card-shadow;
+}
+
+.page-header--soft {
+  background:
+    radial-gradient(circle at top left, rgba($primary, 0.06), transparent 24rem),
+    $surface-soft;
+}
+
+.page-header--flat {
+  box-shadow: none;
+}
+
+.page-header__eyebrow {
+  margin: 0;
+
+  color: $primary;
+
+  font-size: $text-xs;
+  font-weight: $font-bold;
+  line-height: $leading-none;
+  letter-spacing: $tracking-eyebrow;
+  text-transform: uppercase;
+}
+
+.page-header__title {
+  max-width: 14em;
+  margin: $space-2 0 0;
+
+  color: $text-primary;
+
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: $font-bold;
+  line-height: 1;
+  letter-spacing: $tracking-title;
+}
+
+.page-header__description {
+  max-width: 46rem;
+  margin: $space-4 0 0;
+
+  color: $text-secondary;
+
+  font-size: $text-lg;
+  line-height: $leading-relaxed;
+}
+
+.page-header__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $space-3;
+
+  margin-top: $space-6;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: $breakpoint-md) {
+  .page-header {
+    padding: $space-6;
+  }
+
+  .page-header__title {
+    font-size: clamp(2rem, 10vw, 3.25rem);
+  }
+
+  .page-header__description {
+    font-size: $text-md;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .page-header {
+    padding: $space-5;
+    border-radius: $radius-md;
+  }
+}

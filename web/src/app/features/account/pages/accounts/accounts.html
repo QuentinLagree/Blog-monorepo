@@ -1,126 +1,201 @@
-<section class="contributors-page">
-  <header class="contributors-header">
-    <div class="contributors-header__content">
-      <p class="contributors-eyebrow">Communauté</p>
+<section class="contributors-page page">
+  <div class="page-container page-container--wide">
+    <header class="contributors-header page-header">
+      <div class="contributors-header__content">
+        <p class="page-header__eyebrow">
+          Communauté
+        </p>
 
-      <h1>Contributeurs</h1>
+        <h1 class="page-header__title">
+          Contributeurs
+        </h1>
 
-      <p class="contributors-baseline">
-        Découvre les membres qui participent à la construction de la base de connaissances.
-      </p>
-    </div>
-  </header>
-
-  <section class="contributors-toolbar">
-    <div class="contributors-count">
-      <span>{{ filteredUsers().length }}</span>
-
-      <p>
-        {{ filteredUsers().length > 1 ? 'contributeurs' : 'contributeur' }}
-      </p>
-    </div>
-
-    <label class="contributors-search">
-      <span>Rechercher</span>
-
-      <input
-        type="search"
-        placeholder="Pseudo, nom ou email..."
-        [value]="search()"
-        (input)="updateSearch($event)" />
-    </label>
-  </section>
-
-  @if (users.isLoading()) {
-    <section class="contributors-loading">
-      <div class="contributors-loading__spinner" aria-hidden="true"></div>
-
-      <div>
-        <h2>Chargement des contributeurs</h2>
-        <p>Nous récupérons les membres de la communauté.</p>
+        <p class="page-header__description">
+          Découvre les membres qui participent à la construction de la base de connaissances.
+        </p>
       </div>
-    </section>
-  } @else {
-    <section class="contributors-grid">
-      @for (user of filteredUsers(); track user.id) {
-        <article class="contributor-card">
-          @if (user.role === 'admin') {
-            <span class="contributor-card__badge">Admin</span>
-          }
+    </header>
 
-          <div class="contributor-card__avatar">
-            {{ userInitial(user) }}
+    <section class="contributors-toolbar card card--md">
+      <div class="contributors-count">
+        <span>
+          {{ filteredUsers().length }}
+        </span>
+
+        <p>
+          {{ filteredUsers().length > 1 ? 'contributeurs' : 'contributeur' }}
+        </p>
+      </div>
+
+      <label class="contributors-search form-field">
+        <span class="form-field__label">
+          Rechercher
+        </span>
+
+        <input
+          class="form-control"
+          type="search"
+          placeholder="Pseudo, nom ou email..."
+          [value]="search()"
+          (input)="updateSearch($event)" />
+      </label>
+    </section>
+
+    @if (users.isLoading()) {
+      <section class="contributors-loading card card--md">
+        <div
+          class="contributors-loading__spinner"
+          aria-hidden="true">
+        </div>
+
+        <div>
+          <p class="text-eyebrow">
+            Communauté
+          </p>
+
+          <h2 class="text-title-md">
+            Chargement des contributeurs
+          </h2>
+
+          <p class="text-body">
+            Nous récupérons les membres de la communauté.
+          </p>
+        </div>
+      </section>
+    } @else {
+      <section class="contributors-section page-section">
+        <header class="contributors-section__header">
+          <div>
+            <p class="text-eyebrow">
+              Membres
+            </p>
+
+            <h2 class="content-title">
+              Liste des contributeurs
+              <span class="contributors-section__count">
+                {{ filteredUsers().length }}
+              </span>
+            </h2>
+
+            <p class="content-description">
+              Parcours les profils des utilisateurs qui participent à la plateforme.
+            </p>
           </div>
 
-          <div class="contributor-card__content">
-            <div class="contributor-card__identity">
-              <h2>{{ userDisplayName(user) }}</h2>
+          <app-button
+            type="primary"
+            size="sm"
+            label="Actualiser"
+            icon="icon-refresh"
+            (clicked)="reload()">
+          </app-button>
+        </header>
 
-              @if (user.pseudo) {
-                <p>@{{ user.pseudo }}</p>
-              }
-            </div>
-
-            <div class="contributor-card__details">
-              <div class="contributor-card__detail">
-                <span>Email</span>
-                <strong>{{ user.email || 'Non renseigné' }}</strong>
+        <div class="contributors-grid">
+          @for (user of filteredUsers(); track user.id) {
+            <article class="contributor-card card card--md card--interactive">
+              <div
+                class="contributor-card__avatar"
+                aria-hidden="true">
+                {{ userInitial(user) }}
               </div>
 
-              <div class="contributor-card__detail">
-                <span>Nom</span>
-                <strong>
-                  {{ user.prenom || 'Prénom non renseigné' }}
-                  {{ user.nom || 'Nom non renseigné' }}
-                </strong>
+              <div class="contributor-card__content">
+                <header class="contributor-card__header">
+                  <div class="contributor-card__identity">
+                    <h3 class="card__title">
+                      {{ userDisplayName(user) }}
+                    </h3>
+
+                    @if (user.pseudo) {
+                      <p class="contributor-card__pseudo">
+                        @{{ user.pseudo }}
+                      </p>
+                    }
+                  </div>
+
+                  @if (user.role === 'admin') {
+                    <span class="card__badge card__badge--secondary">
+                      Admin
+                    </span>
+                  }
+                </header>
+
+                <div class="contributor-card__details">
+                  <div class="contributor-card__detail">
+                    <span>
+                      Email
+                    </span>
+
+                    <strong>
+                      {{ user.email || 'Non renseigné' }}
+                    </strong>
+                  </div>
+
+                  <div class="contributor-card__detail">
+                    <span>
+                      Nom
+                    </span>
+
+                    <strong>
+                      {{ user.prenom || 'Prénom non renseigné' }}
+                      {{ user.nom || 'Nom non renseigné' }}
+                    </strong>
+                  </div>
+
+                  @if (user.created_at) {
+                    <div class="contributor-card__detail">
+                      <span>
+                        Inscrit depuis
+                      </span>
+
+                      <strong>
+                        {{ user.created_at | date:'dd/MM/yyyy' }}
+                      </strong>
+                    </div>
+                  }
+                </div>
+
+                <footer class="contributor-card__actions">
+                  <app-button
+                    type="secondary"
+                    size="sm"
+                    label="Voir le profil"
+                    (clicked)="goToUser(user.id.toString())">
+                  </app-button>
+                </footer>
+              </div>
+            </article>
+          } @empty {
+            <div class="contributors-empty-state empty-card">
+              <div
+                class="empty-card__icon"
+                aria-hidden="true">
+                ✦
               </div>
 
-              @if (user.created_at) {
-                <div class="contributor-card__detail">
-                  <span>Inscrit depuis</span>
-                  <strong>{{ user.created_at | date:'dd/MM/yyyy' }}</strong>
+              <h2 class="empty-card__title">
+                Aucun contributeur trouvé
+              </h2>
+
+              <p class="empty-card__description">
+                Aucun utilisateur ne correspond à ta recherche.
+              </p>
+
+              @if (search()) {
+                <div class="empty-card__actions">
+                  <app-button
+                    type="secondary"
+                    size="sm"
+                    label="Réinitialiser"
+                    (clicked)="search.set('')">
+                  </app-button>
                 </div>
               }
             </div>
-
-            <div class="contributor-card__actions">
-              <app-button
-                type="secondary"
-                size="sm"
-                label="Voir le profil"
-                (clicked)="goToUser(user.id.toString())">
-              </app-button>
-            </div>
-          </div>
-        </article>
-        
-      } @empty {
-        <div class="contributors-empty-state">
-          <div class="contributors-empty-state__icon">✦</div>
-
-          <h2>Aucun contributeur trouvé</h2>
-
-          <p>
-            Aucun utilisateur ne correspond à ta recherche.
-          </p>
-
-          @if (search()) {
-            <app-button
-              type="secondary"
-              size="sm"
-              label="Réinitialiser"
-              (clicked)="search.set('')">
-            </app-button>
           }
         </div>
-      }
-      <app-button
-        type="primary"
-        size="sm"
-        label="Actualiser"
-        icon="icon-refresh"
-        (clicked)="reload()">
-      </app-button>
-    </section>
-  }
+      </section>
+    }
+  </div>
 </section>

@@ -1,56 +1,74 @@
 @use 'variables' as *;
 
+/* =========================
+   CONTEXT MENU
+========================= */
+
 .context-menu {
   position: fixed;
-  z-index: 1000;
+  z-index: $z-dropdown;
 
   min-width: 13rem;
   max-width: 18rem;
 
-  max-height: min(22rem, calc(100vh - 2rem));
+  max-height: min(22rem, calc(100vh - #{$space-4}));
   overflow-y: auto;
   overscroll-behavior: contain;
 
-  padding: 0.35em;
+  padding: $space-1;
 
   background: $surface;
-  border: 1px solid $border;
-  border-radius: $radius-md;
-  box-shadow: $card-shadow-hover;
-
   color: $text-primary;
+
+  border: 1px solid $border;
+  border-radius: $radius-xs;
+
+  box-shadow: $dropdown-shadow;
 
   animation: context-menu-enter 0.14s ease-out;
 }
 
-.context-menu__list {
-  margin: 0;
-  padding: 0;
+/* =========================
+   LIST
+========================= */
 
+.context-menu__list {
   display: flex;
   flex-direction: column;
-  gap: 0.15em;
+  gap: $space-1;
+
+  margin: 0;
+  padding: 0;
 
   list-style: none;
 }
 
+/* =========================
+   ITEM
+========================= */
+
 .context-menu__item {
   width: 100%;
+  min-height: 2.15rem;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75em;
+  gap: $space-3;
 
-  padding: 0.65em 0.75em;
+  padding: $space-2 $space-3;
 
+  background: transparent;
   color: $text-secondary;
 
-  border-radius: $radius-sm;
+  border: 1px solid transparent;
+  border-radius: $radius-xs;
 
-  font-size: 0.92rem;
-  font-weight: 500;
-  line-height: 1.2;
+  font: inherit;
+  font-size: $text-sm;
+  font-weight: $font-medium;
+  line-height: $leading-tight;
+  text-align: left;
 
   cursor: pointer;
   user-select: none;
@@ -59,29 +77,121 @@
 
   transition:
     background-color 0.14s ease,
+    border-color 0.14s ease,
     color 0.14s ease;
 }
 
 .context-menu__item:hover,
 .context-menu__item:focus-visible {
-  background: $primary-soft;
-  color: $primary;
+  background: $surface-soft;
+  color: $text-primary;
+
+  border-color: $border-light;
 }
 
 .context-menu__item:active {
-  background: $surface-soft;
+  background: $primary-soft;
+  color: $primary;
+
+  border-color: rgb(49 92 73 / 16%);
 }
 
+/* =========================
+   ITEM VARIANTS
+========================= */
+
+.context-menu__item--primary:hover,
+.context-menu__item--primary:focus-visible {
+  background: $primary-soft;
+  color: $primary;
+
+  border-color: rgb(49 92 73 / 16%);
+}
+
+.context-menu__item--danger {
+  color: $danger;
+}
+
+.context-menu__item--danger:hover,
+.context-menu__item--danger:focus-visible {
+  background: $danger-soft;
+  color: $danger;
+
+  border-color: $border-error;
+}
+
+.context-menu__item--disabled,
+.context-menu__item:disabled,
+.context-menu__item[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* =========================
+   CONTENT
+========================= */
+
 .context-menu__label {
+  min-width: 0;
+
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.context-menu__shortcut {
+  flex: 0 0 auto;
+
+  color: $text-muted;
+
+  font-size: $text-xs;
+  font-weight: $font-medium;
+  line-height: $leading-none;
+}
+
+.context-menu__icon {
+  width: 0.95rem;
+  height: 0.95rem;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  color: currentColor;
+}
+
+.context-menu__icon svg {
+  width: 0.85rem;
+  height: 0.85rem;
+
+  display: block;
+
+  fill: currentColor;
+}
+
+/* =========================
+   SEPARATOR
+========================= */
+
+.context-menu__separator {
+  height: 1px;
+
+  margin: $space-1 0;
+
+  background: $border-light;
+}
+
+/* =========================
+   ANIMATION
+========================= */
+
 @keyframes context-menu-enter {
   from {
     opacity: 0;
-    transform: translateY(-0.25rem) scale(0.98);
+    transform: translateY(-0.2rem) scale(0.99);
   }
 
   to {
@@ -90,8 +200,12 @@
   }
 }
 
+/* =========================
+   SCROLLBAR
+========================= */
+
 .context-menu::-webkit-scrollbar {
-  width: 8px;
+  width: 0.45rem;
 }
 
 .context-menu::-webkit-scrollbar-track {
@@ -105,4 +219,18 @@
 
 .context-menu::-webkit-scrollbar-thumb:hover {
   background: $text-muted;
+}
+
+/* =========================
+   REDUCED MOTION
+========================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .context-menu {
+    animation: none;
+  }
+
+  .context-menu__item {
+    transition: none;
+  }
 }

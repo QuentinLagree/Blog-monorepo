@@ -1,0 +1,22 @@
+/* =========================
+   SHADOWS
+========================= */
+
+$shadow-none: none;
+
+$shadow-sm: 0 1px 2px rgb(28 28 26 / 6%);
+$shadow-md: 0 8px 24px rgb(28 28 26 / 8%);
+$shadow-lg: 0 18px 60px rgb(28 28 26 / 14%);
+
+/* =========================
+   SEMANTIC SHADOWS
+========================= */
+
+$card-shadow: $shadow-sm;
+$card-shadow-hover: $shadow-md;
+
+$modal-shadow: $shadow-lg;
+
+$dropdown-shadow: 0 12px 32px rgb(28 28 26 / 12%);
+
+$header-shadow: 0 8px 28px rgb(28 28 26 / 8%);

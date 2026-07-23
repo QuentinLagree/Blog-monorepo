@@ -1,103 +1,161 @@
 @if (!isDeleted()) {
   <app-confirm-modal
-  [open]="publishModalOpen"
-  title="Supprimer cette publication ?"
-  [message]="`Tu t’apprêtes à supprimer définitivement la publication « ${this.post().title} » de ${this.author()?.pseudo}, publiée le ${(this.post().published_at | date:'dd/MM/yyyy')}. Cette action est irréversible et le contenu ne sera plus accessible par la communauté.`"
-  confirmLabel="Supprimer la publication"
-  cancelLabel="Annuler"
-  variant="danger"
-  [loading]="publishModalLoading"
-  (cancelled)="closePostDeleteModal()"
-  (confirmed)="deletePost()">
-</app-confirm-modal>
-<app-confirm-modal
-  [open]="authorModalOpen"
-  title="Supprimer l'auteur de cette publication ?"
-  [message]="`Tu t’apprêtes à supprimer définitivement l'utilisateur ${this.author()?.pseudo}'. Cette action est irréversible et le contenu ne sera plus accessible par la communauté.`"
-  confirmLabel="Supprimer l'auteur"
-  cancelLabel="Annuler"
-  variant="danger"
-  [loading]="authorModalLoading"
-  (cancelled)="closeAuthorDeleteModal()"
-  (confirmed)="deleteUser()">
-</app-confirm-modal>
-@if (!isDraft()) {
-<a [contextMenuTrigger]="sessionRole === 'admin' ? options : null"
-              [contextMenuAction]="sessionRole === 'admin' ? formatFromContextMenu : null" class="post_detail" [href]="detailPath">
-  <article class="post-container p-2">
-    <div class="post-container__infos">
-      <div class="title" (click)="this.getDetail()">
-        <h3>{{ post().title }}</h3>
-      </div>
+    [open]="publishModalOpen"
+    title="Supprimer cette publication ?"
+    [message]="`Tu t’apprêtes à supprimer définitivement la publication « ${this.post().title} » de ${this.author()?.pseudo}, publiée le ${(this.post().published_at | date:'dd/MM/yyyy')}. Cette action est irréversible et le contenu ne sera plus accessible par la communauté.`"
+    confirmLabel="Supprimer la publication"
+    cancelLabel="Annuler"
+    variant="danger"
+    [loading]="publishModalLoading"
+    (cancelled)="closePostDeleteModal()"
+    (confirmed)="deletePost()">
+  </app-confirm-modal>
 
-      <p class="post-container__infos-description baseline">
-        {{ post().description }}
-      </p>
+  <app-confirm-modal
+    [open]="authorModalOpen"
+    title="Supprimer l'auteur de cette publication ?"
+    [message]="`Tu t’apprêtes à supprimer définitivement l'utilisateur ${this.author()?.pseudo}. Cette action est irréversible et le contenu ne sera plus accessible par la communauté.`"
+    confirmLabel="Supprimer l'auteur"
+    cancelLabel="Annuler"
+    variant="danger"
+    [loading]="authorModalLoading"
+    (cancelled)="closeAuthorDeleteModal()"
+    (confirmed)="deleteUser()">
+  </app-confirm-modal>
 
-      <div class="likes pt-2">
-        {{ likesCount() }}
-        {{
-        `J'aime${likesCount() > 1 ? 's' : ''} `
-        }}
-      </div>
-    </div>
+  @if (!isDraft()) {
+    <article
+      class="post-card card card--md card--interactive"
+      [contextMenuTrigger]="sessionRole === 'admin' ? options : null"
+      [contextMenuAction]="sessionRole === 'admin' ? formatFromContextMenu : null">
 
-    <div class="post-container__callactions">
-      <p class="text-muted text-small">
-        {{ post().published_at| date:'dd/MM/yyyy' }}
-      </p>
+      <a class="post-card__link" [href]="detailPath" (click)="getDetail()">
+        <header class="card__header post-card__header">
+          <div class="post-card__heading">
+            <p class="card__eyebrow">
+              Publication
+            </p>
 
-      
-        <p class="baseline text">
-        <strong>Auteur:</strong> <a [routerLink]="['/account/users', this.post().authorId]">{{ this.author()?.pseudo }}</a>
-      </p>
-    
+            <h3 class="card__title post-card__title">
+              {{ post().title }}
+            </h3>
 
-      <div class="buttons frow flex.between gap-3">
-        @if (this.sessionId === this.post().authorId || this.sessionRole === 'admin') {
-        <app-button-edit style="z-index: 5;" (clicked)="updatePost()" icon="icon-info">
-        </app-button-edit>
-        }
+            <p class="card__description post-card__description">
+              {{ post().description }}
+            </p>
+          </div>
 
-        <app-button size="sm" type="primary" label="Lire l'article" (clicked)="this.getDetail()">
-        </app-button>
-      </div>
-    </div>
-  </article>
-</a>
-} @else {
-<a class="post_detail" [href]="updatePost">
-  <article class="post-container post-container--draft p-2 mb-8" (click)="this.updatePost()">
-    <div class="post-container__infos">
-      <div class="title">
-        <h3>{{ post().title }}</h3>
-      </div>
+          <span class="card__badge card__badge--success">
+            Publié
+          </span>
+        </header>
 
-      <p class="post-container__infos-description baseline">
-        {{ post().description }}
-      </p>
-    </div>
+        <div class="post-card__content">
+          <div class="card__meta">
+            <span class="card__meta-item">
+              {{ post().published_at | date:'dd/MM/yyyy' }}
+            </span>
 
-    <div class="post-container__callactions">
-      <p class="text-muted text-small">
-        {{ post().published_at| date:'dd/MM/yyyy' }}
-      </p>
+            <span class="card__meta-separator"></span>
 
-      @if (!isAdminAndNoAuthor) {
-      <p class="baseline text">
-        <strong>Auteur:</strong> {{ this.author()?.pseudo }}
-      </p>
-      }
+            <span class="card__meta-item">
+              {{ likesCount() }} J'aime{{ likesCount() > 1 ? 's' : '' }}
+            </span>
+          </div>
+        </div>
+      </a>
 
-      <div class="buttons frow flex.between gap-3">
-        <app-button type="primary" size="sm" (clicked)="updatePost()" label="Editer">
-        </app-button>
+      <footer class="card__footer post-card__footer">
+        <div class="card__meta">
+          <span class="card__meta-item">
+            <strong>Auteur :</strong>
 
-        <app-button-danger label="supprimer"></app-button-danger>
-      </div>
-    </div>
-  </article>
-</a>
+            <a
+              class="post-card__author-link"
+              [routerLink]="['/account/users', this.post().authorId]">
+              {{ this.author()?.pseudo }}
+            </a>
+          </span>
+        </div>
 
-}
+        <div class="card__actions">
+          @if (this.sessionId === this.post().authorId || this.sessionRole === 'admin') {
+            <app-button-edit
+              (clicked)="updatePost()"
+              icon="icon-info">
+            </app-button-edit>
+          }
+
+          <app-button
+            size="sm"
+            type="primary"
+            label="Lire l'article"
+            (clicked)="getDetail()">
+          </app-button>
+        </div>
+      </footer>
+    </article>
+  } @else {
+    <article class="post-card post-card--draft card card--md card--interactive">
+      <a class="post-card__link" [href]="updatePost" (click)="updatePost()">
+        <header class="card__header post-card__header">
+          <div class="post-card__heading">
+            <p class="card__eyebrow">
+              Brouillon
+            </p>
+
+            <h3 class="card__title post-card__title">
+              {{ post().title }}
+            </h3>
+
+            <p class="card__description post-card__description">
+              {{ post().description }}
+            </p>
+          </div>
+
+          <span class="card__badge card__badge--warning">
+            Brouillon
+          </span>
+        </header>
+
+        <div class="post-card__content">
+          <div class="card__meta">
+            <span class="card__meta-item">
+              Créé le {{ post().created_at | date:'dd/MM/yyyy' }}
+            </span>
+
+            @if (!isAdminAndNoAuthor) {
+              <span class="card__meta-separator"></span>
+
+              <span class="card__meta-item">
+                <strong>Auteur :</strong>
+                {{ this.author()?.pseudo }}
+              </span>
+            }
+          </div>
+        </div>
+      </a>
+
+      <footer class="card__footer post-card__footer">
+        <div class="card__meta">
+          <span class="card__meta-item">
+            Non publié
+          </span>
+        </div>
+
+        <div class="card__actions">
+          <app-button
+            type="primary"
+            size="sm"
+            label="Éditer"
+            (clicked)="updatePost()">
+          </app-button>
+
+          <app-button-danger
+            label="Supprimer">
+          </app-button-danger>
+        </div>
+      </footer>
+    </article>
+  }
 }

@@ -10,7 +10,7 @@ import { ɵEmptyOutletComponent } from "@angular/router";
 @Component({
   selector: 'app-input-password',
   templateUrl: './input-password.html',
-  styleUrls: ['./input-password.scss', '../base-input.scss'],
+  styleUrls: ['./input-password.scss'],
   imports: [
     ReactiveFormsModule,
     InputPasswordMeterComponent,
@@ -24,6 +24,8 @@ export class InputPassswordComponent extends BaseFormElementComponent<InputPassw
     label: 'Mot de passe',
     placeholder: 'placeholder : password',
     required: true,
+    hint: '',
+    size: 'md',
     type: 'password',
     showPassword: false,
     displayStrenghMeterPassword: false

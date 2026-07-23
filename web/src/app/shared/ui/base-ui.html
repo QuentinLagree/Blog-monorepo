@@ -1,133 +1,918 @@
-<app-header-content eyebrow="header-content eyebrow" title="header content title h1" baseline="header-content baseline p">
-  <app-button label="Action principale">
-      </app-button>
+<section class="base-ui-page page">
+  <div class="page-container page-container--wide">
+    <app-header-content
+      eyebrow="Design system"
+      title="Base UI"
+      baseline="Aperçu des composants, styles globaux, typographies, boutons, cartes, états et formulaires.">
 
-      <app-button type="secondary" label="Action secondaire">
-      </app-button>
-</app-header-content>
-<app-header-section eyebrow="section-header eyeborw" title="section-header title h2"></app-header-section>
-<div class="main-container fcol gap-8 p-7">
-  <div class="frow gap-5 ghost">
-    <div class="ghost">
-      <h1 class="mb-1">Titre du premier niveau</h1>
-      <h2 class="mb-1">Titre du deuxieme niveau</h2>
-      <h3 class="mb-1">Titre du troisième niveau</h3>
-      <h4 class="mb-1">Titre du quatrième niveau</h4>
-      <h5 class="mb-1">Titre du cinquième niveau</h5>
-      <p class="baseline">
-        .baseline Lorem, ipsum dolor sit amet consectetur adipisicing elit. Placeat molestias rerum
-        nemo delectus incidunt quam temporibus molestiae modi nihil distinctio necessitatibus
-        voluptates velit ad, maxime fuga, deserunt fugit ex eligendi.
+      <div class="btn-group btn-group--wrap">
+        <app-button
+          icon="icon-plus"
+          label="Action principale">
+        </app-button>
+
+        <app-button
+          type="secondary"
+          label="Action secondaire">
+        </app-button>
+      </div>
+    </app-header-content>
+
+    <section class="base-ui-section page-section">
+      <app-header-section
+        eyebrow="Fondations"
+        title="Typographie">
+      </app-header-section>
+
+      <div class="ui-grid ui-grid--two">
+        <article class="card card--md">
+          <header class="card__header">
+            <div>
+              <p class="card__eyebrow">
+                Titres natifs
+              </p>
+
+              <h3 class="card__title">
+                Hiérarchie HTML
+              </h3>
+            </div>
+          </header>
+
+          <div class="ui-stack">
+            <h1>Titre du premier niveau</h1>
+            <h2>Titre du deuxième niveau</h2>
+            <h3>Titre du troisième niveau</h3>
+            <h4>Titre du quatrième niveau</h4>
+            <h5>Titre du cinquième niveau</h5>
+          </div>
+
+          <p class="text-body">
+            Exemple de texte courant. Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            Placeat molestias rerum nemo delectus incidunt quam temporibus molestiae modi.
+          </p>
+        </article>
+
+        <article class="card card--md card--soft">
+          <header class="card__header">
+            <div>
+              <p class="card__eyebrow">
+                Classes globales
+              </p>
+
+              <h3 class="card__title">
+                Typographie utilitaire
+              </h3>
+            </div>
+          </header>
+
+          <div class="ui-stack">
+            <h1 class="text-title-lg">
+              Titre .text-title-lg
+            </h1>
+
+            <h2 class="text-title-md">
+              Sous-titre .text-title-md
+            </h2>
+
+            <p class="text-body-lg">
+              Texte de présentation .text-body-lg pour les descriptions importantes.
+            </p>
+
+            <p class="text-body">
+              Texte courant .text-body pour les paragraphes classiques.
+            </p>
+
+            <p class="text-muted">
+              Texte secondaire .text-muted pour les informations discrètes.
+            </p>
+          </div>
+
+          <div class="ui-inline">
+            <p class="text-danger">
+              .text-danger
+            </p>
+
+            <p class="text-success">
+              .text-success
+            </p>
+
+            <p class="text-warning">
+              .text-warning
+            </p>
+
+            <p class="text-info">
+              .text-info
+            </p>
+
+            <a href="#">
+              Lien standard
+            </a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="base-ui-section page-section">
+      <app-header-section
+        eyebrow="Tokens"
+        title="Couleurs">
+      </app-header-section>
+
+      <div class="ui-color-grid">
+        <article class="ui-color-card card card--sm">
+          <span class="ui-color-card__swatch ui-color-card__swatch--primary"></span>
+
+          <div>
+            <h3>Primary</h3>
+            <p>Couleur principale de l’interface.</p>
+          </div>
+        </article>
+
+        <article class="ui-color-card card card--sm">
+          <span class="ui-color-card__swatch ui-color-card__swatch--secondary"></span>
+
+          <div>
+            <h3>Secondary</h3>
+            <p>Couleur d’accent secondaire.</p>
+          </div>
+        </article>
+
+        <article class="ui-color-card card card--sm">
+          <span class="ui-color-card__swatch ui-color-card__swatch--success"></span>
+
+          <div>
+            <h3>Success</h3>
+            <p>Validation, réussite, action positive.</p>
+          </div>
+        </article>
+
+        <article class="ui-color-card card card--sm">
+          <span class="ui-color-card__swatch ui-color-card__swatch--danger"></span>
+
+          <div>
+            <h3>Danger</h3>
+            <p>Suppression, erreur critique, action destructive.</p>
+          </div>
+        </article>
+
+        <article class="ui-color-card card card--sm">
+          <span class="ui-color-card__swatch ui-color-card__swatch--warning"></span>
+
+          <div>
+            <h3>Warning</h3>
+            <p>Attention, action sensible, confirmation.</p>
+          </div>
+        </article>
+
+        <article class="ui-color-card card card--sm">
+          <span class="ui-color-card__swatch ui-color-card__swatch--info"></span>
+
+          <div>
+            <h3>Info</h3>
+            <p>Information secondaire ou contexte.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="base-ui-section page-section">
+  <app-header-section
+    eyebrow="Composants"
+    title="Modales">
+  </app-header-section>
+
+  <div class="ui-grid ui-grid--three">
+    <article class="card card--md">
+      <p class="card__eyebrow">
+        Primary
       </p>
-    </div>
-    <div class="main-container-box ghost">
-      <h1 class="mb-1 hero-title">Titre .hero-title</h1>
-      <h2 class="mb-1 hero-subtitle">Sous-titre .hero-subtitle</h2>
-      <p class="hero-baseline">
-        .hero-baseline Lorem, ipsum dolor sit amet consectetur adipisicing elit. Placeat molestias
-        rerum nemo delectus.
+
+      <h3 class="card__title">
+        Confirmation standard
+      </h3>
+
+      <p class="card__description">
+        Modale utilisée pour confirmer une action classique.
       </p>
-      <div class="frow gap-4">
-        <p class="text-danger">.text-danger</p>
-        <p class="text-muted">.text-disabled</p>
-        <a href="#">link</a>
+
+      <div class="ui-modal-preview">
+        <div class="ui-modal-preview__backdrop">
+          <section
+            class="confirm-modal card card--md"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Confirmer l’action">
+
+            <div
+              class="confirm-modal__icon confirm-modal__icon--primary"
+              aria-hidden="true">
+              <span class="confirm-modal__icon-mark">
+                ✓
+              </span>
+            </div>
+
+            <div class="confirm-modal__content">
+              <h2 class="confirm-modal__title">
+                Confirmer l’action
+              </h2>
+
+              <p class="confirm-modal__message">
+                Cette action va modifier les informations de ton espace.
+              </p>
+            </div>
+
+            <div class="confirm-modal__notice card card--sm card--soft">
+              <strong>
+                À vérifier avant de continuer.
+              </strong>
+
+              <span>
+                Cette action peut modifier l’état de ton espace ou de tes contenus.
+              </span>
+            </div>
+
+            <footer class="confirm-modal__actions btn-group btn-group--wrap">
+              <app-button
+                size="sm"
+                type="secondary"
+                label="Annuler">
+              </app-button>
+
+              <app-button
+                size="sm"
+                type="primary"
+                label="Confirmer">
+              </app-button>
+            </footer>
+          </section>
+        </div>
+      </div>
+    </article>
+
+    <article class="card card--md">
+      <p class="card__eyebrow">
+        Danger
+      </p>
+
+      <h3 class="card__title">
+        Action destructive
+      </h3>
+
+      <p class="card__description">
+        Modale utilisée pour une suppression ou une action irréversible.
+      </p>
+
+      <div class="ui-modal-preview">
+        <div class="ui-modal-preview__backdrop">
+          <section
+            class="confirm-modal card card--md"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Supprimer l’article">
+
+            <div
+              class="confirm-modal__icon confirm-modal__icon--danger"
+              aria-hidden="true">
+              <span class="confirm-modal__icon-mark">
+                !
+              </span>
+            </div>
+
+            <div class="confirm-modal__content">
+              <h2 class="confirm-modal__title">
+                Supprimer l’article ?
+              </h2>
+
+              <p class="confirm-modal__message">
+                Cette action est définitive. L’article ne pourra pas être récupéré.
+              </p>
+            </div>
+
+            <div class="confirm-modal__notice card card--sm card--soft">
+              <strong>
+                À vérifier avant de continuer.
+              </strong>
+
+              <span>
+                Cette action peut modifier l’état de ton espace ou de tes contenus.
+              </span>
+            </div>
+
+            <footer class="confirm-modal__actions btn-group btn-group--wrap">
+              <app-button
+                size="sm"
+                type="secondary"
+                label="Annuler">
+              </app-button>
+
+              <app-button
+                size="sm"
+                type="danger"
+                label="Supprimer">
+              </app-button>
+            </footer>
+          </section>
+        </div>
+      </div>
+    </article>
+
+    <article class="card card--md">
+      <p class="card__eyebrow">
+        Warning
+      </p>
+
+      <h3 class="card__title">
+        Action sensible
+      </h3>
+
+      <p class="card__description">
+        Modale utilisée pour prévenir avant une action à risque.
+      </p>
+
+      <div class="ui-modal-preview">
+        <div class="ui-modal-preview__backdrop">
+          <section
+            class="confirm-modal card card--md"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Quitter sans sauvegarder">
+
+            <div
+              class="confirm-modal__icon confirm-modal__icon--warning"
+              aria-hidden="true">
+              <span class="confirm-modal__icon-mark">
+                !
+              </span>
+            </div>
+
+            <div class="confirm-modal__content">
+              <h2 class="confirm-modal__title">
+                Quitter sans sauvegarder ?
+              </h2>
+
+              <p class="confirm-modal__message">
+                Tes modifications en cours seront perdues si tu quittes cette page.
+              </p>
+            </div>
+
+            <div class="confirm-modal__notice card card--sm card--soft">
+              <strong>
+                À vérifier avant de continuer.
+              </strong>
+
+              <span>
+                Cette action peut modifier l’état de ton espace ou de tes contenus.
+              </span>
+            </div>
+
+            <footer class="confirm-modal__actions btn-group btn-group--wrap">
+              <app-button
+                size="sm"
+                type="secondary"
+                label="Continuer">
+              </app-button>
+
+              <app-button
+                size="sm"
+                type="primary"
+                label="Quitter">
+              </app-button>
+            </footer>
+          </section>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+    <section class="base-ui-section page-section">
+      <app-header-section
+        eyebrow="Composants"
+        title="Cartes">
+      </app-header-section>
+
+      <div class="ui-grid ui-grid--three">
+        <article class="card card--md">
+          <p class="card__eyebrow">
+            Standard
+          </p>
+
+          <h3 class="card__title">
+            Carte simple
+          </h3>
+
+          <p class="card__description">
+            Une carte neutre pour afficher du contenu standard.
+          </p>
+
+          <div class="card__meta">
+            <span class="card__meta-item">
+              Meta
+            </span>
+
+            <span class="card__meta-separator"></span>
+
+            <span class="card__meta-item">
+              Information
+            </span>
+          </div>
+        </article>
+
+        <article class="card card--md card--soft">
+          <p class="card__eyebrow">
+            Soft
+          </p>
+
+          <h3 class="card__title">
+            Carte douce
+          </h3>
+
+          <p class="card__description">
+            Une variation plus discrète pour les blocs secondaires.
+          </p>
+
+          <span class="card__badge card__badge--primary">
+            Badge primary
+          </span>
+        </article>
+
+        <article class="card card--md card--interactive">
+          <p class="card__eyebrow">
+            Interactive
+          </p>
+
+          <h3 class="card__title">
+            Carte interactive
+          </h3>
+
+          <p class="card__description">
+            Une carte avec effet de survol pour les listes cliquables.
+          </p>
+
+          <div class="card__actions">
+            <app-button
+              size="sm"
+              type="secondary"
+              label="Action">
+            </app-button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="base-ui-section page-section">
+      <app-header-section
+        eyebrow="Composants"
+        title="Badges">
+      </app-header-section>
+
+      <div class="card card--md">
+        <div class="ui-inline">
+          <span class="card__badge">
+            Default
+          </span>
+
+          <span class="card__badge card__badge--primary">
+            Primary
+          </span>
+
+          <span class="card__badge card__badge--secondary">
+            Secondary
+          </span>
+
+          <span class="card__badge card__badge--success">
+            Success
+          </span>
+
+          <span class="card__badge card__badge--warning">
+            Warning
+          </span>
+
+          <span class="card__badge card__badge--danger">
+            Danger
+          </span>
+
+          <span class="card__badge card__badge--info">
+            Info
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <section class="base-ui-section page-section">
+      <app-header-section
+        eyebrow="Composants"
+        title="Boutons">
+      </app-header-section>
+
+      <div class="ui-stack">
+        <article class="card card--md">
+          <header class="card__header">
+            <div>
+              <p class="card__eyebrow">
+                Large
+              </p>
+
+              <h3 class="card__title">
+                Boutons large
+              </h3>
+            </div>
+          </header>
+
+          <div class="btn-group btn-group--wrap">
+            <app-button
+              size="lg"
+              type="primary"
+              label="Primary">
+            </app-button>
+
+            <app-button
+              size="lg"
+              type="secondary"
+              label="Secondary">
+            </app-button>
+
+            <app-button
+              size="lg"
+              type="success"
+              label="Success">
+            </app-button>
+
+            <app-button
+              size="lg"
+              type="danger"
+              label="Danger">
+            </app-button>
+
+            <app-button
+              size="lg"
+              label="Chargement"
+              [loading]="true">
+            </app-button>
+
+            <app-button
+              size="lg"
+              type="primary"
+              [disabled]="true"
+              label="Désactivé">
+            </app-button>
+          </div>
+        </article>
+
+        <article class="card card--md">
+          <header class="card__header">
+            <div>
+              <p class="card__eyebrow">
+                Medium
+              </p>
+
+              <h3 class="card__title">
+                Boutons medium
+              </h3>
+            </div>
+          </header>
+
+          <div class="btn-group btn-group--wrap">
+            <app-button
+              size="md"
+              type="primary"
+              label="Primary">
+            </app-button>
+
+            <app-button
+              size="md"
+              type="secondary"
+              label="Secondary">
+            </app-button>
+
+            <app-button
+              size="md"
+              type="success"
+              label="Success">
+            </app-button>
+
+            <app-button
+              size="md"
+              type="danger"
+              label="Danger">
+            </app-button>
+
+            <app-button
+              size="md"
+              type="ghost"
+              label="Ghost">
+            </app-button>
+
+            <app-button
+              size="md"
+              type="outlined"
+              label="Outlined">
+            </app-button>
+          </div>
+        </article>
+
+        <article class="card card--md">
+          <header class="card__header">
+            <div>
+              <p class="card__eyebrow">
+                Small
+              </p>
+
+              <h3 class="card__title">
+                Boutons small
+              </h3>
+            </div>
+          </header>
+
+          <div class="btn-group btn-group--wrap">
+            <app-button
+              size="sm"
+              type="primary"
+              label="Primary">
+            </app-button>
+
+            <app-button
+              size="sm"
+              type="secondary"
+              label="Secondary">
+            </app-button>
+
+            <app-button
+              size="sm"
+              type="success"
+              label="Success">
+            </app-button>
+
+            <app-button
+              size="sm"
+              type="danger"
+              label="Danger">
+            </app-button>
+
+            <app-button
+              size="sm"
+              label="Chargement"
+              [loading]="true">
+            </app-button>
+
+            <app-button
+              size="sm"
+              type="primary"
+              [disabled]="true"
+              label="Désactivé">
+            </app-button>
+          </div>
+        </article>
+
+        <article class="card card--md">
+          <header class="card__header">
+            <div>
+              <p class="card__eyebrow">
+                Pleine largeur
+              </p>
+
+              <h3 class="card__title">
+                Bouton full width
+              </h3>
+            </div>
+          </header>
+
+          <app-button
+            size="lg"
+            type="primary"
+            [full]="true"
+            label="Bouton full">
+          </app-button>
+        </article>
+
+        <article class="card card--md">
+          <header class="card__header">
+            <div>
+              <p class="card__eyebrow">
+                Spéciaux
+              </p>
+
+              <h3 class="card__title">
+                Boutons spécialisés
+              </h3>
+            </div>
+          </header>
+
+          <div class="btn-group btn-group--wrap">
+            <app-button-edit></app-button-edit>
+
+            <app-button-edit
+              [label]="undefined"
+              size="md">
+            </app-button-edit>
+
+            <app-button-danger></app-button-danger>
+
+            <app-button-add size="sm"></app-button-add>
+
+            <app-button
+              size="sm"
+              label="Chargement"
+              [loading]="true">
+            </app-button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="base-ui-section page-section">
+      <app-header-section
+        eyebrow="Composants"
+        title="Formulaire">
+      </app-header-section>
+
+      <div class="ui-form-preview">
+        <form
+          [formGroup]="form"
+          class="form form-card">
+
+          <header class="form-card__header">
+            <p class="text-eyebrow">
+              Formulaire
+            </p>
+
+            <h2 class="form-card__title">
+              Exemple de formulaire
+            </h2>
+
+            <p class="form-card__description">
+              Aperçu des champs globaux : mot de passe, select, switch et textarea.
+            </p>
+          </header>
+
+          <app-input-password
+            [control]="textControl"
+            [configuration]="{
+              label: 'Mot de passe',
+              placeholder: 'Saisis un mot de passe',
+              size: 'md',
+              required: true,
+              displayStrenghMeterPassword: true
+            }">
+          </app-input-password>
+
+          <app-select
+            [control]="selectControl"
+            [configuration]="{
+              label: 'Select simple',
+              placeholder: 'Sélectionne une valeur',
+              required: true,
+              choices: ['Valeur 1', 'Valeur 2', 'Valeur 3', 'Valeur 4']
+            }">
+          </app-select>
+
+          <app-select
+            [control]="selectMultipleControl"
+            [configuration]="{
+              label: 'Select multiple',
+              required: true,
+              placeholder: 'Sélectionne une ou plusieurs valeurs',
+              multiple: true,
+              choices: ['Valeur 1', 'Valeur 2', 'Valeur 3', 'Valeur 4', 'Valeur 5']
+            }">
+          </app-select>
+
+          <app-switch-button
+            [control]="checkboxControl"
+            [configuration]="{
+              label: 'Switch personnalisé',
+              type: 'checkbox'
+            }">
+          </app-switch-button>
+
+          <app-textarea
+            [control]="textareaControl"
+            [configuration]="{
+              label: 'Textarea',
+              placeholder: 'Écris ton contenu ici...',
+              maxLength: 255,
+              required: false
+            }">
+          </app-textarea>
+
+          <footer class="form-actions">
+            <app-button
+              type="ghost"
+              label="Annuler">
+            </app-button>
+
+            <app-button-submit size="md"></app-button-submit>
+          </footer>
+        </form>
+      </div>
+    </section>
+
+    <section class="base-ui-section page-section">
+  <app-header-section
+    eyebrow="États"
+    title="États d’interface">
+  </app-header-section>
+
+  <div class="ui-grid ui-grid--two">
+    <article class="card card--md">
+      <p class="card__eyebrow">
+        Empty state
+      </p>
+
+      <h3 class="card__title">
+        État vide
+      </h3>
+
+      <p class="card__description">
+        Utilisé lorsqu’une liste, une page ou une section ne contient encore aucun élément.
+      </p>
+
+      <div class="ui-state-preview">
+        <div class="empty-card">
+          <div
+            class="empty-card__icon"
+            aria-hidden="true">
+            ✦
+          </div>
+
+          <h3 class="empty-card__title">
+            Aucun contenu disponible
+          </h3>
+
+          <p class="empty-card__description">
+            Ce bloc montre l’état vide global utilisé dans les pages de l’application.
+          </p>
+
+          <div class="empty-card__actions">
+            <app-button
+              size="sm"
+              type="primary"
+              label="Créer un contenu">
+            </app-button>
+
+            <app-button
+              size="sm"
+              type="secondary"
+              label="Action secondaire">
+            </app-button>
+          </div>
+        </div>
+      </div>
+    </article>
+
+   <article class="card card--md">
+  <p class="card__eyebrow">
+    Loading state
+  </p>
+
+  <h3 class="card__title">
+    État de chargement
+  </h3>
+
+  <p class="card__description">
+    Utilisé lorsqu’une page vérifie une session ou prépare les données nécessaires.
+  </p>
+
+  <div class="ui-state-preview ui-state-preview--loading">
+    <div class="session-loading-card card card--md">
+      <div
+        class="session-loading-logo"
+        aria-hidden="true">
+
+        <span class="session-loading-logo__ring"></span>
+
+        <span class="session-loading-logo__mark">
+          ✓
+        </span>
+      </div>
+
+      <div class="session-loading-content">
+        <p class="text-eyebrow">
+          Connexion sécurisée
+        </p>
+
+        <h1 class="text-title-md">
+          Préparation de ton espace
+        </h1>
+
+        <p class="text-body">
+          Nous vérifions ta session et récupérons les informations nécessaires
+          pour t’orienter vers le bon espace.
+        </p>
+      </div>
+
+      <div
+        class="session-loading-steps"
+        aria-hidden="true">
+
+        <span class="session-loading-step"></span>
+        <span class="session-loading-step"></span>
+        <span class="session-loading-step"></span>
       </div>
     </div>
   </div>
-  <div class="main-container flex between col gap-6">
-    <h1 class="hero-title">Couleurs</h1>
-    <p>Aucune couleurs déinie pour le moment (à terminer)</p>
+</article>
   </div>
-
-  <div class="main-container flex between col gap-6">
-    <h1 class="hero-title">Boutons</h1>
-    <h1>Boutons (large)</h1>
-    <div class="frow gap-5">
-      <app-button size="lg" label="Bouton .btn-primary"></app-button>
-      <app-button size="lg" type="secondary" label="Bouton .btn-secondary"></app-button>
-      <app-button size="lg" type="success" label="Bouton .btn-success"></app-button>
-      <app-button size="lg" type="danger" label="Bouton .btn-danger"></app-button>
-      <app-button size="lg" label="Bouton chargement" [loading]="true"></app-button>
-      <app-button size="lg" type="primary" [disabled]="true" label="Bouton .btn-primary [disabled]"></app-button>
-    </div>
-    <h1>Boutons (medium)</h1>
-    <div class="frow gap-5">
-      <app-button size="md" label="Bouton .btn-primary"></app-button>
-      <app-button size="md" type="secondary" label="Bouton .btn-secondary"></app-button>
-      <app-button size="md" type="success" label="Bouton .btn-success"></app-button>
-      <app-button size="md" type="danger" label="Bouton .btn-danger"></app-button>
-      <app-button size="md" label="Bouton chargement" [loading]="true"></app-button>
-      <app-button size="md" type="primary" [disabled]="true" label="Bouton .btn-primary [disabled]"></app-button>
-    </div>
-    <h1>Boutons (small)</h1>
-    <div class="frow gap-5">
-      <app-button size="sm" label="Bouton .btn-primary small"></app-button>
-      <app-button size="sm" type="secondary" label="Bouton .btn-secondary small"></app-button>
-      <app-button size="sm" type="success" label="Bouton .btn-success small"></app-button>
-      <app-button size="sm" type="danger" label="Bouton .btn-danger small"></app-button>
-      <app-button size="sm" label="Bouton chargement small" [loading]="true"></app-button>
-
-      <app-button size="sm" type="primary" [disabled]="true" label="Bouton .btn-primary [disabled] small"></app-button>
-    </div>
-
-    <h1>Bouton "full"</h1>
-    <div class="fcol">
-      <app-button size="lg" [full]="true" label="Bouton FULL"></app-button>
-    </div>
+</section>
   </div>
-  <div class="main-container flex between col gap-6">
-      <h1 class="hero-title">Boutons spécials</h1>
-      <div class="frow gap-5">
-        <app-button-edit></app-button-edit>
-        <app-button-edit [label]="undefined" size="md"></app-button-edit>
-        <app-button-danger></app-button-danger>
-        <app-button-add size="sm"></app-button-add>
-        <app-button size="sm" label="Bouton chargement" [loading]="true"></app-button>
-    </div>
-  </div>
-  <div class="flex frow-center">
-    <div class="main-container-form p-5">
-      <h1 class="hero-title form-title">Formulaire</h1>
-      <form [formGroup]="form" class="stack gap-2">
-        <app-input-password [control]="textControl" [configuration]="{
-      label: 'LABEL',
-      placeholder: 'PLACEHOLDER',
-      required: true,
-      displayStrenghMeterPassword: true,
-
-    }"></app-input-password>
-        <app-select [control]="selectControl" [configuration]="{
-      label: 'CUSTOM SELECT',
-      placeholder: 'Selectionne une valeur',
-      required: true,
-      choices: ['Valeur1', 'Valeur2', 'Valeur3', 'Valeur4']
-    }"></app-select>
-        <app-select [control]="selectMultipleControl" [configuration]="{
-      label: 'CUSTOM MULTIPLE SELECT',
-      required: true,
-      placeholder: 'Selectionne une ou plusieur valeurs',
-      multiple: true,
-      choices: ['Valeur1', 'Valeur2', 'Valeur3', 'Valeur4', 'Valeur5']
-    }"></app-select>
-        <app-switch-button [control]="checkboxControl" [configuration]="{
-          label:'CUSTOM SWITCH BUTTON',
-          type: 'checkbox'
-        }"></app-switch-button>
-        <app-textarea [control]="textareaControl" [configuration]="{
-          label: 'TEXTAREA LABEL',
-          placeholder: 'textarea placeholder',
-          maxLength: 255,
-          required: false,
-        }"></app-textarea>
-        <app-button-submit size="md"></app-button-submit>
-      </form>
-    </div>
-  </div>
-  <!--
-  <div class="main-container flex">
-    <app-post-card [post]="this.exemplePost()"></app-post-card>
-  </div>
-  <div class="main-container-form flex" [contextMenuTrigger]="''" [contextMenuAction]="actionHandle">
-    <h1>Choix : {{ syntaxChoice() }}</h1>
-  </div> -->
-</div>
+</section>

@@ -3,7 +3,7 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, RouterLinkWithHref, RouterLink } from '@angular/router';
 
 import { SessionService } from './shared/services/session.service';
 import { UserPreferencesService } from './features/account/pages/profil/preferences.service';
@@ -12,6 +12,7 @@ import { HeaderComponent } from "./core/layouts/header/header";
 import { ToastContainerComponent } from "./shared/ui/toast/toast";
 import { environment } from 'src/environments/environment';
 import { BreadcrumbComponent } from "./core/layouts/breadcrumb/breadcrumb";
+import { BaseButtonComponent } from "./shared/ui/form/buttons/base-button";
 
 @Component({
   selector: 'app-root',
@@ -21,7 +22,10 @@ import { BreadcrumbComponent } from "./core/layouts/breadcrumb/breadcrumb";
     ContextMenuComponent,
     HeaderComponent,
     ToastContainerComponent,
-    BreadcrumbComponent
+    BreadcrumbComponent,
+    BaseButtonComponent,
+    RouterLinkWithHref,
+    RouterLink
 ],
   templateUrl: './app.html',
   styleUrl: './app.scss',

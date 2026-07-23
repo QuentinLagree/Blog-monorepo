@@ -59,6 +59,8 @@ export class SelectComponent extends BaseFormElementComponent<SelectConfig> impl
     label: 'Label',
     placeholder: 'Choisissez une valeur.',
     type: 'select',
+    size: 'md',
+    hint: '',
     choices: ['Valeur par défaut'],
     default_choice: '',
     required: true,

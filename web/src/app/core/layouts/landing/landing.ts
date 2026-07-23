@@ -9,25 +9,41 @@ import { SessionService } from 'src/app/shared/services/session.service';
   selector: 'app-landing',
   styleUrls: ['./landing.scss'],
   template: `
-  <section class="session-loading-page" aria-label="Vérification de la session">
-  <div class="session-loading-card">
-    <div class="session-loading-logo" aria-hidden="true">
+  <section
+  class="session-loading-page page"
+  aria-label="Vérification de la session">
+
+  <div class="session-loading-card card card--md">
+    <div
+      class="session-loading-logo"
+      aria-hidden="true">
+
       <span class="session-loading-logo__ring"></span>
-      <span class="session-loading-logo__mark"></span>
+
+      <span class="session-loading-logo__mark">
+        ✓
+      </span>
     </div>
 
     <div class="session-loading-content">
-      <p class="session-loading-eyebrow">Connexion sécurisée</p>
+      <p class="text-eyebrow">
+        Connexion sécurisée
+      </p>
 
-      <h1>Préparation de ton espace</h1>
+      <h1 class="text-title-md">
+        Préparation de ton espace
+      </h1>
 
-      <p>
+      <p class="text-body">
         Nous vérifions ta session et récupérons les informations nécessaires
         pour t’orienter vers le bon espace.
       </p>
     </div>
 
-    <div class="session-loading-steps" aria-hidden="true">
+    <div
+      class="session-loading-steps"
+      aria-hidden="true">
+
       <span class="session-loading-step session-loading-step--active"></span>
       <span class="session-loading-step"></span>
       <span class="session-loading-step"></span>
@@ -44,7 +60,7 @@ export class LandingComponent implements OnInit {
 
   async ngOnInit() {
     try {
-      
+
       const [session] = await Promise.all([
         firstValueFrom(this.session.fetchSession().pipe(take(1))),
         firstValueFrom(timer(1000)),

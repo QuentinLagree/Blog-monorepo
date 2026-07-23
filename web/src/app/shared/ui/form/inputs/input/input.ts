@@ -8,7 +8,6 @@ import { InputErrorComponent } from '../inputs-error/inputs-error';
   selector: 'app-input',
   imports: [ReactiveFormsModule, InputErrorComponent],
   templateUrl: './input.html',
-  styleUrls: ['../base-input.scss'],
   standalone: true
 })
 export class InputComponent extends BaseFormElementComponent<InputConfig> {

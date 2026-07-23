@@ -1,77 +1,96 @@
-<div class="flex frow-center">
-  <div class="main-container-form p-5">
-    <h1>Ravis de te revoir !</h1>
-    <form [formGroup]="form" class="stack gap-4 pt-5">
-      <app-input-email
-        [control]="emailControl"
-        [configuration]="{
-  label: 'Adresse Email',
-  placeholder: 'Entrez votre adresse email',
-  required: true,
-  type: 'email'
-}"
-      />
+<section class="auth-page login-page">
+  <div class="auth-page__container auth-page__container--wide">
+    <div class="form-card auth-card login-card">
+      <header class="form-card__header">
+        <p class="text-eyebrow">
+          Connexion
+        </p>
 
-      <app-input-password
-        [control]="passwordControl"
-        [configuration]="{
-  label: 'Mot de passe',
-  placeholder: 'Entrez votre mot de passe',
-  required: true,
-  type: 'password',
-  showPassword: true,
-}"
-      >
-      <a href="/auth/forget-password" class="main-container-form-link-password">
+        <h1 class="form-card__title">
+          Ravi de te revoir !
+        </h1>
+
+        <p class="form-card__description">
+          Connecte-toi pour retrouver ton espace, tes brouillons et tes publications.
+        </p>
+      </header>
+
+      <form
+  class="form login-card__form"
+  [formGroup]="form">
+
+  <app-input-email
+    [control]="emailControl"
+    [configuration]="{
+      label: 'Adresse email',
+      placeholder: 'Entrez votre adresse email',
+      required: true,
+      type: 'email',
+    }">
+  </app-input-email>
+
+  <div class="login-card__password-field">
+    <app-input-password
+      [control]="passwordControl"
+      [configuration]="{
+        label: 'Mot de passe',
+        placeholder: 'Entrez votre mot de passe',
+        required: true,
+        type: 'password',
+        showPassword: true
+      }">
+    </app-input-password>
+
+    <a
+      class="login-card__forgot-link"
+      routerLink="/auth/forget-password">
       Mot de passe oublié ?
-      </a>
-  </app-input-password>
-      
-      <app-button
-          [full]="true"
-        (clicked)="submit()"
-        class="full"
-        size="lg"
-        [label]="loading ? 'Connection en cours...' : 'Se connecter'"
-        [disabled]="!form.valid"
-        [loading]="loading"
-      ></app-button>
-    </form>
-    <p class="main-container-form-link">
-      Vous n'avez pas de compte ? <a href="auth/register">Inscris-toi</a>.
-    </p>
+    </a>
   </div>
-</div>
-  @if (!prod) {
-  <a (click)="setFormWithMode('admin')">
-    <p class="baseline" style="
-    position: fixed;
-    bottom: 10px;
-    left: 10px;
-    z-index: 99999;
-    background-color: black;
-    color: rgb(226, 226, 9);
-    font-size: 0.8em;
-    user-select: none;
-    padding: 0.2em 2em;
-  ">
-      Connection Admin
-    </p>
-  </a>
 
-  <a (click)="setFormWithMode('user')">
-    <p class="baseline" style="
-    position: fixed;
-    bottom: 40px;
-    left: 10px;
-    z-index: 99999;
-    background-color: black;
-    color: rgb(226, 226, 9);
-    font-size: 0.8em;
-    user-select: none;
-    padding: 0.2em 2em;
-  ">
-      Connection User
-    </p>
-  </a>
-  }
+  <div class="form-actions form-actions--full login-card__actions">
+    <app-button
+      [full]="true"
+      size="lg"
+      type="primary"
+      [label]="loading ? 'Connexion en cours...' : 'Se connecter'"
+      [disabled]="!form.valid"
+      [loading]="loading"
+      (clicked)="submit()">
+    </app-button>
+  </div>
+</form>
+
+      <div class="auth-card__register">
+        <span>
+          Vous n'avez pas de compte ?
+        </span>
+
+        <a routerLink="/auth/register">
+          Inscris-toi
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+@if (!prod) {
+  <div
+    class="dev-auth-shortcuts"
+    aria-label="Raccourcis de connexion développement">
+
+    <button
+      type="button"
+      class="dev-auth-shortcuts__button"
+      (click)="setFormWithMode('admin')">
+      Connexion Admin
+    </button>
+
+    <button
+      type="button"
+      class="dev-auth-shortcuts__button"
+      (click)="setFormWithMode('user')">
+      Connexion User
+    </button>
+  </div>
+}

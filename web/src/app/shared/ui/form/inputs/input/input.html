@@ -2,25 +2,27 @@
   class="input-container"
   [class.error]="errorMessages"
   [class.success]="!errorMessages && (control.value.length > 1)"
-  [class.disabled]="!control.disable"
+  [class.disabled]="control.disabled"
 >
-  @if (mergeConfigs().label.length != 0) {
-    <p class="baseline">
+  <p class="baseline">
     <label class="input-container-label" [for]="mergeConfigs().label.trim()"
-      >{{ mergeConfigs().label }}</label
+      >{{ mergeConfigs().label }}{{ (mergeConfigs().required) ? '' : '*'}}</label
     >
   </p>
-  }
-
-  <input
-    [formControl]="control"
-    [type]="mergeConfigs().type"
-    [attr.placeholder]="this.mergeConfigs().placeholder"
-    [attr.id]="mergeConfigs().label.trim()"
-    autocomplete="off"
-    required="{{ mergeConfigs().required }}"
-    (blur)="control.markAsTouched()"
-  />
-
-  <div class="input-informations"><app-input-error [control]="control"></app-input-error></div>
+  <div class="input-container-content">
+    <input
+      [formControl]="control"
+      [type]="mergeConfigs().type"
+      [attr.placeholder]="this.mergeConfigs().placeholder"
+      autocomplete="off"
+      [attr.id]="mergeConfigs().label.trim()"
+      (blur)="control.markAsTouched()"
+      [disabled]="control.disabled"
+      required="{{ mergeConfigs().required }}"
+    />
+  <div class="input-informations row">
+    <app-input-error [attr.aria-hidden]="null" [control]="control"></app-input-error>
+    <ng-content></ng-content>
+    
+  </div>
 </div>

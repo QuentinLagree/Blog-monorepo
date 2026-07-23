@@ -1,80 +1,110 @@
-<div class="flex frow-center">
-  <div class="main-container-form p-5">
-    <h1>Ravis de te revoir !</h1>
-    <form [formGroup]="form" class="grid gap-4 pt-5">
-      <app-input
-        [control]="firstnameControl"
-        [configuration]="{
-  label: 'Prénom',
-  placeholder: 'Entrez votre prénom',
-  required: true,
-  type: 'text'
-}"
-      />
-      <app-input
-        [control]="lastnameControl"
-        [configuration]="{
-  label: 'Nom de famille',
-  placeholder: 'Entrez votre nom de famille',
-  required: true,
-  type: 'text'
-}"
-      />
+<section class="auth-page register-page">
+  <div class="auth-page__container auth-page__container--wide">
+    <div class="form-card auth-card register-card">
+      <header class="form-card__header">
+        <p class="text-eyebrow">
+          Inscription
+        </p>
 
-      <app-input
-        [control]="pseudoControl"
-        [configuration]="{
-  label: 'Pseudo',
-  placeholder: 'Entrez votre pseudonyme',
-  required: true,
-  type: 'text'
-}"
-      />
+        <h1 class="form-card__title">
+          Crée ton espace
+        </h1>
 
-      <app-input-email
-        [control]="emailControl"
-        [configuration]="{
-  label: 'Adresse Email',
-  placeholder: 'Entrez votre adresse email',
-  required: true,
-  type: 'email'
-}"
-      />
+        <p class="form-card__description">
+          Rejoins la communauté pour publier tes articles, sauvegarder tes brouillons et personnaliser ton expérience.
+        </p>
+      </header>
 
-      <app-input-password
-        [control]="passwordControl"
-        [configuration]="{
-  label: 'Mot de passe',
-  placeholder: 'Entrez votre mot de passe.',
-  required: true,
-  type: 'password',
-  showPassword: true,
-  displayStrenghMeterPassword: true
-    
-}"
-      />
-      <app-input-password
-        [control]="confirmPasswordControl"
-        [configuration]="{
-  label: 'Confirmation du Mot de passe',
-  placeholder: 'Entrez de nouveau votre mot de passe.',
-  required: true,
-  type: 'password',
-    
-}"
-      />
+      <form
+        [formGroup]="form"
+        class="form register-card__form">
 
-      <app-button
-        (clicked)="submit()"
-        [full]="true"
-        size="lg"
-        [loading]="loading"
-        [label]="loading ? 'Inscription en cours...' : 'S\'inscrire'"
-        [disabled]="!form.valid"
-      ></app-button>
-    </form>
-    <p class="main-container-form-link">
-      Tu as déjà un compte ? <a href="auth/login">Connecte-toi</a>.
-    </p>
+        <div class="form-row">
+          <app-input
+            [control]="firstnameControl"
+            [configuration]="{
+              label: 'Prénom',
+              placeholder: 'Entrez votre prénom',
+              required: true,
+              type: 'text'
+            }">
+          </app-input>
+
+          <app-input
+            [control]="lastnameControl"
+            [configuration]="{
+              label: 'Nom de famille',
+              placeholder: 'Entrez votre nom de famille',
+              required: true,
+              type: 'text'
+            }">
+          </app-input>
+        </div>
+
+        <app-input
+          [control]="pseudoControl"
+          [configuration]="{
+            label: 'Pseudo',
+            placeholder: 'Entrez votre pseudonyme',
+            required: true,
+            type: 'text'
+          }">
+        </app-input>
+
+        <app-input-email
+          [control]="emailControl"
+          [configuration]="{
+            label: 'Adresse email',
+            placeholder: 'Entrez votre adresse email',
+            required: true,
+            type: 'email'
+          }">
+        </app-input-email>
+
+        <app-input-password
+          [control]="passwordControl"
+          [configuration]="{
+            label: 'Mot de passe',
+            placeholder: 'Entrez votre mot de passe.',
+            required: true,
+            type: 'password',
+            showPassword: true,
+            displayStrenghMeterPassword: true
+          }">
+        </app-input-password>
+
+        <app-input-password
+          [control]="confirmPasswordControl"
+          [configuration]="{
+            label: 'Confirmation du mot de passe',
+            placeholder: 'Entrez de nouveau votre mot de passe.',
+            required: true,
+            type: 'password'
+          }">
+        </app-input-password>
+
+        <div class="form-actions form-actions--full">
+          <app-button
+            (clicked)="submit()"
+            [full]="true"
+            size="lg"
+            type="primary"
+            [loading]="loading"
+            [label]="loading ? 'Inscription en cours...' : 'S’inscrire'"
+            [disabled]="!form.valid">
+          </app-button>
+        </div>
+      </form>
+
+      <div class="auth-card__register">
+        <span>
+          Tu as déjà un compte ?
+        </span>
+
+        <a routerLink="/auth/login">
+          Connecte-toi
+        </a>
+      </div>
+    </div>
   </div>
-</div>
+</section>

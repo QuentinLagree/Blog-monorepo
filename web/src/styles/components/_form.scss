@@ -1,310 +1,1070 @@
-@use 'fonts' as *;
-@use 'mixins/mixins' as *;
-@use 'variables' as *;
+@use '../variables' as *;
 
-.main-container-form {
-  background: $surface;
-  border: 1px solid $border;
-  border-radius: $radius-md;
-  height: 100%;
+/* =========================
+   FORM LAYOUT
+========================= */
+
+.form {
   width: 100%;
-  padding: 2em 2.5em;
-  box-shadow: $card-shadow;
-}
 
-.main-container-form .form-title {
-  align-self: flex-start;
-  color: $text-primary;
-}
-
-.main-container-form-link {
-  font-size: 1em;
-  color: $text-secondary;
-  margin-top: 2em;
-  text-align: center;
-}
-
-.main-container-form-link a {
-  color: $primary;
-  text-decoration: none;
-  font-weight: 700;
-
-  &:hover {
-    color: $primary-hover;
-    text-decoration: underline;
-  }
-}
-
-/* INPUT CONTAINER */
-
-.input-container {
-  position: relative;
   display: flex;
   flex-direction: column;
-  min-width: 10em;
+  gap: $spacing-form-gap;
 }
 
-.input-container-label {
-  cursor: inherit;
-  user-select: none;
-  padding-bottom: 0.5em;
-  padding-left: 0.2em;
-  color: $text-secondary;
-  font-weight: 600;
-  font-size: 0.9rem;
+.form--compact {
+  gap: $space-4;
 }
 
-/* INPUT / TEXTAREA / SELECT BASE */
-
-input:not([type="checkbox"]),
-textarea:not(.no-shadow),
-select {
-  width: 100%;
-  height: 100%;
-  padding: 14px 18px;
-
-  background: $surface;
-  color: $text-primary;
-
-  border: 1px solid $border;
-  border-radius: $radius-sm;
-  outline: none;
-
-  box-shadow: none;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background-color 0.2s ease,
-    color 0.2s ease;
-
-  &::placeholder {
-    color: $input-placeholder;
-  }
-
-  &:hover {
-    border-color: $border-strong;
-    background: $surface;
-  }
-
-  &:focus {
-    border-color: $primary;
-    box-shadow: 0 0 0 4px $focus-ring;
-  }
-
-  &:disabled {
-    background: $surface-soft;
-    color: $text-muted;
-    border-color: $border;
-    box-shadow: none;
-  }
+.form--spacious {
+  gap: $space-6;
 }
-
-textarea.no-shadow {
-  box-shadow: none !important;
-}
-
-textarea {
-  padding: 14px 18px;
-  resize: vertical;
-  min-height: 9em;
-  line-height: 1.55;
-}
-
-select {
-  appearance: none;
-  cursor: pointer;
-  padding-right: 56px;
-}
-
-/* SELECT */
-
-.select-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-.select-container .icon-container {
-  position: absolute;
-  right: 18px;
-  color: $text-muted;
-  pointer-events: none;
-  rotate: 0;
-}
-
-.select-container .icon-container svg {
-  width: 22px;
-  transition: rotate 0.25s ease;
-}
-
-.select-container.open .icon-container svg {
-  rotate: 180deg;
-}
-
-.select-container:hover .icon-container {
-  color: $text-secondary;
-}
-
-.select-container:focus-within .icon-container {
-  color: $primary;
-}
-
-/* VALUE */
-
-input:not(:placeholder-shown),
-textarea:not(:placeholder-shown) {
-  color: $text-primary;
-}
-
-.input-container .input-informations {
-  min-height: 0.8em;
-  margin-top: 0.4em;
-  color: $text-muted;
-  font-size: 0.85rem;
-
-  .row {
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  a {
-    color: $text-secondary;
-    padding-left: 0.9em;
-    cursor: pointer;
-    text-decoration: none;
-
-    &:hover {
-      color: $primary;
-      text-decoration: underline;
-    }
-  }
-}
-
-/* STATES */
-
-$states: (
-  error: $error,
-  success: $success,
-  warning: $warning
-);
-
-@each $state, $color in $states {
-  .input-container.#{$state} {
-    .input-container-label {
-      color: $color;
-    }
-
-    input,
-    textarea,
-    select {
-      border-color: $color;
-
-      &:focus {
-        border-color: $color;
-        box-shadow: 0 0 0 4px rgba($color, 0.14);
-      }
-    }
-
-    .input-informations {
-      color: $color;
-    }
-  }
-
-  .select-container.#{$state} {
-    select {
-      border-color: $color;
-    }
-
-    .icon-container {
-      color: $color;
-    }
-  }
-}
-
-/* DISABLED */
-
-.input-container.disabled {
-  .input-container-label {
-    color: $text-muted;
-  }
-
-  input,
-  textarea,
-  select {
-    cursor: not-allowed;
-    background: $surface-soft;
-    color: $text-muted;
-    border-color: $border;
-    box-shadow: none;
-  }
-}
-
-/* CHECKBOX */
-
-input[type="checkbox"] {
-  position: relative;
-  width: 1.15em;
-  height: 1.15em;
-
-  accent-color: $primary;
-  cursor: pointer;
-}
-
-input[type="checkbox"]:disabled {
-  cursor: no-drop;
-  accent-color: $text-muted;
-}
-
-/* VARIANTS */
-
-.input-container.compact {
-  input,
-  textarea,
-  select {
-    padding: 10px 14px;
-    border-radius: $radius-sm;
-  }
-}
-
-.input-container.search {
-  input {
-    background: $surface;
-    border-color: $border;
-    border-radius: $radius-full;
-    padding-left: 20px;
-    padding-right: 20px;
-
-    &:focus {
-      border-color: $primary;
-      box-shadow: 0 0 0 4px $focus-ring;
-    }
-  }
-}
-
-/* FORM LAYOUT */
 
 .form-row {
-  display: flex;
-  gap: 1em;
-  width: 100%;
-}
-
-.form-row > * {
-  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-4;
 }
 
 .form-actions {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.75em;
-  margin-top: 2em;
+  flex-wrap: wrap;
+  gap: $space-3;
+
+  margin-top: $space-2;
+}
+
+.form-actions--between {
+  justify-content: space-between;
+}
+
+.form-actions--start {
+  justify-content: flex-start;
+}
+
+.form-actions--full {
+  align-items: stretch;
+  flex-direction: column;
+}
+
+/* =========================
+   ANGULAR FORM COMPONENTS
+========================= */
+
+app-input-email,
+app-input-password,
+app-textarea,
+app-select,
+app-switch-button {
+  width: 100%;
+
+  display: block;
+}
+
+/* =========================
+   FIELD
+========================= */
+
+.form-field,
+.input_container,
+.input-container {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.form-field--inline {
+  display: grid;
+  grid-template-columns: 12rem minmax(0, 1fr);
+  gap: $space-4;
+  align-items: center;
+}
+
+.form-field__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+}
+
+.form-field__label,
+.input_container__label,
+.input-container-label {
+  color: $text-primary;
+
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  line-height: $leading-tight;
+}
+
+.form-field__optional {
+  color: $text-muted;
+
+  font-size: $text-xs;
+  font-weight: $font-medium;
+}
+
+.form-field__hint {
+  margin: 0;
+
+  color: $text-muted;
+
+  font-size: $text-sm;
+  line-height: $leading-normal;
+}
+
+.form-field__message,
+.informations,
+.input-informations {
+  margin: 0;
+
+  color: $danger;
+
+  font-size: $text-sm;
+  font-weight: $font-medium;
+  line-height: $leading-normal;
+}
+
+.form-field__message--error {
+  color: $danger;
+}
+
+.form-field__message--success {
+  color: $success;
+}
+
+.form-field__message--warning {
+  color: $warning;
+}
+
+.form-field__message--info {
+  color: $info;
+}
+
+/* =========================
+   CONTROL BASE
+========================= */
+
+.form-control,
+.form-field input,
+.form-field textarea,
+.form-field select,
+.input_container input,
+.input_container textarea,
+.input_container select,
+.input-container input,
+.input-container textarea,
+.input-container select {
+  width: 100%;
+  min-height: 2.45rem;
+
+  padding: $space-2 $space-3;
+
+  background: $surface;
+  color: $text-primary;
+
+  border: 1px solid $border;
+  border-radius: $radius-input;
+
+  font: inherit;
+  font-size: $text-sm;
+  line-height: $leading-normal;
+
+  box-shadow: 0 1px 2px rgb(28 28 26 / 4%);
+
+  transition:
+    background-color 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    color 0.16s ease;
+}
+
+.form-control::placeholder,
+.form-field input::placeholder,
+.form-field textarea::placeholder,
+.input_container input::placeholder,
+.input_container textarea::placeholder,
+.input-container input::placeholder,
+.input-container textarea::placeholder {
+  color: $input-placeholder;
+}
+
+.form-control:hover:not(:disabled):not([readonly]),
+.form-field input:hover:not(:disabled):not([readonly]),
+.form-field textarea:hover:not(:disabled):not([readonly]),
+.form-field select:hover:not(:disabled):not([readonly]),
+.input_container input:hover:not(:disabled):not([readonly]),
+.input_container textarea:hover:not(:disabled):not([readonly]),
+.input_container select:hover:not(:disabled):not([readonly]),
+.input-container input:hover:not(:disabled):not([readonly]),
+.input-container textarea:hover:not(:disabled):not([readonly]),
+.input-container select:hover:not(:disabled):not([readonly]) {
+  border-color: $border-strong;
+}
+
+.form-control:focus,
+.form-field input:focus,
+.form-field textarea:focus,
+.form-field select:focus,
+.input_container input:focus,
+.input_container textarea:focus,
+.input_container select:focus,
+.input-container input:focus,
+.input-container textarea:focus,
+.input-container select:focus {
+  outline: none;
+
+  border-color: $focus-border;
+  box-shadow: 0 0 0 3px $focus-ring;
+}
+
+.form-control:disabled,
+.form-control[aria-disabled='true'],
+.form-field input:disabled,
+.form-field textarea:disabled,
+.form-field select:disabled,
+.input_container input:disabled,
+.input_container textarea:disabled,
+.input_container select:disabled,
+.input-container input:disabled,
+.input-container textarea:disabled,
+.input-container select:disabled {
+  cursor: not-allowed;
+
+  background: $surface-soft;
+  color: $text-muted;
+
+  border-color: $border;
+  box-shadow: none;
+}
+
+.form-control[readonly],
+.form-field input[readonly],
+.form-field textarea[readonly],
+.input_container input[readonly],
+.input_container textarea[readonly],
+.input-container input[readonly],
+.input-container textarea[readonly] {
+  background: $surface-soft;
+  color: $text-secondary;
+
+  border-color: $border;
+}
+
+.form-control--flat,
+.form-control.no-shadow,
+textarea.no-shadow {
+  box-shadow: none;
+}
+
+/* =========================
+   CONTROL SIZES
+========================= */
+
+.form-control--sm {
+  min-height: 2.15rem;
+  padding: $space-2 $space-3;
+
+  font-size: $text-sm;
+}
+
+.form-control--md {
+  min-height: 2.45rem;
+  padding: $space-2 $space-3;
+
+  font-size: $text-sm;
+}
+
+.form-control--lg {
+  min-height: 2.85rem;
+  padding: $space-3 $space-4;
+
+  font-size: $text-md;
+}
+
+/* =========================
+   TEXTAREA
+========================= */
+
+textarea.form-control,
+.form-field textarea,
+.input_container textarea,
+.input-container textarea {
+  min-height: 9rem;
+  resize: vertical;
+}
+
+textarea.form-control--sm {
+  min-height: 6rem;
+}
+
+textarea.form-control--lg {
+  min-height: 14rem;
+}
+
+.form-control--no-resize {
+  resize: none;
+}
+
+/* =========================
+   NATIVE SELECT
+========================= */
+
+select.form-control,
+.form-field select,
+.input_container select,
+.input-container select {
+  min-height: 2.25rem;
+
+  padding: $space-2 $space-10 $space-2 $space-3;
+
+  cursor: pointer;
+  appearance: none;
+
+  font-size: $text-sm;
+  line-height: $leading-tight;
+
+  background-image:
+    linear-gradient(45deg, transparent 50%, $text-muted 50%),
+    linear-gradient(135deg, $text-muted 50%, transparent 50%);
+  background-position:
+    calc(100% - 1.05rem) 50%,
+    calc(100% - 0.78rem) 50%;
+  background-size:
+    0.32rem 0.32rem,
+    0.32rem 0.32rem;
+  background-repeat: no-repeat;
+}
+
+.form-control--select {
+  min-height: 2.25rem;
+  padding-top: $space-2;
+  padding-bottom: $space-2;
+
+  font-size: $text-sm;
+  line-height: $leading-tight;
+}
+
+select.form-control:disabled,
+.form-field select:disabled,
+.input_container select:disabled,
+.input-container select:disabled {
+  cursor: not-allowed;
+}
+
+/* =========================
+   CUSTOM SELECT
+========================= */
+
+.select-container {
+  position: relative;
+
+  width: 100%;
+}
+
+.btn-select,
+.custom-select__trigger,
+.select-trigger {
+  min-height: 2.25rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-2;
+
+  width: 100%;
+
+  padding: $space-2 $space-10 $space-2 $space-3;
+
+  background: $surface;
+  color: $text-muted;
+
+  border: 1px solid $border;
+  border-radius: $radius-input;
+
+  font: inherit;
+  font-size: $text-sm;
+  line-height: $leading-tight;
+  text-align: left;
+
+  cursor: pointer;
+
+  box-shadow: 0 1px 2px rgb(28 28 26 / 4%);
+
+  transition:
+    background-color 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    color 0.16s ease;
+}
+
+.btn-select:hover,
+.custom-select__trigger:hover,
+.select-trigger:hover {
+  border-color: $border-strong;
+}
+
+.btn-select:focus-visible,
+.custom-select__trigger:focus-visible,
+.select-trigger:focus-visible {
+  outline: none;
+
+  border-color: $focus-border;
+  box-shadow: 0 0 0 3px $focus-ring;
+}
+
+.btn-select.fill {
+  color: $text-primary;
+}
+
+.btn-select.error {
+  border-color: $border-error;
+}
+
+.btn-select.error:focus-visible {
+  box-shadow: 0 0 0 3px rgb(180 35 24 / 14%);
+}
+
+.btn-select.success {
+  border-color: $border-success;
+}
+
+.btn-select.success:focus-visible {
+  box-shadow: 0 0 0 3px rgb(47 125 91 / 14%);
+}
+
+/* =========================
+   CUSTOM SELECT ICON
+========================= */
+
+.icon-container {
+  position: absolute;
+  top: 50%;
+  right: $space-3;
+  z-index: 2;
+
+  width: 0.95rem;
+  height: 0.95rem;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  color: $text-muted;
+
+  pointer-events: none;
+
+  transform: translateY(-50%);
+
+  transition:
+    color 0.16s ease,
+    transform 0.16s ease;
+}
+
+.icon-container svg {
+  width: 0.82rem;
+  height: 0.82rem;
+
+  display: block;
+
+  fill: currentColor;
+}
+
+.select-container.open .icon-container {
+  color: $primary;
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.btn-select:hover + .icon-container {
+  color: $primary;
+}
+
+/* =========================
+   CUSTOM SELECT PILLS
+========================= */
+
+.pills {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $space-1;
+}
+
+.icon-container-cancel {
+  width: 1rem;
+  height: 1rem;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  background: transparent;
+  color: $text-muted;
+
+  border: none;
+  border-radius: $radius-xs;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.16s ease,
+    color 0.16s ease,
+    transform 0.16s ease;
+}
+
+.icon-container-cancel svg {
+  width: 0.62rem;
+  height: 0.62rem;
+
+  display: block;
+
+  fill: currentColor;
+}
+
+.icon-container-cancel:hover {
+  background: $danger-soft;
+  color: $danger;
+}
+
+.icon-container-cancel:active {
+  transform: scale(0.92);
+}
+
+.icon-container-cancel:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px $focus-ring;
+}
+
+/* =========================
+   CUSTOM SELECT LIST
+========================= */
+
+.select-list {
+  position: absolute;
+  top: calc(100% + $space-2);
+  left: 0;
+  z-index: $z-dropdown;
+
+  width: 100%;
+  max-height: 16rem;
+
+  display: none;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  background: $surface;
+
+  border: 1px solid $border;
+  border-radius: $radius-input;
+
+  box-shadow: $dropdown-shadow;
+}
+
+.select-list.open {
+  display: flex;
+}
+
+.select-list.up {
+  top: auto;
+  bottom: calc(100% + $space-2);
+}
+
+.select-list__filter,
+.select-list > input {
+  width: 100%;
+  min-height: 2.2rem;
+
+  padding: $space-2 $space-3;
+
+  background: $surface-soft;
+  color: $text-primary;
+
+  border: none;
+  border-bottom: 1px solid $border;
+
+  font: inherit;
+  font-size: $text-sm;
+  line-height: $leading-tight;
+}
+
+.select-list__filter:focus,
+.select-list > input:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 2px $focus-ring;
+}
+
+.select-list ul {
+  max-height: 13rem;
+
+  margin: 0;
+  padding: $space-1;
+
+  overflow-y: auto;
+
+  list-style: none;
+}
+
+.select-list__option,
+.select-list li {
+  min-height: 2.1rem;
+
+  display: flex;
+  align-items: center;
+
+  padding: $space-2 $space-3;
+
+  color: $text-secondary;
+
+  border-radius: $radius-xs;
+
+  font-size: $text-sm;
+  line-height: $leading-tight;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.14s ease,
+    color 0.14s ease;
+}
+
+.select-list__option:hover,
+.select-list li:hover {
+  background: $surface-soft;
+  color: $text-primary;
+}
+
+.select-list__option.selected,
+.select-list li.selected,
+.select-list li[aria-selected='true'] {
+  background: $primary-soft;
+  color: $primary;
+
+  font-weight: $font-medium;
+}
+
+.select-list__option:focus-visible,
+.select-list li:focus-visible {
+  outline: none;
+
+  background: $surface-soft;
+  box-shadow: inset 0 0 0 2px $focus-ring;
+}
+
+/* =========================
+   FIELD STATES
+========================= */
+
+.form-field--error .form-control,
+.form-field--error input,
+.form-field--error textarea,
+.form-field--error select,
+.form-field--error .btn-select,
+.form-control--error,
+.input_container.error input,
+.input_container.error textarea,
+.input_container.error select,
+.input_container.error .btn-select,
+.input-container.error input,
+.input-container.error textarea,
+.input-container.error select,
+.input-container.error .btn-select {
+  border-color: $border-error;
+}
+
+.form-field--error .form-control:focus,
+.form-field--error input:focus,
+.form-field--error textarea:focus,
+.form-field--error select:focus,
+.form-field--error .btn-select:focus-visible,
+.form-control--error:focus,
+.input_container.error input:focus,
+.input_container.error textarea:focus,
+.input_container.error select:focus,
+.input_container.error .btn-select:focus-visible,
+.input-container.error input:focus,
+.input-container.error textarea:focus,
+.input-container.error select:focus,
+.input-container.error .btn-select:focus-visible {
+  box-shadow: 0 0 0 3px rgb(180 35 24 / 14%);
+}
+
+.form-field--success .form-control,
+.form-field--success input,
+.form-field--success textarea,
+.form-field--success select,
+.form-field--success .btn-select,
+.form-control--success,
+.input_container.success input,
+.input_container.success textarea,
+.input_container.success select,
+.input_container.success .btn-select,
+.input-container.success input,
+.input-container.success textarea,
+.input-container.success select,
+.input-container.success .btn-select {
+  border-color: $border-success;
+}
+
+.form-field--success .form-control:focus,
+.form-field--success input:focus,
+.form-field--success textarea:focus,
+.form-field--success select:focus,
+.form-field--success .btn-select:focus-visible,
+.form-control--success:focus,
+.input_container.success input:focus,
+.input_container.success textarea:focus,
+.input_container.success select:focus,
+.input_container.success .btn-select:focus-visible,
+.input-container.success input:focus,
+.input-container.success textarea:focus,
+.input-container.success select:focus,
+.input-container.success .btn-select:focus-visible {
+  box-shadow: 0 0 0 3px rgb(47 125 91 / 14%);
+}
+
+.form-field--warning .form-control,
+.form-field--warning input,
+.form-field--warning textarea,
+.form-field--warning select,
+.form-field--warning .btn-select,
+.form-control--warning {
+  border-color: $border-warning;
+}
+
+.form-field--warning .form-control:focus,
+.form-field--warning input:focus,
+.form-field--warning textarea:focus,
+.form-field--warning select:focus,
+.form-field--warning .btn-select:focus-visible,
+.form-control--warning:focus {
+  box-shadow: 0 0 0 3px rgb(183 121 31 / 14%);
+}
+
+.form-field--disabled,
+.input_container.disabled,
+.input-container.disabled {
+  opacity: 0.72;
+}
+
+.form-field--disabled label,
+.input_container.disabled label,
+.input-container.disabled label {
+  color: $text-muted;
+}
+
+/* =========================
+   INPUT GROUP
+========================= */
+
+.input-group {
+  display: flex;
+  align-items: stretch;
+
+  width: 100%;
+}
+
+.input-group .form-control {
+  border-radius: 0;
+}
+
+.input-group .form-control:first-child {
+  border-top-left-radius: $radius-input;
+  border-bottom-left-radius: $radius-input;
+}
+
+.input-group .form-control:last-child {
+  border-top-right-radius: $radius-input;
+  border-bottom-right-radius: $radius-input;
+}
+
+.input-group__addon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 $space-4;
+
+  background: $surface-soft;
+  color: $text-muted;
+
+  border: 1px solid $border;
+
+  font-size: $text-sm;
+  font-weight: $font-medium;
+}
+
+.input-group__addon:first-child {
+  border-right: 0;
+  border-top-left-radius: $radius-input;
+  border-bottom-left-radius: $radius-input;
+}
+
+.input-group__addon:last-child {
+  border-left: 0;
+  border-top-right-radius: $radius-input;
+  border-bottom-right-radius: $radius-input;
+}
+
+/* =========================
+   PASSWORD FIELD
+========================= */
+
+.input-password {
+  position: relative;
+}
+
+.input-password .form-control,
+.input-password input {
+  padding-right: $space-12;
+}
+
+.input-password-toggle {
+  position: absolute;
+  top: 50%;
+  right: $space-3;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 2rem;
+  height: 2rem;
+
+  padding: 0;
+
+  background: transparent;
+  color: $text-muted;
+
+  border: none;
+  border-radius: $radius-xs;
+
+  cursor: pointer;
+
+  transform: translateY(-50%);
+
+  transition:
+    background-color 0.16s ease,
+    color 0.16s ease;
+}
+
+.input-password-toggle:hover {
+  background: $surface-soft;
+  color: $primary;
+}
+
+/* =========================
+   CHECKBOX / RADIO
+========================= */
+
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+
+  cursor: pointer;
+}
+
+.choice__input {
+  width: 1rem;
+  height: 1rem;
+
+  flex: 0 0 auto;
+
+  margin-top: 0.15rem;
+
+  accent-color: $primary;
+}
+
+.choice__content {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.choice__label {
+  color: $text-primary;
+
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  line-height: $leading-tight;
+}
+
+.choice__description {
+  color: $text-muted;
+
+  font-size: $text-sm;
+  line-height: $leading-normal;
+}
+
+.choice:has(.choice__input:disabled) {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* =========================
+   SWITCH
+========================= */
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-3;
+
+  cursor: pointer;
+}
+
+.switch__input {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  opacity: 0;
+  pointer-events: none;
+}
+
+.switch__track {
+  position: relative;
+
+  width: 2.5rem;
+  height: 1.35rem;
+
+  flex: 0 0 auto;
+
+  background: $border-strong;
+
+  border-radius: $radius-full;
+
+  transition:
+    background-color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.switch__track::before {
+  content: "";
+
+  position: absolute;
+  top: 0.18rem;
+  left: 0.18rem;
+
+  width: 0.99rem;
+  height: 0.99rem;
+
+  background: $white;
+
+  border-radius: $radius-full;
+  box-shadow: 0 1px 2px rgb(28 28 26 / 18%);
+
+  transition: transform 0.16s ease;
+}
+
+.switch__input:checked + .switch__track {
+  background: $primary;
+}
+
+.switch__input:checked + .switch__track::before {
+  transform: translateX(1.15rem);
+}
+
+.switch__input:focus-visible + .switch__track {
+  box-shadow: 0 0 0 3px $focus-ring;
+}
+
+.switch__input:disabled + .switch__track {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.switch__label {
+  color: $text-primary;
+
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  line-height: $leading-tight;
+}
+
+/* =========================
+   FORM CARD
+========================= */
+
+.form-card {
+  width: 100%;
+
+  padding: $spacing-section;
+
+  background: $surface;
+
+  border: 1px solid $border;
+  border-radius: $radius-card-lg;
+
+  box-shadow: $card-shadow;
+}
+
+.form-card__header {
+  margin-bottom: $space-6;
+}
+
+.form-card__title {
+  margin: 0;
+
+  color: $text-primary;
+
+  font-size: $text-2xl;
+  font-weight: $font-bold;
+  line-height: $leading-tight;
+  letter-spacing: $tracking-tight;
+}
+
+.form-card__description {
+  max-width: 42rem;
+  margin: $space-2 0 0;
+
+  color: $text-secondary;
+
+  font-size: $text-md;
+  line-height: $leading-relaxed;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: $breakpoint-md) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-field--inline {
+    grid-template-columns: 1fr;
+    gap: $space-2;
+  }
+
+  .form-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .form-card {
+    padding: $space-5;
+    border-radius: $radius-md;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
 }

@@ -11,7 +11,21 @@ import { MarkdownSyntaxOptions } from '../../context-menu/config/context-menu-op
   selector: 'app-textarea',
   imports: [ReactiveFormsModule, InputErrorComponent],
   templateUrl: './text-area.html',
-  styleUrls: ['./text-area.scss'],
+  styles: `
+  @use 'variables' as *;
+
+  .textarea-field {
+    height: 100%;
+  }
+
+  .textarea-field__control {
+    height: 100%;
+  }
+
+  .form-control--flat {
+    box-shadow: none;
+  }
+  `,
   standalone: true
 })
 export class TextAreaComponent extends BaseFormElementComponent<TextAreaConfig> {

@@ -23,7 +23,7 @@ import { HeaderSectionComponent } from "./content/header-section/header-section"
 @Component({
   selector: 'app-generic-ui',
   templateUrl: './base-ui.html',
-  styles: "@use 'base' as *;",
+  styleUrls: ['./base-ui.scss'],
   imports: [
     BaseButtonComponent,
     ReactiveFormsModule,

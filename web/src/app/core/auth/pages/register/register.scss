@@ -1,0 +1,177 @@
+@use 'variables' as *;
+
+:host {
+  display: block;
+  min-height: 100%;
+}
+
+/* =========================
+   REGISTER PAGE
+========================= */
+
+.register-page {
+  min-height: calc(100vh - 25rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: $space-6 $space-4;
+}
+
+.auth-page__container--wide {
+  width: 100%;
+  max-width: 76rem;
+}
+
+.register-card {
+  width: 100%;
+
+  padding: $space-6;
+}
+
+.register-card .form-card__header {
+  margin-bottom: $space-5;
+}
+
+.register-card .form-card__title {
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+}
+
+.register-card .form-card__description {
+  max-width: 44rem;
+
+  font-size: $text-sm;
+  line-height: $leading-relaxed;
+}
+
+.register-card__form {
+  margin-top: 0;
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: $space-4;
+  row-gap: $space-4;
+}
+
+/* =========================
+   FORM FIELDS LAYOUT
+========================= */
+
+.register-card__form app-input,
+.register-card__form app-input-email,
+.register-card__form app-input-password {
+  min-width: 0;
+}
+
+.register-card__form app-input-email,
+.register-card__form app-input-password,
+.register-card__form .form-actions {
+  grid-column: span 1;
+}
+
+.register-card__form .form-actions {
+  margin-top: 0;
+}
+
+/* Bouton sur toute la largeur en bas */
+.register-card__form .form-actions--full {
+  grid-column: 1 / -1;
+}
+
+/* Si tu gardes un .form-row dans ton HTML */
+.register-card .form-row {
+  display: contents;
+}
+
+/* =========================
+   LOGIN LINK
+========================= */
+
+.auth-card__register {
+  margin-top: $space-5;
+  padding: $space-3 $space-4;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: $space-2;
+
+  background: $surface-soft;
+
+  border: 1px solid $border;
+  border-radius: $radius-xs;
+
+  color: $text-secondary;
+
+  font-size: $text-sm;
+  line-height: $leading-normal;
+  text-align: center;
+}
+
+.auth-card__register span {
+  color: $text-secondary;
+}
+
+.auth-card__register a {
+  display: inline-flex;
+  align-items: center;
+
+  color: $primary;
+
+  font-weight: $font-semibold;
+  text-decoration: none;
+}
+
+.auth-card__register a:hover {
+  color: $primary-hover;
+
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+}
+
+.auth-card__register a:focus-visible {
+  outline: none;
+
+  border-radius: $radius-xs;
+  box-shadow: 0 0 0 3px $focus-ring;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: $breakpoint-md) {
+  .register-page {
+    align-items: flex-start;
+    padding: $space-6 $space-3;
+  }
+
+  .auth-page__container--wide {
+    max-width: 100%;
+  }
+
+  .register-card {
+    padding: $space-5;
+  }
+
+  .register-card__form {
+    grid-template-columns: 1fr;
+  }
+
+  .register-card__form app-input-email,
+  .register-card__form app-input-password,
+  .register-card__form .form-actions {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .register-page {
+    padding: $space-4 $space-3;
+  }
+
+  .register-card {
+    padding: $space-4;
+  }
+}

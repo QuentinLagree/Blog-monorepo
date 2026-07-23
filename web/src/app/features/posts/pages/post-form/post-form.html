@@ -1,31 +1,43 @@
-<section class="article-editor-page">
-  <div class="article-editor-container">
-    <header class="article-editor-header">
+<section class="article-editor-page page">
+  <div class="article-editor-container page-container page-container--wide">
+    <header class="article-editor-header page-header">
       <div>
-        <p class="article-editor-eyebrow">
-          {{ this.post() ? 'Modification' : 'Nouvelle contribution' }}
+        <p class="page-header__eyebrow">
+          {{ post() ? 'Modification' : 'Nouvelle contribution' }}
         </p>
 
-        <h1>
-          {{ this.post() ? 'Modifier ton article' : 'Rédige une découverte' }}
+        <h1 class="page-header__title">
+          {{ post() ? 'Modifier ton article' : 'Rédige une découverte' }}
         </h1>
 
-        <p class="article-editor-baseline">
+        <p class="page-header__description">
           Structure ton idée, ajoute du contexte et partage une connaissance utile avec la communauté.
         </p>
       </div>
     </header>
 
-    <form [formGroup]="form" class="article-editor-form">
-      <section class="article-editor-section">
-        <div class="article-editor-section__header">
-          <div>
-            <h2>Informations principales</h2>
-            <p>Ces informations aideront les lecteurs à comprendre rapidement le sujet.</p>
-          </div>
-        </div>
+    <form
+      [formGroup]="form"
+      class="article-editor-form form">
 
-        <div class="article-editor-fields">
+      <section class="article-editor-section page-section">
+        <header class="article-editor-section__header">
+          <div>
+            <p class="text-eyebrow">
+              Article
+            </p>
+
+            <h2 class="content-title">
+              Informations principales
+            </h2>
+
+            <p class="content-description">
+              Ces informations aideront les lecteurs à comprendre rapidement le sujet.
+            </p>
+          </div>
+        </header>
+
+        <div class="article-editor-fields stack stack-md">
           <app-input
             [control]="titleControl"
             [configuration]="{
@@ -47,14 +59,23 @@
         </div>
       </section>
 
-      <section class="article-editor-section article-editor-section--content">
-        <div class="article-editor-section__header">
+      <section class="article-editor-section article-editor-section--content page-section">
+        <header class="article-editor-section__header">
           <div>
-            <h2>Contenu</h2>
-            <p>Rédige ton article en Markdown. Tu peux ajouter des images et prévisualiser le rendu.</p>
+            <p class="text-eyebrow">
+              Rédaction
+            </p>
+
+            <h2 class="content-title">
+              Contenu
+            </h2>
+
+            <p class="content-description">
+              Rédige ton article en Markdown. Tu peux ajouter des images et prévisualiser le rendu.
+            </p>
           </div>
 
-          <div class="article-editor-toolbar">
+          <div class="article-editor-toolbar btn-group btn-group--wrap">
             <app-button
               icon="icon-eye"
               size="sm"
@@ -86,11 +107,13 @@
               (clicked)="saveManual()">
             </app-button>
           </div>
-        </div>
+        </header>
 
-        <div class="fullscreen-editor">
-          <div class="editor-pane">
-            <div class="editor-pane__label">Markdown</div>
+        <div class="fullscreen-editor card">
+          <section class="editor-pane">
+            <div class="editor-pane__label">
+              Markdown
+            </div>
 
             <app-textarea
               [noShadow]="true"
@@ -107,11 +130,11 @@
                 placeholder: 'Commence à écrire ton article...'
               }">
             </app-textarea>
-          </div>
+          </section>
 
-          <span class="line"></span>
+          <span class="line" aria-hidden="true"></span>
 
-          <div
+          <section
             #preview
             class="preview"
             [class.hide]="showPreview()"
@@ -119,12 +142,15 @@
             (click)="onPreviewClick($event)">
 
             <div class="preview__header">
-              <span>Aperçu</span>
+              Aperçu
             </div>
 
-            <markdown class="variable-binding markdown-content" [data]="resolvedMarkdown()" katex>
+            <markdown
+              class="markdown-content"
+              [data]="resolvedMarkdown()"
+              katex>
             </markdown>
-          </div>
+          </section>
 
           <input
             #relinkPicker
@@ -136,7 +162,7 @@
       </section>
     </form>
 
-    <footer class="actionbar">
+    <footer class="actionbar card card--md">
       <div class="actionbar__left">
         <app-button
           (clicked)="goBack()"
@@ -146,8 +172,8 @@
         </app-button>
       </div>
 
-      <div class="actionbar__right">
-        @if (!this.post()) {
+      <div class="actionbar__right btn-group btn-group--wrap">
+        @if (!post()) {
           <app-button
             size="sm"
             type="outlined"
@@ -161,7 +187,7 @@
           [loading]="loading()"
           size="sm"
           type="primary"
-          [label]="this.post() ? 'Enregistrer les modifications' : 'Publier l’article'">
+          [label]="post() ? 'Enregistrer les modifications' : 'Publier l’article'">
         </app-button>
       </div>
     </footer>

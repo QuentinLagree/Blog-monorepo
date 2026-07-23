@@ -5,7 +5,6 @@ import { IconLoaderService } from 'src/app/shared/services/icons-loader';
 @Component({
   selector: 'app-button-edit',
   templateUrl: '../base-button.html',
-  styleUrls: ['../base-button.scss'],
 })
 export class EditButtonComponent extends BaseButtonComponent {
   override type: InputSignal<ButtonType> = input<ButtonType>('warn');

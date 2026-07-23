@@ -1,13 +1,12 @@
 import { Component, EventEmitter, HostBinding, inject, input, InputSignal, Output } from '@angular/core';
 import { IconLoaderService } from 'src/app/shared/services/icons-loader';
 
-export type ButtonType = 'primary' | 'secondary' | 'danger' | 'ghost' | 'success' | 'outlined' | 'warn';
+export type ButtonType = 'primary' | 'secondary' | 'danger' | 'ghost' | 'success' | 'outlined' | 'warn' | 'link';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 @Component({
   selector: 'app-button',
   templateUrl: './base-button.html',
-  styleUrl: './base-button.scss'
 })
 export class BaseButtonComponent {
   private readonly _iconLoader: IconLoaderService = inject(IconLoaderService);

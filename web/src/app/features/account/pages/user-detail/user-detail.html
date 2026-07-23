@@ -1,105 +1,170 @@
-<section class="user-detail-page">
-  @if (user.isLoading()) {
-    <section class="user-detail-loading">
-      <div class="user-detail-loading__spinner" aria-hidden="true"></div>
+<section class="user-detail-page page">
+  <div class="page-container page-container--wide">
+    @if (user.isLoading()) {
+      <section
+        class="user-detail-loading card card--md"
+        aria-label="Chargement du profil">
 
-      <div>
-        <h1>Chargement du profil</h1>
-        <p>Nous récupérons les informations de ce contributeur.</p>
-      </div>
-    </section>
-  } @else if (user.value()) {
-    <header class="user-detail-header">
-      <div class="user-detail-header__identity">
-        <div class="user-detail-avatar">
-          {{ userInitial(user.value()) }}
+        <div
+          class="user-detail-loading__spinner"
+          aria-hidden="true">
         </div>
 
-        <div class="user-detail-identity">
-          <p class="user-detail-eyebrow">Profil contributeur</p>
-
-          <h1>{{ userDisplayName(user.value()) }}</h1>
-
-          <p class="user-detail-fullname">
-            {{ user.value()?.prenom || 'Prénom non renseigné' }}
-            {{ user.value()?.nom || 'Nom non renseigné' }}
+        <div>
+          <p class="text-eyebrow">
+            Profil contributeur
           </p>
 
-          @if (user.value()?.created_at) {
-            <p class="user-detail-joined">
-              Inscrit depuis le {{ user.value()?.created_at | date:'dd/MM/yyyy' }}
+          <h1 class="text-title-md">
+            Chargement du profil
+          </h1>
+
+          <p class="text-body">
+            Nous récupérons les informations de ce contributeur.
+          </p>
+        </div>
+      </section>
+    } @else if (user.value()) {
+      <header class="user-detail-header page-header">
+        <div class="user-detail-header__identity">
+          <div
+            class="user-detail-avatar"
+            aria-hidden="true">
+            {{ userInitial(user.value()) }}
+          </div>
+
+          <div class="user-detail-identity">
+            <p class="page-header__eyebrow">
+              Profil contributeur
             </p>
+
+            <h1 class="page-header__title">
+              {{ userDisplayName(user.value()) }}
+            </h1>
+
+            <p class="user-detail-fullname">
+              {{ user.value()?.prenom || 'Prénom non renseigné' }}
+              {{ user.value()?.nom || 'Nom non renseigné' }}
+            </p>
+
+            @if (user.value()?.created_at) {
+              <p class="user-detail-joined">
+                Inscrit depuis le {{ user.value()?.created_at | date:'dd/MM/yyyy' }}
+              </p>
+            }
+          </div>
+        </div>
+
+        <div class="user-detail-header__infos">
+          <article class="user-detail-info card card--sm">
+            <span>
+              Pseudo
+            </span>
+
+            <strong>
+              {{ user.value()?.pseudo || 'Non renseigné' }}
+            </strong>
+          </article>
+
+          @if (user.value()?.role) {
+            <article class="user-detail-info card card--sm">
+              <span>
+                Rôle
+              </span>
+
+              <strong>
+                {{ role[user.value()?.role ?? 'user'] }}
+              </strong>
+            </article>
           }
-        </div>
-      </div>
 
-      <div class="user-detail-header__infos">
-        <div class="user-detail-info">
-          <span>Pseudo</span>
-          <strong>{{ user.value()?.pseudo || 'Non renseigné' }}</strong>
-        </div>
+          <article class="user-detail-info card card--sm">
+            <span>
+              Contributions
+            </span>
 
-        @if (user.value()?.role) {
-          <div class="user-detail-info">
-            <span>Rôle</span>
-            <strong>{{ this.role[user.value()?.role ?? 'user'] }}</strong>
+            <strong>
+              {{ posts.value()?.length ?? 0 }}
+            </strong>
+          </article>
+        </div>
+      </header>
+
+      <section class="user-detail-content page-section">
+        <header class="user-detail-section-header">
+          <div>
+            <p class="text-eyebrow">
+              Contributions
+            </p>
+
+            <h2 class="content-title">
+      Articles publiés
+      <span class="user-detail-post-count">
+        {{ posts.value()?.length ?? 0 }}
+      </span>
+    </h2>
+
+            <p class="content-description">
+              Retrouve les publications visibles de ce contributeur.
+            </p>
+          </div>
+        </header>
+
+        @if (posts.isLoading()) {
+          <div class="user-posts-loading card card--md card--soft">
+            <p class="text-body">
+              Chargement des articles...
+            </p>
+          </div>
+        } @else {
+          <div class="user-posts-list stack stack-md">
+            @for (post of posts.value(); track post.id) {
+              <app-post-card [post]="post"></app-post-card>
+            } @empty {
+              <div class="user-detail-empty-state empty-card">
+                <div
+                  class="empty-card__icon"
+                  aria-hidden="true">
+                  ✦
+                </div>
+
+                <h3 class="empty-card__title">
+                  Aucun article publié
+                </h3>
+
+                <p class="empty-card__description">
+                  Ce contributeur n’a pas encore publié d’article visible.
+                </p>
+              </div>
+            }
           </div>
         }
+      </section>
+    } @else {
+      <div class="user-detail-empty-state empty-card">
+        <div
+          class="empty-card__icon"
+          aria-hidden="true">
+          ?
+        </div>
 
-        <div class="user-detail-info">
-          <span>Contributions</span>
-          <strong>{{ posts.value()?.length ?? 0 }}</strong>
+        <h1 class="empty-card__title">
+          Utilisateur introuvable
+        </h1>
+
+        <p class="empty-card__description">
+          Ce profil n’existe pas ou n’est plus disponible.
+        </p>
+
+        <div class="empty-card__actions">
+          <app-button
+            type="secondary"
+            size="sm"
+            label="Retour"
+            (clicked)="goBack()">
+          </app-button>
         </div>
       </div>
-    </header>
-
-    <section class="user-detail-content">
-      <div class="user-detail-section-header">
-        <div>
-          <p class="user-detail-eyebrow">Contributions</p>
-          <h2>Articles publiés</h2>
-        </div>
-
-      </div>
-
-      @if (posts.isLoading()) {
-        <div class="user-posts-loading">
-          Chargement des articles...
-        </div>
-      } @else {
-        <div class="user-posts-list">
-          @for (post of posts.value(); track post.id) {
-            <app-post-card [post]="post" />
-          } @empty {
-            <div class="user-detail-empty-state">
-              <div class="user-detail-empty-state__icon">✦</div>
-
-              <h3>Aucun article publié</h3>
-
-              <p>
-                Ce contributeur n’a pas encore publié d’article visible.
-              </p>
-            </div>
-          }
-        </div>
-      }
-    </section>
-  } @else {
-    <div class="user-detail-empty-state">
-      <div class="user-detail-empty-state__icon">?</div>
-
-      <h1>Utilisateur introuvable</h1>
-
-      <p>
-        Ce profil n’existe pas ou n’est plus disponible.
-      </p>
-
-      <app-button
-        type="secondary"
-        size="sm"
-        label="Retour"
-        (clicked)="goBack()">
-      </app-button>
-    </div>
-  }
+    }
+  </div>
 </section>

@@ -7,7 +7,7 @@ import { TextInputValidatorFactory } from '@src/app/shared/ui/form/inputs/input/
 import { EmailInputComponent } from "@src/app/shared/ui/form/inputs/input-email/input-email";
 import { InputComponent } from "@src/app/shared/ui/form/inputs/input/input";
 import { InputPassswordComponent } from "@src/app/shared/ui/form/inputs/inputs-password/inputs-password";
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { UserService } from 'src/app/shared/services/user.service';
 import { userLogin } from '../../models/user-login.model';
 import { userRegister } from '../../models/user-register.model';
@@ -21,7 +21,8 @@ import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
     BaseButtonComponent,
     EmailInputComponent,
     InputComponent,
-    InputPassswordComponent
+    InputPassswordComponent,
+    RouterLink
 ],
   standalone: true,
   templateUrl: './register.html',

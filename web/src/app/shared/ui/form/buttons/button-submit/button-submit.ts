@@ -3,8 +3,7 @@ import { BaseButtonComponent, ButtonSize, ButtonType } from '../base-button';
 
 @Component({
   selector: 'app-button-submit',
-  templateUrl: '../base-button-simple.html',
-  styleUrls: ['../base-button.scss']
+  templateUrl: '../base-button.html',
 })
 export class SubmitButtonComponent extends BaseButtonComponent {
   override type: InputSignal<ButtonType> = input<ButtonType>('primary');

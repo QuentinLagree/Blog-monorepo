@@ -1,0 +1,155 @@
+/* =========================
+   COLORS — BASE
+========================= */
+
+$white: #ffffff;
+$black: #1c1c1a;
+
+/* =========================
+   COLORS — TEXT
+========================= */
+
+$text-primary: #1c1c1a;
+$text-secondary: #6f6f68;
+$text-muted: #9a978e;
+
+/* =========================
+   COLORS — SURFACES
+========================= */
+
+$background: #fafaf7;
+
+$surface: #ffffff;
+$surface-soft: #f4f2ec;
+$surface-muted: #edeae2;
+
+/* Aliases temporaires */
+$container-background: $surface;
+$container-background-soft: $surface-soft;
+
+/* =========================
+   COLORS — BRAND
+========================= */
+
+$primary: #315c49;
+$primary-hover: #264a3a;
+$primary-active: #1f3d30;
+$primary-soft: #e4eee9;
+
+$secondary: #c47a35;
+$secondary-hover: #a9652a;
+$secondary-active: #8c5220;
+$secondary-soft: #f4e6d8;
+
+/* =========================
+   COLORS — STATES
+========================= */
+
+$success: #2f7d5b;
+$success-hover: #286b4e;
+$success-active: #205940;
+$success-soft: #e1f1e9;
+
+$danger: #b42318;
+$danger-hover: #981f16;
+$danger-active: #7f1a12;
+$danger-soft: #fde7e4;
+
+$error: $danger;
+$error-hover: $danger-hover;
+$error-active: $danger-active;
+$error-soft: $danger-soft;
+
+$warning: #b7791f;
+$warning-hover: #9d6519;
+$warning-active: #824f14;
+$warning-soft: #f7ecd8;
+
+$info: #315c7c;
+$info-hover: #284f66;
+$info-active: #214255;
+$info-soft: #e2ecf3;
+
+/* =========================
+   BORDERS
+========================= */
+
+$border-light: #edeae2;
+$border: #e6e3da;
+$border-strong: #d8d3c7;
+$border-emphasis: #beb7a8;
+
+$border-focus: $primary;
+
+$border-success: #a8d8bd;
+$border-warning: #e0c18d;
+$border-error: #f0a8a0;
+$border-info: #afc6d8;
+
+/* Aliases */
+$success-border: $border-success;
+$warning-border: $border-warning;
+$error-border: $border-error;
+$info-border: $border-info;
+
+/* =========================
+   UI STATES
+========================= */
+
+$hover-background: $surface-soft;
+$active-background: $surface-muted;
+$selected-background: $primary-soft;
+
+$focus-border: $primary;
+$focus-ring: rgb(49 92 73 / 16%);
+
+/* =========================
+   FORMS
+========================= */
+
+$input-placeholder: rgb(154 151 142 / 75%);
+
+$option-background: $surface-soft;
+$option-background-focus: $primary-soft;
+
+/* =========================
+   CARD COLORS
+========================= */
+
+$card-background: $surface;
+$card-background-soft: $surface-soft;
+$card-background-muted: $surface-muted;
+
+$card-border: $border;
+$card-border-hover: $border-strong;
+$card-border-active: $border-emphasis;
+
+$card-text: $text-primary;
+$card-text-secondary: $text-secondary;
+$card-text-muted: $text-muted;
+
+/* Card variants */
+
+$card-primary-background: $primary-soft;
+$card-primary-border: rgb(49 92 73 / 16%);
+$card-primary-text: $primary;
+
+$card-secondary-background: $secondary-soft;
+$card-secondary-border: rgb(196 122 53 / 18%);
+$card-secondary-text: $secondary;
+
+$card-success-background: $success-soft;
+$card-success-border: $border-success;
+$card-success-text: $success;
+
+$card-warning-background: $warning-soft;
+$card-warning-border: $border-warning;
+$card-warning-text: $warning;
+
+$card-danger-background: $danger-soft;
+$card-danger-border: $border-error;
+$card-danger-text: $danger;
+
+$card-info-background: $info-soft;
+$card-info-border: $border-info;
+$card-info-text: $info;

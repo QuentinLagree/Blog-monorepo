@@ -26,7 +26,6 @@ const SILENT_CONTEXT = new HttpContext().set(
 @Component({
     selector: 'app-post-card',
     templateUrl: 'post-card.html',
-    styleUrls: ['./post-card.scss'],
     imports: [DatePipe, BaseButtonComponent, EditButtonComponent, RouterLink, DangerButtonComponent,
     ContextMenuTriggerDirective, ConfirmModalComponent]
 })

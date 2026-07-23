@@ -4,8 +4,8 @@
   [class.toast-stack--bottom-right]="pos === 'bottom-right'"
   [class.toast-stack--bottom-left]="pos === 'bottom-left'"
   role="region"
-  aria-label="Notifications"
->
+  aria-label="Notifications">
+
   @for (t of service.toasts(); track t.id) {
     <section
       class="toast"
@@ -19,58 +19,67 @@
       aria-atomic="true"
       (transitionend)="onTransitionEnd($event, t.id)"
       (mouseenter)="service.pause(t.id)"
-      (mouseleave)="service.resume(t.id)"
-    >
-      <div class="toast-accent" aria-hidden="true"></div>
+      (mouseleave)="service.resume(t.id)">
 
-      <div class="toast-icon" aria-hidden="true">
+      <div
+        class="toast__accent"
+        aria-hidden="true">
+      </div>
+
+      <div
+        class="toast__icon"
+        aria-hidden="true">
+
         @if (t.variant === 'success') {
           <svg viewBox="0 0 24 24">
-            <use href="#icon-check" />
+            <use href="#icon-check"></use>
           </svg>
         }
 
         @if (t.variant === 'error') {
           <svg viewBox="0 0 24 24">
-            <use href="#icon-cancel" />
+            <use href="#icon-cancel"></use>
           </svg>
         }
 
         @if (t.variant === 'info') {
           <svg viewBox="0 0 24 24">
-            <use href="#icon-info" />
+            <use href="#icon-info"></use>
           </svg>
         }
 
         @if (t.variant === 'warning') {
           <svg viewBox="0 0 24 24">
-            <use href="#icon-warn-triangle" />
+            <use href="#icon-warn-triangle"></use>
           </svg>
         }
       </div>
 
-      <div class="toast-body">
-        <div class="toast-content">
+      <div class="toast__body">
+        <div class="toast__content">
           @if (t.title) {
-            <h5 class="toast-title">{{ t.title }}</h5>
+            <h5 class="toast__title">
+              {{ t.title }}
+            </h5>
           }
 
-          <p class="toast-message">{{ t.message }}</p>
+          <p class="toast__message">
+            {{ t.message }}
+          </p>
         </div>
 
         @if (t.actions.length) {
-          <div class="toast-actions">
+          <div class="toast__actions">
             @for (a of t.actions; track a.value) {
               <button
                 type="button"
-                class="toast-action"
+                class="toast__action"
                 [class.toast__action--primary]="a.buttonType === 'primary'"
                 [class.toast__action--secondary]="a.buttonType === 'secondary'"
                 [class.toast__action--danger]="a.buttonType === 'danger'"
                 [class.toast__action--outlined]="a.buttonType === 'outlined'"
                 (click)="service.action(t.id, a.value)"
-                [attr.aria-label]="a.ariaLabel || a.label"
-              >
+                [attr.aria-label]="a.ariaLabel || a.label">
                 {{ a.label }}
               </button>
             }
@@ -78,22 +87,24 @@
         }
 
         @if (!t.sticky) {
-          <div class="toast-progress" [class.toast__progress--paused]="t._paused">
+          <div
+            class="toast__progress"
+            [class.toast__progress--paused]="t._paused">
+
             <span
-              class="toast-progress-bar"
+              class="toast__progress-bar"
               [style.animation-duration.ms]="t.duration"
-              [style.animation-play-state]="t._paused ? 'paused' : 'running'"
-            ></span>
+              [style.animation-play-state]="t._paused ? 'paused' : 'running'">
+            </span>
           </div>
         }
       </div>
 
       <button
         type="button"
-        class="toast-close"
+        class="toast__close"
         (click)="service.close(t.id)"
-        aria-label="Fermer la notification"
-      >
+        aria-label="Fermer la notification">
         ×
       </button>
     </section>
