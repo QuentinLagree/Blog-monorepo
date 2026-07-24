@@ -95,6 +95,7 @@ app-switch-button {
 .input_container__label,
 .input-container-label {
   color: $text-primary;
+  padding-right: $space-2;
 
   font-size: $text-sm;
   font-weight: $font-semibold;

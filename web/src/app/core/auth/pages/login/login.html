@@ -3,7 +3,7 @@
     <div class="form-card auth-card login-card">
       <header class="form-card__header">
         <p class="text-eyebrow">
-          Connexion
+          Connection
         </p>
 
         <h1 class="form-card__title">
@@ -15,51 +15,40 @@
         </p>
       </header>
 
-      <form
-  class="form login-card__form"
-  [formGroup]="form">
+      <form class="form login-card__form" [formGroup]="form">
 
-  <app-input-email
-    [control]="emailControl"
-    [configuration]="{
+        <app-input-email [control]="emailControl" [configuration]="{
       label: 'Adresse email',
       placeholder: 'Entrez votre adresse email',
       required: true,
       type: 'email',
     }">
-  </app-input-email>
+        </app-input-email>
 
-  <div class="login-card__password-field">
-    <app-input-password
-      [control]="passwordControl"
-      [configuration]="{
+        <div class="login-card__password-field">
+
+          <app-input-password [control]="passwordControl" [configuration]="{
         label: 'Mot de passe',
         placeholder: 'Entrez votre mot de passe',
         required: true,
         type: 'password',
         showPassword: true
       }">
-    </app-input-password>
+            <a class="login-card__forgot-link" routerLink="/auth/forget-password">
+              Mot de passe oublié ?
+            </a>
+          </app-input-password>
 
-    <a
-      class="login-card__forgot-link"
-      routerLink="/auth/forget-password">
-      Mot de passe oublié ?
-    </a>
-  </div>
 
-  <div class="form-actions form-actions--full login-card__actions">
-    <app-button
-      [full]="true"
-      size="lg"
-      type="primary"
-      [label]="loading ? 'Connexion en cours...' : 'Se connecter'"
-      [disabled]="!form.valid"
-      [loading]="loading"
-      (clicked)="submit()">
-    </app-button>
-  </div>
-</form>
+        </div>
+
+        <div class="form-actions form-actions--full login-card__actions">
+          <app-button [full]="true" size="lg" type="primary"
+            [label]="loading ? 'Connexion en cours...' : 'Se connecter'" [disabled]="!form.valid" [loading]="loading"
+            (clicked)="submit()">
+          </app-button>
+        </div>
+      </form>
 
       <div class="auth-card__register">
         <span>
@@ -75,22 +64,14 @@
 </section>
 
 @if (!prod) {
-  <div
-    class="dev-auth-shortcuts"
-    aria-label="Raccourcis de connexion développement">
+<div class="dev-auth-shortcuts" aria-label="Raccourcis de connexion développement">
 
-    <button
-      type="button"
-      class="dev-auth-shortcuts__button"
-      (click)="setFormWithMode('admin')">
-      Connexion Admin
-    </button>
+  <button type="button" class="dev-auth-shortcuts__button" (click)="setFormWithMode('admin')">
+    Connexion Admin
+  </button>
 
-    <button
-      type="button"
-      class="dev-auth-shortcuts__button"
-      (click)="setFormWithMode('user')">
-      Connexion User
-    </button>
-  </div>
+  <button type="button" class="dev-auth-shortcuts__button" (click)="setFormWithMode('user')">
+    Connexion User
+  </button>
+</div>
 }
