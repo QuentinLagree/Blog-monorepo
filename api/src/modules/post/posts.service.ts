@@ -13,6 +13,7 @@ import { PublishedPostDto } from './dto/published-post.dto';
 import { UpdatePostDto } from './dto/update.post.dto';
 import { PostNotFoundException } from './exceptions/post-not-found.exception';
 import { StatusLikeDto } from './dto/status-like.dto';
+import { MetaPaginationDto } from '../pagination/meta.pagination.dto';
 
 @Injectable()
 export class ArticleService {
@@ -31,20 +32,36 @@ export class ArticleService {
   }
 
 
-  async index(paginationDto: PaginationDto): Promise<Article[]> {
+  async index(paginationDto: PaginationDto): Promise<[Article[], MetaPaginationDto]> {
     const page = paginationDto.page ?? 1;
     const limit = paginationDto.limit ?? 10;
+    const published = paginationDto.published;
+    const [posts, total] = await this._prisma.$transaction([
+      this._prisma.post.findMany({
+        take: limit,
+        skip: (page - 1) * limit,
+        where:
+          paginationDto.published === undefined
+            ? {}
+            : {
+              published_at: paginationDto.published ? { not: null } : null,
+            },
+      }),
+      this._prisma.post.count({
+        where: {
+          published_at: (published) ? { not: null } : null
+        }
+      })
+    ]);
 
-    return this._prisma.post.findMany({
-      take: limit,
-      skip: (page - 1) * limit,
-      where:
-        paginationDto.published === undefined
-          ? {}
-          : {
-            published_at: paginationDto.published ? { not: null } : null,
-          },
-    });
+    return [
+      posts,
+      {
+        currentPage: page,
+        limit,
+        totalArticle: total
+      }
+    ]
   }
 
   async indexWhere(where: Prisma.PostWhereInput) {
@@ -132,29 +149,29 @@ export class ArticleService {
   }
 
   async getLikeStatus(
-  userId: number,
-  postId: number,
-): Promise<StatusLikeDto> {
-  const [like, likesCount] = await this._prisma.$transaction([
-    this._prisma.like.findUnique({
-      where: {
-        userId_postId: {
-          userId,
+    userId: number,
+    postId: number,
+  ): Promise<StatusLikeDto> {
+    const [like, likesCount] = await this._prisma.$transaction([
+      this._prisma.like.findUnique({
+        where: {
+          userId_postId: {
+            userId,
+            postId,
+          },
+        },
+      }),
+
+      this._prisma.like.count({
+        where: {
           postId,
         },
-      },
-    }),
+      }),
+    ]);
 
-    this._prisma.like.count({
-      where: {
-        postId,
-      },
-    }),
-  ]);
-
-  return {
-    liked: like !== null,
-    likesCount,
-  };
-}
+    return {
+      liked: like !== null,
+      likesCount,
+    };
+  }
 }

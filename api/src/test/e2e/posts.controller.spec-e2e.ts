@@ -43,7 +43,7 @@ describe('PostController e2e', () => {
         app,
         prisma,
         passwordService,
-      );
+      ); 
 
       const post = await createTestPost(prisma, user.id, {
         title: 'First post',
@@ -68,25 +68,7 @@ describe('PostController e2e', () => {
         ]),
       );
     });
-
-    it('should return an error if session is inactive', async () => {
-      const { user } = await createLoggedAgent(
-        app,
-        prisma,
-        passwordService,
-      );
-
-      await createTestPost(prisma, user.id, {
-        title: 'First post',
-        content: 'Content of first post',
-      });
-
-      await request(app.getHttpServer())
-        .get(endpoint)
-        .expect(401);
-
     });
-  });
 
   describe('GET /post/:id', () => {
     it('should return a post by id', async () => {

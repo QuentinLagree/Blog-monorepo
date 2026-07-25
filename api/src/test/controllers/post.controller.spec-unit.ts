@@ -15,7 +15,6 @@ describe('PostController', () => {
 
   const articleServiceMock = {
     index: jest.fn(),
-    countByPublishedStatus: jest.fn(),
     show: jest.fn(),
     store: jest.fn(),
     update: jest.fn(),
@@ -49,105 +48,83 @@ describe('PostController', () => {
   });
 
   describe('index', () => {
-    it('should return an empty message if posts list is empty', async () => {
-      const payload = {
-        page: 1,
-        limit: 10,
-      } as PaginationDto;
+  it('should return an empty message if posts list is empty', async () => {
+    const payload = {
+      page: 1,
+      limit: 10,
+    } as PaginationDto;
 
-      articleServiceMock.index.mockResolvedValue([]);
-      articleServiceMock.countByPublishedStatus.mockResolvedValue(0);
+    const meta = {
+      currentPage: 1,
+      limit: 10,
+      totalArticle: 0,
+    };
 
-      const response = await postController.index(payload);
+    articleServiceMock.index.mockResolvedValue([[], meta]);
 
-      expect(articleServiceMock.index).toHaveBeenCalledWith(payload);
-      expect(articleServiceMock.countByPublishedStatus).toHaveBeenCalledWith(true);
+    const response = await postController.index(payload);
 
-      expect(response).toEqual(
-        makeMessage(
-          'List of all posts is empty.',
-          'La liste des publications est vide',
-          [],
-        ),
-      );
-    });
+    expect(articleServiceMock.index).toHaveBeenCalledWith(payload);
 
-    it('should return posts list with pagination meta', async () => {
-      const payload = {
-        page: 1,
-        limit: 10,
-      } as PaginationDto;
-
-      const posts = [
-        createPostMock({ id: 1 }),
-        createPostMock({ id: 2 }),
-      ];
-
-      articleServiceMock.index.mockResolvedValue(posts);
-      articleServiceMock.countByPublishedStatus.mockResolvedValue(2);
-
-      const response = await postController.index(payload);
-
-      expect(articleServiceMock.index).toHaveBeenCalledWith(payload);
-      expect(articleServiceMock.countByPublishedStatus).toHaveBeenCalledWith(true);
-
-      expect(response).toEqual(
-        makeMessage(
-          'List of all posts',
-          'Liste de toutes les publications',
-          posts,
-          {
-            currentPage: payload.page,
-            limit: payload.limit,
-            totalArticle: 2,
-          },
-        ),
-      );
-    });
+    expect(response).toEqual(
+      makeMessage(
+        'List of all posts is empty.',
+        'La liste des publications est vide',
+        [],
+      ),
+    );
   });
 
-  describe('indexPublished', () => {
-    it('should return an empty message if published posts list is empty', async () => {
-      articleServiceMock.index.mockResolvedValue([]);
+  it('should return posts list with pagination meta', async () => {
+    const payload = {
+      page: 1,
+      limit: 10,
+    } as PaginationDto;
 
-      const response = await postController.indexPublished();
+    const posts = [
+      createPostMock({ id: 1 }),
+      createPostMock({ id: 2 }),
+    ];
 
-      expect(articleServiceMock.index).toHaveBeenCalledWith({
-        published: true,
-      });
+    const meta = {
+      currentPage: 1,
+      limit: 10,
+      totalArticle: 2,
+    };
 
-      expect(response).toEqual(
-        makeMessage(
-          'List of all published posts is empty.',
-          'La liste des publications publiées est vide',
-          null,
-        ),
-      );
-    });
+    articleServiceMock.index.mockResolvedValue([posts, meta]);
 
-    it('should return published posts list', async () => {
-      const posts = [
-        createPostMock({ id: 1, published_at: new Date() }),
-        createPostMock({ id: 2, published_at: new Date() }),
-      ];
+    const response = await postController.index(payload);
 
-      articleServiceMock.index.mockResolvedValue(posts);
+    expect(articleServiceMock.index).toHaveBeenCalledWith(payload);
 
-      const response = await postController.indexPublished();
-
-      expect(articleServiceMock.index).toHaveBeenCalledWith({
-        published: true,
-      });
-
-      expect(response).toEqual(
-        makeMessage(
-          'List of all published posts',
-          'Liste de toutes les publications publiées',
-          posts,
-        ),
-      );
-    });
+    expect(response).toEqual(
+      makeMessage(
+        'List of all posts',
+        'Liste de toutes les publications',
+        posts,
+        meta,
+      ),
+    );
   });
+
+  it('should throw an error if posts loading fails', async () => {
+    const payload = {
+      page: 1,
+      limit: 10,
+    } as PaginationDto;
+
+    const error = new Error('Posts loading failed');
+
+    articleServiceMock.index.mockRejectedValue(error);
+
+    await expect(
+      postController.index(payload),
+    ).rejects.toThrow(error);
+
+    expect(articleServiceMock.index).toHaveBeenCalledWith(payload);
+  });
+});
 
   describe('slugTestWithID', () => {
     it('should return a post by slug', async () => {
@@ -203,72 +180,150 @@ describe('PostController', () => {
   });
 
   describe('store', () => {
-    it('should create a post', async () => {
-      const dto = createPostDtoMock() as CreatePostDto;
-      const author = createUserMock({ id: dto.authorId });
-      const createdPost = createPostMock({
-        id: 1,
-        authorId: dto.authorId,
-      });
+  it('should create a post for the authenticated user', async () => {
+    const dto = createPostDtoMock() as CreatePostDto;
+    const authenticatedUserId = 1;
 
-      userServiceMock.show.mockResolvedValue(author);
-      articleServiceMock.store.mockResolvedValue(createdPost);
-
-      const response = await postController.store(dto);
-
-      expect(userServiceMock.show).toHaveBeenCalledWith({
-        id: dto.authorId,
-      });
-
-      expect(articleServiceMock.store).toHaveBeenCalledWith(
-        dto,
-        author,
-      );
-
-      expect(response).toEqual(
-        makeMessage(
-          'Post created !',
-          'La publication a été créee !',
-          createdPost,
-        ),
-      );
+    const author = createUserMock({
+      id: authenticatedUserId,
     });
 
-    it('should throw an error if author is not found', async () => {
-      const dto = createPostDtoMock({ authorId: 999 }) as CreatePostDto;
-      const error = new Error('User not found');
-
-      userServiceMock.show.mockRejectedValue(error);
-
-      await expect(postController.store(dto)).rejects.toThrow(error);
-
-      expect(userServiceMock.show).toHaveBeenCalledWith({
-        id: dto.authorId,
-      });
-
-      expect(articleServiceMock.store).not.toHaveBeenCalled();
+    const createdPost = createPostMock({
+      id: 1,
+      authorId: authenticatedUserId,
     });
 
-    it('should throw an error if post creation fails', async () => {
-      const dto = createPostDtoMock() as CreatePostDto;
-      const author = createUserMock({ id: dto.authorId });
-      const error = new Error('Post creation failed');
+    const sessionMock = {
+      get: jest.fn().mockReturnValue({
+        id: authenticatedUserId,
+      }),
+    };
 
-      userServiceMock.show.mockResolvedValue(author);
-      articleServiceMock.store.mockRejectedValue(error);
+    userServiceMock.show.mockResolvedValue(author);
+    articleServiceMock.store.mockResolvedValue(createdPost);
 
-      await expect(postController.store(dto)).rejects.toThrow(error);
+    const response = await postController.store(
+      dto,
+      sessionMock as any,
+    );
 
-      expect(userServiceMock.show).toHaveBeenCalledWith({
-        id: dto.authorId,
-      });
+    expect(sessionMock.get).toHaveBeenCalledWith('user');
 
-      expect(articleServiceMock.store).toHaveBeenCalledWith(
-        dto,
-        author,
-      );
+    expect(userServiceMock.show).toHaveBeenCalledWith({
+      id: authenticatedUserId,
+    });
+
+    expect(articleServiceMock.store).toHaveBeenCalledWith(
+      dto,
+      author,
+    );
+
+    expect(response).toEqual(
+      makeMessage(
+        'Post created !',
+        'La publication a été créee !',
+        createdPost,
+      ),
+    );
+  });
+
+  it('should use the session user instead of the DTO authorId', async () => {
+    const dto = createPostDtoMock({
+      authorId: 999,
+    }) as CreatePostDto;
+
+    const authenticatedUserId = 1;
+
+    const author = createUserMock({
+      id: authenticatedUserId,
+    });
+
+    const createdPost = createPostMock({
+      id: 1,
+      authorId: authenticatedUserId,
+    });
+
+    const sessionMock = {
+      get: jest.fn().mockReturnValue({
+        id: authenticatedUserId,
+      }),
+    };
+
+    userServiceMock.show.mockResolvedValue(author);
+    articleServiceMock.store.mockResolvedValue(createdPost);
+
+    await postController.store(dto, sessionMock as any);
+
+    expect(userServiceMock.show).toHaveBeenCalledWith({
+      id: authenticatedUserId,
+    });
+
+    expect(userServiceMock.show).not.toHaveBeenCalledWith({
+      id: dto.authorId,
     });
   });
+
+  it('should throw an error if authenticated user is not found', async () => {
+    const dto = createPostDtoMock() as CreatePostDto;
+    const authenticatedUserId = 999;
+    const error = new Error('User not found');
+
+    const sessionMock = {
+      get: jest.fn().mockReturnValue({
+        id: authenticatedUserId,
+      }),
+    };
+
+    userServiceMock.show.mockRejectedValue(error);
+
+    await expect(
+      postController.store(dto, sessionMock as any),
+    ).rejects.toThrow(error);
+
+    expect(sessionMock.get).toHaveBeenCalledWith('user');
+
+    expect(userServiceMock.show).toHaveBeenCalledWith({
+      id: authenticatedUserId,
+    });
+
+    expect(articleServiceMock.store).not.toHaveBeenCalled();
+  });
+
+  it('should throw an error if post creation fails', async () => {
+    const dto = createPostDtoMock() as CreatePostDto;
+    const authenticatedUserId = 1;
+
+    const author = createUserMock({
+      id: authenticatedUserId,
+    });
+
+    const error = new Error('Post creation failed');
+
+    const sessionMock = {
+      get: jest.fn().mockReturnValue({
+        id: authenticatedUserId,
+      }),
+    };
+
+    userServiceMock.show.mockResolvedValue(author);
+    articleServiceMock.store.mockRejectedValue(error);
+
+    await expect(
+      postController.store(dto, sessionMock as any),
+    ).rejects.toThrow(error);
+
+    expect(sessionMock.get).toHaveBeenCalledWith('user');
+
+    expect(userServiceMock.show).toHaveBeenCalledWith({
+      id: authenticatedUserId,
+    });
+
+    expect(articleServiceMock.store).toHaveBeenCalledWith(
+      dto,
+      author,
+    );
+  });
+});
 
   describe('updatePost', () => {
     it('should update a post', async () => {

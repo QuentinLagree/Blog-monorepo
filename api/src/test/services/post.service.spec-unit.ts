@@ -7,11 +7,13 @@ import { UserNotHaveAuthorisation } from 'src/modules/user/exceptions/user-not-h
 import { CreatePostDto } from 'src/modules/post/dto/create.post.dto';
 import { UpdatePostDto } from 'src/modules/post/dto/update.post.dto';
 import { PublishedPostDto } from 'src/modules/post/dto/published-post.dto';
+import { PaginationDto } from 'src/modules/pagination/pagination.dto';
 
 describe('ArticleService', () => {
   let articleService: ArticleService;
 
   const prismaMock = {
+    $transaction: jest.fn(),
     post: {
       count: jest.fn(),
       findMany: jest.fn(),
@@ -69,45 +71,27 @@ describe('ArticleService', () => {
     });
   });
 
-  describe('countByPublishedStatus', () => {
-    it('should count published posts', async () => {
-      prismaMock.post.count.mockResolvedValue(3);
-
-      const response = await articleService.countByPublishedStatus(true);
-
-      expect(prismaMock.post.count).toHaveBeenCalledWith({
-        where: {
-          published_at: {
-            not: null,
-          },
-        },
-      });
-
-      expect(response).toBe(3);
-    });
-
-    it('should count draft posts', async () => {
-      prismaMock.post.count.mockResolvedValue(2);
-
-      const response = await articleService.countByPublishedStatus(false);
-
-      expect(prismaMock.post.count).toHaveBeenCalledWith({
-        where: {
-          published_at: null,
-        },
-      });
-
-      expect(response).toBe(2);
-    });
-  });
-
   describe('index', () => {
-    it('should return posts with default pagination', async () => {
-      const posts = [createPostMock({ id: 1 }), createPostMock({ id: 2 })];
+    it('should return all posts with pagination metadata', async () => {
+      const paginationDto = {
+        page: 1,
+        limit: 10,
+      } as PaginationDto;
 
-      prismaMock.post.findMany.mockResolvedValue(posts);
+      const posts = [
+        createPostMock({ id: 1 }),
+        createPostMock({ id: 2 }),
+      ];
 
-      const response = await articleService.index({} as any);
+      prismaMock.post.findMany.mockReturnValue(posts as any);
+      prismaMock.post.count.mockReturnValue(2 as any);
+
+      prismaMock.$transaction.mockResolvedValue([
+        posts,
+        2,
+      ]);
+
+      const response = await articleService.index(paginationDto);
 
       expect(prismaMock.post.findMany).toHaveBeenCalledWith({
         take: 10,
@@ -115,42 +99,113 @@ describe('ArticleService', () => {
         where: {},
       });
 
-      expect(response).toEqual(posts);
+      expect(prismaMock.post.count).toHaveBeenCalledWith({
+        where: {
+          published_at: null,
+        },
+      });
+
+      expect(prismaMock.$transaction).toHaveBeenCalled();
+
+      expect(response).toEqual([
+        posts,
+        {
+          currentPage: 1,
+          limit: 10,
+          totalArticle: 2,
+        },
+      ]);
     });
 
-    it('should return posts with custom pagination', async () => {
-      const posts = [createPostMock({ id: 11 })];
+    it('should calculate the correct skip value', async () => {
+      const paginationDto = {
+        page: 3,
+        limit: 5,
+      } as PaginationDto;
 
-      prismaMock.post.findMany.mockResolvedValue(posts);
+      const posts = [
+        createPostMock({ id: 11 }),
+        createPostMock({ id: 12 }),
+      ];
 
-      const response = await articleService.index({
-        page: 2,
-        limit: 10,
-      } as any);
+      prismaMock.post.findMany.mockReturnValue(posts as any);
+      prismaMock.post.count.mockReturnValue(12 as any);
+
+      prismaMock.$transaction.mockResolvedValue([
+        posts,
+        12,
+      ]);
+
+      const response = await articleService.index(paginationDto);
 
       expect(prismaMock.post.findMany).toHaveBeenCalledWith({
-        take: 10,
+        take: 5,
         skip: 10,
         where: {},
       });
 
-      expect(response).toEqual(posts);
+      expect(response).toEqual([
+        posts,
+        {
+          currentPage: 3,
+          limit: 5,
+          totalArticle: 12,
+        },
+      ]);
+    });
+
+    it('should use default pagination values', async () => {
+      const paginationDto = {} as PaginationDto;
+
+      prismaMock.post.findMany.mockReturnValue([] as any);
+      prismaMock.post.count.mockReturnValue(0 as any);
+
+      prismaMock.$transaction.mockResolvedValue([
+        [],
+        0,
+      ]);
+
+      const response = await articleService.index(paginationDto);
+
+      expect(prismaMock.post.findMany).toHaveBeenCalledWith({
+        take: 10,
+        skip: 0,
+        where: {},
+      });
+
+      expect(response).toEqual([
+        [],
+        {
+          currentPage: 1,
+          limit: 10,
+          totalArticle: 0,
+        },
+      ]);
     });
 
     it('should return only published posts when published is true', async () => {
+      const paginationDto = {
+        page: 1,
+        limit: 10,
+        published: true,
+      } as PaginationDto;
+
       const posts = [
         createPostMock({
+          id: 1,
           published_at: new Date(),
         }),
       ];
 
-      prismaMock.post.findMany.mockResolvedValue(posts);
+      prismaMock.post.findMany.mockReturnValue(posts as any);
+      prismaMock.post.count.mockReturnValue(1 as any);
 
-      const response = await articleService.index({
-        page: 1,
-        limit: 10,
-        published: true,
-      } as any);
+      prismaMock.$transaction.mockResolvedValue([
+        posts,
+        1,
+      ]);
+
+      const response = await articleService.index(paginationDto);
 
       expect(prismaMock.post.findMany).toHaveBeenCalledWith({
         take: 10,
@@ -162,23 +217,47 @@ describe('ArticleService', () => {
         },
       });
 
-      expect(response).toEqual(posts);
+      expect(prismaMock.post.count).toHaveBeenCalledWith({
+        where: {
+          published_at: {
+            not: null,
+          },
+        },
+      });
+
+      expect(response).toEqual([
+        posts,
+        {
+          currentPage: 1,
+          limit: 10,
+          totalArticle: 1,
+        },
+      ]);
     });
 
     it('should return only drafts when published is false', async () => {
+      const paginationDto = {
+        page: 1,
+        limit: 10,
+        published: false,
+      } as PaginationDto;
+
       const posts = [
         createPostMock({
+          id: 1,
           published_at: null,
         }),
       ];
 
-      prismaMock.post.findMany.mockResolvedValue(posts);
+      prismaMock.post.findMany.mockReturnValue(posts as any);
+      prismaMock.post.count.mockReturnValue(1 as any);
 
-      const response = await articleService.index({
-        page: 1,
-        limit: 10,
-        published: false,
-      } as any);
+      prismaMock.$transaction.mockResolvedValue([
+        posts,
+        1,
+      ]);
+
+      const response = await articleService.index(paginationDto);
 
       expect(prismaMock.post.findMany).toHaveBeenCalledWith({
         take: 10,
@@ -188,7 +267,39 @@ describe('ArticleService', () => {
         },
       });
 
-      expect(response).toEqual(posts);
+      expect(prismaMock.post.count).toHaveBeenCalledWith({
+        where: {
+          published_at: null,
+        },
+      });
+
+      expect(response).toEqual([
+        posts,
+        {
+          currentPage: 1,
+          limit: 10,
+          totalArticle: 1,
+        },
+      ]);
+    });
+
+    it('should throw an error if the transaction fails', async () => {
+      const paginationDto = {
+        page: 1,
+        limit: 10,
+      } as PaginationDto;
+
+      const error = new Error('Database error');
+
+      prismaMock.post.findMany.mockReturnValue([] as any);
+      prismaMock.post.count.mockReturnValue(0 as any);
+      prismaMock.$transaction.mockRejectedValue(error);
+
+      await expect(
+        articleService.index(paginationDto),
+      ).rejects.toThrow(error);
+
+      expect(prismaMock.$transaction).toHaveBeenCalled();
     });
   });
 

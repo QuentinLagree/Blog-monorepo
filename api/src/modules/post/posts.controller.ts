@@ -44,12 +44,10 @@ export class PostController {
   @ApiQuery({
     name: 'PaginationDto', type: PaginationDto
   })
-  @UseGuards(AuthGuardSession())
   async index(
     @Query() payload: PaginationDto
   ): Promise<Message<Articles[] | null, MetaPaginationDto>> {
-    const posts: Articles[] = await this._articles.index(payload);
-    const articleLength: number = await this._articles.countByPublishedStatus(true);
+    const [posts, meta] = await this._articles.index(payload);
     return posts.length == 0
       ? makeMessage(
         'List of all posts is empty.',
@@ -60,30 +58,10 @@ export class PostController {
         'List of all posts',
         'Liste de toutes les publications',
         posts,
-        {
-          currentPage: payload.page,
-          limit: payload.limit,
-          totalArticle: articleLength
-        }
+        meta
       );
   }
 
-
-  @Get('/published')
-  async indexPublished(): Promise<Message<Articles[] | null>> {
-      const posts: Articles[] = await this._articles.index({ published: true });
-      return posts.length == 0
-        ? makeMessage(
-          'List of all published posts is empty.',
-          'La liste des publications publiées est vide',
-          null,
-        )
-        : makeMessage(
-          'List of all published posts',
-          'Liste de toutes les publications publiées',
-          posts,
-        );
-  }
 
   @Get("/slug/:slug_title")
   async slugTestWithID(@Param('slug_title') slug: string): Promise<Message<Articles>> {
@@ -115,12 +93,13 @@ export class PostController {
   })
   async store(
     @Body() payload: CreatePostDto,
+    @Session() session: secureSession.Session
   ): Promise<Message<Articles>> {
-    const author = await this._user.show({ id: payload.authorId ?? 0 });
+    const author = await this._user.show({ id: session.get('user').id ?? 0 });
     const created_post = await this._articles.store(payload, author);
     return makeMessage(
       'Post created !',
-      "La publication a été créee !",
+      "La publication a été créée !",
       created_post,
     );
   }

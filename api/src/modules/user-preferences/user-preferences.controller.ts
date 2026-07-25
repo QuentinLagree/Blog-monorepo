@@ -56,8 +56,6 @@ export class UserPreferenceController {
   ) {
     const sessionUser = session.get('user');
 
-    console.log(payload)
-
     const preferences =
       await this._preferences.updatePreferences(
         sessionUser.id,
