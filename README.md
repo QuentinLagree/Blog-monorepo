@@ -473,11 +473,11 @@ Au travers de ce projet, j'ai approfondi plusieurs notions importantes :
 ## À venir
 
 - [ ] Commentaires
-- [ ] Likes
-- [ ] Profils utilisateurs
+- [x] Likes
+- [x] Profils utilisateurs
 - [ ] Notifications
 - [ ] Upload cloud
-- [ ] Lecture d'article
+- [x] Lecture d'article
 - [x] Tests unitaires
 - [ ] CI/CD
 
