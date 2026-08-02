@@ -7,235 +7,438 @@
         class="session-loading-page"
         aria-label="Chargement de l'article">
 
-        <div class="session-loading-card card card--md">
-          <div class="session-loading-logo" aria-hidden="true">
-            <span class="session-loading-logo__ring"></span>
-            <span class="session-loading-logo__mark"></span>
-          </div>
-
-          <div class="session-loading-content">
-            <p class="text-eyebrow">
-              Recherche de l'article
-            </p>
-
-            <h1 class="text-title-md">
-              Récupération de l'article
-            </h1>
-
-            <p class="text-body">
-              Nous récupérons l'article depuis le serveur. Bonne découverte et bonne lecture.
-            </p>
-          </div>
-
-          <div class="session-loading-steps" aria-hidden="true">
-            <span class="session-loading-step session-loading-step--active"></span>
-            <span class="session-loading-step"></span>
-            <span class="session-loading-step"></span>
-          </div>
+      <div class="session-loading-card card card--md">
+        <div class="session-loading-logo" aria-hidden="true">
+          <span class="session-loading-logo__ring"></span>
+          <span class="session-loading-logo__mark"></span>
         </div>
-      </section>
+
+        <div class="session-loading-content">
+          <p class="text-eyebrow">
+            Recherche de l'article
+          </p>
+
+          <h1 class="text-title-md">
+            Récupération de l'article
+          </h1>
+
+          <p class="text-body">
+            Nous récupérons l'article depuis le serveur. Bonne découverte et bonne lecture.
+          </p>
+        </div>
+
+        <div class="session-loading-steps" aria-hidden="true">
+          <span class="session-loading-step session-loading-step--active"></span>
+          <span class="session-loading-step"></span>
+          <span class="session-loading-step"></span>
+        </div>
+      </div>
+    </section>
     } @else if (post.error()) {
-      <div class="post-detail-empty empty-card">
-        <h1 class="empty-card__title">
-          Impossible de charger l’article
-        </h1>
+    <div class="post-detail-empty empty-card">
+      <h1 class="empty-card__title">
+        Impossible de charger l’article
+      </h1>
 
-        <p class="empty-card__description">
-          Une erreur est survenue pendant le chargement du contenu.
-        </p>
+      <p class="empty-card__description">
+        Une erreur est survenue pendant le chargement du contenu.
+      </p>
 
-        <div class="empty-card__actions">
+      <div class="empty-card__actions">
           <app-button
             type="secondary"
             label="Retour aux articles"
             (clicked)="goBack()">
-          </app-button>
-        </div>
+        </app-button>
       </div>
+    </div>
     } @else if (currentPost) {
-      <article class="post-detail">
-        <header class="post-detail__header page-header">
-          <div class="post-detail__main">
-            <div class="post-detail__topline">
-              <span class="card__badge card__badge--primary">
-                Article
-              </span>
+    <article class="post-detail">
+      <header class="post-detail__header page-header">
+        <div class="post-detail__main">
+          <div class="post-detail__topline">
+            <span class="card__badge card__badge--primary">
+              Article
+            </span>
 
-              <span class="post-detail__date">
-                {{
-                  currentPost.published_at || currentPost.created_at
-                    | date: 'dd/MM/yyyy'
-                }}
-              </span>
+            <span class="post-detail__date">
+              {{
+              currentPost.published_at || currentPost.created_at
+              | date: 'dd/MM/yyyy'
+              }}
+            </span>
 
-              @if (showReadingTime()) {
-                <span class="post-detail__reading-time">
-                  {{ readingTime() }} min de lecture
-                </span>
-              }
-            </div>
-
-            <h1 class="page-header__title">
-              {{ currentPost.title }}
-            </h1>
-
-            @if (currentPost.description) {
-              <p class="page-header__description post-detail__description">
-                {{ currentPost.description }}
-              </p>
+            @if (showReadingTime()) {
+            <span class="post-detail__reading-time">
+              {{ readingTime() }} min de lecture
+            </span>
             }
+          </div>
+
+          <h1 class="page-header__title">
+            {{ currentPost.title }}
+          </h1>
+
+          @if (currentPost.description) {
+          <p class="page-header__description post-detail__description">
+            {{ currentPost.description }}
+          </p>
+          }
 
             <a
               class="post-detail__author"
               [routerLink]="['/account/users', currentPost.authorId]">
 
-              <div class="post-detail__author-avatar" aria-hidden="true">
-                {{
-                  author()?.pseudo?.charAt(0) ||
-                  author()?.prenom?.charAt(0) ||
-                  '?'
-                }}
-              </div>
+            <div class="post-detail__author-avatar" aria-hidden="true">
+              {{
+              author()?.pseudo?.charAt(0) ||
+              author()?.prenom?.charAt(0) ||
+              '?'
+              }}
+            </div>
 
-              <div class="post-detail__author-content">
-                <span>
-                  Écrit par
-                </span>
+            <div class="post-detail__author-content">
+              <span>
+                Écrit par
+              </span>
 
-                <strong>
-                  {{ author()?.pseudo || 'Auteur inconnu' }}
-                </strong>
-              </div>
-            </a>
+              <strong>
+                {{ author()?.pseudo || 'Auteur inconnu' }}
+              </strong>
+            </div>
+          </a>
+        </div>
+
+        <aside class="post-detail__aside card card--md">
+          <section class="post-detail__aside-section">
+            <p class="card__eyebrow">
+              À propos
+            </p>
+
+            <div class="post-detail__aside-row">
+              <span>Format</span>
+              <strong>Découverte</strong>
+            </div>
+
+            @if (showReadingTime()) {
+            <div class="post-detail__aside-row">
+              <span>Lecture</span>
+              <strong>{{ readingTime() }} min</strong>
+            </div>
+            }
+
+            <div class="post-detail__aside-row">
+              <span>Auteur</span>
+              <strong>{{ author()?.pseudo || 'Inconnu' }}</strong>
+            </div>
+          </section>
+
+          <section class="post-detail__like-card card card--sm card--soft">
+            <div class="post-detail__like-content">
+              <span class="post-detail__like-label">
+                Appréciation
+              </span>
+
+              <strong>
+                {{ likesCount() }}
+                {{ `J'aime${likesCount() > 1 ? 's' : ''}` }}
+              </strong>
+            </div>
+
+            @if (!isAuthor()) {
+            <app-button size="sm" [type]="hasLiked() ? 'primary' : 'secondary'"
+              [icon]="hasLiked() ? 'icon-full-heart' : 'icon-heart'" [label]="hasLiked() ? 'Aimé' : 'J’aime'"
+              [loading]="likeLoading()" (clicked)="toggleLike()">
+            </app-button>
+            }
+          </section>
+
+          <div class="post-detail__aside-actions btn-group btn-group--wrap">
+            <app-button size="sm" type="primary" label="Contribuer" icon="icon-plus" (clicked)="contribute()">
+            </app-button>
+
+            <app-button size="sm" type="secondary" label="Partager" icon="icon-share" (clicked)="sharePost()">
+            </app-button>
           </div>
+        </aside>
+      </header>
 
-          <aside class="post-detail__aside card card--md">
-            <section class="post-detail__aside-section">
+
+      <div class="reading-mobile-bar">
+        <div class="reading-mobile-bar__progress">
+          <span [style.width.%]="readingProgress()">
+          </span>
+        </div>
+
+        <button type="button" class="reading-mobile-bar__summary" (click)="toggleMobileSummary()">
+
+          <span>
+            {{ readingProgress() }} %
+          </span>
+
+          <strong>
+            {{ activeHeading()?.label || 'Sommaire' }}
+          </strong>
+        </button>
+
+        <app-button type="primary" size="sm" icon="icon-plus" label="Contribuer" (clicked)="contribute()">
+        </app-button>
+      </div>
+
+      @if (mobileSummaryOpened()) {
+      <div class="reading-mobile-summary" role="dialog" aria-modal="true" aria-label="Sommaire de l’article">
+
+        <button type="button" class="reading-mobile-summary__backdrop" aria-label="Fermer le sommaire"
+          (click)="closeMobileSummary()">
+        </button>
+
+        <section class="reading-mobile-summary__panel">
+          <header class="reading-mobile-summary__header">
+            <div>
               <p class="card__eyebrow">
-                À propos
+                Navigation
               </p>
 
-              <div class="post-detail__aside-row">
-                <span>Format</span>
-                <strong>Découverte</strong>
-              </div>
-
-              @if (showReadingTime()) {
-                <div class="post-detail__aside-row">
-                  <span>Lecture</span>
-                  <strong>{{ readingTime() }} min</strong>
-                </div>
-              }
-
-              <div class="post-detail__aside-row">
-                <span>Auteur</span>
-                <strong>{{ author()?.pseudo || 'Inconnu' }}</strong>
-              </div>
-            </section>
-
-            <section class="post-detail__like-card card card--sm card--soft">
-              <div class="post-detail__like-content">
-                <span class="post-detail__like-label">
-                  Appréciation
-                </span>
-
-                <strong>
-                  {{ likesCount() }}
-                  {{ `J'aime${likesCount() > 1 ? 's' : ''}` }}
-                </strong>
-              </div>
-
-              @if (!isAuthor()) {
-                <app-button
-                  size="sm"
-                  [type]="hasLiked() ? 'primary' : 'secondary'"
-                  [icon]="hasLiked() ? 'icon-full-heart' : 'icon-heart'"
-                  [label]="hasLiked() ? 'Aimé' : 'J’aime'"
-                  [loading]="likeLoading()"
-                  (clicked)="toggleLike()">
-                </app-button>
-              }
-            </section>
-
-            <div class="post-detail__aside-actions btn-group btn-group--wrap">
-              <app-button
-                size="sm"
-                type="primary"
-                label="Contribuer"
-                icon="icon-plus"
-                (clicked)="contribute()">
-              </app-button>
-
-              <app-button
-                size="sm"
-                type="secondary"
-                label="Partager"
-                icon="icon-share"
-                (clicked)="sharePost()">
-              </app-button>
+              <h2>
+                Sommaire
+              </h2>
             </div>
-          </aside>
-        </header>
+
+            <button type="button" class="reading-mobile-summary__close" aria-label="Fermer le sommaire"
+              (click)="closeMobileSummary()">
+
+              ×
+            </button>
+          </header>
+
+          <ol class="reading-mobile-summary__list">
+            @for (
+            heading of tableOfContents();
+            track heading.id;
+            let index = $index
+            ) {
+            <li [class.reading-mobile-summary__item--sub]="
+              heading.level === 3
+            " [class.reading-mobile-summary__item--active]="
+              index === activeHeadingIndex()
+            ">
+
+              <button type="button" (click)="scrollToHeading(heading.id)">
+
+                {{ heading.label }}
+              </button>
+            </li>
+            }
+          </ol>
+        </section>
+      </div>
+      }
+
+      <div
+        class="post-detail__reading-layout"
+        [class.post-detail__reading-layout--panel-opened]="
+          readingPanelOpened()
+        ">
 
         <main class="post-detail__content page-section">
-          <markdown
-            class="markdown-content"
-            [data]="currentPost.content"
-            katex>
+          <markdown #markdownContent class="markdown-content" [data]="currentPost.content" katex>
           </markdown>
         </main>
 
-        <section class="post-detail__cta card card--md card--soft">
-          <div class="post-detail__cta-content">
-            <p class="card__eyebrow">
-              Contribution communautaire
-            </p>
+        <div class="post-detail__reading-sidebar">
+          @if (readingPanelOpened()) {
+  <aside
+    class="reading-panel"
+    aria-label="Navigation dans l’article">
 
-            <h2 class="card__title">
-              Tu peux enrichir cette découverte.
-            </h2>
+    <button
+      type="button"
+      class="reading-panel__close"
+      aria-label="Masquer le panneau de lecture"
+      title="Masquer le panneau"
+      (click)="closeReadingPanel()">
 
-            <p class="card__description">
-              Ajoute une source, propose une correction ou complète l’article avec une idée liée.
-            </p>
-          </div>
+      <span aria-hidden="true">×</span>
+    </button>
 
-          <div class="post-detail__cta-actions btn-group btn-group--wrap">
-            <app-button
-              type="primary"
-              size="sm"
-              label="Proposer une amélioration"
-              icon="icon-plus"
-              (clicked)="contribute()">
-            </app-button>
-
-            <app-button
-              type="outlined"
-              size="sm"
-              label="Retour aux articles"
-              (clicked)="goBack()">
-            </app-button>
-          </div>
-        </section>
-      </article>
-    } @else {
-      <div class="post-detail-empty empty-card">
-        <h1 class="empty-card__title">
-          Article introuvable
-        </h1>
-
-        <p class="empty-card__description">
-          Ce contenu n’existe pas ou n’est plus disponible.
+    <div class="reading-panel__header">
+      <div>
+        <p class="reading-panel__eyebrow">
+          Progression
         </p>
 
-        <div class="empty-card__actions">
-          <app-button
-            type="secondary"
-            label="Retour aux articles"
-            (clicked)="goBack()">
-          </app-button>
+        <strong class="reading-panel__percentage">
+          {{ readingProgress() }} %
+        </strong>
+      </div>
+
+      @if (tableOfContents().length) {
+        <span class="reading-panel__current-step">
+          {{ activeHeadingIndex() + 1 }}/{{ tableOfContents().length }}
+        </span>
+      }
+    </div>
+
+    <div
+      class="reading-panel__progress"
+      role="progressbar"
+      aria-label="Progression de la lecture"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      [attr.aria-valuenow]="readingProgress()">
+
+      <span
+        class="reading-panel__progress-value"
+        [style.width.%]="readingProgress()">
+      </span>
+    </div>
+
+    @if (activeHeading(); as heading) {
+      <div class="reading-panel__current">
+        <span>Lecture actuelle</span>
+        <strong>{{ heading.label }}</strong>
+      </div>
+    }
+
+    @if (tableOfContents().length) {
+      <nav
+        class="reading-panel__toc"
+        aria-label="Sommaire de l’article">
+
+        <p class="reading-panel__toc-title">
+          Dans cet article
+        </p>
+
+        <ol class="reading-panel__toc-list">
+          @for (
+            heading of tableOfContents();
+            track heading.id;
+            let index = $index
+          ) {
+            <li
+              class="reading-panel__toc-item"
+              [class.reading-panel__toc-item--sub]="
+                heading.level === 3
+              "
+              [class.reading-panel__toc-item--active]="
+                index === activeHeadingIndex()
+              ">
+
+              <button
+                type="button"
+                class="reading-panel__toc-link"
+                [attr.aria-current]="
+                  index === activeHeadingIndex()
+                    ? 'location'
+                    : null
+                "
+                (click)="scrollToHeading(heading.id)">
+
+                <span
+                  class="reading-panel__toc-marker"
+                  aria-hidden="true">
+                </span>
+
+                <span class="reading-panel__toc-label">
+                  {{ heading.label }}
+                </span>
+              </button>
+            </li>
+          }
+        </ol>
+      </nav>
+    }
+
+    <div class="reading-panel__contribution">
+      <p>
+        Une information manque ou pourrait être améliorée ?
+      </p>
+
+      <app-button
+        type="primary"
+        size="sm"
+        label="Contribuer"
+        (clicked)="contribute()">
+      </app-button>
+    </div>
+  </aside>
+          } @else {
+            <button
+              type="button"
+              class="reading-panel-trigger"
+              aria-label="Afficher le sommaire et la progression"
+              title="Afficher le panneau de lecture"
+              (click)="openReadingPanel()">
+
+              <span
+                class="reading-panel-trigger__progress"
+                aria-hidden="true">
+
+                <span
+                  [style.height.%]="readingProgress()">
+                </span>
+              </span>
+
+              <span class="reading-panel-trigger__content">
+                <span
+                  class="reading-panel-trigger__icon"
+                  aria-hidden="true">
+                  ☰
+                </span>
+
+                <span class="reading-panel-trigger__label">
+                  Sommaire
+                </span>
+
+                <strong class="reading-panel-trigger__percentage">
+                  {{ readingProgress() }} %
+                </strong>
+              </span>
+            </button>
+          }
         </div>
       </div>
+
+      <section class="post-detail__cta card card--md card--soft">
+        <div class="post-detail__cta-content">
+          <p class="card__eyebrow">
+            Contribution communautaire
+          </p>
+
+          <h2 class="card__title">
+            Tu peux enrichir cette découverte.
+          </h2>
+
+          <p class="card__description">
+            Ajoute une source, propose une correction ou complète l’article avec une idée liée.
+          </p>
+        </div>
+
+        <div class="post-detail__cta-actions btn-group btn-group--wrap">
+          <app-button type="primary" size="sm" label="Proposer une amélioration" icon="icon-plus"
+            (clicked)="contribute()">
+          </app-button>
+
+          <app-button type="outlined" size="sm" label="Retour aux articles" (clicked)="goBack()">
+          </app-button>
+        </div>
+      </section>
+    </article>
+    } @else {
+    <div class="post-detail-empty empty-card">
+      <h1 class="empty-card__title">
+        Article introuvable
+      </h1>
+
+      <p class="empty-card__description">
+        Ce contenu n’existe pas ou n’est plus disponible.
+      </p>
+
+      <div class="empty-card__actions">
+        <app-button type="secondary" label="Retour aux articles" (clicked)="goBack()">
+        </app-button>
+      </div>
+    </div>
     }
   </div>
 </section>

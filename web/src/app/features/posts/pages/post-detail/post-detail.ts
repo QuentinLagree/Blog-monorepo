@@ -1,14 +1,27 @@
-import { DatePipe } from '@angular/common';
+import {
+  DatePipe,
+  DOCUMENT,
+} from '@angular/common';
 import { HttpContext } from '@angular/common/http';
 import {
+  AfterViewInit,
   Component,
+  DestroyRef,
+  ElementRef,
+  ViewChild,
+  computed,
+  effect,
   inject,
   resource,
   signal,
   WritableSignal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import {
+  ActivatedRoute,
+  Router,
+  RouterLink,
+} from '@angular/router';
 import { MarkdownComponent } from 'ngx-markdown';
 import {
   firstValueFrom,
@@ -17,6 +30,7 @@ import {
 
 import { UserPreferencesService } from 'src/app/features/account/pages/profil/preferences.service';
 import { SUCCESS_MESSAGE } from 'src/app/shared/helpers/toasts/models/toasts.config';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
 import { SessionService } from 'src/app/shared/services/session.service';
 import {
   User,
@@ -28,12 +42,20 @@ import { BaseButtonComponent } from 'src/app/shared/ui/form/buttons/base-button'
 import { PostService } from '../../data-access/post.service';
 import { PostLikeStatus } from '../../model/post-like-status.model';
 import { Post } from '../../model/post.model';
-import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
 
 const SILENT_CONTEXT = new HttpContext().set(
   SUCCESS_MESSAGE,
   false,
 );
+
+const READING_PANEL_STORAGE_KEY =
+  'post-detail-reading-panel-opened';
+
+type TableOfContentsItem = {
+  id: string;
+  label: string;
+  level: 2 | 3;
+};
 
 @Component({
   selector: 'app-post-detail',
@@ -42,12 +64,20 @@ const SILENT_CONTEXT = new HttpContext().set(
     MarkdownComponent,
     DatePipe,
     BaseButtonComponent,
-    RouterLink
+    RouterLink,
   ],
   templateUrl: './post-detail.html',
-  styleUrls: ['./post-detail.scss', '../../../../core/layouts/landing/landing.scss'],
+  styleUrls: [
+    './post-detail.scss',
+    '../../../../core/layouts/landing/landing.scss',
+  ],
 })
-export class PostDetailComponent {
+export class PostDetailComponent implements AfterViewInit {
+  @ViewChild('markdownContent', {
+    read: ElementRef,
+  })
+  private markdownContent?: ElementRef<HTMLElement>;
+
   private readonly _activatedRoute =
     inject(ActivatedRoute);
 
@@ -66,7 +96,22 @@ export class PostDetailComponent {
   private readonly _preferences =
     inject(UserPreferencesService);
 
-    private readonly _breadCrumb = inject(BreadcrumbService)
+  private readonly _breadCrumb =
+    inject(BreadcrumbService);
+
+  private readonly _document =
+    inject(DOCUMENT);
+
+  private readonly _destroyRef =
+    inject(DestroyRef);
+
+  private headingObserver?: IntersectionObserver;
+  private resizeObserver?: ResizeObserver;
+  private markdownInitializationTimeout?: number;
+
+  readonly readingPanelOpened = signal(
+  this.getInitialReadingPanelState(),
+);
 
   readonly author: WritableSignal<User | undefined> =
     signal(undefined);
@@ -76,15 +121,32 @@ export class PostDetailComponent {
   readonly likeLoading = signal(false);
   readonly isAuthor = signal(false);
 
+  readonly tableOfContents =
+    signal<TableOfContentsItem[]>([]);
+
+  readonly activeHeadingIndex =
+    signal(0);
+
+  readonly readingProgress =
+    signal(0);
+
+  readonly mobileSummaryOpened =
+    signal(false);
+
+  readonly activeHeading = computed(() => {
+    const headings =
+      this.tableOfContents();
+
+    return (
+      headings[this.activeHeadingIndex()] ??
+      headings[0] ??
+      null
+    );
+  });
+
   readonly showReadingTime =
     this._preferences.showReadingTime;
 
-  /**
-   * Le slug est maintenant réactif.
-   *
-   * Il sera mis à jour lors d'une navigation Angular,
-   * même si le composant est réutilisé.
-   */
   private readonly routeSlug = toSignal(
     this._activatedRoute.paramMap.pipe(
       map((params) => {
@@ -95,7 +157,9 @@ export class PostDetailComponent {
       initialValue: '',
     },
   );
-  readonly slugTitle = this.routeSlug;
+
+  readonly slugTitle =
+    this.routeSlug;
 
   readonly post = resource<Post, string>({
     params: () => {
@@ -166,6 +230,28 @@ export class PostDetailComponent {
     },
   });
 
+  constructor() {
+    effect(() => {
+      const currentPost =
+        this.post.value();
+
+      if (!currentPost) {
+        this.resetReadingNavigation();
+        return;
+      }
+
+      this.scheduleReadingNavigationInitialization();
+    });
+
+    this._destroyRef.onDestroy(() => {
+      this.destroyReadingNavigation();
+    });
+  }
+
+  ngAfterViewInit(): void {
+    this.scheduleReadingNavigationInitialization();
+  }
+
   private resetPostState(): void {
     this.author.set(undefined);
     this.isAuthor.set(false);
@@ -173,6 +259,15 @@ export class PostDetailComponent {
     this.likesCount.set(0);
     this.hasLiked.set(false);
     this.likeLoading.set(false);
+
+    this.resetReadingNavigation();
+  }
+
+  private resetReadingNavigation(): void {
+    this.tableOfContents.set([]);
+    this.activeHeadingIndex.set(0);
+    this.readingProgress.set(0);
+    this.mobileSummaryOpened.set(false);
   }
 
   private checkPostAccess(
@@ -253,6 +348,7 @@ export class PostDetailComponent {
   ): Promise<void> {
     const sessionId =
       this._sessionService.getUserIdSync();
+
     if (!sessionId) {
       this.hasLiked.set(false);
       return;
@@ -328,7 +424,6 @@ export class PostDetailComponent {
       !previousLiked;
 
     this.likeLoading.set(true);
-
     this.hasLiked.set(nextLiked);
 
     this.likesCount.set(
@@ -391,9 +486,10 @@ export class PostDetailComponent {
     }
   }
 
-  readingTime(
-    content?: string | null,
-  ): number {
+  readingTime(): number {
+    const content =
+      this.post.value()?.content;
+
     if (!content?.trim()) {
       return 1;
     }
@@ -410,9 +506,55 @@ export class PostDetailComponent {
     );
   }
 
+  scrollToHeading(
+    headingId: string,
+  ): void {
+    const heading =
+      this._document.getElementById(
+        headingId,
+      );
+
+    if (!heading) {
+      return;
+    }
+
+    heading.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+
+    this.closeMobileSummary();
+  }
+
+  toggleMobileSummary(): void {
+    this.mobileSummaryOpened.update(
+      (opened) => !opened,
+    );
+  }
+
+  closeMobileSummary(): void {
+    this.mobileSummaryOpened.set(false);
+  }
+
   contribute(): void {
-    throw new Error(
-      'Method not implemented.',
+    if (!this.post.hasValue()) {
+      return;
+    }
+
+    const post =
+      this.post.value();
+
+    void this._router.navigate(
+      [
+        '/posts',
+        post.id,
+        'contribute',
+      ],
+      {
+        queryParams: {
+          title: post.title,
+        },
+      },
     );
   }
 
@@ -421,12 +563,16 @@ export class PostDetailComponent {
       return;
     }
 
+    const post =
+      this.post.value();
+
     const url =
       window.location.href;
 
     if (navigator.share) {
       void navigator.share({
-        title: this.post.value().title,
+        title: post.title,
+        text: post.description,
         url,
       });
 
@@ -444,6 +590,332 @@ export class PostDetailComponent {
     ]);
   }
 
+  private scheduleReadingNavigationInitialization(): void {
+    if (
+      typeof window === 'undefined'
+    ) {
+      return;
+    }
+
+    if (
+      this.markdownInitializationTimeout
+    ) {
+      window.clearTimeout(
+        this.markdownInitializationTimeout,
+      );
+    }
+
+    this.markdownInitializationTimeout =
+      window.setTimeout(() => {
+        this.initializeReadingNavigation();
+      });
+  }
+
+  private initializeReadingNavigation(): void {
+    const markdownElement =
+      this.markdownContent?.nativeElement;
+
+    if (!markdownElement) {
+      return;
+    }
+
+    this.headingObserver?.disconnect();
+    this.resizeObserver?.disconnect();
+
+    const headingElements =
+      Array.from(
+        markdownElement.querySelectorAll<HTMLElement>(
+          'h2, h3',
+        ),
+      );
+
+    const headings =
+      headingElements.map(
+        (
+          heading,
+          index,
+        ): TableOfContentsItem => {
+          const id =
+            heading.id ||
+            this.createHeadingId(
+              heading.textContent ?? '',
+              index,
+            );
+
+          heading.id = id;
+
+          return {
+            id,
+            label:
+              heading.textContent?.trim() ||
+              `Section ${index + 1}`,
+            level:
+              heading.tagName === 'H3'
+                ? 3
+                : 2,
+          };
+        },
+      );
+
+    this.tableOfContents.set(
+      headings,
+    );
+
+    this.activeHeadingIndex.set(0);
+
+    this.observeHeadings(
+      headingElements,
+    );
+
+    window.removeEventListener(
+      'scroll',
+      this.updateReadingProgress,
+    );
+
+    window.addEventListener(
+      'scroll',
+      this.updateReadingProgress,
+      {
+        passive: true,
+      },
+    );
+
+    this.resizeObserver =
+      new ResizeObserver(() => {
+        this.updateReadingProgress();
+      });
+
+    this.resizeObserver.observe(
+      markdownElement,
+    );
+
+    this.updateReadingProgress();
+    this.findClosestHeading(
+      headingElements,
+    );
+  }
+
+  private observeHeadings(
+    headings: HTMLElement[],
+  ): void {
+    if (!headings.length) {
+      return;
+    }
+
+    this.headingObserver =
+      new IntersectionObserver(
+        (entries) => {
+          const visibleEntries =
+            entries
+              .filter(
+                (entry) =>
+                  entry.isIntersecting,
+              )
+              .sort(
+                (
+                  first,
+                  second,
+                ) =>
+                  first.boundingClientRect.top -
+                  second.boundingClientRect.top,
+              );
+
+          const currentEntry =
+            visibleEntries[0];
+
+          if (!currentEntry) {
+            this.findClosestHeading(
+              headings,
+            );
+            return;
+          }
+
+          const index =
+            headings.indexOf(
+              currentEntry.target as HTMLElement,
+            );
+
+          if (index >= 0) {
+            this.activeHeadingIndex.set(
+              index,
+            );
+          }
+        },
+        {
+          rootMargin:
+            '-18% 0px -68% 0px',
+          threshold: [0, 1],
+        },
+      );
+
+    headings.forEach((heading) => {
+      this.headingObserver?.observe(
+        heading,
+      );
+    });
+  }
+
+  private findClosestHeading(
+    headings: HTMLElement[],
+  ): void {
+    if (!headings.length) {
+      return;
+    }
+
+    const readingLine =
+      window.innerHeight * 0.28;
+
+    let closestIndex = 0;
+    let closestDistance =
+      Number.POSITIVE_INFINITY;
+
+    headings.forEach(
+      (
+        heading,
+        index,
+      ) => {
+        const distance =
+          Math.abs(
+            heading.getBoundingClientRect().top -
+            readingLine,
+          );
+
+        if (
+          distance <
+          closestDistance
+        ) {
+          closestDistance =
+            distance;
+
+          closestIndex =
+            index;
+        }
+      },
+    );
+
+    this.activeHeadingIndex.set(
+      closestIndex,
+    );
+  }
+
+  private readonly updateReadingProgress =
+    (): void => {
+      const markdownElement =
+        this.markdownContent?.nativeElement;
+
+      if (!markdownElement) {
+        return;
+      }
+
+      const bounds =
+        markdownElement.getBoundingClientRect();
+
+      const viewportHeight =
+        window.innerHeight;
+
+      const articleStart =
+        window.scrollY +
+        bounds.top -
+        viewportHeight * 0.25;
+
+      const articleEnd =
+        articleStart +
+        markdownElement.offsetHeight -
+        viewportHeight * 0.5;
+
+      const readingDistance =
+        articleEnd -
+        articleStart;
+
+      if (
+        readingDistance <= 0
+      ) {
+        this.readingProgress.set(
+          100,
+        );
+
+        return;
+      }
+
+      const progress =
+        ((window.scrollY -
+          articleStart) /
+          readingDistance) *
+        100;
+
+      this.readingProgress.set(
+        Math.round(
+          Math.min(
+            100,
+            Math.max(
+              0,
+              progress,
+            ),
+          ),
+        ),
+      );
+
+      const headings =
+        Array.from(
+          markdownElement.querySelectorAll<HTMLElement>(
+            'h2, h3',
+          ),
+        );
+
+      this.findClosestHeading(
+        headings,
+      );
+    };
+
+  private createHeadingId(
+    heading: string,
+    index: number,
+  ): string {
+    const normalizedHeading =
+      heading
+        .normalize('NFD')
+        .replace(
+          /[\u0300-\u036f]/g,
+          '',
+        )
+        .toLowerCase()
+        .trim()
+        .replace(
+          /[^a-z0-9]+/g,
+          '-',
+        )
+        .replace(
+          /^-+|-+$/g,
+          '',
+        );
+
+    return normalizedHeading
+      ? `section-${normalizedHeading}-${index}`
+      : `section-${index + 1}`;
+  }
+
+  private destroyReadingNavigation(): void {
+    if (
+      typeof window !== 'undefined'
+    ) {
+      window.removeEventListener(
+        'scroll',
+        this.updateReadingProgress,
+      );
+
+      if (
+        this.markdownInitializationTimeout
+      ) {
+        window.clearTimeout(
+          this.markdownInitializationTimeout,
+        );
+      }
+    }
+
+    this.headingObserver?.disconnect();
+    this.resizeObserver?.disconnect();
+  }
+
   private normalizeError(
     error: unknown,
   ): Error {
@@ -455,14 +927,15 @@ export class PostDetailComponent {
       typeof error === 'object' &&
       error !== null
     ) {
-      const httpError = error as {
-        message?: unknown;
-        status?: unknown;
-        error?: {
+      const httpError =
+        error as {
           message?: unknown;
-          error?: unknown;
+          status?: unknown;
+          error?: {
+            message?: unknown;
+            error?: unknown;
+          };
         };
-      };
 
       const nestedMessage =
         typeof httpError.error?.message === 'string'
@@ -487,8 +960,12 @@ export class PostDetailComponent {
       );
     }
 
-    if (typeof error === 'string') {
-      return new Error(error);
+    if (
+      typeof error === 'string'
+    ) {
+      return new Error(
+        error,
+      );
     }
 
     return new Error(
@@ -498,4 +975,62 @@ export class PostDetailComponent {
       },
     );
   }
+
+  toggleReadingPanel(): void {
+  this.readingPanelOpened.update(
+    (opened) => {
+      const nextState = !opened;
+
+      this.saveReadingPanelState(
+        nextState,
+      );
+
+      return nextState;
+    },
+  );
+}
+
+openReadingPanel(): void {
+  this.readingPanelOpened.set(true);
+  this.saveReadingPanelState(true);
+}
+
+closeReadingPanel(): void {
+  this.readingPanelOpened.set(false);
+  this.saveReadingPanelState(false);
+}
+
+private getInitialReadingPanelState(): boolean {
+  if (
+    typeof window === 'undefined'
+  ) {
+    return true;
+  }
+
+  const storedState =
+    window.localStorage.getItem(
+      READING_PANEL_STORAGE_KEY,
+    );
+
+  if (storedState === null) {
+    return true;
+  }
+
+  return storedState === 'true';
+}
+
+private saveReadingPanelState(
+  opened: boolean,
+): void {
+  if (
+    typeof window === 'undefined'
+  ) {
+    return;
+  }
+
+  window.localStorage.setItem(
+    READING_PANEL_STORAGE_KEY,
+    String(opened),
+  );
+}
 }
