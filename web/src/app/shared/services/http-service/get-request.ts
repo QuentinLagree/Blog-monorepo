@@ -3,7 +3,6 @@ import { inject, Injectable } from '@angular/core';
 import { Message } from 'src/app/shared/types/message.type';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { options } from 'marked';
 
 const API_URL = environment.apiUrl;
 
@@ -11,6 +10,8 @@ export interface HttpOptions {
   credentials?: boolean,
   context?: HttpContext
 }
+
+
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 @Injectable({ providedIn: 'root' })
