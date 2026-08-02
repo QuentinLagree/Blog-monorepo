@@ -5,5 +5,6 @@ export interface Post {
     content: string,
     description: string,
     published_at: string,
-    created_at: Date
+    created_at: Date,
+    updated_at?: Date,
 }
