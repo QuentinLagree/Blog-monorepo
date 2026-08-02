@@ -80,15 +80,12 @@ export class UserToPostController {
 
     const posts = await this._posts.indexWhere({
       authorId: id,
-      published_at: {
-        not: null,
-      },
     });
 
     return posts.length === 0
       ? makeMessage(
-          `List of all published posts of ${fullName} is empty.`,
-          `La liste des publications publiées de l'utilisateur ${fullName} est vide.`,
+          `List of all posts of ${fullName} is empty.`,
+          `La liste des publications de l'utilisateur ${fullName} est vide.`,
           null,
         )
       : makeMessage(
