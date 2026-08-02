@@ -33,7 +33,7 @@ export class AuthController {
     private readonly _user: UserService,
   ) { }
 
-  @Get('/session') // Pas tester (encore en implémentation)
+  @Get('/session')
   async status(
     @Session() session: secureSession.Session,
   ): Promise<Message<SessionType>> {
@@ -53,7 +53,7 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuardSession())
-  @Post('/logout') // Pas tester (Encore en implémentation)
+  @Post('/logout')
   async logout(@Session() session: secureSession.Session) {
     session.delete();
     return makeMessage(
