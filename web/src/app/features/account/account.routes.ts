@@ -5,7 +5,7 @@
       path: 'profil',
       title: 'Profile utilisateur',
       loadComponent: () =>
-        import('./pages/profil/profil').then((m) => m.ProfilPageComponent),
+        import('./pages/profil/profil-page/profil-page').then((m) => m.ProfilPageComponent),
     data: {
       breadcrumb: 'Mon profil',
     },

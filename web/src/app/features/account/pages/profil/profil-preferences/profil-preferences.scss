@@ -1,0 +1,215 @@
+@use 'variables' as *;
+
+.profile-preferences {
+  position: relative;
+  z-index: 1;
+
+  overflow: visible;
+}
+
+.profile-preferences__group {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+
+  overflow: visible;
+}
+
+.profile-preferences__group-header {
+  padding-bottom: $space-4;
+
+  border-bottom: 1px solid $border-light;
+}
+
+.profile-preferences__select-grid,
+.profile-preferences__options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: $space-4;
+}
+
+.profile-preferences__select-grid {
+  position: relative;
+  z-index: 20;
+
+  overflow: visible;
+}
+
+.profile-preferences__select-card {
+  position: relative;
+  z-index: 1;
+
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: flex-start;
+  gap: $space-4;
+
+  overflow: visible;
+}
+
+.profile-preferences__select-card:focus-within {
+  z-index: 100;
+}
+
+.profile-preferences__select-icon,
+.profile-preference-card__icon {
+  width: 2.55rem;
+  height: 2.55rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+
+  background: $primary-soft;
+  color: $primary;
+
+  border: 1px solid rgb(49 92 73 / 16%);
+  border-radius: $radius-xs;
+
+  font-size: $text-sm;
+  font-weight: $font-bold;
+  line-height: $leading-none;
+}
+
+.profile-preferences__select-content {
+  min-width: 0;
+
+  position: relative;
+  z-index: 1;
+
+  overflow: visible;
+}
+
+.profile-preferences__select-content app-select {
+  display: block;
+
+  position: relative;
+  z-index: 1;
+
+  overflow: visible;
+}
+
+.profile-preferences__select-card:focus-within
+.profile-preferences__select-content,
+.profile-preferences__select-card:focus-within
+.profile-preferences__select-content app-select {
+  z-index: 200;
+}
+
+.profile-preference-card {
+  min-width: 0;
+  min-height: 5rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+}
+
+.profile-preference-card__main {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.profile-preference-card__content {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.profile-preference-card__content strong {
+  color: $text-primary;
+
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  line-height: $leading-normal;
+}
+
+.profile-preference-card app-switch-button {
+  display: block;
+  flex: 0 0 auto;
+  width: 4em;
+}
+
+/* =========================
+   SELECT STACKING
+========================= */
+
+.profile-preferences__group:has(
+  .profile-preferences__select-card:focus-within
+) {
+  z-index: 50;
+}
+
+.profile-preferences__group:has(
+  .profile-preferences__select-card:focus-within
+)
+.profile-preferences__select-grid {
+  z-index: 100;
+}
+
+.profile-preferences__group:has(
+  .profile-preferences__select-card:focus-within
+)
+.profile-preferences__options-grid {
+  z-index: 0;
+}
+
+/* =========================
+   ACTIONS / DANGER
+========================= */
+
+.profile-preferences__actions-content {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.profile-preferences__actions-content strong {
+  color: $text-primary;
+
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  line-height: $leading-normal;
+}
+
+.profile-preferences__actions-content span {
+  color: $text-secondary;
+
+  font-size: $text-sm;
+  line-height: $leading-normal;
+}
+
+@media (max-width: $breakpoint-md) {
+  .profile-preferences__select-grid,
+  .profile-preferences__options-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-preferences__actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .profile-preference-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .profile-preferences__actions app-button {
+    width: 100%;
+  }
+}

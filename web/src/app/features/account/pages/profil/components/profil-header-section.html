@@ -1,0 +1,29 @@
+<section class="profile-section page-section">
+    <header class="profile-section__header">
+        <div>
+            <p class="text-eyebrow">
+                {{ this.eyebrow() }}
+            </p>
+
+            <h2 class="content-title">
+                {{ this.title() }}
+            </h2>
+
+            <p class="content-description">
+                {{ this.description() }}
+            </p>
+        </div>
+
+        <app-button type="secondary" nativeType="button" [label]="
+              showElements
+                ? `Masquer les ${ElementsDisplay[this.element()]}s`
+                : `Afficher les ${ElementsDisplay[this.element()]}s`
+            " (clicked)="showElements = !showElements">
+        </app-button>
+    </header>
+    <div class="profile-collapse" [class.profile-collapse--open]="showElements" [attr.aria-hidden]="!showElements">
+        <div class="profile-collapse__inner">
+            <ng-content></ng-content>
+        </div>
+    </div>
+</section>

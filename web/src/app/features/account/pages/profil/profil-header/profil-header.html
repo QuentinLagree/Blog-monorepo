@@ -1,0 +1,53 @@
+<header class="profile-header page-header">
+      <div class="profile-header__identity">
+        <div class="profile-avatar" aria-hidden="true">
+          {{
+          user()?.pseudo?.charAt(0) ||
+          user()?.prenom?.charAt(0) ||
+          '?'
+          }}
+        </div>
+
+        <div class="profile-identity">
+          <p class="page-header__eyebrow">
+            Espace personnel
+          </p>
+
+          <h1 class="page-header__title">
+            {{ user()?.pseudo || 'Mon profil' }}
+          </h1>
+
+          <p class="profile-fullname">
+            {{ user()?.prenom || 'Prénom non renseigné' }}
+            {{ user()?.nom || 'Nom non renseigné' }}
+          </p>
+
+          <p class="profile-joined">
+            Inscrit depuis le
+            {{ user()?.created_at | date: 'dd/MM/yyyy' }}
+          </p>
+        </div>
+      </div>
+
+      <div class="profile-header__infos">
+        <article class="profile-info card card--sm">
+          <span>
+            Email
+          </span>
+
+          <strong>
+            {{ user()?.email || 'Non renseigné' }}
+          </strong>
+        </article>
+
+        <article class="profile-info card card--sm">
+          <span>
+            Pseudo
+          </span>
+
+          <strong>
+            {{ user()?.pseudo || 'Non renseigné' }}
+          </strong>
+        </article>
+      </div>
+    </header>

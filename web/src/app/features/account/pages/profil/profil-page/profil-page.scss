@@ -1,0 +1,44 @@
+@use 'variables' as *;
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+
+@media (max-width: $breakpoint-md) {
+  .profile-danger-zone {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* =========================
+   REDUCED MOTION
+========================= */
+
+.profile-page--reduce-motion .profile-collapse,
+.profile-page--reduce-motion .profile-posts__filter,
+.profile-page--reduce-motion .profile-posts__item,
+.profile-page--reduce-motion .profile-posts__search input {
+  transition-duration: 1ms;
+}
+
+.profile-page--reduce-motion .profile-posts__loader {
+  animation-duration: 2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-collapse,
+  .profile-posts__filter,
+  .profile-posts__item,
+  .profile-posts__search input,
+  .profile-preference-card,
+  .profile-preferences__select-card {
+    transition-duration: 1ms;
+  }
+
+  .profile-posts__loader {
+    animation-duration: 2s;
+  }
+}

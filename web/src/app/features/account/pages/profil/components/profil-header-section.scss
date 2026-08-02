@@ -1,0 +1,13 @@
+@use 'variables' as *;
+
+.profile-section__header,
+.profile-preferences__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-5;
+}
+
+.profile-section__header {
+  margin-bottom: 0;
+}

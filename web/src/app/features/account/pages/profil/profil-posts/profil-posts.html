@@ -1,0 +1,178 @@
+<div class="profile-posts">
+    <header class="profile-posts__toolbar">
+        <div class="profile-posts__filters" role="group" aria-label="Filtrer les articles par statut">
+
+            <button type="button" class="profile-posts__filter" [class.profile-posts__filter--active]="
+                      postStatusFilter() === 'all'
+                    " [attr.aria-pressed]="
+                      postStatusFilter() === 'all'
+                    " (click)="setPostStatusFilter('all')">
+
+                <span>
+                    Tous
+                </span>
+
+                <span class="profile-posts__filter-count">
+                    {{ postCounts().all }}
+                </span>
+            </button>
+
+            <button type="button" class="profile-posts__filter" [class.profile-posts__filter--active]="
+                      postStatusFilter() === 'published'
+                    " [attr.aria-pressed]="
+                      postStatusFilter() === 'published'
+                    " (click)="setPostStatusFilter('published')">
+
+                <span>
+                    Publiés
+                </span>
+
+                <span class="profile-posts__filter-count">
+                    {{ postCounts().published }}
+                </span>
+            </button>
+
+            <button type="button" class="profile-posts__filter" [class.profile-posts__filter--active]="
+                      postStatusFilter() === 'draft'
+                    " [attr.aria-pressed]="
+                      postStatusFilter() === 'draft'
+                    " (click)="setPostStatusFilter('draft')">
+
+                <span>
+                    Brouillons
+                </span>
+
+                <span class="profile-posts__filter-count">
+                    {{ postCounts().draft }}
+                </span>
+            </button>
+            @if (
+            postSearch() ||
+            postStatusFilter() !== 'all'
+            ) {
+            <app-button type="ghost" size="sm" nativeType="button" label="Réinitialiser les filtres"
+                (clicked)="resetPostFilters()">
+            </app-button>
+            }
+        </div>
+
+        <app-input [control]="searchPost" [configuration]="{
+              label: 'Rechercher un article',
+              placeholder: 'Titre de l\'article...',
+              size: 'md',
+              required: false,
+            }" type="search" placeholder="Rechercher dans mes articles..." autocomplete="off"
+            (input)="updatePostSearch($event)"></app-input>
+
+        @if (postSearch()) {
+        <button type="button" class="profile-posts__search-clear" aria-label="Effacer la recherche"
+            (click)="clearPostSearch()">
+            <span aria-hidden="true">×</span>
+        </button>
+        }
+    </header>
+
+    <div class="profile-posts__summary">
+        @if (
+        postStatusFilter() !== 'all' ||
+        postSearch()
+        ) {
+        <button type="button" class="profile-posts__reset" (click)="resetPostFilters()">
+            Réinitialiser les filtres
+        </button>
+        }
+    </div>
+
+    @if (posts.isLoading()) {
+    <div class="profile-posts__state card card--md card--soft" role="status">
+        <div class="profile-posts__loader" aria-hidden="true">
+        </div>
+
+        <div>
+            <h3>
+                Chargement des articles
+            </h3>
+
+            <p>
+                Tes publications sont en cours de récupération.
+            </p>
+        </div>
+    </div>
+    } @else if (posts.error()) {
+    <div class="profile-posts__state profile-posts__state--error card card--md" role="alert">
+        <div class="profile-posts__state-icon" aria-hidden="true">
+            !
+        </div>
+
+        <div class="profile-posts__state-content">
+            <h3>
+                Impossible de charger les articles
+            </h3>
+
+            <p>
+                Une erreur est survenue pendant la récupération de tes publications.
+            </p>
+        </div>
+
+        <app-button type="secondary" size="sm" nativeType="button" label="Réessayer" (clicked)="reloadPosts()">
+        </app-button>
+    </div>
+    } @else {
+    <div class="profile-posts__list stack stack-md">
+        @for (
+        post of filteredPosts();
+        track post.id
+        ) {
+        <article class="profile-posts__item">
+            <header class="profile-posts__item-header">
+                <span class="profile-posts__status" [class.profile-posts__status--published]="
+                            post.published_at
+                          " [class.profile-posts__status--draft]="
+                            !post.published_at
+                          ">
+
+                    <span class="profile-posts__status-dot" aria-hidden="true">
+                    </span>
+
+                    {{
+                    post.published_at
+                    ? 'Publié'
+                    : 'Brouillon'
+                    }}
+                </span>
+
+                <span class="profile-posts__date">
+                    {{
+                    post.published_at
+                    ? 'Publié le'
+                    : 'Créé le'
+                    }}
+
+                    {{
+                    (post.published_at || post.created_at)
+                    | date: 'dd/MM/yyyy'
+                    }}
+                </span>
+            </header>
+
+            <app-post-card (afterAction)="reloadPosts()" [post]="post" [isDraft]="!post.published_at">
+            </app-post-card>
+        </article>
+        } @empty {
+        <div class="empty-card profile-posts__empty">
+            <div class="profile-posts__empty-icon" aria-hidden="true">
+                A
+            </div>
+
+            <h3 class="empty-card__title">
+                {{ emptyPostsTitle() }}
+            </h3>
+
+            <p class="empty-card__description">
+                {{ emptyPostsDescription() }}
+            </p>
+        </div>
+        }
+    </div>
+    }
+</div>

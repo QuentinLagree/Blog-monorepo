@@ -1,158 +1,4 @@
-<section
-  class="profile-page page"
-  [class.profile-page--reduce-motion]="reduceAnimationsControl.value">
-
-  <div class="page-container page-container--wide">
-    <header class="profile-header page-header">
-      <div class="profile-header__identity">
-        <div
-          class="profile-avatar"
-          aria-hidden="true">
-          {{
-            user()?.pseudo?.charAt(0) ||
-            user()?.prenom?.charAt(0) ||
-            '?'
-          }}
-        </div>
-
-        <div class="profile-identity">
-          <p class="page-header__eyebrow">
-            Espace personnel
-          </p>
-
-          <h1 class="page-header__title">
-            {{ user()?.pseudo || 'Mon profil' }}
-          </h1>
-
-          <p class="profile-fullname">
-            {{ user()?.prenom || 'Prénom non renseigné' }}
-            {{ user()?.nom || 'Nom non renseigné' }}
-          </p>
-
-          <p class="profile-joined">
-            Inscrit depuis le
-            {{ user()?.created_at | date: 'dd/MM/yyyy' }}
-          </p>
-        </div>
-      </div>
-
-      <div class="profile-header__infos">
-        <article class="profile-info card card--sm">
-          <span>
-            Email
-          </span>
-
-          <strong>
-            {{ user()?.email || 'Non renseigné' }}
-          </strong>
-        </article>
-
-        <article class="profile-info card card--sm">
-          <span>
-            Pseudo
-          </span>
-
-          <strong>
-            {{ user()?.pseudo || 'Non renseigné' }}
-          </strong>
-        </article>
-      </div>
-    </header>
-
-    <div class="profile-container stack stack-lg">
-      <section class="profile-section page-section">
-        <header class="profile-section__header">
-          <div>
-            <p class="text-eyebrow">
-              Publications
-            </p>
-
-            <h2 class="content-title">
-              Brouillons
-            </h2>
-
-            <p class="content-description">
-              Retrouve les articles que tu as commencés mais pas encore publiés.
-            </p>
-          </div>
-
-          <app-button
-            type="secondary"
-            nativeType="button"
-            [label]="
-              showDraftsPosts
-                ? 'Masquer les brouillons'
-                : 'Afficher les brouillons'
-            "
-            (clicked)="showDraftsPosts = !showDraftsPosts">
-          </app-button>
-        </header>
-
-        <div
-          class="profile-collapse"
-          [class.profile-collapse--open]="showDraftsPosts"
-          [attr.aria-hidden]="!showDraftsPosts">
-
-          <div class="profile-collapse__inner">
-            <div class="profile-drafts stack stack-md">
-              @for (post of drafts.value(); track post.id) {
-                <app-post-card
-                  [post]="post"
-                  [isDraft]="true">
-                </app-post-card>
-              } @empty {
-                <div class="empty-card">
-                  <h3 class="empty-card__title">
-                    Aucun brouillon
-                  </h3>
-
-                  <p class="empty-card__description">
-                    Tu n’as aucun article en cours de rédaction pour le moment.
-                  </p>
-                </div>
-              }
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="profile-section page-section">
-        <header class="profile-section__header">
-          <div>
-            <p class="text-eyebrow">
-              Paramètres
-            </p>
-
-            <h2 class="content-title">
-              Préférences
-            </h2>
-
-            <p class="content-description">
-              Personnalise ton expérience, tes notifications et la visibilité de ton profil.
-            </p>
-          </div>
-
-          <app-button
-            type="secondary"
-            nativeType="button"
-            [label]="
-              showPreferences
-                ? 'Masquer les préférences'
-                : 'Afficher les préférences'
-            "
-            (clicked)="showPreferences = !showPreferences">
-          </app-button>
-        </header>
-
-        <div
-          class="profile-collapse"
-          [class.profile-collapse--open]="showPreferences"
-          [attr.aria-hidden]="!showPreferences">
-
-          <div class="profile-collapse__inner">
-            <form
-              class="profile-preferences form"
-              [formGroup]="preferencesForm">
+<form class="profile-preferences form" [formGroup]="preferencesForm">
 
               <section class="profile-preferences__group card card--md">
                 <header class="profile-preferences__group-header">
@@ -173,16 +19,12 @@
 
                 <div class="profile-preferences__select-grid">
                   <article class="profile-preferences__select-card card card--sm card--soft">
-                    <div
-                      class="profile-preferences__select-icon"
-                      aria-hidden="true">
+                    <div class="profile-preferences__select-icon" aria-hidden="true">
                       Aa
                     </div>
 
                     <div class="profile-preferences__select-content">
-                      <app-select
-                        [control]="themeControl"
-                        [configuration]="{
+                      <app-select [control]="themeControl" [configuration]="{
                           label: 'Thème',
                           required: true,
                           placeholder: 'Sélectionne un thème',
@@ -198,16 +40,12 @@
                   </article>
 
                   <article class="profile-preferences__select-card card card--sm card--soft">
-                    <div
-                      class="profile-preferences__select-icon"
-                      aria-hidden="true">
+                    <div class="profile-preferences__select-icon" aria-hidden="true">
                       T
                     </div>
 
                     <div class="profile-preferences__select-content">
-                      <app-select
-                        [control]="fontSizeControl"
-                        [configuration]="{
+                      <app-select [control]="fontSizeControl" [configuration]="{
                           label: 'Taille du texte',
                           required: true,
                           placeholder: 'Sélectionne une taille',
@@ -226,9 +64,7 @@
                 <div class="profile-preferences__options-grid">
                   <article class="profile-preference-card card card--sm">
                     <div class="profile-preference-card__main">
-                      <div
-                        class="profile-preference-card__icon"
-                        aria-hidden="true">
+                      <div class="profile-preference-card__icon" aria-hidden="true">
                         ✦
                       </div>
 
@@ -243,9 +79,7 @@
                       </div>
                     </div>
 
-                    <app-switch-button
-                      [control]="reduceAnimationsControl"
-                      [configuration]="{
+                    <app-switch-button [control]="reduceAnimationsControl" [configuration]="{
                         label: ' ',
                         required: false
                       }">
@@ -274,9 +108,7 @@
                 <div class="profile-preferences__options-grid">
                   <article class="profile-preference-card card card--sm">
                     <div class="profile-preference-card__main">
-                      <div
-                        class="profile-preference-card__icon"
-                        aria-hidden="true">
+                      <div class="profile-preference-card__icon" aria-hidden="true">
                         ⏱
                       </div>
 
@@ -291,9 +123,7 @@
                       </div>
                     </div>
 
-                    <app-switch-button
-                      [control]="showReadingTimeControl"
-                      [configuration]="{
+                    <app-switch-button [control]="showReadingTimeControl" [configuration]="{
                         label: ' ',
                         required: false
                       }">
@@ -302,9 +132,7 @@
 
                   <article class="profile-preference-card card card--sm">
                     <div class="profile-preference-card__main">
-                      <div
-                        class="profile-preference-card__icon"
-                        aria-hidden="true">
+                      <div class="profile-preference-card__icon" aria-hidden="true">
                         A
                       </div>
 
@@ -319,9 +147,7 @@
                       </div>
                     </div>
 
-                    <app-switch-button
-                      [control]="showAuthorDetailsControl"
-                      [configuration]="{
+                    <app-switch-button [control]="showAuthorDetailsControl" [configuration]="{
                         label: ' ',
                         required: false
                       }">
@@ -330,9 +156,7 @@
 
                   <article class="profile-preference-card card card--sm">
                     <div class="profile-preference-card__main">
-                      <div
-                        class="profile-preference-card__icon"
-                        aria-hidden="true">
+                      <div class="profile-preference-card__icon" aria-hidden="true">
                         ✓
                       </div>
 
@@ -347,9 +171,7 @@
                       </div>
                     </div>
 
-                    <app-switch-button
-                      [control]="hideReadPostsControl"
-                      [configuration]="{
+                    <app-switch-button [control]="hideReadPostsControl" [configuration]="{
                         label: ' ',
                         required: false
                       }">
@@ -378,9 +200,7 @@
                 <div class="profile-preferences__options-grid">
                   <article class="profile-preference-card card card--sm">
                     <div class="profile-preference-card__main">
-                      <div
-                        class="profile-preference-card__icon"
-                        aria-hidden="true">
+                      <div class="profile-preference-card__icon" aria-hidden="true">
                         ♥
                       </div>
 
@@ -395,9 +215,7 @@
                       </div>
                     </div>
 
-                    <app-switch-button
-                      [control]="notifyOnLikeControl"
-                      [configuration]="{
+                    <app-switch-button [control]="notifyOnLikeControl" [configuration]="{
                         label: ' ',
                         required: false
                       }">
@@ -406,9 +224,7 @@
 
                   <article class="profile-preference-card card card--sm">
                     <div class="profile-preference-card__main">
-                      <div
-                        class="profile-preference-card__icon"
-                        aria-hidden="true">
+                      <div class="profile-preference-card__icon" aria-hidden="true">
                         +
                       </div>
 
@@ -423,9 +239,7 @@
                       </div>
                     </div>
 
-                    <app-switch-button
-                      [control]="notifyOnContributionControl"
-                      [configuration]="{
+                    <app-switch-button [control]="notifyOnContributionControl" [configuration]="{
                         label: ' ',
                         required: false
                       }">
@@ -434,9 +248,7 @@
 
                   <article class="profile-preference-card card card--sm">
                     <div class="profile-preference-card__main">
-                      <div
-                        class="profile-preference-card__icon"
-                        aria-hidden="true">
+                      <div class="profile-preference-card__icon" aria-hidden="true">
                         @
                       </div>
 
@@ -451,9 +263,7 @@
                       </div>
                     </div>
 
-                    <app-switch-button
-                      [control]="emailNotificationsControl"
-                      [configuration]="{
+                    <app-switch-button [control]="emailNotificationsControl" [configuration]="{
                         label: ' ',
                         required: false
                       }">
@@ -462,9 +272,7 @@
 
                   <article class="profile-preference-card card card--sm">
                     <div class="profile-preference-card__main">
-                      <div
-                        class="profile-preference-card__icon"
-                        aria-hidden="true">
+                      <div class="profile-preference-card__icon" aria-hidden="true">
                         N
                       </div>
 
@@ -479,9 +287,7 @@
                       </div>
                     </div>
 
-                    <app-switch-button
-                      [control]="newsletterControl"
-                      [configuration]="{
+                    <app-switch-button [control]="newsletterControl" [configuration]="{
                         label: ' ',
                         required: false
                       }">
@@ -510,9 +316,7 @@
                 <div class="profile-preferences__options-grid">
                   <article class="profile-preference-card card card--sm">
                     <div class="profile-preference-card__main">
-                      <div
-                        class="profile-preference-card__icon"
-                        aria-hidden="true">
+                      <div class="profile-preference-card__icon" aria-hidden="true">
                         P
                       </div>
 
@@ -527,9 +331,7 @@
                       </div>
                     </div>
 
-                    <app-switch-button
-                      [control]="profileVisibleControl"
-                      [configuration]="{
+                    <app-switch-button [control]="profileVisibleControl" [configuration]="{
                         label: ' ',
                         required: false
                       }">
@@ -538,9 +340,7 @@
 
                   <article class="profile-preference-card card card--sm">
                     <div class="profile-preference-card__main">
-                      <div
-                        class="profile-preference-card__icon"
-                        aria-hidden="true">
+                      <div class="profile-preference-card__icon" aria-hidden="true">
                         ♥
                       </div>
 
@@ -555,9 +355,7 @@
                       </div>
                     </div>
 
-                    <app-switch-button
-                      [control]="showLikedPostsControl"
-                      [configuration]="{
+                    <app-switch-button [control]="showLikedPostsControl" [configuration]="{
                         label: ' ',
                         required: false
                       }">
@@ -566,9 +364,7 @@
 
                   <article class="profile-preference-card card card--sm">
                     <div class="profile-preference-card__main">
-                      <div
-                        class="profile-preference-card__icon"
-                        aria-hidden="true">
+                      <div class="profile-preference-card__icon" aria-hidden="true">
                         C
                       </div>
 
@@ -583,9 +379,7 @@
                       </div>
                     </div>
 
-                    <app-switch-button
-                      [control]="showContributionsControl"
-                      [configuration]="{
+                    <app-switch-button [control]="showContributionsControl" [configuration]="{
                         label: ' ',
                         required: false
                       }">
@@ -605,57 +399,11 @@
                   </span>
                 </div>
 
-                <app-button
-                  type="primary"
-                  size="sm"
-                  icon="icon-check"
-                  label="Enregistrer"
-                  nativeType="button"
+                <app-button type="primary" size="sm" icon="icon-check" label="Enregistrer" nativeType="button"
                   [disabled]="
                     preferencesForm.invalid ||
                     preferencesSaving()
-                  "
-                  [loading]="preferencesSaving()"
-                  (clicked)="savePreferences(true)">
+                  " [loading]="preferencesSaving()" (clicked)="savePreferences()">
                 </app-button>
               </footer>
             </form>
-          </div>
-        </div>
-      </section>
-
-      <section class="profile-danger-zone card card--md card--danger">
-        <div>
-          <p class="card__eyebrow">
-            Zone sensible
-          </p>
-
-          <h2 class="card__title">
-            Supprimer le profil
-          </h2>
-
-          <p class="card__description">
-            Cette action est définitive. Supprime ton profil uniquement si tu es sûr de toi.
-          </p>
-        </div>
-
-        <app-button-danger
-          label="Supprimer le profil"
-          (clicked)="openDeleteProfileModal()">
-        </app-button-danger>
-      </section>
-    </div>
-  </div>
-</section>
-
-<app-confirm-modal
-  [open]="deleteProfileModalOpen"
-  title="Supprimer ton profil ?"
-  message="Cette action est définitive. Ton compte et tes informations personnelles seront supprimés."
-  confirmLabel="Supprimer"
-  cancelLabel="Annuler"
-  variant="danger"
-  [loading]="deleteProfileLoading"
-  (cancelled)="closeDeleteProfileModal()"
-  (confirmed)="deleteProfile()">
-</app-confirm-modal>

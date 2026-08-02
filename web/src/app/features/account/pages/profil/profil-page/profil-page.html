@@ -1,0 +1,30 @@
+<section class="profile-page page">
+@if (sessionId) {
+  <div class="page-container page-container--wide">
+    <app-profil-header [user]="user()"></app-profil-header>
+
+    <div class="profile-container stack stack-lg">
+      
+      <app-profil-header-section 
+      eyebrow="Publications" 
+      title="Mes articles" 
+      description="Retrouve, recherche et gère tous tes articles publiés ou en cours de rédaction. "
+      element="article">
+        <app-profil-posts [sessionId]="sessionId"></app-profil-posts>
+      </app-profil-header-section>
+
+
+        <app-profil-header-section 
+        eyebrow="Paramètres" 
+        title="Mes Préférences" 
+        description="Personnalise ton expérience, tes notifications et la visibilité de ton profil."
+        element="preference">
+        <app-profil-preferences [sessionId]="sessionId" [user]="user()"></app-profil-preferences>
+      </app-profil-header-section>
+
+      <app-profil-zone-danger-section></app-profil-zone-danger-section>
+    </div>
+  </div>
+    }
+</section>
+
