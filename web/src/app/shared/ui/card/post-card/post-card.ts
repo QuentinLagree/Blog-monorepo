@@ -1,6 +1,6 @@
 import { DatePipe } from "@angular/common";
 import { HttpContext } from "@angular/common/http";
-import { Component, effect, inject, input, InputSignal, signal, WritableSignal } from "@angular/core";
+import { Component, effect, inject, input, InputSignal, output, signal, WritableSignal } from "@angular/core";
 import { Router, RouterLink } from "@angular/router";
 import { SessionService } from "src/app/shared/services/session.service";
 import { User, UserService } from "src/app/shared/services/user.service";
@@ -34,12 +34,12 @@ export class PostCard {
     private _user: UserService = inject(UserService);
     private _router: Router = inject(Router)
     private _session: SessionService = inject(SessionService)
-    private _toast: ToastService = inject(ToastService)
     
     post: InputSignal<Post> = input.required<Post>()
     author: WritableSignal<User | undefined> = signal(undefined);
     isDraft: InputSignal<boolean> = input(false)
     likesCount = signal(0);
+    afterAction = output()
 
     detailPath: string = "";
 
@@ -97,14 +97,16 @@ export class PostCard {
   formatFromContextMenu = (_data: unknown, option: string) =>  {
     switch (option) {
       case 'delete-post':
+        console.log("OUVERTURE")
         this.openPostDeleteModal()
         break;
 
       case 'delete-author':
         this.openAuthorDeleteModal()
         break;
-
     }
+
+    // this.doAfterAction()
   }
 
     getSlugifyPath (): string {
@@ -121,7 +123,6 @@ export class PostCard {
     }
 
     getDetail () {
-        const id = this.post().id;
         const detailPath = `/post/detail/${this.getSlugifyPath()}`
         this._router.navigate([detailPath])
         
@@ -135,7 +136,6 @@ export class PostCard {
     }
 
     getDraftDetail () {
-      const id = this.post().id;
         const detailPath = `/draft/detail/${this.getSlugifyPath()}`
         this._router.navigate([detailPath])
     }
@@ -223,5 +223,10 @@ export class PostCard {
     } finally {
       this.authorModalLoading = false;
     }
+  }
+
+  doAfterAction() {
+    if (!this.afterAction) return;
+    this.afterAction.emit()
   }
 }
