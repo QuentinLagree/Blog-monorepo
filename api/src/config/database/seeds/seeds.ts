@@ -1,96 +1,109 @@
 import { PrismaClient } from '@prisma/client';
-
-import { PasswordService } from '../../../commons/services/argon.service'
+import { PasswordService } from 'src/commons/services/argon.service';
+import { usersSeedData } from './data/users.seed';
+import { postsSeedData } from './data/posts.seed';
 
 const prisma = new PrismaClient();
+const passwordService = new PasswordService();
 
-const _password = new PasswordService()
+async function seedUsers(): Promise<void> {
+  console.log('Création des utilisateurs...');
 
+  for (const userData of usersSeedData) {
+    const hashedPassword = await passwordService.hashPassword(
+      userData.password,
+    );
 
-async function main() {
-  const password = process.env['PASSWORD_SEED'] ?? 'Salut1234!';
-
-  if (await prisma.user.findUnique({where: {email: 'lagreequentindev21@gail.com'}})) return;
-  if (await prisma.user.findUnique({where: {email: 'johndoe@gmail.com'}})) return;
-
-  const quentin = await prisma.user.create({
-    data: {
-      nom: 'Lagree',
-      prenom: 'Quentin',
-      email: 'lagreequentindev21@gmail.com',
-      pseudo: 'QuentinLa',
-      password: await _password.hashPassword(password),
-      role: 'admin',
-      Account: {
-        create: {
-          followees_count: 0,
-          followers_count: 0,
-          language: 'fr',
-          theme: 'dark',
-        },
+    await prisma.user.upsert({
+      where: {
+        email: userData.email,
       },
+      update: {
+        nom: userData.nom,
+        prenom: userData.prenom,
+        pseudo: userData.pseudo,
+        role: userData.role ?? 'user',
+      },
+      create: {
+        nom: userData.nom,
+        prenom: userData.prenom,
+        email: userData.email,
+        pseudo: userData.pseudo,
+        password: hashedPassword,
+        role: userData.role ?? 'user',
+
+      },
+    });
+  }
+
+  console.log(`${usersSeedData.length} utilisateurs créés.`);
+}
+
+async function seedPosts(): Promise<void> {
+  console.log('Création des posts...');
+
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+    },
+    orderBy: {
+      id: 'asc',
     },
   });
 
-  const john = await prisma.user.create({
-    data: {
-      nom: 'John',
-      prenom: 'Doe',
-      email: 'johndoe@gmail.com',
-      pseudo: 'JohnDoe',
-      password: await _password.hashPassword("Salut1234!"),
-      role: 'user',
-      Account: {
-        create: {
-          followees_count: 0,
-          followers_count: 0,
-        },
-      },
-    },
+  if (users.length === 0) {
+    throw new Error(
+      'Impossible de créer les posts : aucun utilisateur disponible.',
+    );
+  }
+
+  const posts = postsSeedData.map((post, index) => {
+    const author = users[index % users.length];
+
+    return {
+      authorId: author.id,
+      title: post.title,
+      description: post.description,
+      content: post.content,
+      published_at: post.published_at,
+    };
   });
 
   await prisma.post.createMany({
-    data: [
-      {
-        authorId: quentin.id,
-        title: 'Salut je suis un titre très sympathique',
-        content: 'Salut je suis un contenue',
-        description: 'Ceci est une description du post',
-        published_at: new Date(Date.now()),
-      },
-      {
-        authorId: quentin.id,
-        title:
-          'Salut je suis un deuxième titre super sympa aussi voir meilleur !',
-        content: 'Encore du contenue, toujours du contenue',
-        description: "Ceci est la description de la deuxième publication.",
-        published_at: new Date(Date.now())
-      },
-      {
-        authorId: quentin.id,
-        title:
-          'Je suis un titre custom sympatique',
-        content: 'Est toujours du contenue',
-        description: "Une description toute mignonne.",
-        published_at: null
-      },
-    ],
+    data: posts,
   });
 
-  await prisma.follows.create({
-    data: {
-      followee_id: john.id,
-      follower_id: quentin.id,
-    },
-  });
+  console.log(`${posts.length} posts créés.`);
+}
+
+async function clearDatabase(): Promise<void> {
+  console.log('Nettoyage de la base de données...');
+
+  /*
+   * Les posts doivent être supprimés avant les utilisateurs
+   * à cause de la clé étrangère authorId.
+   */
+  await prisma.like.deleteMany();
+  await prisma.post.deleteMany();
+  await prisma.user.deleteMany();
+
+  console.log('Base de données nettoyée.');
+}
+
+async function main(): Promise<void> {
+  await clearDatabase();
+
+  await seedUsers();
+  await seedPosts();
+
+  console.log('Seed terminée avec succès.');
 }
 
 main()
-  .then(() => {
-    console.log('✅ Base seedée avec succès');
+  .catch((error: unknown) => {
+    console.error('Erreur pendant la seed :', error);
+    process.exitCode = 1;
   })
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(() => prisma.$disconnect());
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
