@@ -3,68 +3,27 @@
     <app-header-content
       eyebrow="Encyclopédie communautaire"
       title="Découvre, partage et enrichis les savoirs."
-      baseline="Explore des articles, des idées et des découvertes publiés par la communauté. Contribue à une base de connaissances claire, utile et vivante.">
+      baseline="Explore des articles, des idées et des découvertes publiés par la communauté. Contribue à une base de connaissances claire, utile et vivante."
 
-      <div class="btn-group btn-group--wrap">
-        <app-button
-          icon="icon-plus"
-          label="Créer un article"
-          (clicked)="_router.navigate(['/post/add'])">
-        </app-button>
+      [primaryButton]="{
+        label: 'Créer un article',
+        icon: 'icon-plus'
+      }"
 
-        <app-button
-          type="secondary"
-          label="Voir les contributeurs"
-          (clicked)="_router.navigate(['/account/users'])">
-        </app-button>
-      </div>
-    </app-header-content>
+      [secondaryButton]="{ label: 'Voir les contributeurs' }"
+      
+      (primaryAction)="_router.navigate(['/post/add'])"
+      (secondaryAction)="_router.navigate(['/account/users'])"
+      />
+
 
     <section class="home-section page-section">
       <app-header-section
         eyebrow="Dernières contributions"
         title="Articles récents">
       </app-header-section>
-
-      <div class="home-posts stack stack-md">
-        <ng-paginator
-          class="home-paginator"
-          [CurrentPage]="+page()"
-          [PageSize]="+limit()"
-          [TotalItems]="totalArticle()"
-          (pageChange)="updatePage($event)">
-        </ng-paginator>
-
-        @if (posts.isLoading()) {
-          <div class="home-loading card card--md card--soft">
-            <p class="text-body">
-              Chargement des articles...
-            </p>
-          </div>
-        } @else {
-          @for (post of posts.value(); track post.id) {
-            <app-post-card [post]="post"></app-post-card>
-          } @empty {
-            <div class="home-empty-state empty-card">
-              <h3 class="empty-card__title">
-                Aucun article
-              </h3>
-
-              <p class="empty-card__description">
-                Aucune contribution n’est disponible pour le moment.
-              </p>
-
-              <div class="empty-card__actions">
-                <app-button
-                  icon="icon-plus"
-                  label="Créer le premier article"
-                  (clicked)="_router.navigate(['/post/add'])">
-                </app-button>
-              </div>
-            </div>
-          }
-        }
-      </div>
+      <app-home-articles></app-home-articles>
+      
     </section>
   </div>
 </section>

@@ -1,0 +1,28 @@
+<div class="home-posts stack stack-md">
+        <ng-paginator
+          class="home-paginator"
+          [CurrentPage]="+page()"
+          [PageSize]="+limit()"
+          [TotalItems]="totalArticle()"
+          (pageChange)="updatePage($event)"
+          (sizeChange)="updateLimit($event)">
+        </ng-paginator>
+
+        @if (posts.isLoading()) {
+          <app-state-loading title="Chargement des articles..."></app-state-loading>
+        } @else {
+          @for (post of posts.value(); track post.id) {
+            <app-post-card [post]="post"></app-post-card>
+          } @empty {
+            <app-state-empty 
+            title="Aucun article"
+            description="Aucune contribution n'est disponible pour le moment."
+            (primaryAction)="_router.navigate(['/post/add'])" 
+            [primaryButton]="{
+              icon:'icon-plus',
+              label: 'Créer le premier article'
+            }"
+            />
+          }
+        }
+      </div>

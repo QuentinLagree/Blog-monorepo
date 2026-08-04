@@ -1,0 +1,11 @@
+@use 'variables' as *;
+
+.home-paginator {
+  width: 100%;
+}
+
+.home-posts {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
