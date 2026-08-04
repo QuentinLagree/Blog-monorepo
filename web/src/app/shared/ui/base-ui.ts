@@ -35,7 +35,6 @@ import { HeaderSectionComponent } from "./content/header-section/header-section"
     EditButtonComponent,
     DangerButtonComponent,
     ButtonAddComponent,
-    HeaderComponent,
     HeaderContentComponent,
     HeaderSectionComponent
 ]

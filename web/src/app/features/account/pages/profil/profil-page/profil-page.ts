@@ -40,6 +40,7 @@ import { ProfilPostsComponent } from '../profil-posts/profil-posts';
 import { ProfilHeaderSectionComponent } from "../components/profil-header-section";
 import { ProfilPreferencesComponent } from "../profil-preferences/profil-preferences";
 import { ProfilDangerZoneSectionComponent } from "../profil-danger-zone/profil-danger-zone";
+import { UserPreferencesService } from '../preferences.service';
 
 
 @Component({
@@ -52,7 +53,7 @@ import { ProfilDangerZoneSectionComponent } from "../profil-danger-zone/profil-d
     ProfilHeaderSectionComponent,
     ProfilPreferencesComponent,
     ProfilDangerZoneSectionComponent
-],
+  ],
   templateUrl: './profil-page.html',
   styleUrls: ['./profil-page.scss'],
 })
@@ -63,6 +64,7 @@ export class ProfilPageComponent {
   private readonly _session =
     inject(SessionService);
 
+
   user: WritableSignal<User | undefined> =
     signal(undefined)
 
@@ -72,6 +74,8 @@ export class ProfilPageComponent {
 
   readonly sessionId =
     this._session.getUserIdSync();
+
+ 
 
   constructor() {
     this._breadCrumb.setWithHome([
