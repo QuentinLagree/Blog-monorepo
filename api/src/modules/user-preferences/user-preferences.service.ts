@@ -95,4 +95,19 @@ export class UserPreferenceService {
             {},
         );
     }
+
+    async isProfileVisible(
+        userId: number,
+    ): Promise<boolean> {
+        const preference =
+            await this._prisma.userPreference.findUnique({
+                where: {
+                    userId,
+                },
+                select: {
+                    profileVisible: true,
+                },
+            });
+        return preference?.profileVisible ?? true;
+    }
 }

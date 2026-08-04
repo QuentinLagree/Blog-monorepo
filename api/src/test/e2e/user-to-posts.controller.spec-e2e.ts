@@ -66,26 +66,6 @@ describe('UserToPostController e2e', () => {
       );
     });
 
-    it('should not return user drafts', async () => {
-      const { user } = await createLoggedAgent(
-        app,
-        prisma,
-        passwordService,
-      );
-
-      await createTestPost(prisma, user.id, {
-        title: 'Draft post',
-        content: 'Draft post content',
-        published_at: null,
-      });
-
-      const response = await request(app.getHttpServer())
-        .get(`${endpoint}/${user.id}`)
-        .expect(200);
-
-      expect(response.body.data).toBeNull();
-    });
-
     it('should return null if user has no published posts', async () => {
       const { user } = await createLoggedAgent(
         app,

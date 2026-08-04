@@ -221,7 +221,7 @@ describe('PostController', () => {
     expect(response).toEqual(
       makeMessage(
         'Post created !',
-        'La publication a été créee !',
+        'La publication a été créée !',
         createdPost,
       ),
     );

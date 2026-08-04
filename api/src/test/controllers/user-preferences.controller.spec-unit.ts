@@ -9,10 +9,12 @@ describe('UserPreferenceController', () => {
 
   const preferenceServiceMock = {
     getPreferences: jest.fn(),
+    isProfileVisible: jest.fn(),
     updatePreferences: jest.fn(),
   };
 
   const userId = 1;
+  const otherId = 2
 
   const createSessionMock = (
     id: number = userId,
@@ -191,6 +193,85 @@ describe('UserPreferenceController', () => {
           sessionMock as any,
         ),
       ).rejects.toThrow(error);
+    });
+  });
+
+  describe('getProfileVisibility', () => {
+    it('should return profilVisible to true', async () => {
+      const userId = 1;
+
+      preferenceServiceMock
+        .isProfileVisible
+        .mockResolvedValue(true);
+
+      const result =
+        await controller.getProfileVisibility(
+          userId,
+        );
+
+      expect(
+        preferenceServiceMock.isProfileVisible,
+      ).toHaveBeenCalledTimes(1);
+
+      expect(
+        preferenceServiceMock.isProfileVisible,
+      ).toHaveBeenCalledWith(userId);
+
+      expect(result).toEqual({
+        message:
+          'Visibilité du profil récupérée.',
+        data: {
+          profileVisible: true,
+        },
+      });
+    });
+
+    it('should return profilVisible to false', async () => {
+      const userId = 2;
+
+      preferenceServiceMock
+        .isProfileVisible
+        .mockResolvedValue(false);
+
+      const result =
+        await controller.getProfileVisibility(
+          userId,
+        );
+
+      expect(
+        preferenceServiceMock.isProfileVisible,
+      ).toHaveBeenCalledWith(userId);
+
+      expect(result).toEqual({
+        message:
+          'Visibilité du profil récupérée.',
+        data: {
+          profileVisible: false,
+        },
+      });
+    });
+
+    it('should propagate preference get errors', async () => {
+      const userId = 999;
+
+      const error =
+        new Error(
+          'Impossible de récupérer la préférence.',
+        );
+
+      preferenceServiceMock
+        .isProfileVisible
+        .mockRejectedValue(error);
+
+      await expect(
+        controller.getProfileVisibility(
+          userId,
+        ),
+      ).rejects.toThrow(error);
+
+      expect(
+        preferenceServiceMock.isProfileVisible,
+      ).toHaveBeenCalledWith(userId);
     });
   });
 

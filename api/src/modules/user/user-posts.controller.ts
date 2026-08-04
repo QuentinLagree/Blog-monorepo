@@ -72,7 +72,7 @@ export class UserToPostController {
   }
 
   @Get(':id')
-  async getAllPublishedPostsOfUser(
+  async getAllPostsOfUser(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Message<Article[] | null>> {
     const user: userSelectPayload = await this._user.show({ id });

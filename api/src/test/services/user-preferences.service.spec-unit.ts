@@ -8,6 +8,7 @@ describe('UserPreferenceService', () => {
   const prismaMock = {
     userPreference: {
       upsert: jest.fn(),
+      findUnique: jest.fn(),
     },
   };
 
@@ -355,6 +356,124 @@ describe('UserPreferenceService', () => {
       expect(
         prismaMock.userPreference.upsert,
       ).toHaveBeenCalledTimes(1);
+    });
+  });
+
+
+  describe('isProfileVisible', () => {
+    it('should return true when the profile is visible', async () => {
+      prismaMock.userPreference.findUnique.mockResolvedValue({
+        profileVisible: true,
+      });
+
+      const result =
+        await service.isProfileVisible(
+          userId,
+        );
+
+      expect(
+        prismaMock.userPreference.findUnique,
+      ).toHaveBeenCalledTimes(1);
+
+      expect(
+        prismaMock.userPreference.findUnique,
+      ).toHaveBeenCalledWith({
+        where: {
+          userId,
+        },
+        select: {
+          profileVisible: true,
+        },
+      });
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false when the profile is private', async () => {
+      prismaMock.userPreference.findUnique.mockResolvedValue({
+        profileVisible: false,
+      });
+
+      const result =
+        await service.isProfileVisible(
+          userId,
+        );
+
+      expect(
+        prismaMock.userPreference.findUnique,
+      ).toHaveBeenCalledWith({
+        where: {
+          userId,
+        },
+        select: {
+          profileVisible: true,
+        },
+      });
+
+      expect(result).toBe(false);
+    });
+
+    it('should return true when the user has no preference row', async () => {
+      prismaMock.userPreference.findUnique.mockResolvedValue(
+        null,
+      );
+
+      const result =
+        await service.isProfileVisible(
+          userId,
+        );
+
+      expect(result).toBe(true);
+    });
+
+    it('should use the supplied user id', async () => {
+      const anotherUserId = 42;
+
+      prismaMock.userPreference.findUnique.mockResolvedValue({
+        profileVisible: true,
+      });
+
+      await service.isProfileVisible(
+        anotherUserId,
+      );
+
+      expect(
+        prismaMock.userPreference.findUnique,
+      ).toHaveBeenCalledWith({
+        where: {
+          userId: anotherUserId,
+        },
+        select: {
+          profileVisible: true,
+        },
+      });
+    });
+
+    it('should propagate Prisma errors', async () => {
+      const error = new Error(
+        'Profile visibility lookup failed',
+      );
+
+      prismaMock.userPreference.findUnique.mockRejectedValue(
+        error,
+      );
+
+      await expect(
+        service.isProfileVisible(
+          userId,
+        ),
+      ).rejects.toThrow(error);
+
+      expect(
+        prismaMock.userPreference.findUnique,
+      ).toHaveBeenCalledWith({
+        where: {
+          userId,
+        },
+        select: {
+          profileVisible: true,
+        },
+      });
     });
   });
 

@@ -29,8 +29,9 @@ import { UpdateUserPreferenceDto } from './dto/update-preferences.user.dto';
 export class UserPreferenceController {
   constructor(
     private readonly _preferences: UserPreferenceService,
-  ) {}  
+  ) { }
 
+  @UseGuards(AuthGuardSession())
   @Get()
   async getPreferences(
     @Query() query: UserPreferenceQueryDto,
@@ -51,23 +52,22 @@ export class UserPreferenceController {
     );
   }
 
-  @Get(':id')
-  async getUserPreferences(
-    @Param('id', ParseIntPipe) id: number,
-    @Query() query: UserPreferenceQueryDto,
-    @Session() session: secureSession.Session,
-  ): Promise<Message<Record<string, unknown>>> {
-
-    const preferences =
-      await this._preferences.getPreferences(
-        id,
-        query.fields,
+  @UseGuards(AuthGuardSession())
+  @Get(':id/visibility')
+  async getProfileVisibility(
+    @Param('id', ParseIntPipe) userId: number,
+  ): Promise<Message<{ profileVisible: boolean }>> {
+    const profileVisible =
+      await this._preferences.isProfileVisible(
+        userId,
       );
 
     return makeMessage(
-      'User preferences',
-      'Préférences utilisateur récupérées.',
-      preferences,
+      'Profile visibility',
+      'Visibilité du profil récupérée.',
+      {
+        profileVisible,
+      },
     );
   }
 

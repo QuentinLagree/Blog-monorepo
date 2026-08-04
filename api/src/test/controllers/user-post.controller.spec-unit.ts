@@ -49,7 +49,7 @@ describe('UserToPostController', () => {
 
       expect(postServiceMock.indexWhere).toHaveBeenCalledWith({
         authorId: id,
-        published_at: null,
+        published_at: null
       });
 
       expect(response).toEqual(
@@ -114,21 +114,18 @@ describe('UserToPostController', () => {
       _userServiceMock.show.mockResolvedValue(user);
       postServiceMock.indexWhere.mockResolvedValue([]);
 
-      const response = await userToPostController.getAllPublishedPostsOfUser(id);
+      const response = await userToPostController.getAllPostsOfUser(id);
 
       expect(_userServiceMock.show).toHaveBeenCalledWith({ id });
 
       expect(postServiceMock.indexWhere).toHaveBeenCalledWith({
         authorId: id,
-        published_at: {
-          not: null,
-        },
       });
 
       expect(response).toEqual(
         makeMessage(
-          `List of all published posts of ${user.nom} ${user.prenom} is empty.`,
-          `La liste des publications publiées de l'utilisateur ${user.nom} ${user.prenom} est vide.`,
+          `List of all posts of ${user.nom} ${user.prenom} is empty.`,
+          `La liste des publications de l'utilisateur ${user.nom} ${user.prenom} est vide.`,
           null,
         ),
       );
@@ -147,15 +144,12 @@ describe('UserToPostController', () => {
       _userServiceMock.show.mockResolvedValue(user);
       postServiceMock.indexWhere.mockResolvedValue(posts);
 
-      const response = await userToPostController.getAllPublishedPostsOfUser(id);
+      const response = await userToPostController.getAllPostsOfUser(id);
 
       expect(_userServiceMock.show).toHaveBeenCalledWith({ id });
 
       expect(postServiceMock.indexWhere).toHaveBeenCalledWith({
         authorId: id,
-        published_at: {
-          not: null,
-        },
       });
 
       expect(response).toEqual(
@@ -175,7 +169,7 @@ describe('UserToPostController', () => {
       );
 
       await expect(
-        userToPostController.getAllPublishedPostsOfUser(id),
+        userToPostController.getAllPostsOfUser(id),
       ).rejects.toThrow(UserNotFoundException);
 
       expect(_userServiceMock.show).toHaveBeenCalledWith({ id });

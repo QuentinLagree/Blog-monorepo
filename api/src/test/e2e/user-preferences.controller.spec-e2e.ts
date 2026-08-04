@@ -1,5 +1,3 @@
-// src/test/e2e/user-preference.controller.spec-e2e.ts
-
 import request from 'supertest';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 
@@ -276,6 +274,108 @@ describe('UserPreferenceController e2e', () => {
       await request(app.getHttpServer())
         .get(endpoint)
         .expect(401);
+    });
+  });     
+
+
+  describe('GET users/preferences/:id/visibility', () => {
+    it('should return profileVisible true when the profile is visible', async () => {
+      const { user, agent } =
+        await createLoggedAgent(
+          app,
+          prisma,
+          passwordService,
+        );
+
+      await prisma.userPreference.create({
+        data: {
+          userId: user.id,
+          profileVisible: true,
+        },
+      });
+
+      const response = await agent
+        .get(
+          `${endpoint}/${user.id}/visibility`,
+        )
+        .expect(200);
+
+      expect(response.body.data).toEqual({
+        profileVisible: true,
+      });
+    });
+
+    it('should return profileVisible false when the profile is private', async () => {
+      const { user, agent } =
+        await createLoggedAgent(
+          app,
+          prisma,
+          passwordService,
+        );
+
+      await prisma.userPreference.create({
+        data: {
+          userId: user.id,
+          profileVisible: false,
+        },
+      });
+
+      const response = await agent
+        .get(
+          `${endpoint}/${user.id}/visibility`,
+        )
+        .expect(200);
+
+      expect(response.body.data).toEqual({
+        profileVisible: false,
+      });
+    });
+
+    it('should return the default visibility when the user has no preference row', async () => {
+      const { user, agent } =
+        await createLoggedAgent(
+          app,
+          prisma,
+          passwordService,
+        );
+
+      const response = await agent
+        .get(
+          `${endpoint}/${user.id}/visibility`,
+        )
+        .expect(200);
+
+      expect(response.body.data).toEqual({
+        profileVisible: true,
+      });
+    });
+
+    it('should return 400 when the user id is invalid', async () => {
+      const { user, agent } = await createLoggedAgent(
+        app,
+        prisma,
+        passwordService
+      )
+      await agent
+        .get(
+          `${endpoint}/not-a-number/visibility`,
+        )
+        .expect(400);
+    });
+
+    it('should be accessible without authentication', async () => {
+      const { user, agent } =
+        await createLoggedAgent(
+          app,
+          prisma,
+          passwordService,
+        );
+
+      await agent
+        .get(
+          `${endpoint}/${user.id}/visibility`,
+        )
+        .expect(200);
     });
   });
 
