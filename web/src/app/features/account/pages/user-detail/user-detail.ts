@@ -13,6 +13,7 @@ import { PostService } from '../../../posts/data-access/post.service';
 import { Post } from '../../../posts/model/post.model';
 import { Role, User, UserService } from 'src/app/shared/services/user.service';
 import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
+import { UserPreferencesService } from '../profil/preferences.service';
 
 @Component({
   selector: 'app-user-detail',
@@ -32,9 +33,14 @@ export class UserDetailComponent {
   userId = computed(() => this._route.snapshot.params['id']);
 
   role = Role;
+  private readonly _preferences =
+    inject(UserPreferencesService);
+
+  readonly showProfil =
+    this._preferences.visibleProfil;
 
   user = resource<User, number>({
-    params:  () => +this.userId(),
+    params: () => +this.userId(),
 
     loader: async ({ params }) => {
       try {
@@ -58,7 +64,7 @@ export class UserDetailComponent {
         ]);
 
         return res.data;
-        
+
       } catch (error) {
         const message =
           error instanceof Error
@@ -73,7 +79,7 @@ export class UserDetailComponent {
       }
     },
   });
-  
+
 
   posts = resource<Post[], number>({
     params: () => +this.userId(),
@@ -81,13 +87,6 @@ export class UserDetailComponent {
     loader: async ({ params }) => {
       try {
         const context = new HttpContext().set(SUCCESS_MESSAGE, false);
-
-        /*
-          À adapter selon ton API.
-
-          Idéalement, crée une méthode dans PostService :
-          getPublishedPostsByAuthor(authorId: string, options?)
-        */
 
         const res = await firstValueFrom(
           this._post.getAllPostOfUser(params, { context })
