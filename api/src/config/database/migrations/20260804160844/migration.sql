@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `PostRead` ADD COLUMN `completed` BOOLEAN NOT NULL DEFAULT false,
+    MODIFY `progress` INTEGER NOT NULL DEFAULT 0;
