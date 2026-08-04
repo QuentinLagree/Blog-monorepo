@@ -32,14 +32,41 @@ Ce projet a pour objectif de reproduire une application de blog moderne tout en 
 
 ---
 
-## 📸 Aperçu 
-> ### Tout le style va subir des modification
----
+📸 Aperçu de l'application
 
-<img width="320" height="200" alt="image" src="https://github.com/user-attachments/assets/2db88383-2959-4b78-b45c-89327f82b6b0" />
-<img width="320" height="200" alt="image" src="https://github.com/user-attachments/assets/8af7d2a8-e655-40c7-97b7-8711c524d2fd" />
+[!NOTE]
+L'interface est encore en cours d'amélioration. Certains éléments visuels peuvent évoluer au fil du développement.
 
----
+🏠 Page d'accueil
+
+La page d'accueil permet de consulter les articles publiés par la communauté, avec leur auteur, leur date de publication et une courte description.
+
+<p align="center"> <img width="800" alt="Page d'accueil du blog." src="https://github.com/user-attachments/assets/05b326e8-fcee-4b48-92e5-a6a07b660454" />
+ </p>
+
+📖 Lecture d'un article
+
+La page de détail affiche le contenu Markdown de l'article, son auteur, sa date de publication, son temps de lecture ainsi qu'un sommaire permettant de naviguer rapidement entre les différentes sections.
+
+<p align="center"> <img src="https://github.com/user-attachments/assets/3a43a7b2-6477-4ea6-b722-90e81f68da9a" alt="Page de lecture d'un article" width="800" /> </p>
+
+✍️ Éditeur Markdown
+
+L'éditeur permet de rédiger un article en Markdown tout en visualisant le résultat en temps réel. Il prend également en charge les brouillons, la coloration syntaxique et l'ajout d'images locales.
+
+<p align="center"> <img src="https://github.com/user-attachments/assets/4707baa4-dc8c-40e2-927e-94360b8c161a" alt="Éditeur Markdown avec prévisualisation" width="800" /> </p>
+
+👤 Espace utilisateur
+
+L'espace personnel permet de consulter les informations du compte, de retrouver ses brouillons et de gérer ses propres publications.
+
+<p align="center"> <img src="https://github.com/user-attachments/assets/4b3bfbb4-b35b-4e9f-8462-3e9da56f40ef" alt="Espace personnel de l'utilisateur" width="800" /> </p>
+
+🔐 Authentification
+
+L'application dispose d'un système complet d'authentification comprenant la création de compte, la connexion, la vérification de l'adresse email et la réinitialisation du mot de passe.
+
+<p align="center"> <img src="https://github.com/user-attachments/assets/e1598cd1-1c74-4234-8039-48d50bf557aa" alt="Page d'authentification" width="800" /> </p>
 
 
 <a id="fonctionnalites"></a>
@@ -473,11 +500,11 @@ Au travers de ce projet, j'ai approfondi plusieurs notions importantes :
 ## À venir
 
 - [ ] Commentaires
-- [ ] Likes
-- [ ] Profils utilisateurs
+- [x] Likes
+- [x] Profils utilisateurs
 - [ ] Notifications
 - [ ] Upload cloud
-- [ ] Lecture d'article
+- [x] Lecture d'article
 - [x] Tests unitaires
 - [ ] CI/CD
 
