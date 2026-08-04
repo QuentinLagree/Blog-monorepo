@@ -5,13 +5,16 @@ import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from 'src/app.controller';
 
-import { UserModule } from 'src/modules/user/user.module';
 import { AuthModule } from 'src/modules/auth/auth.module';
-import { TestMocksModule } from './test.mock-module';
 import { PostsModule } from 'src/modules/post/posts.module';
-import { TestPasswordRecoveryModule } from './test-password-recovery.module';
-import { UserPreferencesModule } from 'src/modules/user-preferences/user-preferences.module';
+import { UserModule } from 'src/modules/user/user.module';
+import { UserPreferencesModule } from
+  'src/modules/user-preferences/user-preferences.module';
 
+import { TestMocksModule } from './test.mock-module';
+import { TestPasswordRecoveryModule } from
+  './test-password-recovery.module';
+import { UserPostsModule } from 'src/modules/user/user-post/user-posts.module';
 
 @Module({
   imports: [
@@ -25,9 +28,12 @@ import { UserPreferencesModule } from 'src/modules/user-preferences/user-prefere
     UserModule,
     AuthModule,
     PostsModule,
+    UserPostsModule,
     TestPasswordRecoveryModule,
-    UserPreferencesModule
+    UserPreferencesModule,
   ],
-  controllers: [AppController],
+  controllers: [
+    AppController,
+  ],
 })
 export class TestAppModule {}

@@ -10,7 +10,9 @@ export const postServiceMock = {
         update: jest.fn(),
         destroy: jest.fn(),
         isPublished: jest.fn(),
-        getLikeStatus: jest.fn()
+        getLikeStatus: jest.fn(),
+        getReadingStatus: jest.fn(),
+        updateReadingProgress: jest.fn()
     };
 
 export const userServiceMock = {

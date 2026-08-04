@@ -8,6 +8,7 @@ import { createTestPost } from './helpers/post.helper-e2e';
 
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { PasswordService } from 'src/commons/services/argon.service';
+import { postServiceMock } from '../mocks/mocks';
 
 describe('UserToPostController e2e', () => {
   let app: NestFastifyApplication;
@@ -737,4 +738,539 @@ describe('UserToPostController e2e', () => {
         .expect(400);
     });
   });
+
+describe(
+  `GET ${endpoint}/:postId/reading-status`,
+  () => {
+    it(
+      'doit refuser un utilisateur non connecté',
+      async () => {
+        const { user } =
+          await createLoggedAgent(
+            app,
+            prisma,
+            passwordService,
+          );
+
+        const post =
+          await createTestPost(
+            prisma,
+            user.id,
+            {
+              title:
+                'Unauthenticated reading status',
+              content:
+                'Post content',
+              published_at:
+                new Date(),
+            },
+          );
+
+        await request(
+          app.getHttpServer(),
+        )
+          .get(
+            `${endpoint}/${post.id}/reading-status`,
+          )
+          .expect(401);
+      },
+    );
+
+    it(
+      'doit retourner un statut non commencé',
+      async () => {
+        const { user, agent } =
+          await createLoggedAgent(
+            app,
+            prisma,
+            passwordService,
+          );
+
+        const post =
+          await createTestPost(
+            prisma,
+            user.id,
+            {
+              title:
+                'Unread post',
+              content:
+                'Post content',
+              published_at:
+                new Date(),
+            },
+          );
+
+        const response =
+          await agent
+            .get(
+              `${endpoint}/${post.id}/reading-status`,
+            )
+            .expect(200);
+
+        expect(
+          response.body,
+        ).toEqual({
+          message:
+            "Statut de lecture de l'article.",
+          data: {
+            hasStarted: false,
+            completed: false,
+            progress: 0,
+          },
+        });
+      },
+    );
+
+    it(
+      'doit retourner la progression enregistrée',
+      async () => {
+        const { user, agent } =
+          await createLoggedAgent(
+            app,
+            prisma,
+            passwordService,
+          );
+
+        const post =
+          await createTestPost(
+            prisma,
+            user.id,
+            {
+              title:
+                'Started post',
+              content:
+                'Post content',
+              published_at:
+                new Date(),
+            },
+          );
+
+        await prisma.postRead.create({
+          data: {
+            userId: user.id,
+            postId: post.id,
+            progress: 45,
+            completed: false,
+          },
+        });
+
+        const response =
+          await agent
+            .get(
+              `${endpoint}/${post.id}/reading-status`,
+            )
+            .expect(200);
+
+        expect(
+          response.body.data,
+        ).toEqual({
+          hasStarted: true,
+          completed: false,
+          progress: 45,
+        });
+      },
+    );
+
+    it(
+      'doit retourner un statut terminé',
+      async () => {
+        const { user, agent } =
+          await createLoggedAgent(
+            app,
+            prisma,
+            passwordService,
+          );
+
+        const post =
+          await createTestPost(
+            prisma,
+            user.id,
+            {
+              title:
+                'Completed post',
+              content:
+                'Post content',
+              published_at:
+                new Date(),
+            },
+          );
+
+        await prisma.postRead.create({
+          data: {
+            userId: user.id,
+            postId: post.id,
+            progress: 100,
+            completed: true,
+          },
+        });
+
+        const response =
+          await agent
+            .get(
+              `${endpoint}/${post.id}/reading-status`,
+            )
+            .expect(200);
+
+        expect(
+          response.body.data,
+        ).toEqual({
+          hasStarted: true,
+          completed: true,
+          progress: 100,
+        });
+      },
+    );
+
+    it(
+      'doit retourner 400 lorsque postId n’est pas un nombre',
+      async () => {
+        const { agent } =
+          await createLoggedAgent(
+            app,
+            prisma,
+            passwordService,
+          );
+
+        await agent
+          .get(
+            `${endpoint}/abc/reading-status`,
+          )
+          .expect(400);
+      },
+    );
+  },
+);
+
+  describe(
+  `PATCH ${endpoint}/:postId/reading-progress`,
+  () => {
+    it(
+      'doit refuser un utilisateur non connecté',
+      async () => {
+        const { user } =
+          await createLoggedAgent(
+            app,
+            prisma,
+            passwordService,
+          );
+
+        const post =
+          await createTestPost(
+            prisma,
+            user.id,
+            {
+              title:
+                'Unauthenticated progress',
+              content:
+                'Post content',
+              published_at:
+                new Date(),
+            },
+          );
+
+        await request(
+          app.getHttpServer(),
+        )
+          .patch(
+            `${endpoint}/${post.id}/reading-progress`,
+          )
+          .send({
+            progress: 60,
+          })
+          .expect(401);
+
+        const postRead =
+          await prisma.postRead.findUnique({
+            where: {
+              userId_postId: {
+                userId: user.id,
+                postId: post.id,
+              },
+            },
+          });
+
+        expect(postRead).toBeNull();
+      },
+    );
+
+    it(
+      'doit créer la progression de lecture',
+      async () => {
+        const { user, agent } =
+          await createLoggedAgent(
+            app,
+            prisma,
+            passwordService,
+          );
+
+        const post =
+          await createTestPost(
+            prisma,
+            user.id,
+            {
+              title:
+                'Reading progress post',
+              content:
+                'Post content',
+              published_at:
+                new Date(),
+            },
+          );
+
+        const response =
+          await agent
+            .patch(
+              `${endpoint}/${post.id}/reading-progress`,
+            )
+            .send({
+              progress: 60,
+            })
+            .expect(200);
+
+        expect(
+          response.body,
+        ).toEqual(
+          expect.objectContaining({
+            message:
+              'La progression de lecture a été mise à jour.',
+            data:
+              expect.objectContaining({
+                userId: user.id,
+                postId: post.id,
+                progress: 60,
+                completed: false,
+              }),
+          }),
+        );
+
+        const postRead =
+          await prisma.postRead.findUnique({
+            where: {
+              userId_postId: {
+                userId: user.id,
+                postId: post.id,
+              },
+            },
+          });
+
+        expect(postRead).not.toBeNull();
+
+        expect(postRead).toEqual(
+          expect.objectContaining({
+            userId: user.id,
+            postId: post.id,
+            progress: 60,
+            completed: false,
+          }),
+        );
+      },
+    );
+
+    it(
+      'doit mettre à jour une progression existante',
+      async () => {
+        const { user, agent } =
+          await createLoggedAgent(
+            app,
+            prisma,
+            passwordService,
+          );
+
+        const post =
+          await createTestPost(
+            prisma,
+            user.id,
+            {
+              title:
+                'Updated reading progress',
+              content:
+                'Post content',
+              published_at:
+                new Date(),
+            },
+          );
+
+        await prisma.postRead.create({
+          data: {
+            userId: user.id,
+            postId: post.id,
+            progress: 20,
+            completed: false,
+          },
+        });
+
+        await agent
+          .patch(
+            `${endpoint}/${post.id}/reading-progress`,
+          )
+          .send({
+            progress: 75,
+          })
+          .expect(200);
+
+        const postRead =
+          await prisma.postRead.findUnique({
+            where: {
+              userId_postId: {
+                userId: user.id,
+                postId: post.id,
+              },
+            },
+          });
+
+        expect(postRead).toEqual(
+          expect.objectContaining({
+            progress: 75,
+            completed: false,
+          }),
+        );
+      },
+    );
+
+    it(
+      'doit marquer la lecture comme terminée',
+      async () => {
+        const { user, agent } =
+          await createLoggedAgent(
+            app,
+            prisma,
+            passwordService,
+          );
+
+        const post =
+          await createTestPost(
+            prisma,
+            user.id,
+            {
+              title:
+                'Completed reading progress',
+              content:
+                'Post content',
+              published_at:
+                new Date(),
+            },
+          );
+
+        const response =
+          await agent
+            .patch(
+              `${endpoint}/${post.id}/reading-progress`,
+            )
+            .send({
+              progress: 100,
+            })
+            .expect(200);
+
+        expect(
+          response.body.data,
+        ).toEqual(
+          expect.objectContaining({
+            userId: user.id,
+            postId: post.id,
+            progress: 100,
+            completed: true,
+          }),
+        );
+
+        const postRead =
+          await prisma.postRead.findUnique({
+            where: {
+              userId_postId: {
+                userId: user.id,
+                postId: post.id,
+              },
+            },
+          });
+
+        expect(
+          postRead?.completed,
+        ).toBe(true);
+      },
+    );
+
+    it(
+      'doit retourner 400 lorsque postId est invalide',
+      async () => {
+        const { agent } =
+          await createLoggedAgent(
+            app,
+            prisma,
+            passwordService,
+          );
+
+        await agent
+          .patch(
+            `${endpoint}/invalid/reading-progress`,
+          )
+          .send({
+            progress: 50,
+          })
+          .expect(400);
+      },
+    );
+
+    it(
+      'doit retourner 400 lorsque progress est absent',
+      async () => {
+        const { user, agent } =
+          await createLoggedAgent(
+            app,
+            prisma,
+            passwordService,
+          );
+
+        const post =
+          await createTestPost(
+            prisma,
+            user.id,
+            {
+              published_at:
+                new Date(),
+            },
+          );
+
+        await agent
+          .patch(
+            `${endpoint}/${post.id}/reading-progress`,
+          )
+          .send({})
+          .expect(400);
+      },
+    );
+
+    it(
+      'doit retourner 400 lorsque le payload contient un champ inconnu',
+      async () => {
+        const { user, agent } =
+          await createLoggedAgent(
+            app,
+            prisma,
+            passwordService,
+          );
+
+        const post =
+          await createTestPost(
+            prisma,
+            user.id,
+            {
+              published_at:
+                new Date(),
+            },
+          );
+
+        await agent
+          .patch(
+            `${endpoint}/${post.id}/reading-progress`,
+          )
+          .send({
+            progress: 50,
+            unknownField: true,
+          })
+          .expect(400);
+      },
+    );
+  },
+);
+
+
 });
