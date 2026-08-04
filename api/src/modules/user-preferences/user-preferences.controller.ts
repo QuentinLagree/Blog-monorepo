@@ -6,6 +6,8 @@ import {
   Body,
   Controller,
   Get,
+  Param,
+  ParseIntPipe,
   Patch,
   Query,
   Session,
@@ -39,6 +41,26 @@ export class UserPreferenceController {
     const preferences =
       await this._preferences.getPreferences(
         sessionUser.id,
+        query.fields,
+      );
+
+    return makeMessage(
+      'User preferences',
+      'Préférences utilisateur récupérées.',
+      preferences,
+    );
+  }
+
+  @Get(':id')
+  async getUserPreferences(
+    @Param('id', ParseIntPipe) id: number,
+    @Query() query: UserPreferenceQueryDto,
+    @Session() session: secureSession.Session,
+  ): Promise<Message<Record<string, unknown>>> {
+
+    const preferences =
+      await this._preferences.getPreferences(
+        id,
         query.fields,
       );
 
