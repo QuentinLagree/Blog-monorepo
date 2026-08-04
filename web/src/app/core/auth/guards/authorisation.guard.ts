@@ -22,7 +22,7 @@ export const canEditPostGuard: CanActivateFn = async (route) => {
   const post = await firstValueFrom(postService.getPostWithID(postId, {context}));
 
 
-  const isOwner = post.data.authorId === user.data.id;
+  const isOwner = post.data.authorId === user.data.user.id;
   const isAdmin = user.data.user.role === 'admin';
 
   if (isOwner || isAdmin) {
