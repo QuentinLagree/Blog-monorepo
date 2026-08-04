@@ -4,6 +4,13 @@ import { IconLoaderService } from 'src/app/shared/services/icons-loader';
 export type ButtonType = 'primary' | 'secondary' | 'danger' | 'ghost' | 'success' | 'outlined' | 'warn' | 'link';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
+
+export type ButtonData = {
+  label: string,
+  icon?: string
+}
+
+
 @Component({
   selector: 'app-button',
   templateUrl: './base-button.html',
