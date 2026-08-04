@@ -24,6 +24,7 @@ import {
 } from '@angular/router';
 import { MarkdownComponent } from 'ngx-markdown';
 import {
+  distinctUntilChanged,
   firstValueFrom,
   map,
 } from 'rxjs';
@@ -109,9 +110,15 @@ export class PostDetailComponent implements AfterViewInit {
   private resizeObserver?: ResizeObserver;
   private markdownInitializationTimeout?: number;
 
+  private viewInitialized = false;
+  private secondaryDataPostId: number | null = null;
+
+  private readonly lastSavedProgress =
+    signal<number | null>(null);
+
   readonly readingPanelOpened = signal(
-  this.getInitialReadingPanelState(),
-);
+    this.getInitialReadingPanelState(),
+  );
 
   readonly author: WritableSignal<User | undefined> =
     signal(undefined);
@@ -144,37 +151,55 @@ export class PostDetailComponent implements AfterViewInit {
     );
   });
 
+  readonly readSaved =
+    signal(false);
+
+  readonly readSaving =
+    signal(false);
+
   readonly showReadingTime =
     this._preferences.showReadingTime;
 
   private readonly routeSlug = toSignal(
     this._activatedRoute.paramMap.pipe(
       map((params) => {
-        return params.get('title') ?? '';
+        const slug =
+          params.get('title')?.trim();
+
+        return slug || undefined;
       }),
+      distinctUntilChanged(),
     ),
     {
-      initialValue: '',
+      initialValue:
+        this._activatedRoute.snapshot.paramMap
+          .get('title')
+          ?.trim() || undefined,
     },
   );
 
   readonly slugTitle =
     this.routeSlug;
 
-  readonly post = resource<Post, string>({
-    params: () => {
-      const slug =
-        this.routeSlug().trim();
-
-      return slug || '';
-    },
+  readonly post = resource<
+    Post,
+    string | undefined
+  >({
+    params: () =>
+      this.routeSlug(),
 
     loader: async ({
       params: slug,
     }): Promise<Post> => {
-      try {
-        this.resetPostState();
+      if (!slug) {
+        throw new Error(
+          "Le slug de l'article est manquant.",
+        );
+      }
 
+      this.resetPostState();
+
+      try {
         const postResponse: Message<Post> =
           await firstValueFrom(
             this._postService.getPublishedDetail(
@@ -191,7 +216,7 @@ export class PostDetailComponent implements AfterViewInit {
           );
         }
 
-        const post =
+        const currentPost =
           postResponse.data;
 
         this._breadCrumb.setWithHome([
@@ -200,21 +225,15 @@ export class PostDetailComponent implements AfterViewInit {
             url: '/home',
           },
           {
-            label: post.title,
+            label: currentPost.title,
           },
         ]);
 
-        this.checkPostAccess(post);
+        this.checkPostAccess(
+          currentPost,
+        );
 
-        await this.loadAuthor(post);
-
-        if (post.id) {
-          await this.loadLikeStatus(
-            post.id,
-          );
-        }
-
-        return post;
+        return currentPost;
       } catch (error: unknown) {
         const normalizedError =
           this.normalizeError(error);
@@ -236,20 +255,55 @@ export class PostDetailComponent implements AfterViewInit {
         this.post.value();
 
       if (!currentPost) {
-        this.resetReadingNavigation();
         return;
       }
 
-      this.scheduleReadingNavigationInitialization();
+      if (
+        this.secondaryDataPostId !==
+        currentPost.id
+      ) {
+        this.secondaryDataPostId =
+          currentPost.id ?? null;
+
+        void this.loadSecondaryData(
+          currentPost,
+        );
+      }
+
+      if (this.viewInitialized) {
+        this.scheduleReadingNavigationInitialization();
+      }
     });
 
     this._destroyRef.onDestroy(() => {
+      this.saveCurrentReading();
       this.destroyReadingNavigation();
     });
   }
 
   ngAfterViewInit(): void {
-    this.scheduleReadingNavigationInitialization();
+    this.viewInitialized = true;
+
+    if (this.post.hasValue()) {
+      this.scheduleReadingNavigationInitialization();
+    }
+  }
+
+  private async loadSecondaryData(
+    post: Post,
+  ): Promise<void> {
+    await this.loadAuthor(post);
+
+    const sessionId =
+      this._sessionService.getUserIdSync();
+
+    if (!sessionId || !post.id) {
+      return;
+    }
+
+    await this.loadLikeStatus(
+      post.id,
+    );
   }
 
   private resetPostState(): void {
@@ -260,6 +314,8 @@ export class PostDetailComponent implements AfterViewInit {
     this.hasLiked.set(false);
     this.likeLoading.set(false);
 
+    this.secondaryDataPostId = null;
+
     this.resetReadingNavigation();
   }
 
@@ -268,6 +324,10 @@ export class PostDetailComponent implements AfterViewInit {
     this.activeHeadingIndex.set(0);
     this.readingProgress.set(0);
     this.mobileSummaryOpened.set(false);
+
+    this.readSaved.set(false);
+    this.readSaving.set(false);
+    this.lastSavedProgress.set(null);
   }
 
   private checkPostAccess(
@@ -592,7 +652,8 @@ export class PostDetailComponent implements AfterViewInit {
 
   private scheduleReadingNavigationInitialization(): void {
     if (
-      typeof window === 'undefined'
+      typeof window === 'undefined' ||
+      !this.viewInitialized
     ) {
       return;
     }
@@ -607,8 +668,11 @@ export class PostDetailComponent implements AfterViewInit {
 
     this.markdownInitializationTimeout =
       window.setTimeout(() => {
+        this.markdownInitializationTimeout =
+          undefined;
+
         this.initializeReadingNavigation();
-      });
+      }, 0);
   }
 
   private initializeReadingNavigation(): void {
@@ -799,51 +863,46 @@ export class PostDetailComponent implements AfterViewInit {
   }
 
   private readonly updateReadingProgress =
-    (): void => {
-      const markdownElement =
-        this.markdownContent?.nativeElement;
+  (): void => {
+    const markdownElement =
+      this.markdownContent?.nativeElement;
 
-      if (!markdownElement) {
-        return;
-      }
+    if (!markdownElement) {
+      return;
+    }
 
-      const bounds =
-        markdownElement.getBoundingClientRect();
+    const bounds =
+      markdownElement.getBoundingClientRect();
 
-      const viewportHeight =
-        window.innerHeight;
+    const viewportHeight =
+      window.innerHeight;
 
-      const articleStart =
-        window.scrollY +
-        bounds.top -
-        viewportHeight * 0.25;
+    const articleStart =
+      window.scrollY +
+      bounds.top -
+      viewportHeight * 0.25;
 
-      const articleEnd =
-        articleStart +
-        markdownElement.offsetHeight -
-        viewportHeight * 0.5;
+    const articleEnd =
+      articleStart +
+      markdownElement.offsetHeight -
+      viewportHeight * 0.5;
 
-      const readingDistance =
-        articleEnd -
-        articleStart;
+    const readingDistance =
+      articleEnd -
+      articleStart;
 
-      if (
-        readingDistance <= 0
-      ) {
-        this.readingProgress.set(
-          100,
-        );
+    let normalizedProgress = 0;
 
-        return;
-      }
-
+    if (readingDistance <= 0) {
+      normalizedProgress = 100;
+    } else {
       const progress =
         ((window.scrollY -
           articleStart) /
           readingDistance) *
         100;
 
-      this.readingProgress.set(
+      normalizedProgress =
         Math.round(
           Math.min(
             100,
@@ -852,20 +911,32 @@ export class PostDetailComponent implements AfterViewInit {
               progress,
             ),
           ),
+        );
+    }
+
+    this.readingProgress.set(
+      normalizedProgress,
+    );
+
+    if (
+      normalizedProgress >= 80 &&
+      !this.readSaved() &&
+      !this.readSaving()
+    ) {
+      void this.savePostAsRead();
+    }
+
+    const headings =
+      Array.from(
+        markdownElement.querySelectorAll<HTMLElement>(
+          'h2, h3',
         ),
       );
 
-      const headings =
-        Array.from(
-          markdownElement.querySelectorAll<HTMLElement>(
-            'h2, h3',
-          ),
-        );
-
-      this.findClosestHeading(
-        headings,
-      );
-    };
+    this.findClosestHeading(
+      headings,
+    );
+  };
 
   private createHeadingId(
     heading: string,
@@ -977,60 +1048,165 @@ export class PostDetailComponent implements AfterViewInit {
   }
 
   toggleReadingPanel(): void {
-  this.readingPanelOpened.update(
-    (opened) => {
-      const nextState = !opened;
+    this.readingPanelOpened.update(
+      (opened) => {
+        const nextState = !opened;
 
-      this.saveReadingPanelState(
-        nextState,
+        this.saveReadingPanelState(
+          nextState,
+        );
+
+        return nextState;
+      },
+    );
+  }
+
+  openReadingPanel(): void {
+    this.readingPanelOpened.set(true);
+    this.saveReadingPanelState(true);
+  }
+
+  closeReadingPanel(): void {
+    this.readingPanelOpened.set(false);
+    this.saveReadingPanelState(false);
+  }
+
+  private getInitialReadingPanelState(): boolean {
+    if (
+      typeof window === 'undefined'
+    ) {
+      return true;
+    }
+
+    const storedState =
+      window.localStorage.getItem(
+        READING_PANEL_STORAGE_KEY,
       );
 
-      return nextState;
-    },
-  );
-}
+    if (storedState === null) {
+      return true;
+    }
 
-openReadingPanel(): void {
-  this.readingPanelOpened.set(true);
-  this.saveReadingPanelState(true);
-}
-
-closeReadingPanel(): void {
-  this.readingPanelOpened.set(false);
-  this.saveReadingPanelState(false);
-}
-
-private getInitialReadingPanelState(): boolean {
-  if (
-    typeof window === 'undefined'
-  ) {
-    return true;
+    return storedState === 'true';
   }
 
-  const storedState =
-    window.localStorage.getItem(
+  private saveReadingPanelState(
+    opened: boolean,
+  ): void {
+    if (
+      typeof window === 'undefined'
+    ) {
+      return;
+    }
+
+    window.localStorage.setItem(
       READING_PANEL_STORAGE_KEY,
+      String(opened),
     );
-
-  if (storedState === null) {
-    return true;
   }
 
-  return storedState === 'true';
-}
+  private async savePostAsRead(): Promise<void> {
+    if (
+      this.readSaved() ||
+      this.readSaving() ||
+      !this.post.hasValue()
+    ) {
+      return;
+    }
 
-private saveReadingPanelState(
-  opened: boolean,
-): void {
-  if (
-    typeof window === 'undefined'
-  ) {
-    return;
+    const userId =
+      this._sessionService.getUserIdSync();
+
+    const postId =
+      this.post.value().id;
+
+    const progress =
+      this.readingProgress();
+
+    if (
+      !userId ||
+      !postId ||
+      progress <= 0
+    ) {
+      return;
+    }
+
+    this.readSaving.set(true);
+
+    try {
+      await firstValueFrom(
+        this._postService.updateReadingProgress(
+          postId,
+          progress,
+          {
+            context: SILENT_CONTEXT,
+          },
+        ),
+      );
+
+      this.lastSavedProgress.set(
+        progress,
+      );
+
+      this.readSaved.set(
+        progress >= 80,
+      );
+    } catch (error: unknown) {
+      console.error(
+        "Impossible d'enregistrer la lecture de l'article.",
+        error,
+      );
+    } finally {
+      this.readSaving.set(false);
+    }
   }
 
-  window.localStorage.setItem(
-    READING_PANEL_STORAGE_KEY,
-    String(opened),
-  );
-}
+  private saveCurrentReading(): void {
+    if (
+      !this.post.hasValue() ||
+      this.readSaving()
+    ) {
+      return;
+    }
+
+    const userId =
+      this._sessionService.getUserIdSync();
+
+    const postId =
+      this.post.value().id;
+
+    const progress =
+      this.readingProgress();
+
+    if (
+      !userId ||
+      !postId ||
+      progress <= 0 ||
+      progress ===
+        this.lastSavedProgress()
+    ) {
+      return;
+    }
+
+    this._postService.updateReadingProgress(
+      postId,
+      progress,
+      {
+        context: SILENT_CONTEXT,
+      },
+    ).subscribe({
+      next: () => {
+        this.lastSavedProgress.set(
+          progress,
+        );
+      },
+      error: (error: unknown) => {
+        console.error(
+          'Impossible de sauvegarder la progression de lecture.',
+          error,
+        );
+      },
+    });
+  }
+
 }

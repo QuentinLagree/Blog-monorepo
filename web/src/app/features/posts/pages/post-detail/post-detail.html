@@ -3,9 +3,7 @@
 <section class="post-detail-page page">
   <div class="page-container page-container--wide">
     @if (post.isLoading()) {
-      <section
-        class="session-loading-page"
-        aria-label="Chargement de l'article">
+    <section class="session-loading-page" aria-label="Chargement de l'article">
 
       <div class="session-loading-card card card--md">
         <div class="session-loading-logo" aria-hidden="true">
@@ -45,10 +43,7 @@
       </p>
 
       <div class="empty-card__actions">
-          <app-button
-            type="secondary"
-            label="Retour aux articles"
-            (clicked)="goBack()">
+        <app-button type="secondary" label="Retour aux articles" (clicked)="goBack()">
         </app-button>
       </div>
     </div>
@@ -63,7 +58,8 @@
 
             <span class="post-detail__date">
               {{
-              currentPost.published_at || currentPost.created_at
+              currentPost.published_at ||
+              currentPost.created_at
               | date: 'dd/MM/yyyy'
               }}
             </span>
@@ -73,6 +69,20 @@
               {{ readingTime() }} min de lecture
             </span>
             }
+
+            <!-- @if (isPostRead()) {
+            <span class="card__badge card__badge--success" title="Vous avez terminé cet article">
+              Lu
+            </span>
+            } @else if (hasStartedReading()) {
+            <span class="card__badge card__badge--secondary" [title]="
+        'Progression enregistrée : ' +
+        savedReadingProgress() +
+        ' %'
+      ">
+              En cours · {{ savedReadingProgress() }} %
+            </span>
+            } -->
           </div>
 
           <h1 class="page-header__title">
@@ -85,9 +95,7 @@
           </p>
           }
 
-            <a
-              class="post-detail__author"
-              [routerLink]="['/account/users', currentPost.authorId]">
+          <a class="post-detail__author" [routerLink]="['/account/users', currentPost.authorId]">
 
             <div class="post-detail__author-avatar" aria-hidden="true">
               {{
@@ -234,9 +242,7 @@
       </div>
       }
 
-      <div
-        class="post-detail__reading-layout"
-        [class.post-detail__reading-layout--panel-opened]="
+      <div class="post-detail__reading-layout" [class.post-detail__reading-layout--panel-opened]="
           readingPanelOpened()
         ">
 
@@ -247,154 +253,117 @@
 
         <div class="post-detail__reading-sidebar">
           @if (readingPanelOpened()) {
-  <aside
-    class="reading-panel"
-    aria-label="Navigation dans l’article">
+          <aside class="reading-panel" aria-label="Navigation dans l’article">
 
-    <button
-      type="button"
-      class="reading-panel__close"
-      aria-label="Masquer le panneau de lecture"
-      title="Masquer le panneau"
-      (click)="closeReadingPanel()">
+            <button type="button" class="reading-panel__close" aria-label="Masquer le panneau de lecture"
+              title="Masquer le panneau" (click)="closeReadingPanel()">
 
-      <span aria-hidden="true">×</span>
-    </button>
+              <span aria-hidden="true">×</span>
+            </button>
 
-    <div class="reading-panel__header">
-      <div>
-        <p class="reading-panel__eyebrow">
-          Progression
-        </p>
+            <div class="reading-panel__header">
+              <div>
+                <p class="reading-panel__eyebrow">
+                  Progression
+                </p>
 
-        <strong class="reading-panel__percentage">
-          {{ readingProgress() }} %
-        </strong>
-      </div>
+                <strong class="reading-panel__percentage">
+                  {{ readingProgress() }} %
+                </strong>
+              </div>
 
-      @if (tableOfContents().length) {
-        <span class="reading-panel__current-step">
-          {{ activeHeadingIndex() + 1 }}/{{ tableOfContents().length }}
-        </span>
-      }
-    </div>
+              @if (tableOfContents().length) {
+              <span class="reading-panel__current-step">
+                {{ activeHeadingIndex() + 1 }}/{{ tableOfContents().length }}
+              </span>
+              }
+            </div>
 
-    <div
-      class="reading-panel__progress"
-      role="progressbar"
-      aria-label="Progression de la lecture"
-      aria-valuemin="0"
-      aria-valuemax="100"
-      [attr.aria-valuenow]="readingProgress()">
+            <div class="reading-panel__progress" role="progressbar" aria-label="Progression de la lecture"
+              aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="readingProgress()">
 
-      <span
-        class="reading-panel__progress-value"
-        [style.width.%]="readingProgress()">
-      </span>
-    </div>
+              <span class="reading-panel__progress-value" [style.width.%]="readingProgress()">
+              </span>
+            </div>
 
-    @if (activeHeading(); as heading) {
-      <div class="reading-panel__current">
-        <span>Lecture actuelle</span>
-        <strong>{{ heading.label }}</strong>
-      </div>
-    }
+            @if (activeHeading(); as heading) {
+            <div class="reading-panel__current">
+              <span>Lecture actuelle</span>
+              <strong>{{ heading.label }}</strong>
+            </div>
+            }
 
-    @if (tableOfContents().length) {
-      <nav
-        class="reading-panel__toc"
-        aria-label="Sommaire de l’article">
+            @if (tableOfContents().length) {
+            <nav class="reading-panel__toc" aria-label="Sommaire de l’article">
 
-        <p class="reading-panel__toc-title">
-          Dans cet article
-        </p>
+              <p class="reading-panel__toc-title">
+                Dans cet article
+              </p>
 
-        <ol class="reading-panel__toc-list">
-          @for (
-            heading of tableOfContents();
-            track heading.id;
-            let index = $index
-          ) {
-            <li
-              class="reading-panel__toc-item"
-              [class.reading-panel__toc-item--sub]="
+              <ol class="reading-panel__toc-list">
+                @for (
+                heading of tableOfContents();
+                track heading.id;
+                let index = $index
+                ) {
+                <li class="reading-panel__toc-item" [class.reading-panel__toc-item--sub]="
                 heading.level === 3
-              "
-              [class.reading-panel__toc-item--active]="
+              " [class.reading-panel__toc-item--active]="
                 index === activeHeadingIndex()
               ">
 
-              <button
-                type="button"
-                class="reading-panel__toc-link"
-                [attr.aria-current]="
+                  <button type="button" class="reading-panel__toc-link" [attr.aria-current]="
                   index === activeHeadingIndex()
                     ? 'location'
                     : null
-                "
-                (click)="scrollToHeading(heading.id)">
+                " (click)="scrollToHeading(heading.id)">
 
-                <span
-                  class="reading-panel__toc-marker"
-                  aria-hidden="true">
-                </span>
+                    <span class="reading-panel__toc-marker" aria-hidden="true">
+                    </span>
 
-                <span class="reading-panel__toc-label">
-                  {{ heading.label }}
-                </span>
-              </button>
-            </li>
-          }
-        </ol>
-      </nav>
-    }
+                    <span class="reading-panel__toc-label">
+                      {{ heading.label }}
+                    </span>
+                  </button>
+                </li>
+                }
+              </ol>
+            </nav>
+            }
 
-    <div class="reading-panel__contribution">
-      <p>
-        Une information manque ou pourrait être améliorée ?
-      </p>
+            <div class="reading-panel__contribution">
+              <p>
+                Une information manque ou pourrait être améliorée ?
+              </p>
 
-      <app-button
-        type="primary"
-        size="sm"
-        label="Contribuer"
-        (clicked)="contribute()">
-      </app-button>
-    </div>
-  </aside>
+              <app-button type="primary" size="sm" label="Contribuer" (clicked)="contribute()">
+              </app-button>
+            </div>
+          </aside>
           } @else {
-            <button
-              type="button"
-              class="reading-panel-trigger"
-              aria-label="Afficher le sommaire et la progression"
-              title="Afficher le panneau de lecture"
-              (click)="openReadingPanel()">
+          <button type="button" class="reading-panel-trigger" aria-label="Afficher le sommaire et la progression"
+            title="Afficher le panneau de lecture" (click)="openReadingPanel()">
 
-              <span
-                class="reading-panel-trigger__progress"
-                aria-hidden="true">
+            <span class="reading-panel-trigger__progress" aria-hidden="true">
 
-                <span
-                  [style.height.%]="readingProgress()">
-                </span>
+              <span [style.height.%]="readingProgress()">
+              </span>
+            </span>
+
+            <span class="reading-panel-trigger__content">
+              <span class="reading-panel-trigger__icon" aria-hidden="true">
+                ☰
               </span>
 
-              <span class="reading-panel-trigger__content">
-                <span
-                  class="reading-panel-trigger__icon"
-                  aria-hidden="true">
-                  ☰
-                </span>
-
-                <span class="reading-panel-trigger__label">
-                  Sommaire
-                </span>
-
-                <strong class="reading-panel-trigger__percentage">
-                  {{ readingProgress() }} %
-                </strong>
+              <span class="reading-panel-trigger__label">
+                Sommaire
               </span>
-            </button>
+
+              <strong class="reading-panel-trigger__percentage">
+                {{ readingProgress() }} %
+              </strong>
+            </span>
+          </button>
           }
         </div>
       </div>
