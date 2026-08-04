@@ -1,4 +1,5 @@
   import { Routes } from '@angular/router';
+import { redirectCurrentUserProfileGuard } from './guards/user-detail-to-profil.guard';
 
   export const accountRoutes: Routes = [
     {
@@ -21,6 +22,7 @@
     {
       path: 'users/:id',
       loadComponent: () => import('./pages/user-detail/user-detail').then((m) => m.UserDetailComponent),
+      canActivate: [redirectCurrentUserProfileGuard],
     data: {
       breadcrumb: 'Profil contributeur',
       dynamicBreadcrumb: true,
