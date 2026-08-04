@@ -1,0 +1,20 @@
+@let primaryButton = this.primaryAction && this.primaryButton();
+@let secondaryButton = this.secondaryAction && this.secondaryButton();
+<div class="home-empty-state empty-card">
+    <h3 class="empty-card__title">
+        Aucun article
+    </h3>
+
+    <p class="empty-card__description">
+        Aucune contribution n’est disponible pour le moment.
+    </p>
+
+    @if (primaryButton) {
+    <div class="empty-card__actions">
+        <app-button icon="icon-plus" label="Créer le premier article" (clicked)="doPrimaryAction()"/>
+        @if (secondaryButton) {
+            <app-button [icon]="this.secondaryButton()?.icon ?? ''" [label]="this.secondaryButton()!.label" (clicked)="doSecondaryAction()"/>
+        }
+    </div>
+    }
+</div>
