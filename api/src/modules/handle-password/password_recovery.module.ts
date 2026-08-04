@@ -1,32 +1,23 @@
-import { Global, Module } from '@nestjs/common';
-import { PasswordRecoveryController } from './password_recovery.controller';
-import { AuthService } from '../auth/auth.service';
-import { UserService } from '../user/user.service';
-import { TokenService } from 'src/commons/services/token.service';
-import { PrismaService } from 'src/commons/prisma/prisma.service';
-import { PasswordService } from 'src/commons/services/argon.service';
+import { Module } from '@nestjs/common';
+
+import { BullMQModule } from 'src/commons/mailing/bullmq/bullmq.module';
 import { MailModule } from 'src/commons/mailing/mail/mailer.module';
-import { ArticleService } from '../post/posts.service';
+import { TokenModule } from 'src/commons/services/token.module';
+
+import { AuthModule } from '../auth/auth.module';
+import { UserModule } from '../user/user.module';
+import { PasswordRecoveryController } from './password_recovery.controller';
 
 @Module({
-  imports: [MailModule], // ← c'est tout ce qu'il faut côté mail
-  controllers: [PasswordRecoveryController],
-  providers: [
-    AuthService,
-    PrismaService,
-    UserService,
-    TokenService,
-    PasswordService,
-    ArticleService
+  imports: [
+    AuthModule,
+    UserModule,
+    TokenModule,
+    MailModule,
+    BullMQModule,
   ],
-  exports: [
-    AuthService,
-    PrismaService,
-    UserService,
-    TokenService,
-    PasswordService,
-    ArticleService
+  controllers: [
+    PasswordRecoveryController,
   ],
 })
 export class PasswordRecoveryModule {}
-

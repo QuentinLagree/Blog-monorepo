@@ -19,6 +19,6 @@ import { RedisModule } from 'src/commons/redis/redis.module'; // doit exporter R
   },
   BullMQService,
 ],
-exports: [MAIL_QUEUE, BullMQService],
+exports: [MAIL_QUEUE],
 })
 export class BullMQModule {}

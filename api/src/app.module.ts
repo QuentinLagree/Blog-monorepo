@@ -1,17 +1,26 @@
-import { Global, Module } from '@nestjs/common';
-import { AppController } from './app.controller';
+import { Module } from '@nestjs/common';
+
 import { ConfigModule } from '@nestjs/config';
+
+import { AppController } from './app.controller';
 import { LoggerService } from './commons/logger/logger.service';
 import { ConfigurationModule } from './config/config.module';
 import { moduleModules } from './modules/app-modules';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
-    ConfigurationModule,  // ← expose MailModule, Prisma, Redis, BullMQ
-    ...moduleModules,     // UserModule, AuthModule, PasswordRecoveryModule, etc.
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true,
+    }),
+    ConfigurationModule,
+    ...moduleModules,
   ],
-  controllers: [AppController],
-  providers: [LoggerService], // évite d'ajouter ici RedisService/BullMQService s’ils sont déjà dans leurs modules
+  controllers: [
+    AppController,
+  ],
+  providers: [
+    LoggerService,
+  ],
 })
 export class AppModule {}

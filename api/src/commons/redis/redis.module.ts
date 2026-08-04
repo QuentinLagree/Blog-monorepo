@@ -9,9 +9,7 @@ const RedisProvider: Provider = {
   useFactory: () => {
     const url = process.env['REDIS_URL'] ?? 'redis://redis:6379';
     const options: RedisOptions = {
-      // ⬇️ BullMQ exige ceci
       maxRetriesPerRequest: null,
-      // ⬇️ souvent recommandé avec BullMQ (évite une attente initiale)
       enableReadyCheck: false,
     };
     const client = new Redis(url, options);

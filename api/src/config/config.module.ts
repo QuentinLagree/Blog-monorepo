@@ -1,13 +1,13 @@
-import { PrismaModule } from "src/commons/prisma/prisma.module";
-import { MailModule } from "../commons/mailing/mail/mailer.module";
-import { BullMQModule } from "src/commons/mailing/bullmq/bullmq.module";
-import { RedisModule } from "src/commons/redis/redis.module";
-import { Global, Module } from "@nestjs/common";
+import { Global, Module } from '@nestjs/common';
+
+import { BullMQModule } from 'src/commons/mailing/bullmq/bullmq.module';
+import { MailModule } from 'src/commons/mailing/mail/mailer.module';
+import { PrismaModule } from 'src/commons/prisma/prisma.module';
+import { RedisModule } from 'src/commons/redis/redis.module';
 
 @Global()
 @Module({
   imports: [
-    // ne PAS ajouter MailerModule ici
     MailModule,
     PrismaModule,
     RedisModule,
