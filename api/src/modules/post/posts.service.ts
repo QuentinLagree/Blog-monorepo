@@ -1,7 +1,8 @@
 import {
+  BadRequestException,
   Injectable
 } from '@nestjs/common';
-import { Post as Article, Post, Prisma } from '@prisma/client';
+import { Post as Article, Post, PostRead, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { Role } from 'src/commons/roles/role.enum';
 import { PaginationDto } from '../pagination/pagination.dto';
@@ -14,6 +15,7 @@ import { UpdatePostDto } from './dto/update.post.dto';
 import { PostNotFoundException } from './exceptions/post-not-found.exception';
 import { StatusLikeDto } from './dto/status-like.dto';
 import { MetaPaginationDto } from '../pagination/meta.pagination.dto';
+import { StatusReadingDto } from '../user/dto/status-reading.dto';
 
 @Injectable()
 export class ArticleService {
@@ -173,5 +175,96 @@ export class ArticleService {
       liked: like !== null,
       likesCount,
     };
+  }
+
+  async getReadingStatus(
+  userId: number,
+  postId: number,
+): Promise<StatusReadingDto> {
+  await this.show({
+    id: postId,
+  });
+
+  const postRead =
+    await this._prisma.postRead.findUnique({
+      where: {
+        userId_postId: {
+          userId,
+          postId,
+        },
+      },
+      select: {
+        progress: true,
+        completed: true,
+      },
+    });
+
+  if (!postRead) {
+    return {
+      hasStarted: false,
+      completed: false,
+      progress: 0,
+    };
+  }
+
+  return {
+    hasStarted: true,
+    completed: postRead.completed,
+    progress: postRead.progress,
+  };
+}
+
+  async updateReadingProgress(
+    userId: number,
+    postId: number,
+    progress: number,
+  ): Promise<PostRead> {
+    const post = await this._prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!post) {
+      throw new PostNotFoundException(
+        postId,
+      );
+    }
+
+    return this._prisma.postRead.upsert({
+      where: {
+        userId_postId: {
+          userId,
+          postId,
+        },
+      },
+      create: {
+        userId,
+        postId,
+        progress,
+        completed: progress >= 95,
+      },
+      update: {
+        progress,
+        completed: progress >= 95,
+      },
+    });
+  }
+
+  private validateReadingProgress(
+    progress: number,
+  ): void {
+    if (
+      !Number.isInteger(progress) ||
+      progress < 0 ||
+      progress > 100
+    ) {
+      throw new BadRequestException(
+        'La progression doit être un nombre entier compris entre 0 et 100.',
+      );
+    }
   }
 }
