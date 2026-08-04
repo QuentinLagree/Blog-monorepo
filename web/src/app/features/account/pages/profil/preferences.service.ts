@@ -86,6 +86,10 @@ readonly preferences =
       this._preferences().showReadingTime,
   );
 
+  readonly visibleProfil = computed(
+    () => this.preferences().profileVisible
+  )
+
   readonly showAuthorDetails = computed(
     () =>
       this._preferences().showAuthorDetails,
