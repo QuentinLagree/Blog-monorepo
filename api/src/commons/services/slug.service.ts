@@ -75,12 +75,6 @@ export class SlugService {
         ),
       );
 
-    console.log({
-      articleTitle: article.title,
-      receivedSlug,
-      expectedSlug,
-    });
-
     if (expectedSlug !== receivedSlug) {
       throw new PostNotFoundWithSlugException(
         receivedSlug,
