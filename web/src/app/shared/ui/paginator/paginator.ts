@@ -4,10 +4,13 @@ import {
   EventEmitter,
   Input,
   Output,
+  Signal,
   computed,
   signal,
 } from '@angular/core';
 import { BaseButtonComponent } from '../form/buttons/base-button';
+import { FormControl } from '@angular/forms';
+import { SelectValidatorFactory } from '../form/selects/models/select-validator.factory';
 
 
 @Component({
@@ -29,8 +32,18 @@ import { BaseButtonComponent } from '../form/buttons/base-button';
         </app-button>
       }
     </div>
-
     <div class="paginator__controls">
+      Limite:
+      <div class="paginator__pages">
+      @for (limit of limits(); track limit) {
+        <app-button
+          size="sm"
+          [type]="limit === pageSize() ? 'secondary' : 'ghost'"
+          [label]="limit.toString()"
+          (click)="changeSize(limit)">
+        </app-button>
+      }
+    </div>
       <app-button
         size="sm"
         type="secondary"
@@ -53,11 +66,12 @@ import { BaseButtonComponent } from '../form/buttons/base-button';
 })
 export class PaginatorComponent {
   @Output() pageChange = new EventEmitter<number>();
+  @Output() sizeChange = new EventEmitter<number>();
 
   @Input() set CurrentPage(value: number) {
     this._currentPage.set(value);
   }
-  
+
   @Input() set PageSize(value: number) {
     this._pageSize.set(value);
   }
@@ -69,6 +83,15 @@ export class PaginatorComponent {
   private _currentPage = signal(1);
   private _pageSize = signal(5);
   private _totalItems = signal(0);
+
+  selectControl = new FormControl('', [
+    SelectValidatorFactory({
+      validate: false,
+      required: false,
+    })
+  ]);
+
+  limits: Signal<number[]> = signal([2, 5, 10])
 
   currentPage = this._currentPage.asReadonly();
   pageSize = this._pageSize.asReadonly();
@@ -87,6 +110,13 @@ export class PaginatorComponent {
 
     this._currentPage.set(page);
     this.pageChange.emit(page);
+  }
+
+  changeSize(limit: number): void {
+    if (!this.limits().includes(limit)) return;
+
+    this._pageSize.set(limit);
+    this.sizeChange.emit(limit);
   }
 
   next(): void {
