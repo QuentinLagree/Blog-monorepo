@@ -1,0 +1,191 @@
+<div class="post-detail__reading-sidebar">
+  @if (opened()) {
+    <aside
+      class="reading-panel"
+      aria-label="Navigation dans l’article"
+    >
+      <button
+        type="button"
+        class="reading-panel__close"
+        aria-label="Masquer le panneau de lecture"
+        title="Masquer le panneau"
+        (click)="closeRequested.emit()"
+      >
+        <span aria-hidden="true">
+          ×
+        </span>
+      </button>
+
+      <div class="reading-panel__header">
+        <div>
+          <p class="reading-panel__eyebrow">
+            Progression
+          </p>
+
+          <strong
+            class="reading-panel__percentage"
+          >
+            {{ progress() }} %
+          </strong>
+        </div>
+
+        @if (headings().length) {
+          <span
+            class="reading-panel__current-step"
+          >
+            {{ activeHeadingIndex() + 1 }}/{{
+              headings().length
+            }}
+          </span>
+        }
+      </div>
+
+      <div
+        class="reading-panel__progress"
+        role="progressbar"
+        aria-label="Progression de la lecture"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        [attr.aria-valuenow]="progress()"
+      >
+        <span
+          class="reading-panel__progress-value"
+          [style.width.%]="progress()"
+        ></span>
+      </div>
+
+      @if (activeHeading(); as heading) {
+        <div
+          class="reading-panel__current"
+        >
+          <span>
+            Lecture actuelle
+          </span>
+
+          <strong>
+            {{ heading.label }}
+          </strong>
+        </div>
+      }
+
+      @if (headings().length) {
+        <nav
+          class="reading-panel__toc"
+          aria-label="Sommaire de l’article"
+        >
+          <p
+            class="reading-panel__toc-title"
+          >
+            Dans cet article
+          </p>
+
+          <ol
+            class="reading-panel__toc-list"
+          >
+            @for (
+              heading of headings();
+              track heading.id;
+              let index = $index
+            ) {
+              <li
+                class="reading-panel__toc-item"
+                [class.reading-panel__toc-item--sub]="
+                  heading.level === 3
+                "
+                [class.reading-panel__toc-item--active]="
+                  index ===
+                  activeHeadingIndex()
+                "
+              >
+                <button
+                  type="button"
+                  class="reading-panel__toc-link"
+                  [attr.aria-current]="
+                    index ===
+                    activeHeadingIndex()
+                      ? 'location'
+                      : null
+                  "
+                  (click)="
+                    headingSelected.emit(
+                      heading.id
+                    )
+                  "
+                >
+                  <span
+                    class="reading-panel__toc-marker"
+                    aria-hidden="true"
+                  ></span>
+
+                  <span
+                    class="reading-panel__toc-label"
+                  >
+                    {{ heading.label }}
+                  </span>
+                </button>
+              </li>
+            }
+          </ol>
+        </nav>
+      }
+
+      <div
+        class="reading-panel__contribution"
+      >
+        <p>
+          Une information manque ou
+          pourrait être améliorée ?
+        </p>
+
+        <app-button
+          type="primary"
+          size="sm"
+          label="Contribuer"
+          (clicked)="
+            contributionRequested.emit()
+          "
+        />
+      </div>
+    </aside>
+  } @else {
+    <button
+      type="button"
+      class="reading-panel-trigger"
+      aria-label="Afficher le sommaire et la progression"
+      title="Afficher le panneau de lecture"
+      (click)="openRequested.emit()"
+    >
+      <span
+        class="reading-panel-trigger__progress"
+        aria-hidden="true"
+      >
+        <span
+          [style.height.%]="progress()"
+        ></span>
+      </span>
+
+      <span
+        class="reading-panel-trigger__content"
+      >
+        <span
+          class="reading-panel-trigger__icon"
+          aria-hidden="true"
+        >
+          ☰
+        </span>
+
+        <span
+          class="reading-panel-trigger__label"
+        >
+          Sommaire
+        </span>
+
+        <strong
+          class="reading-panel-trigger__percentage"
+        >
+          {{ progress() }} %
+        </strong>
+      </span>
+    </button>
+  }
+</div>

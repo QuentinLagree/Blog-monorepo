@@ -16,6 +16,8 @@ import { DangerButtonComponent } from "../../form/buttons/button-danger/button-d
 import { ContextMenuTriggerDirective } from "../../context-menu/context-menu.directive";
 import { AdminActionsMenu } from "../../context-menu/config/context-menu-options";
 import { ConfirmModalComponent } from "src/app/shared/helpers/modal/confirm-modal/confirm-modal";
+import { ReadingStatus } from "src/app/features/posts/pages/post-detail/models/post-detail.types";
+import { PostReadingProgressService } from "src/app/shared/services/post-reading-progress.service";
 
 const SILENT_CONTEXT = new HttpContext().set(
   SUCCESS_MESSAGE,
@@ -26,13 +28,27 @@ const SILENT_CONTEXT = new HttpContext().set(
   selector: 'app-post-card',
   templateUrl: 'post-card.html',
   imports: [DatePipe, BaseButtonComponent, EditButtonComponent, RouterLink, DangerButtonComponent,
-    ContextMenuTriggerDirective, ConfirmModalComponent]
+    ContextMenuTriggerDirective, ConfirmModalComponent],
+    providers: [PostReadingProgressService]
 })
 export class PostCard {
 
   private _user: UserService = inject(UserService);
   private _router: Router = inject(Router)
   private _session: SessionService = inject(SessionService)
+
+  
+    private readonly reading =
+      inject(PostReadingProgressService);
+
+  readonly savedReadingProgress =
+    this.reading.savedProgress;
+
+  readonly hasStartedReading =
+    this.reading.hasStarted;
+
+  readonly isPostRead =
+    this.reading.completed;
 
   post: InputSignal<Post> = input.required<Post>()
   author: WritableSignal<User | undefined> = signal(undefined);
@@ -61,6 +77,15 @@ export class PostCard {
       const currentPost = this.post()
       const authorId = currentPost.authorId
       this.detailPath = this.getDetailPath()
+      if (this.sessionId !== authorId) {
+        this.reading.initialize(
+        currentPost.id!,
+        Boolean(
+          this._session
+            .getUserIdSync(),
+        ),
+      )
+      }
 
       if (!authorId) {
         this.author.set(undefined);
@@ -113,7 +138,7 @@ export class PostCard {
         break;
     }
 
-    // this.doAfterAction()
+    this.doAfterAction()
   }
 
   getSlugifyPath(): string {

@@ -1,0 +1,111 @@
+<header class="post-detail__header page-header">
+  <div class="post-detail__main">
+    <div class="post-detail__topline">
+      <span
+        class="card__badge card__badge--primary"
+      >
+        Article
+      </span>
+
+      <span class="post-detail__date">
+        {{
+          post().published_at ||
+            post().created_at
+            | date: 'dd/MM/yyyy'
+        }}
+      </span>
+
+      @if (showReadingTime()) {
+        <span class="post-detail__reading-time">
+          {{ readingTime() }} min de lecture
+        </span>
+      }
+
+      @if (isPostRead()) {
+        <span
+          class="card__badge card__badge--success"
+          title="Vous avez terminé cet article"
+        >
+          Lu
+        </span>
+      } @else if (hasStartedReading()) {
+        <span
+          class="card__badge card__badge--secondary"
+          [title]="
+            'Progression enregistrée : ' +
+            savedReadingProgress() +
+            ' %'
+          "
+        >
+          En cours ·
+          {{ savedReadingProgress() }} %
+        </span>
+      }
+    </div>
+
+    <h1 class="page-header__title">
+      {{ post().title }}
+    </h1>
+
+    @if (post().description) {
+      <p
+        class="page-header__description post-detail__description"
+      >
+        {{ post().description }}
+      </p>
+    }
+
+    <a
+      class="post-detail__author"
+      [routerLink]="[
+        '/account/users',
+        post().authorId
+      ]"
+    >
+      <div
+        class="post-detail__author-avatar"
+        aria-hidden="true"
+      >
+        {{
+          author()?.pseudo?.charAt(0) ||
+          author()?.prenom?.charAt(0) ||
+          '?'
+        }}
+      </div>
+
+      <div
+        class="post-detail__author-content"
+      >
+        <span>
+          Écrit par
+        </span>
+
+        <strong>
+          {{
+            author()?.pseudo ||
+              'Auteur inconnu'
+          }}
+        </strong>
+      </div>
+    </a>
+  </div>
+
+  <app-post-detail-aside
+    [author]="author()"
+    [readingTime]="readingTime()"
+    [showReadingTime]="
+      showReadingTime()
+    "
+    [likesCount]="likesCount()"
+    [hasLiked]="hasLiked()"
+    [likeLoading]="likeLoading()"
+    [isAuthor]="isAuthor()"
+    (likeToggled)="likeToggled.emit()"
+    (contributionRequested)="
+      contributionRequested.emit()
+    "
+    (shareRequested)="
+      shareRequested.emit()
+    "
+  />
+</header>

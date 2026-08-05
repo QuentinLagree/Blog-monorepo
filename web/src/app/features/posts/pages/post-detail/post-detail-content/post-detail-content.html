@@ -1,0 +1,162 @@
+<div class="reading-mobile-bar">
+  <div
+    class="reading-mobile-bar__progress"
+  >
+    <span
+      [style.width.%]="progress()"
+    ></span>
+  </div>
+
+  <button
+    type="button"
+    class="reading-mobile-bar__summary"
+    (click)="mobileSummaryToggled.emit()"
+  >
+    <span>
+      {{ progress() }} %
+    </span>
+
+    <strong>
+      {{
+        activeHeading()?.label ||
+          'Sommaire'
+      }}
+    </strong>
+  </button>
+
+  <app-button
+    type="primary"
+    size="sm"
+    icon="icon-plus"
+    label="Contribuer"
+    (clicked)="
+      contributionRequested.emit()
+    "
+  />
+</div>
+
+@if (mobileSummaryOpened()) {
+  <div
+    class="reading-mobile-summary"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Sommaire de l’article"
+  >
+    <button
+      type="button"
+      class="reading-mobile-summary__backdrop"
+      aria-label="Fermer le sommaire"
+      (click)="
+        mobileSummaryClosed.emit()
+      "
+    ></button>
+
+    <section
+      class="reading-mobile-summary__panel"
+    >
+      <header
+        class="reading-mobile-summary__header"
+      >
+        <div>
+          <p class="card__eyebrow">
+            Navigation
+          </p>
+
+          <h2>
+            Sommaire
+          </h2>
+        </div>
+
+        <button
+          type="button"
+          class="reading-mobile-summary__close"
+          aria-label="Fermer le sommaire"
+          (click)="
+            mobileSummaryClosed.emit()
+          "
+        >
+          ×
+        </button>
+      </header>
+
+      <ol
+        class="reading-mobile-summary__list"
+      >
+        @for (
+          heading of headings();
+          track heading.id;
+          let index = $index
+        ) {
+          <li
+            [class.reading-mobile-summary__item--sub]="
+              heading.level === 3
+            "
+            [class.reading-mobile-summary__item--active]="
+              index ===
+              activeHeadingIndex()
+            "
+          >
+            <button
+              type="button"
+              (click)="
+                headingSelected.emit(
+                  heading.id
+                )
+              "
+            >
+              {{ heading.label }}
+            </button>
+          </li>
+        }
+      </ol>
+    </section>
+  </div>
+}
+
+<div
+  class="post-detail__reading-layout"
+  [class.post-detail__reading-layout--panel-opened]="
+    readingPanelOpened()
+  "
+>
+  <main
+    class="post-detail__content page-section"
+  >
+    <markdown
+      #markdownContent
+      class="markdown-content"
+      [data]="content()"
+      katex
+      (ready)="onMarkdownReady()"
+    />
+  </main>
+
+  <app-post-reading-panel
+    [opened]="readingPanelOpened()"
+    [progress]="progress()"
+    [headings]="headings()"
+    [activeHeadingIndex]="
+      activeHeadingIndex()
+    "
+    [activeHeading]="activeHeading()"
+    (closeRequested)="
+      readingPanelClosed.emit()
+    "
+    (openRequested)="
+      readingPanelOpenedRequested.emit()
+    "
+    (headingSelected)="
+      headingSelected.emit($event)
+    "
+    (contributionRequested)="
+      contributionRequested.emit()
+    "
+  />
+</div>
+
+<app-post-contribution-cta
+  (contributionRequested)="
+    contributionRequested.emit()
+  "
+  (backRequested)="backRequested.emit()"
+/>

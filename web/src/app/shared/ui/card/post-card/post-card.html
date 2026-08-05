@@ -1,31 +1,18 @@
 @if (!isDeleted()) {
-  <app-confirm-modal
-    [open]="publishModalOpen"
-    title="Supprimer cette publication ?"
+<app-confirm-modal [open]="publishModalOpen" title="Supprimer cette publication ?"
   [message]="`Tu t’apprêtes à supprimer définitivement la publication « ${this.post().title} » de ${this.author()?.pseudo}, publiée le ${(this.post().published_at | date:'dd/MM/yyyy')}. Cette action est irréversible et le contenu ne sera plus accessible par la communauté.`"
-    confirmLabel="Supprimer la publication"
-    cancelLabel="Annuler"
-    variant="danger"
-    [loading]="publishModalLoading"
-    (cancelled)="closePostDeleteModal()"
-    (confirmed)="deletePost()">
+  confirmLabel="Supprimer la publication" cancelLabel="Annuler" variant="danger" [loading]="publishModalLoading"
+  (cancelled)="closePostDeleteModal()" (confirmed)="deletePost()">
 </app-confirm-modal>
 
-  <app-confirm-modal
-    [open]="authorModalOpen"
-    title="Supprimer l'auteur de cette publication ?"
+<app-confirm-modal [open]="authorModalOpen" title="Supprimer l'auteur de cette publication ?"
   [message]="`Tu t’apprêtes à supprimer définitivement l'utilisateur ${this.author()?.pseudo}. Cette action est irréversible et le contenu ne sera plus accessible par la communauté.`"
-    confirmLabel="Supprimer l'auteur"
-    cancelLabel="Annuler"
-    variant="danger"
-    [loading]="authorModalLoading"
-    (cancelled)="closeAuthorDeleteModal()"
-    (confirmed)="deleteUser()">
+  confirmLabel="Supprimer l'auteur" cancelLabel="Annuler" variant="danger" [loading]="authorModalLoading"
+  (cancelled)="closeAuthorDeleteModal()" (confirmed)="deleteUser()">
 </app-confirm-modal>
 
 @if (!isDraft()) {
-    <article
-      class="post-card card card--md card--interactive"
+<article class="post-card card card--md card--interactive"
   [contextMenuTrigger]="sessionRole === 'admin' ? options : null"
   [contextMenuAction]="sessionRole === 'admin' ? formatFromContextMenu : null">
 
@@ -44,10 +31,27 @@
           {{ post().description }}
         </p>
       </div>
+      <div class="post-card__badges">
+        <span class="card__badge card__badge--success">
+          Publié
+        </span>
 
-      <span class="card__badge card__badge--success">
-        Publié
-      </span>
+        @if (isPostRead() && post().authorId !== sessionId) {
+        <span class="card__badge card__badge--read" title="Vous avez terminé cet article">
+          <span class="post-card__reading-icon icon-check" aria-hidden="true"></span>
+          Lu
+        </span>
+        } @else if (hasStartedReading()) {
+        <span class="card__badge card__badge--reading" [title]="
+        'Progression enregistrée : ' +
+        savedReadingProgress() +
+        ' %'
+      ">
+          En cours · {{ savedReadingProgress() }} %
+        </span>
+        }
+      </div>
+
     </header>
 
     <div class="post-card__content">
@@ -79,9 +83,7 @@
       <span class="card__meta-item">
         <strong>Auteur :</strong>
 
-            <a
-              class="post-card__author-link"
-              [routerLink]="['/account/users', this.post().authorId]">
+        <a class="post-card__author-link" [routerLink]="['/account/users', this.post().authorId]">
           {{ this.author()?.pseudo }}
         </a>
       </span>
@@ -89,17 +91,11 @@
 
     <div class="card__actions">
       @if (this.sessionId === this.post().authorId || this.sessionRole === 'admin') {
-            <app-button-edit
-              (clicked)="updatePost()"
-              icon="icon-info">
+      <app-button-edit (clicked)="updatePost()" icon="icon-info">
       </app-button-edit>
       }
 
-          <app-button
-            size="sm"
-            type="primary"
-            label="Lire l'article"
-            (clicked)="getDetail()">
+      <app-button size="sm" type="primary" label="Lire l'article" (clicked)="getDetail()">
       </app-button>
     </div>
   </footer>
@@ -153,15 +149,10 @@
     </div>
 
     <div class="card__actions">
-          <app-button
-            type="primary"
-            size="sm"
-            label="Éditer"
-            (clicked)="updatePost()">
+      <app-button type="primary" size="sm" label="Éditer" (clicked)="updatePost()">
       </app-button>
 
-          <app-button-danger
-            label="Supprimer">
+      <app-button-danger label="Supprimer">
       </app-button-danger>
     </div>
   </footer>

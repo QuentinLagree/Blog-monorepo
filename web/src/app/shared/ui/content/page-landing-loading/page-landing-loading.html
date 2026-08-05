@@ -1,0 +1,29 @@
+<section class="session-loading-page" aria-label="Chargement de l'article">
+
+    <div class="session-loading-card card card--md">
+        <div class="session-loading-logo" aria-hidden="true">
+            <span class="session-loading-logo__ring"></span>
+            <span class="session-loading-logo__mark"></span>
+        </div>
+
+        <div class="session-loading-content">
+            <p class="text-eyebrow">
+                {{ eyebrow()}}
+            </p>
+
+            <h1 class="text-title-md">
+                {{ title()}}
+            </h1>
+
+            <p class="text-body">
+                {{ description() }}
+            </p>
+        </div>
+
+        <div class="session-loading-steps" aria-hidden="true">
+            <span class="session-loading-step session-loading-step--active"></span>
+            <span class="session-loading-step"></span>
+            <span class="session-loading-step"></span>
+        </div>
+    </div>
+</section>

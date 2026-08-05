@@ -1,0 +1,249 @@
+@use 'variables' as *;
+
+/* =========================
+   SESSION LOADING PAGE
+========================= */
+
+.session-loading-page {
+  min-height: calc(100vh - 4rem);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: $space-6 $space-4;
+
+  background:
+    radial-gradient(circle at top left, rgb(49 92 73 / 8%), transparent 28rem),
+    radial-gradient(circle at bottom right, rgb(196 122 53 / 7%), transparent 24rem),
+    $background;
+}
+
+/* =========================
+   CARD
+========================= */
+
+.session-loading-card {
+  width: min(100%, 28rem);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-5;
+
+  padding: $space-8 $space-6;
+
+  text-align: center;
+
+  background: rgb(255 255 255 / 90%);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  animation: session-loading-enter 0.22s ease-out;
+}
+
+/* =========================
+   LOGO
+========================= */
+
+.session-loading-logo {
+  position: relative;
+
+  width: 4.5rem;
+  height: 4.5rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.session-loading-logo__ring {
+  position: absolute;
+  inset: 0;
+
+  border: 1px solid rgb(49 92 73 / 16%);
+  border-top-color: $primary;
+  border-right-color: rgb(49 92 73 / 45%);
+  border-radius: $radius-full;
+
+  animation: session-loading-spin 1.1s linear infinite;
+}
+
+.session-loading-logo__mark {
+  width: 2.45rem;
+  height: 2.45rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: $primary-soft;
+  color: $primary;
+
+  border: 1px solid rgb(49 92 73 / 18%);
+  border-radius: $radius-xs;
+
+  font-size: $text-lg;
+  font-weight: $font-bold;
+  line-height: $leading-none;
+
+  box-shadow: inset 0 0 0 0.35rem rgb(255 255 255 / 70%);
+
+  animation: session-loading-pulse 1.45s ease-in-out infinite;
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.session-loading-content {
+  max-width: 24rem;
+}
+
+.session-loading-content h1,
+.session-loading-content p {
+  margin: 0;
+}
+
+.session-loading-content h1 {
+  margin-top: $space-3;
+}
+
+.session-loading-content .text-body {
+  margin-top: $space-3;
+}
+
+/* =========================
+   STEPS
+========================= */
+
+.session-loading-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+}
+
+.session-loading-step {
+  width: 0.45rem;
+  height: 0.45rem;
+
+  display: block;
+
+  background: $border-strong;
+  border-radius: $radius-full;
+
+  opacity: 0.55;
+
+  animation: session-loading-step 1.2s ease-in-out infinite;
+}
+
+.session-loading-step:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.session-loading-step:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+
+@keyframes session-loading-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.35rem) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes session-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes session-loading-pulse {
+  0%,
+  100% {
+    opacity: 0.86;
+    transform: scale(0.94);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes session-loading-step {
+  0%,
+  100% {
+    background: $border-strong;
+    opacity: 0.55;
+    transform: translateY(0);
+  }
+
+  50% {
+    background: $primary;
+    opacity: 1;
+    transform: translateY(-0.15rem);
+  }
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: $breakpoint-sm) {
+  .session-loading-page {
+    min-height: calc(100vh - 2rem);
+    padding: $space-4;
+  }
+
+  .session-loading-card {
+    padding: $space-7 $space-5;
+    border-radius: $radius-md;
+  }
+
+  .session-loading-logo {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .session-loading-logo__mark {
+    width: 2.2rem;
+    height: 2.2rem;
+
+    font-size: $text-md;
+  }
+}
+
+/* =========================
+   REDUCED MOTION
+========================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .session-loading-card,
+  .session-loading-logo__ring,
+  .session-loading-logo__mark,
+  .session-loading-step {
+    animation: none;
+  }
+
+  .session-loading-logo__ring {
+    border-top-color: rgb(49 92 73 / 16%);
+    border-right-color: rgb(49 92 73 / 16%);
+  }
+
+  .session-loading-step:first-child {
+    background: $primary;
+    opacity: 1;
+  }
+}

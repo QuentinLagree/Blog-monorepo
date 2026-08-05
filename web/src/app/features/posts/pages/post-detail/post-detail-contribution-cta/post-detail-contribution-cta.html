@@ -1,0 +1,40 @@
+<section
+  class="post-detail__cta card card--md card--soft"
+>
+  <div class="post-detail__cta-content">
+    <p class="card__eyebrow">
+      Contribution communautaire
+    </p>
+
+    <h2 class="card__title">
+      Tu peux enrichir cette découverte.
+    </h2>
+
+    <p class="card__description">
+      Ajoute une source, propose une
+      correction ou complète l’article
+      avec une idée liée.
+    </p>
+  </div>
+
+  <div
+    class="post-detail__cta-actions btn-group btn-group--wrap"
+  >
+    <app-button
+      type="primary"
+      size="sm"
+      label="Proposer une amélioration"
+      icon="icon-plus"
+      (clicked)="
+        contributionRequested.emit()
+      "
+    />
+
+    <app-button
+      type="outlined"
+      size="sm"
+      label="Retour aux articles"
+      (clicked)="backRequested.emit()"
+    />
+  </div>
+</section>

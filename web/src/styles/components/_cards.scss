@@ -217,6 +217,49 @@
   border-color: $border-info;
 }
 
+.post-card__badges {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.card__badge--read {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  color: var(--success-text, #166534);
+  background: var(--success-soft, #dcfce7);
+  border: 1px solid var(--success-border, #86efac);
+}
+
+.card__badge--reading {
+  display: inline-flex;
+  align-items: center;
+
+  color: var(--primary, #7c3aed);
+  background: rgb(124 58 237 / 10%);
+  border: 1px solid rgb(124 58 237 / 25%);
+}
+
+.post-card__reading-icon {
+  font-size: 0.8rem;
+}
+
+@media (max-width: 640px) {
+  .post-card__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .post-card__badges {
+    justify-content: flex-start;
+  }
+}
+
 
 /* =========================
    COLOR CARD

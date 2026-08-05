@@ -1,0 +1,92 @@
+<aside class="post-detail__aside card card--md">
+  <section class="post-detail__aside-section">
+    <p class="card__eyebrow">
+      À propos
+    </p>
+
+    <div class="post-detail__aside-row">
+      <span>Format</span>
+      <strong>Découverte</strong>
+    </div>
+
+    @if (showReadingTime()) {
+      <div class="post-detail__aside-row">
+        <span>Lecture</span>
+        <strong>
+          {{ readingTime() }} min
+        </strong>
+      </div>
+    }
+
+    <div class="post-detail__aside-row">
+      <span>Auteur</span>
+      <strong>
+        {{ author()?.pseudo || 'Inconnu' }}
+      </strong>
+    </div>
+  </section>
+
+  <section
+    class="post-detail__like-card card card--sm card--soft"
+  >
+    <div class="post-detail__like-content">
+      <span class="post-detail__like-label">
+        Appréciation
+      </span>
+
+      <strong>
+        {{ likesCount() }}
+        {{
+          likesCount() > 1
+            ? 'mentions J’aime'
+            : 'mention J’aime'
+        }}
+      </strong>
+    </div>
+
+    @if (!isAuthor()) {
+      <app-button
+        size="sm"
+        [type]="
+          hasLiked()
+            ? 'primary'
+            : 'secondary'
+        "
+        [icon]="
+          hasLiked()
+            ? 'icon-full-heart'
+            : 'icon-heart'
+        "
+        [label]="
+          hasLiked()
+            ? 'Aimé'
+            : 'J’aime'
+        "
+        [loading]="likeLoading()"
+        (clicked)="likeToggled.emit()"
+      />
+    }
+  </section>
+
+  <div
+    class="post-detail__aside-actions btn-group btn-group--wrap"
+  >
+    <app-button
+      size="sm"
+      type="primary"
+      label="Contribuer"
+      icon="icon-plus"
+      (clicked)="
+        contributionRequested.emit()
+      "
+    />
+
+    <app-button
+      size="sm"
+      type="secondary"
+      label="Partager"
+      icon="icon-share"
+      (clicked)="shareRequested.emit()"
+    />
+  </div>
+</aside>
