@@ -258,10 +258,7 @@ describe('PostController', () => {
       id: authenticatedUserId,
     });
 
-    expect(userServiceMock.show).not.toHaveBeenCalledWith({
-      id: dto.authorId,
     });
-  });
 
   it('should throw an error if authenticated user is not found', async () => {
     const dto = createPostDtoMock() as CreatePostDto;

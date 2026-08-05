@@ -3,9 +3,11 @@ import {
   Component,
   DestroyRef,
   ViewEncapsulation,
+  WritableSignal,
   effect,
   inject,
   resource,
+  signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -49,6 +51,8 @@ import { PostReadingProgressService } from
   '../../../../shared/services/post-reading-progress.service';
 import { PostDetailHeaderComponent } from './post-detail-header/post-detail-header';
 import { PostDetailContentComponent } from './post-detail-content/post-detail-content';
+import { ForgetPasswordComponent } from "src/app/core/auth/pages/forget-password/forget-password";
+import { LoginModalComponent } from "src/app/shared/helpers/modal/login-modal/login-modal";
 
 const SILENT_CONTEXT =
   new HttpContext().set(
@@ -71,7 +75,8 @@ const SILENT_CONTEXT =
     PageLandingLoadingComposent,
     PostDetailHeaderComponent,
     PostDetailContentComponent,
-  ],
+    LoginModalComponent
+],
   templateUrl: './post-detail.html',
   styleUrls: [
     './post-detail.scss',
@@ -84,13 +89,13 @@ export class PostDetailComponent {
   private readonly _route =
     inject(ActivatedRoute);
 
-  private readonly _router =
+  readonly _router =
     inject(Router);
 
   private readonly _postService =
     inject(PostService);
 
-  private readonly _session =
+  readonly _session =
     inject(SessionService);
 
   private readonly _breadcrumb =
@@ -235,7 +240,10 @@ export class PostDetailComponent {
       },
     });
 
+    showModal: WritableSignal<boolean> = signal(false)
+
   constructor() {
+    this.showModal.set(false)
     effect(() => {
       if (!this.post.hasValue()) {
         return;
@@ -261,9 +269,13 @@ export class PostDetailComponent {
     });
 
     effect(() => {
+      this.showModal.set(false)
       this.reading.update(
         this.navigation.progress(),
       );
+      if (this.readingProgress() >= 35) {
+        this.showModal.set(true)
+      }
     });
 
     this._destroyRef.onDestroy(

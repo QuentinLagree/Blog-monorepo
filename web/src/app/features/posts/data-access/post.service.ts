@@ -153,6 +153,16 @@ export class PostService {
       options,
     );
   }
+  
+  getPublicCountLike(
+    postId: number,
+    options?: HttpOptions,
+  ): Observable<Message<PostLikeStatus>> {
+    return this._http.getData(
+      `users/posts/profil/${postId}/like-count`,
+      options,
+    );
+  }
 
   likePost(
     postId: number,
@@ -179,7 +189,6 @@ export class PostService {
   postId: number,
   options?: HttpOptions,
 ): Observable<Message<PostReadingStatus>> {
-  console.log("READING")
   return this._http.getData(
     `users/posts/${postId}/reading-status`,
     options,

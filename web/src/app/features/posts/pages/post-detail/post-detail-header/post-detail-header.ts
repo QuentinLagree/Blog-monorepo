@@ -25,6 +25,9 @@ import { Post } from '../../../model/post.model';
     './post-detail-header.html',
 })
 export class PostDetailHeaderComponent {
+  readonly auth =
+    input.required<boolean>()
+  
   readonly post =
     input.required<Post>();
 

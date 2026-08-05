@@ -12,7 +12,6 @@ export type CreatePostPayload = {
   title: string;
   description: string;
   content: string;
-  authorId: number;
   created_at: Date;
   published_at: string | Date | null;
 };
@@ -25,10 +24,9 @@ export class PostFormSubmitService {
   save(params: {
   currentPost?: Post;
   payload: UpdatedPost;
-  authorId: number;
   mode: PostSaveMode;
 }) {
-  const { currentPost, payload, authorId, mode } = params;
+  const { currentPost, payload, mode } = params;
 
   if (currentPost?.id) {
     return this.postService.updatePost(currentPost.id, payload);
@@ -40,7 +38,6 @@ export class PostFormSubmitService {
   return this.postService
     .createPost({
       ...payload,
-      authorId,
       created_at: new Date(),
       published_at: null,
     }, {context})

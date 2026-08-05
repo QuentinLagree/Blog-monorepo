@@ -31,6 +31,20 @@
         label="Se déconnecter"
         (clicked)="openModal()">
       </app-button>
+    } @else {
+<app-button
+        type="primary"
+        label="Connection"
+        size="sm"
+        (clicked)="this._router.navigate(['/auth/login'])">
+      </app-button>
+
+      <app-button
+        type="secondary"
+        label="Inscription"
+        size="sm"
+        (clicked)="this._router.navigate(['/auth/register'])">
+      </app-button>
     }
   </nav>
 </header>

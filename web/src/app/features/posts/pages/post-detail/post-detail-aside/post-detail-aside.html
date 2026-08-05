@@ -38,13 +38,13 @@
         {{ likesCount() }}
         {{
           likesCount() > 1
-            ? 'mentions J’aime'
-            : 'mention J’aime'
+            ? 'J’aimes'
+            : 'J’aime'
         }}
       </strong>
     </div>
 
-    @if (!isAuthor()) {
+    @if (!isAuthor() && authenticated()) {
       <app-button
         size="sm"
         [type]="

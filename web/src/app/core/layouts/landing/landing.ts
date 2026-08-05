@@ -61,21 +61,15 @@ export class LandingComponent implements OnInit {
   async ngOnInit() {
     try {
 
-      const [session] = await Promise.all([
+      await Promise.all([
         firstValueFrom(this.session.fetchSession().pipe(take(1))),
-        firstValueFrom(timer(1000)),
       ]);
 
       const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-
-      if (session?.loggedIn) {
-        await this.router.navigateByUrl(returnUrl || '/home', { replaceUrl: true });
-      } else {
-        await this.router.navigate(['/auth/login'], {
-          queryParams: returnUrl ? { returnUrl } : undefined,
-          replaceUrl: true,
-        });
-      }
+      await this.router.navigate(['/home'], {
+        queryParams: returnUrl ? { returnUrl } : undefined,
+        replaceUrl: true,
+      });
     } finally {
       this.loading = false;
     }

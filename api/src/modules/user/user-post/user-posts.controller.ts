@@ -31,10 +31,7 @@ import { ArticleService } from '../../post/posts.service';
 import { UserEntity } from '../entities/user.entities';
 import { userSelectPayload, UserService } from '../user.service';
 import { PostAlreadyPublishException } from '../exceptions/post-already-publish.exception';
-import { LikedPostDto } from '../dto/liked-post.dto';
-import { PostId } from '../../post/dto/post-id.post.dto';
 import { StatusLikeDto } from '../../post/dto/status-like.dto';
-import { FastifyRequest } from 'fastify';
 import { UpdatePostReadingDto } from '../dto/update-post-reading.dto';
 import { StatusReadingDto } from '../dto/status-reading.dto';
 
@@ -218,6 +215,19 @@ export class UserToPostController {
     return makeMessage(
       `Post like status ${postId}`,
       "Statut du like de l'article.",
+      status,
+    );
+  }
+
+  @Get('profil/:id/like-count')
+  async getProfilLikeCount(
+    @Param('id', ParseIntPipe) postId: number
+  ) {
+    const status = await this._posts.getLikeCount(postId);
+
+    return makeMessage(
+      `Public post count status ${postId}`,
+      "Nombre de like de l'article.",
       status,
     );
   }

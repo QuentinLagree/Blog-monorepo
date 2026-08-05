@@ -77,7 +77,7 @@ export class PostCard {
       const currentPost = this.post()
       const authorId = currentPost.authorId
       this.detailPath = this.getDetailPath()
-      if (this.sessionId !== authorId) {
+      if (this.sessionId && this.sessionId !== authorId) {
         this.reading.initialize(
         currentPost.id!,
         Boolean(
@@ -93,8 +93,11 @@ export class PostCard {
       }
 
       void this.loadAuthor(authorId)
-
-      void this.loadLikeStatus(this.post()?.id ?? 0)
+      if (this.sessionId) {
+        void this.loadLikeStatus(this.post()?.id ?? 0)
+      } else {
+        void this.loadLikeStatusPublic(this.post().id ?? 0)
+      }
 
       const published_at: number = new Date(this.post().published_at).getTime();
 
@@ -179,13 +182,39 @@ export class PostCard {
   private async loadLikeStatus(
     postId: number,
   ): Promise<void> {
-    try {
+      try {
       const response: Message<PostLikeStatus> =
         await firstValueFrom(
           this._postService.getStatusLike(postId, {
             context: SILENT_CONTEXT,
-          }),
+          }), 
+        )
+
+      if (!response.data) {
+        throw new Error(
+          "La réponse de l'API ne contient pas le statut du like.",
         );
+      }
+
+      this.likesCount.set(response.data.likesCount);
+    } catch (error) {
+      this.likesCount.set(0);
+
+      console.error(
+        'Impossible de charger le statut du like.',
+        error,
+      );
+    }
+  }
+
+  private async loadLikeStatusPublic(postId: number): Promise<void> {
+      try {
+      const response: Message<PostLikeStatus> =
+        await firstValueFrom(
+          this._postService.getPublicCountLike(postId, {
+            context: SILENT_CONTEXT,
+          }), 
+        )
 
       if (!response.data) {
         throw new Error(

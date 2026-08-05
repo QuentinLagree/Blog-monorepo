@@ -1,3 +1,4 @@
+<app-modal-login  [showModal]="this.showModal()"></app-modal-login>
 <section class="post-detail-page page">
   <div
     class="page-container page-container--wide"
@@ -24,6 +25,9 @@
 
       <article class="post-detail">
         <app-post-detail-header
+        [auth]="
+          this._session
+            .getUserIdSync() !== null"
           [post]="currentPost"
           [author]="author()"
           [readingTime]="readingTime()"

@@ -109,27 +109,27 @@ export class PostDetailSocialService {
     try {
       const response:
         Message<PostLikeStatus> =
-          nextLiked
-            ? await firstValueFrom(
-              this._postService
-                .likePost(
-                  postId,
-                  {
-                    context:
-                      SILENT_CONTEXT,
-                  },
-                ),
-            )
-            : await firstValueFrom(
-              this._postService
-                .unlikePost(
-                  postId,
-                  {
-                    context:
-                      SILENT_CONTEXT,
-                  },
-                ),
-            );
+        nextLiked
+          ? await firstValueFrom(
+            this._postService
+              .likePost(
+                postId,
+                {
+                  context:
+                    SILENT_CONTEXT,
+                },
+              ),
+          )
+          : await firstValueFrom(
+            this._postService
+              .unlikePost(
+                postId,
+                {
+                  context:
+                    SILENT_CONTEXT,
+                },
+              ),
+          );
 
       if (!response.data) {
         throw new Error(
@@ -200,8 +200,8 @@ export class PostDetailSocialService {
 
       this.isAuthor.set(
         response.data.id ===
-          this._session
-            .getUserIdSync(),
+        this._session
+          .getUserIdSync(),
       );
     } catch (error: unknown) {
       console.error(
@@ -212,38 +212,38 @@ export class PostDetailSocialService {
   }
 
   private async loadLikeStatus(
-    postId: number,
-  ): Promise<void> {
-    try {
-      const response:
-        Message<PostLikeStatus> =
+      postId: number,
+    ): Promise<void> {
+        try {
+        const response: Message<PostLikeStatus> =
           await firstValueFrom(
-            this._postService
-              .getStatusLike(
-                postId,
-                {
-                  context:
-                    SILENT_CONTEXT,
-                },
-              ),
+            this._postService.getStatusLike(postId, {
+              context: SILENT_CONTEXT,
+            }),
+          ).finally(
+            async () => {
+              await firstValueFrom(
+            this._postService.getPublicCountLike(postId, {
+              context: SILENT_CONTEXT,
+            }),
+          )}
+            
+          )
+  
+        if (!response.data) {
+          throw new Error(
+            "La réponse de l'API ne contient pas le statut du like.",
           );
-
-      if (!response.data) {
-        return;
+        }
+  
+        this.likesCount.set(response.data.likesCount);
+      } catch (error) {
+        this.likesCount.set(0);
+  
+        console.error(
+          'Impossible de charger le statut du like.',
+          error,
+        );
       }
-
-      this.hasLiked.set(
-        response.data.liked,
-      );
-
-      this.likesCount.set(
-        response.data.likesCount,
-      );
-    } catch (error: unknown) {
-      console.error(
-        'Impossible de charger le statut du like.',
-        error,
-      );
     }
-  }
 }

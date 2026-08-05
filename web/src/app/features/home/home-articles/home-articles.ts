@@ -10,6 +10,7 @@ import { LoadingStateComponent } from "src/app/shared/ui/content/states/loading-
 import { PostCard } from "src/app/shared/ui/card/post-card/post-card";
 import { EmptyStateComponent } from "src/app/shared/ui/content/states/empty-state/empty-state";
 import { Router } from "@angular/router";
+import { SessionService } from "src/app/shared/services/session.service";
 
 type PostsParams = {
   page: number;
@@ -27,11 +28,13 @@ export class HomeArticlesComponent {
   public readonly _router = inject(Router);
   private readonly _toastService = inject(ToastService);
   private readonly _post = inject(PostService);
+  private readonly _session = inject(SessionService)
 
     page = signal(1);
   limit = signal(5);
 
   totalArticle = signal(0);
+  sessionId = this._session.getUserIdSync()
 
   posts = resource<Post[], PostsParams>({
     params: () => ({

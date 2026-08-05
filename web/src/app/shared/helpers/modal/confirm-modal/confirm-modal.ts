@@ -11,6 +11,7 @@ export type ConfirmModalVariant = 'primary' | 'danger' | 'warning';
   styleUrls: ['./confirm-modal.scss'],
 })
 export class ConfirmModalComponent {
+  @Input() showNote = true;
   @Input() open = false;
 
   @Input() title = 'Confirmer l’action';

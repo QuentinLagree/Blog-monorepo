@@ -168,7 +168,6 @@ export class PostFormComponent implements AfterViewInit {
       .save({
         currentPost: this.post(),
         payload: this.getPostPayload(),
-        authorId,
         mode
       })
       .pipe(finalize(() => this.loading.set(false)))

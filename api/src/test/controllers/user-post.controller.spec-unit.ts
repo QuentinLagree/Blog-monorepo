@@ -877,268 +877,377 @@ describe('UserToPostController', () => {
     });
   });
 
-  describe('getReadingStatus', () => {
-    it(
-      'doit retourner le statut de lecture de l’article',
-      async () => {
-        const postId = 42;
-        const sessionUser = {
-          id: 1,
-        };
+  describe('public getLikeCount', () => {
+    it('should return liked true if connected user liked the post', async () => {
+      const postId = 10;
 
-        const sessionMock = {
-          get: jest.fn().mockReturnValue({
-            id: 1,
-          }),
-        };
-        const readingStatus: StatusReadingDto = {
-          hasStarted: true,
-          completed: false,
-          progress: 45,
-        };
+      const status = {
+        liked: true,
+        likesCount: 6,
+      };
 
-        postServiceMock
-          .getReadingStatus
-          .mockResolvedValue(
-            readingStatus,
-          );
+      postServiceMock.getLikeCount.mockResolvedValue(status);
 
-        const result =
-          await userToPostController.getReadingStatus(
-            postId,
-            sessionMock as never,
-          );
-
-        expect(
-          sessionMock.get,
-        ).toHaveBeenCalledTimes(1);
-
-        expect(
-          sessionMock.get,
-        ).toHaveBeenCalledWith(
-          'user',
-        );
-
-        expect(
-          postServiceMock.getReadingStatus,
-        ).toHaveBeenCalledTimes(1);
-
-        expect(
-          postServiceMock.getReadingStatus,
-        ).toHaveBeenCalledWith(
-          sessionUser.id,
+      const response =
+        await userToPostController.getProfilLikeCount(
           postId,
         );
 
-        expect(result).toEqual(
-          expect.objectContaining({
-            data: readingStatus,
-          }),
-        );
-      },
+      expect(postServiceMock.getLikeCount).toHaveBeenCalledWith(
+        postId,
+      );
+
+      expect(response).toEqual(
+        makeMessage(
+          `Public post count status ${postId}`,
+          "Nombre de like de l'article.",
+          status,
+        )
+      );
+  });
+
+  it('should return liked false if connected user did not like the post', async () => {
+    const postId = 10;
+
+    const status = {
+      liked: false,
+      likesCount: 3,
+    };
+
+    postServiceMock.getLikeCount.mockResolvedValue(status);
+
+    const response =
+      await userToPostController.getProfilLikeCount(
+        postId,
+      );
+
+    expect(response.data).toEqual({
+      liked: false,
+      likesCount: 3,
+    });
+  });
+
+  it('should return zero when the post has no likes', async () => {
+    const postId = 10;
+
+    const status = {
+      liked: false,
+      likesCount: 0,
+    };
+
+    postServiceMock.getLikeCount.mockResolvedValue(status);
+
+    const response =
+      await userToPostController.getProfilLikeCount(
+        postId,
+      );
+
+    expect(response.data).toEqual({
+      liked: false,
+      likesCount: 0,
+    });
+  });
+
+  it('should use the post id from the route', async () => {
+    const postId = 75;
+
+    postServiceMock.getLikeCount.mockResolvedValue({
+      liked: false,
+      likesCount: 0,
+    });
+
+    await userToPostController.getProfilLikeCount(
+      postId,
     );
 
-    it(
-      'doit propager une erreur du service',
-      async () => {
-        const postId = 42;
-        const sessionUser = {
-          id: 1,
-        };
-
-        const sessionMock = {
-          get: jest.fn().mockReturnValue({
-            id: 1,
-          }),
-        };
-
-        const serviceError =
-          new Error(
-            'Impossible de récupérer le statut.',
-          );
-
-        postServiceMock
-          .getReadingStatus
-          .mockRejectedValue(
-            serviceError,
-          );
-
-        await expect(
-          userToPostController.getReadingStatus(
-            postId,
-            sessionMock as never,
-          ),
-        ).rejects.toThrow(
-          serviceError,
-        );
-
-        expect(
-          postServiceMock.getReadingStatus,
-        ).toHaveBeenCalledWith(
-          sessionUser.id,
-          postId,
-        );
-      },
+    expect(postServiceMock.getLikeCount).toHaveBeenCalledWith(
+      postId,
     );
   });
 
-  describe('updateReadingProgress', () => {
-    it(
-      'doit mettre à jour la progression de lecture',
-      async () => {
-        const postId = 42;
-        const sessionUser = {
-          id: 1,
-        };
+  it('should throw an error if like status retrieval fails', async () => {
+    const postId = 10;
 
-        const sessionMock = {
-          get: jest.fn().mockReturnValue({
-            id: 1,
-          }),
-        };
-
-        const payload = {
-          progress: 65,
-        };
-
-        const postRead: PostRead = {
-          id: 7,
-          userId: sessionUser.id,
-          postId,
-          progress: payload.progress,
-          completed: false,
-          readAt: new Date(),
-        };
-
-        postServiceMock
-          .updateReadingProgress
-          .mockResolvedValue(
-            postRead,
-          );
-
-        const result =
-          await userToPostController.updateReadingProgress(
-            postId,
-            payload,
-            sessionMock as never,
-          );
-
-        expect(
-          sessionMock.get,
-        ).toHaveBeenCalledWith(
-          'user',
-        );
-
-        expect(
-          postServiceMock.updateReadingProgress,
-        ).toHaveBeenCalledTimes(1);
-
-        expect(
-          postServiceMock.updateReadingProgress,
-        ).toHaveBeenCalledWith(
-          sessionUser.id,
-          postId,
-          payload.progress,
-        );
-
-        expect(result).toEqual(
-          expect.objectContaining({
-            data: postRead,
-          }),
-        );
-      },
+    const error = new Error(
+      'Like status retrieval failed',
     );
 
-    it(
-      'doit transmettre une progression de 100',
-      async () => {
-        const postId = 42;
+    postServiceMock.getLikeCount.mockRejectedValue(error);
 
-        const sessionUser = {
+    await expect(
+      userToPostController.getProfilLikeCount(
+        postId,
+      ),
+    ).rejects.toThrow(error);
+
+    expect(postServiceMock.getLikeCount).toHaveBeenCalledWith(
+      postId,
+    );
+  });
+});
+
+describe('getReadingStatus', () => {
+  it(
+    'doit retourner le statut de lecture de l’article',
+    async () => {
+      const postId = 42;
+      const sessionUser = {
+        id: 1,
+      };
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue({
           id: 1,
-        };
+        }),
+      };
+      const readingStatus: StatusReadingDto = {
+        hasStarted: true,
+        completed: false,
+        progress: 45,
+      };
 
-        const sessionMock = {
-          get: jest.fn().mockReturnValue({
-            id: 1,
-          }),
-        };
+      postServiceMock
+        .getReadingStatus
+        .mockResolvedValue(
+          readingStatus,
+        );
 
-        const payload = {
-          progress: 100,
-        };
-
-        const postRead: PostRead = {
-          id: 7,
-          userId: sessionUser.id,
+      const result =
+        await userToPostController.getReadingStatus(
           postId,
-          progress: 100,
-          completed: true,
-          readAt: new Date(),
-        };
+          sessionMock as never,
+        );
 
-        postServiceMock
-          .updateReadingProgress
-          .mockResolvedValue(
-            postRead,
-          );
+      expect(
+        sessionMock.get,
+      ).toHaveBeenCalledTimes(1);
 
+      expect(
+        sessionMock.get,
+      ).toHaveBeenCalledWith(
+        'user',
+      );
+
+      expect(
+        postServiceMock.getReadingStatus,
+      ).toHaveBeenCalledTimes(1);
+
+      expect(
+        postServiceMock.getReadingStatus,
+      ).toHaveBeenCalledWith(
+        sessionUser.id,
+        postId,
+      );
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          data: readingStatus,
+        }),
+      );
+    },
+  );
+
+  it(
+    'doit propager une erreur du service',
+    async () => {
+      const postId = 42;
+      const sessionUser = {
+        id: 1,
+      };
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue({
+          id: 1,
+        }),
+      };
+
+      const serviceError =
+        new Error(
+          'Impossible de récupérer le statut.',
+        );
+
+      postServiceMock
+        .getReadingStatus
+        .mockRejectedValue(
+          serviceError,
+        );
+
+      await expect(
+        userToPostController.getReadingStatus(
+          postId,
+          sessionMock as never,
+        ),
+      ).rejects.toThrow(
+        serviceError,
+      );
+
+      expect(
+        postServiceMock.getReadingStatus,
+      ).toHaveBeenCalledWith(
+        sessionUser.id,
+        postId,
+      );
+    },
+  );
+});
+
+describe('updateReadingProgress', () => {
+  it(
+    'doit mettre à jour la progression de lecture',
+    async () => {
+      const postId = 42;
+      const sessionUser = {
+        id: 1,
+      };
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue({
+          id: 1,
+        }),
+      };
+
+      const payload = {
+        progress: 65,
+      };
+
+      const postRead: PostRead = {
+        id: 7,
+        userId: sessionUser.id,
+        postId,
+        progress: payload.progress,
+        completed: false,
+        readAt: new Date(),
+      };
+
+      postServiceMock
+        .updateReadingProgress
+        .mockResolvedValue(
+          postRead,
+        );
+
+      const result =
         await userToPostController.updateReadingProgress(
           postId,
           payload,
           sessionMock as never,
         );
 
-        expect(
-          postServiceMock.updateReadingProgress,
-        ).toHaveBeenCalledWith(
-          sessionUser.id,
-          postId,
-          100,
-        );
-      },
-    );
+      expect(
+        sessionMock.get,
+      ).toHaveBeenCalledWith(
+        'user',
+      );
 
-    it(
-      'doit propager une erreur du service',
-      async () => {
-        const postId = 42;
-        const sessionUser = {
+      expect(
+        postServiceMock.updateReadingProgress,
+      ).toHaveBeenCalledTimes(1);
+
+      expect(
+        postServiceMock.updateReadingProgress,
+      ).toHaveBeenCalledWith(
+        sessionUser.id,
+        postId,
+        payload.progress,
+      );
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          data: postRead,
+        }),
+      );
+    },
+  );
+
+  it(
+    'doit transmettre une progression de 100',
+    async () => {
+      const postId = 42;
+
+      const sessionUser = {
+        id: 1,
+      };
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue({
           id: 1,
-        };
+        }),
+      };
 
-        const sessionMock = {
-          get: jest.fn().mockReturnValue({
-            id: 1,
-          }),
-        };
+      const payload = {
+        progress: 100,
+      };
 
-        const payload = {
-          progress: 40,
-        };
+      const postRead: PostRead = {
+        id: 7,
+        userId: sessionUser.id,
+        postId,
+        progress: 100,
+        completed: true,
+        readAt: new Date(),
+      };
 
-        const serviceError =
-          new Error(
-            'Impossible de mettre à jour la progression.',
-          );
+      postServiceMock
+        .updateReadingProgress
+        .mockResolvedValue(
+          postRead,
+        );
 
-        postServiceMock
-          .updateReadingProgress
-          .mockRejectedValue(
-            serviceError,
-          );
+      await userToPostController.updateReadingProgress(
+        postId,
+        payload,
+        sessionMock as never,
+      );
 
-        await expect(
-          userToPostController.updateReadingProgress(
-            postId,
-            payload,
-            sessionMock as never,
-          ),
-        ).rejects.toThrow(
+      expect(
+        postServiceMock.updateReadingProgress,
+      ).toHaveBeenCalledWith(
+        sessionUser.id,
+        postId,
+        100,
+      );
+    },
+  );
+
+  it(
+    'doit propager une erreur du service',
+    async () => {
+      const postId = 42;
+      const sessionUser = {
+        id: 1,
+      };
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue({
+          id: 1,
+        }),
+      };
+
+      const payload = {
+        progress: 40,
+      };
+
+      const serviceError =
+        new Error(
+          'Impossible de mettre à jour la progression.',
+        );
+
+      postServiceMock
+        .updateReadingProgress
+        .mockRejectedValue(
           serviceError,
         );
-      },
-    );
-  });
+
+      await expect(
+        userToPostController.updateReadingProgress(
+          postId,
+          payload,
+          sessionMock as never,
+        ),
+      ).rejects.toThrow(
+        serviceError,
+      );
+    },
+  );
+});
 
 });

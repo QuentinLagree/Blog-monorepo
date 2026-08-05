@@ -117,7 +117,6 @@ describe('PostController e2e', () => {
       const response = await agent
         .post(endpoint)
         .send({
-          authorId: user.id,
           title: 'New post',
           description: "New post description",
           content: 'New post content',

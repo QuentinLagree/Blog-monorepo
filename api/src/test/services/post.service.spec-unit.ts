@@ -13,19 +13,31 @@ describe('ArticleService', () => {
   let articleService: ArticleService;
 
   const prismaMock = {
-    $transaction: jest.fn(),
-    post: {
-      count: jest.fn(),
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-    },
-    user: {
-      findUnique: jest.fn(),
-    },
-  };
+  $transaction: jest.fn(),
+
+  post: {
+    count: jest.fn(),
+    findMany: jest.fn(),
+    findUnique: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+  },
+
+  user: {
+    findUnique: jest.fn(),
+  },
+
+  like: {
+    count: jest.fn(),
+    findUnique: jest.fn(),
+  },
+
+  postRead: {
+    findUnique: jest.fn(),
+    upsert: jest.fn(),
+  },
+};
 
   const createPostMock = (override = {}) => ({
     id: 1,
@@ -617,4 +629,423 @@ describe('ArticleService', () => {
       expect(articleService.isPublished(post as any)).toBe(false);
     });
   });
+
+  describe('getLikeCount', () => {
+  it('should return the number of likes with liked set to false', async () => {
+    const postId = 1;
+
+    prismaMock.like.count.mockResolvedValue(5);
+
+    const response = await articleService.getLikeCount(postId);
+
+    expect(prismaMock.like.count).toHaveBeenCalledWith({
+      where: {
+        postId,
+      },
+    });
+
+    expect(response).toEqual({
+      liked: false,
+      likesCount: 5,
+    });
+  });
+
+  it('should return zero when the post has no likes', async () => {
+    const postId = 1;
+
+    prismaMock.like.count.mockResolvedValue(0);
+
+    const response = await articleService.getLikeCount(postId);
+
+    expect(response).toEqual({
+      liked: false,
+      likesCount: 0,
+    });
+  });
+
+  it('should propagate the error if counting likes fails', async () => {
+    const postId = 1;
+    const error = new Error('Database error');
+
+    prismaMock.like.count.mockRejectedValue(error);
+
+    await expect(
+      articleService.getLikeCount(postId),
+    ).rejects.toThrow(error);
+  });
+});
+
+describe('getLikeStatus', () => {
+  it('should return liked true when the user has liked the post', async () => {
+    const userId = 1;
+    const postId = 2;
+
+    const like = {
+      id: 1,
+      userId,
+      postId,
+      created_at: new Date(),
+    };
+
+    prismaMock.like.findUnique.mockReturnValue(like as any);
+    prismaMock.like.count.mockReturnValue(4 as any);
+
+    prismaMock.$transaction.mockResolvedValue([
+      like,
+      4,
+    ]);
+
+    const response = await articleService.getLikeStatus(
+      userId,
+      postId,
+    );
+
+    expect(prismaMock.like.findUnique).toHaveBeenCalledWith({
+      where: {
+        userId_postId: {
+          userId,
+          postId,
+        },
+      },
+    });
+
+    expect(prismaMock.like.count).toHaveBeenCalledWith({
+      where: {
+        postId,
+      },
+    });
+
+    expect(prismaMock.$transaction).toHaveBeenCalledWith([
+      like,
+      4,
+    ]);
+
+    expect(response).toEqual({
+      liked: true,
+      likesCount: 4,
+    });
+  });
+
+  it('should return liked false when the user has not liked the post', async () => {
+    const userId = 1;
+    const postId = 2;
+
+    prismaMock.like.findUnique.mockReturnValue(null as any);
+    prismaMock.like.count.mockReturnValue(3 as any);
+
+    prismaMock.$transaction.mockResolvedValue([
+      null,
+      3,
+    ]);
+
+    const response = await articleService.getLikeStatus(
+      userId,
+      postId,
+    );
+
+    expect(response).toEqual({
+      liked: false,
+      likesCount: 3,
+    });
+  });
+
+  it('should propagate the error if the transaction fails', async () => {
+    const userId = 1;
+    const postId = 2;
+    const error = new Error('Transaction error');
+
+    prismaMock.like.findUnique.mockReturnValue(null as any);
+    prismaMock.like.count.mockReturnValue(0 as any);
+    prismaMock.$transaction.mockRejectedValue(error);
+
+    await expect(
+      articleService.getLikeStatus(userId, postId),
+    ).rejects.toThrow(error);
+
+    expect(prismaMock.$transaction).toHaveBeenCalled();
+  });
+});
+
+describe('getReadingStatus', () => {
+  it('should return the current reading status', async () => {
+    const userId = 1;
+    const postId = 2;
+    const post = createPostMock({ id: postId });
+
+    prismaMock.post.findUnique.mockResolvedValue(post);
+
+    prismaMock.postRead.findUnique.mockResolvedValue({
+      progress: 60,
+      completed: false,
+    });
+
+    const response = await articleService.getReadingStatus(
+      userId,
+      postId,
+    );
+
+    expect(prismaMock.post.findUnique).toHaveBeenCalledWith({
+      where: {
+        id: postId,
+      },
+    });
+
+    expect(prismaMock.postRead.findUnique).toHaveBeenCalledWith({
+      where: {
+        userId_postId: {
+          userId,
+          postId,
+        },
+      },
+      select: {
+        progress: true,
+        completed: true,
+      },
+    });
+
+    expect(response).toEqual({
+      hasStarted: true,
+      completed: false,
+      progress: 60,
+    });
+  });
+
+  it('should return a completed reading status', async () => {
+    const userId = 1;
+    const postId = 2;
+    const post = createPostMock({ id: postId });
+
+    prismaMock.post.findUnique.mockResolvedValue(post);
+
+    prismaMock.postRead.findUnique.mockResolvedValue({
+      progress: 100,
+      completed: true,
+    });
+
+    const response = await articleService.getReadingStatus(
+      userId,
+      postId,
+    );
+
+    expect(response).toEqual({
+      hasStarted: true,
+      completed: true,
+      progress: 100,
+    });
+  });
+
+  it('should return the default status when reading has not started', async () => {
+    const userId = 1;
+    const postId = 2;
+    const post = createPostMock({ id: postId });
+
+    prismaMock.post.findUnique.mockResolvedValue(post);
+    prismaMock.postRead.findUnique.mockResolvedValue(null);
+
+    const response = await articleService.getReadingStatus(
+      userId,
+      postId,
+    );
+
+    expect(response).toEqual({
+      hasStarted: false,
+      completed: false,
+      progress: 0,
+    });
+  });
+
+  it('should throw PostNotFoundException when the post does not exist', async () => {
+    const userId = 1;
+    const postId = 999;
+
+    prismaMock.post.findUnique.mockResolvedValue(null);
+
+    await expect(
+      articleService.getReadingStatus(userId, postId),
+    ).rejects.toThrow(PostNotFoundException);
+
+    expect(prismaMock.postRead.findUnique).not.toHaveBeenCalled();
+  });
+});
+
+describe('updateReadingProgress', () => {
+  it('should create the reading progress when it does not exist', async () => {
+    const userId = 1;
+    const postId = 2;
+    const progress = 50;
+
+    const postRead = {
+      id: 1,
+      userId,
+      postId,
+      progress,
+      completed: false,
+      created_at: new Date(),
+      updated_at: new Date(),
+    };
+
+    prismaMock.post.findUnique.mockResolvedValue({
+      id: postId,
+    });
+
+    prismaMock.postRead.upsert.mockResolvedValue(postRead);
+
+    const response = await articleService.updateReadingProgress(
+      userId,
+      postId,
+      progress,
+    );
+
+    expect(prismaMock.post.findUnique).toHaveBeenCalledWith({
+      where: {
+        id: postId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    expect(prismaMock.postRead.upsert).toHaveBeenCalledWith({
+      where: {
+        userId_postId: {
+          userId,
+          postId,
+        },
+      },
+      create: {
+        userId,
+        postId,
+        progress,
+        completed: false,
+      },
+      update: {
+        progress,
+        completed: false,
+      },
+    });
+
+    expect(response).toEqual(postRead);
+  });
+
+  it('should mark reading as completed when progress is 95', async () => {
+    const userId = 1;
+    const postId = 2;
+    const progress = 95;
+
+    const postRead = {
+      id: 1,
+      userId,
+      postId,
+      progress,
+      completed: true,
+    };
+
+    prismaMock.post.findUnique.mockResolvedValue({
+      id: postId,
+    });
+
+    prismaMock.postRead.upsert.mockResolvedValue(postRead);
+
+    const response = await articleService.updateReadingProgress(
+      userId,
+      postId,
+      progress,
+    );
+
+    expect(prismaMock.postRead.upsert).toHaveBeenCalledWith({
+      where: {
+        userId_postId: {
+          userId,
+          postId,
+        },
+      },
+      create: {
+        userId,
+        postId,
+        progress,
+        completed: true,
+      },
+      update: {
+        progress,
+        completed: true,
+      },
+    });
+
+    expect(response).toEqual(postRead);
+  });
+
+  it('should mark reading as completed when progress is greater than 95', async () => {
+    const userId = 1;
+    const postId = 2;
+    const progress = 100;
+
+    prismaMock.post.findUnique.mockResolvedValue({
+      id: postId,
+    });
+
+    prismaMock.postRead.upsert.mockResolvedValue({
+      id: 1,
+      userId,
+      postId,
+      progress,
+      completed: true,
+    });
+
+    await articleService.updateReadingProgress(
+      userId,
+      postId,
+      progress,
+    );
+
+    expect(prismaMock.postRead.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({
+          completed: true,
+        }),
+        update: expect.objectContaining({
+          completed: true,
+        }),
+      }),
+    );
+  });
+
+  it('should throw PostNotFoundException when the post does not exist', async () => {
+    const userId = 1;
+    const postId = 999;
+    const progress = 50;
+
+    prismaMock.post.findUnique.mockResolvedValue(null);
+
+    await expect(
+      articleService.updateReadingProgress(
+        userId,
+        postId,
+        progress,
+      ),
+    ).rejects.toThrow(PostNotFoundException);
+
+    expect(prismaMock.postRead.upsert).not.toHaveBeenCalled();
+  });
+
+  it('should propagate the error if the upsert fails', async () => {
+    const userId = 1;
+    const postId = 2;
+    const progress = 50;
+    const error = new Error('Database error');
+
+    prismaMock.post.findUnique.mockResolvedValue({
+      id: postId,
+    });
+
+    prismaMock.postRead.upsert.mockRejectedValue(error);
+
+    await expect(
+      articleService.updateReadingProgress(
+        userId,
+        postId,
+        progress,
+      ),
+    ).rejects.toThrow(error);
+  });
+});
 });

@@ -11,6 +11,7 @@ export const postServiceMock = {
         destroy: jest.fn(),
         isPublished: jest.fn(),
         getLikeStatus: jest.fn(),
+        getLikeCount: jest.fn(),
         getReadingStatus: jest.fn(),
         updateReadingProgress: jest.fn()
     };

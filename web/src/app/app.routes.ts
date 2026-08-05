@@ -37,7 +37,6 @@ export const appRoutes: Routes = [
     data: {
       breadcrumb: 'Accueil'
     },
-    canActivate: [authGuard],
   },
   { path: 'ui', loadComponent: () => import('./shared/ui/base-ui').then((m) => m.UIComponent),
     data: {

@@ -150,6 +150,16 @@ export class ArticleService {
     return post.published_at !== null;
   }
 
+  async getLikeCount(postId: number): Promise<StatusLikeDto> {
+    return {
+      liked: false, likesCount: await this._prisma.like.count({
+        where: {
+          postId,
+        },
+      }),
+    }
+  }
+
   async getLikeStatus(
     userId: number,
     postId: number,
@@ -178,41 +188,41 @@ export class ArticleService {
   }
 
   async getReadingStatus(
-  userId: number,
-  postId: number,
-): Promise<StatusReadingDto> {
-  await this.show({
-    id: postId,
-  });
-
-  const postRead =
-    await this._prisma.postRead.findUnique({
-      where: {
-        userId_postId: {
-          userId,
-          postId,
-        },
-      },
-      select: {
-        progress: true,
-        completed: true,
-      },
+    userId: number,
+    postId: number,
+  ): Promise<StatusReadingDto> {
+    await this.show({
+      id: postId,
     });
 
-  if (!postRead) {
+    const postRead =
+      await this._prisma.postRead.findUnique({
+        where: {
+          userId_postId: {
+            userId,
+            postId,
+          },
+        },
+        select: {
+          progress: true,
+          completed: true,
+        },
+      });
+
+    if (!postRead) {
+      return {
+        hasStarted: false,
+        completed: false,
+        progress: 0,
+      };
+    }
+
     return {
-      hasStarted: false,
-      completed: false,
-      progress: 0,
+      hasStarted: true,
+      completed: postRead.completed,
+      progress: postRead.progress,
     };
   }
-
-  return {
-    hasStarted: true,
-    completed: postRead.completed,
-    progress: postRead.progress,
-  };
-}
 
   async updateReadingProgress(
     userId: number,

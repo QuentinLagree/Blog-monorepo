@@ -34,16 +34,17 @@
           {{ message }}
         </p>
       </div>
-
-      <div class="confirm-modal__notice card card--sm card--soft">
-        <strong>
-          À vérifier avant de continuer.
-        </strong>
-
-        <span>
-          Cette action peut modifier l’état de ton espace ou de tes contenus.
-        </span>
-      </div>
+      @if (showNote) {
+        <div class="confirm-modal__notice card card--sm card--soft">
+          <strong>
+            À vérifier avant de continuer.
+          </strong>
+  
+          <span>
+            Cette action peut modifier l’état de ton espace ou de tes contenus.
+          </span>
+        </div>
+      }
 
       <footer class="confirm-modal__actions btn-group btn-group--wrap">
         <app-button

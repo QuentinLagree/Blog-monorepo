@@ -14,6 +14,7 @@ import { Message } from
 import { ReadingStatus } from
   '../../features/posts/pages/post-detail/models/post-detail.types';
 import { PostService } from '../../features/posts/data-access/post.service';
+import { UserService } from './user.service';
 
 const SILENT_CONTEXT =
   new HttpContext().set(
@@ -26,6 +27,8 @@ const SAVE_DELAY = 750;
 
 @Injectable()
 export class PostReadingProgressService {
+
+
   private readonly _postService =
     inject(PostService);
 
@@ -52,6 +55,8 @@ export class PostReadingProgressService {
   readonly saving =
     signal(false);
 
+  readonly authenticated = signal(false)
+
   async initialize(
     postId: number,
     authenticated: boolean,
@@ -66,6 +71,8 @@ export class PostReadingProgressService {
     this.hasStarted.set(false);
     this.completed.set(false);
     this.saving.set(false);
+
+    this.authenticated.set(authenticated)
 
     if (!authenticated) {
       return;
@@ -168,11 +175,14 @@ export class PostReadingProgressService {
       }, SAVE_DELAY);
   }
 
-    private async persist(
+  private async persist(
     progress: number,
   ): Promise<void> {
+
+    if (!this.authenticated()) return;
     const postId =
       this.postId;
+
 
     if (
       !postId ||

@@ -19,6 +19,9 @@ import { BaseButtonComponent } from
     './post-detail-aside.html',
 })
 export class PostDetailAsideComponent {
+  readonly authenticated =
+    input<boolean>(false)
+  
   readonly author =
     input<User | undefined>();
 

@@ -1,25 +1,24 @@
-import { PartialType, OmitType } from '@nestjs/swagger';
-import { IsDate, IsDateString, IsDefined, IsNotEmpty, IsNumber, isString, IsString, Length } from 'class-validator';
-import { PostsEntity } from '../entities/posts.entities';
+import {
+  IsDefined,
+  IsNotEmpty,
+  IsString,
+  Length,
+} from 'class-validator';
 
-export class CreatePostDto extends PartialType(
-  OmitType(PostsEntity, ['id', 'updated_at', 'created_at', 'author'] as const),
-) {
-  @IsNotEmpty()
+export class CreatePostDto {
   @IsDefined()
-  @IsNumber()
-  override authorId: number;
-
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   @Length(5, 85)
-  override title: string;
+  title!: string;
 
-  @IsNotEmpty()
+  @IsDefined()
   @IsString()
-  override content: string;
+  @IsNotEmpty()
+  content!: string;
 
-  @IsNotEmpty()
+  @IsDefined()
   @IsString()
-  override description: string;
+  @IsNotEmpty()
+  description!: string;
 }
