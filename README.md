@@ -500,6 +500,7 @@ Au travers de ce projet, j'ai approfondi plusieurs notions importantes :
 ## À venir
 
 - [ ] Commentaires
+- [x] Articles Lu ou en cours
 - [x] Likes
 - [x] Profils utilisateurs
 - [ ] Notifications
