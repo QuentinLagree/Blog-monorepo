@@ -1,23 +1,35 @@
 @if (breadcrumb.items().length) {
-  <nav class="breadcrumb" aria-label="Fil d’Ariane">
-    <ol class="breadcrumb__list">
-      @for (item of breadcrumb.items(); track item.label; let last = $last) {
-        <li class="breadcrumb__item">
-          @if (!last && item.url) {
-            <a class="breadcrumb__link" [routerLink]="item.url">
-              {{ item.label }}
-            </a>
-          } @else {
-            <span class="breadcrumb__current">
-              {{ item.label }}
-            </span>
-          }
-
-          @if (!last) {
-            <span class="breadcrumb__separator" aria-hidden="true">›</span>
-          }
-        </li>
+<nav class="breadcrumb" aria-label="Fil d’Ariane">
+  <ol class="breadcrumb__list">
+    @if (!['/', '/home'].includes(this._location.path())) {
+      <li class="breadcrumb__link">
+        <a class="breadcrumb__back" (click)="goBack()">
+          <i class="icon-container-breadcrumb">
+          <svg style="width: 22px;" viewBox="0 0 22 22">
+            <use href="#icon-large-arrow-left" />
+          </svg>
+        </i>
+        </a>
+      </li>
+      <span class="breadcrumb__split" aria-hidden="true">•</span>
+    }
+    @for (item of breadcrumb.items(); track item.label; let last = $last) {
+    <li class="breadcrumb__item">
+      @if (!last && item.url) {
+      <a class="breadcrumb__link" [routerLink]="item.url">
+        {{ item.label }}
+      </a>
+      } @else {
+      <span class="breadcrumb__current">
+        {{ item.label }}
+      </span>
       }
-    </ol>
-  </nav>
+
+      @if (!last) {
+      <span class="breadcrumb__separator" aria-hidden="true">›</span>
+      }
+    </li>
+    }
+  </ol>
+</nav>
 }

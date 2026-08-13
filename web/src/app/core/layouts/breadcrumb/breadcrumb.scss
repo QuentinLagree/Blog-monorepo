@@ -1,5 +1,9 @@
 @use 'variables' as *;
 
+i:hover svg {
+  background-color: transparent;
+}
+
 .breadcrumb {
   width: fit-content;
   max-width: 100%;
@@ -55,6 +59,10 @@
   white-space: nowrap;
 }
 
+.breadcrumb__back {
+  cursor: pointer;
+}
+
 .breadcrumb__link {
   color: $text-muted;
   text-decoration: none;
@@ -64,12 +72,12 @@
     background-color 0.16s ease,
     transform 0.16s ease;
 }
-
 .breadcrumb__link:hover {
   color: $primary;
   background: rgba($primary, 0.08);
   text-decoration: none;
 }
+
 
 .breadcrumb__link:active {
   transform: scale(0.98);
@@ -84,7 +92,6 @@
   color: $text-secondary;
   font-weight: 750;
 }
-
 .breadcrumb__item:last-child .breadcrumb__current {
   color: $primary;
   background: rgba($primary, 0.08);
@@ -95,6 +102,13 @@
   color: $border-strong;
   font-weight: 700;
   user-select: none;
+}
+
+.breadcrumb__split {
+  content: "•";
+  scale: 1.2;
+  margin-right: 0.65em;
+  color: $border-strong;
 }
 
 /* =========================
