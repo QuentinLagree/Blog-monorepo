@@ -1,7 +1,7 @@
 import { Component, inject, input, InputSignal, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
-import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb.service';
 import { SessionService, UserSession } from 'src/app/shared/services/session.service';
 import { UserService } from 'src/app/shared/services/user.service';
 import { BaseButtonComponent } from "src/app/shared/ui/form/buttons/base-button";

@@ -12,7 +12,7 @@ import { UserService } from 'src/app/shared/services/user.service';
 import { userLogin } from '../../models/user-login.model';
 import { userRegister } from '../../models/user-register.model';
 import { finalize } from 'rxjs';
-import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb.service';
 
 @Component({
   selector: 'app-register-page',

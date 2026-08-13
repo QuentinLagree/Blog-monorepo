@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb.service';
 import { HeaderContentComponent } from "src/app/shared/ui/content/header-content/header-content";
 import { HeaderSectionComponent } from "src/app/shared/ui/content/header-section/header-section";
 import { HomeArticlesComponent } from "./home-articles/home-articles";

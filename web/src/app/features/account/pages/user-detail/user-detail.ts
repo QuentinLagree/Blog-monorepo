@@ -12,7 +12,7 @@ import { ToastService } from 'src/app/shared/helpers/toasts/toaster.service';
 import { PostService } from '../../../posts/data-access/post.service';
 import { Post } from '../../../posts/model/post.model';
 import { Role, User, UserService } from 'src/app/shared/services/user.service';
-import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb.service';
 import { UserPreferencesService } from '../profil/preferences.service';
 
 @Component({

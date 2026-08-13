@@ -25,7 +25,7 @@ import { UserPreferencesService } from
 import { SUCCESS_MESSAGE } from
   'src/app/shared/helpers/toasts/models/toasts.config';
 import { BreadcrumbService } from
-  'src/app/shared/services/breadcrumb';
+  'src/app/shared/services/breadcrumb.service';
 import { SessionService } from
   'src/app/shared/services/session.service';
 import { Message } from
@@ -273,7 +273,7 @@ export class PostDetailComponent {
       this.reading.update(
         this.navigation.progress(),
       );
-      if (this.readingProgress() >= 35) {
+      if (this.readingProgress() >= 35 && !this._session.getUserIdSync()) {
         this.showModal.set(true)
       }
     });

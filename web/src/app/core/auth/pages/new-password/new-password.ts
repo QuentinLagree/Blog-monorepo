@@ -7,7 +7,7 @@ import { InputPassswordComponent } from 'src/app/shared/ui/form/inputs/inputs-pa
 import { PasswordInputValidatorFactory } from 'src/app/shared/ui/form/inputs/inputs-password/validators/input-password-validator.factory';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb.service';
 
 @Component({
   selector: 'app-login-page',

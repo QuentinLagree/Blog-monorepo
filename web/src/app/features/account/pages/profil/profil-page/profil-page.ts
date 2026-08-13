@@ -25,7 +25,7 @@ import { Post } from 'src/app/features/posts/model/post.model';
 import { ConfirmModalComponent } from 'src/app/shared/helpers/modal/confirm-modal/confirm-modal';
 import { SUCCESS_MESSAGE } from 'src/app/shared/helpers/toasts/models/toasts.config';
 import { ToastService } from 'src/app/shared/helpers/toasts/toaster.service';
-import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb.service';
 import { SessionService } from 'src/app/shared/services/session.service';
 import {
   User,

@@ -10,7 +10,8 @@ import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { SessionService } from 'src/app/shared/services/session.service';
 import { environment } from 'src/environments/environment';
-import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-login-page',
@@ -25,6 +26,7 @@ export class LoginPageComponent {
   private _user: UserService = inject(UserService);
   private _session: SessionService = inject(SessionService)
   private _breadCrumb = inject(BreadcrumbService)
+  private _location = inject(Location)
 
   loading = false;
 
@@ -83,7 +85,11 @@ export class LoginPageComponent {
         .subscribe({
           next: (response) => {
             this._session.setSession(response.data)
-            this._router.navigate([''])
+            try {
+              this._location.back()
+            } catch {
+              this._router.navigate([''])
+            }
           }
         });
     }, 2000);

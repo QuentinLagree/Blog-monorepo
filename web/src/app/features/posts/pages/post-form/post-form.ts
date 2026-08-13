@@ -30,7 +30,7 @@ import { PostFormSubmitService, PostSaveMode } from '../../data-access/post-form
 import { PostEditorImageService } from '../../data-access/post-image-editor.service';
 import { SessionService } from 'src/app/shared/services/session.service';
 import { Post } from '../../model/post.model';
-import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb.service';
 import { MarkdownSyntaxOptions } from 'src/app/shared/ui/context-menu/config/context-menu-options';
 
 @Component({

@@ -8,7 +8,7 @@ import { BaseButtonComponent } from '@src/app/shared/ui/form/buttons/base-button
 import { SUCCESS_MESSAGE } from 'src/app/shared/helpers/toasts/models/toasts.config';
 import { ToastService } from 'src/app/shared/helpers/toasts/toaster.service';
 import { User, UserService } from 'src/app/shared/services/user.service';
-import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb.service';
 
 
 @Component({
