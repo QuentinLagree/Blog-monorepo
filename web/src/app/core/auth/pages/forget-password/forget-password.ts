@@ -5,7 +5,7 @@ import { EmailInputValidatorFactory } from 'src/app/shared/ui/form/inputs/input-
 import { BaseButtonComponent } from '@src/app/shared/ui/form/buttons/base-button';
 import { AuthService } from 'src/app/core/auth/data-access/auth.service';
 import { finalize } from 'rxjs';
-import { BreadcrumbService } from 'src/app/shared/services/breadcrumb';
+import { BreadcrumbService } from 'src/app/shared/services/breadcrumb.service';
 
 @Component({
   selector: 'app-login-page',
