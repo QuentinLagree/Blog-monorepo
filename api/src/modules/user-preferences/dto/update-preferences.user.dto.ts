@@ -8,11 +8,11 @@ import {
 
 export class UpdateUserPreferenceDto {
   @ApiPropertyOptional({
-    enum: ['light', 'dark', 'system'],
+    enum: ['light', 'dark', 'system', 'cream'],
   })
   @IsOptional()
   @IsString()
-  @IsIn(['light', 'dark', 'system'])
+  @IsIn(['light', 'dark', 'system', 'cream'])
   theme?: string;
 
   @ApiPropertyOptional({

@@ -626,9 +626,6 @@ markdown.markdown-content pre,
   overscroll-behavior-inline: contain;
   text-shadow: none;
 
-  background:
-    radial-gradient(circle at top right, rgba($primary, 0.11), transparent 15rem),
-    var(--md-code-bg);
   color: var(--md-code-text);
 
   border: 1px solid var(--md-code-border);

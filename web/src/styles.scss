@@ -3,11 +3,15 @@
 
 @use './styles/reset';
 
+@use './styles/animations';
 @use './styles/base';
 @use './styles/typography';
 @use './styles/layout';
 @use './styles/page-header';
 @use './styles/helpers';
+
+@use './styles/themes';
+@use './styles/texts';
 
 @use './styles/components/cards';
 @use './styles/components/button';

@@ -2,154 +2,156 @@
    COLORS — BASE
 ========================= */
 
-$white: #ffffff;
-$black: #1c1c1a;
+$white: var(--white);
+$black: var(--black);
 
 /* =========================
    COLORS — TEXT
 ========================= */
 
-$text-primary: #1c1c1a;
-$text-secondary: #6f6f68;
-$text-muted: #9a978e;
+$text-primary: var(--text-primary);
+$text-secondary: var(--text-secondary);
+$text-muted: var(--text-muted);
 
 /* =========================
    COLORS — SURFACES
 ========================= */
 
-$background: #fafaf7;
+$background: var(--background);
 
-$surface: #ffffff;
-$surface-soft: #f4f2ec;
-$surface-muted: #edeae2;
+$surface: var(--surface);
+$surface-soft: var(--surface-soft);
+$surface-muted: var(--surface-muted);
 
 /* Aliases temporaires */
-$container-background: $surface;
-$container-background-soft: $surface-soft;
+
+$container-background: var(--container-background);
+$container-background-soft: var(--container-background-soft);
 
 /* =========================
    COLORS — BRAND
 ========================= */
 
-$primary: #315c49;
-$primary-hover: #264a3a;
-$primary-active: #1f3d30;
-$primary-soft: #e4eee9;
+$primary: var(--primary);
+$primary-hover: var(--primary-hover);
+$primary-active: var(--primary-active);
+$primary-soft: var(--primary-soft);
 
-$secondary: #c47a35;
-$secondary-hover: #a9652a;
-$secondary-active: #8c5220;
-$secondary-soft: #f4e6d8;
+$secondary: var(--secondary);
+$secondary-hover: var(--secondary-hover);
+$secondary-active: var(--secondary-active);
+$secondary-soft: var(--secondary-soft);
 
 /* =========================
    COLORS — STATES
 ========================= */
 
-$success: #2f7d5b;
-$success-hover: #286b4e;
-$success-active: #205940;
-$success-soft: #e1f1e9;
+$success: var(--success);
+$success-hover: var(--success-hover);
+$success-active: var(--success-active);
+$success-soft: var(--success-soft);
 
-$danger: #b42318;
-$danger-hover: #981f16;
-$danger-active: #7f1a12;
-$danger-soft: #fde7e4;
+$danger: var(--danger);
+$danger-hover: var(--danger-hover);
+$danger-active: var(--danger-active);
+$danger-soft: var(--danger-soft);
 
-$error: $danger;
-$error-hover: $danger-hover;
-$error-active: $danger-active;
-$error-soft: $danger-soft;
+$error: var(--error);
+$error-hover: var(--error-hover);
+$error-active: var(--error-active);
+$error-soft: var(--error-soft);
 
-$warning: #b7791f;
-$warning-hover: #9d6519;
-$warning-active: #824f14;
-$warning-soft: #f7ecd8;
+$warning: var(--warning);
+$warning-hover: var(--warning-hover);
+$warning-active: var(--warning-active);
+$warning-soft: var(--warning-soft);
 
-$info: #315c7c;
-$info-hover: #284f66;
-$info-active: #214255;
-$info-soft: #e2ecf3;
+$info: var(--info);
+$info-hover: var(--info-hover);
+$info-active: var(--info-active);
+$info-soft: var(--info-soft);
 
 /* =========================
    BORDERS
 ========================= */
 
-$border-light: #edeae2;
-$border: #e6e3da;
-$border-strong: #d8d3c7;
-$border-emphasis: #beb7a8;
+$border-light: var(--border-light);
+$border: var(--border);
+$border-strong: var(--border-strong);
+$border-emphasis: var(--border-emphasis);
 
-$border-focus: $primary;
+$border-focus: var(--border-focus);
 
-$border-success: #a8d8bd;
-$border-warning: #e0c18d;
-$border-error: #f0a8a0;
-$border-info: #afc6d8;
+$border-success: var(--border-success);
+$border-warning: var(--border-warning);
+$border-error: var(--border-error);
+$border-info: var(--border-info);
 
 /* Aliases */
-$success-border: $border-success;
-$warning-border: $border-warning;
-$error-border: $border-error;
-$info-border: $border-info;
+
+$success-border: var(--success-border);
+$warning-border: var(--warning-border);
+$error-border: var(--error-border);
+$info-border: var(--info-border);
 
 /* =========================
    UI STATES
 ========================= */
 
-$hover-background: $surface-soft;
-$active-background: $surface-muted;
-$selected-background: $primary-soft;
+$hover-background: var(--hover-background);
+$active-background: var(--active-background);
+$selected-background: var(--selected-background);
 
-$focus-border: $primary;
-$focus-ring: rgb(49 92 73 / 16%);
+$focus-border: var(--focus-border);
+$focus-ring: var(--focus-ring);
 
 /* =========================
    FORMS
 ========================= */
 
-$input-placeholder: rgb(154 151 142 / 75%);
+$input-placeholder: var(--input-placeholder);
 
-$option-background: $surface-soft;
-$option-background-focus: $primary-soft;
+$option-background: var(--option-background);
+$option-background-focus: var(--option-background-focus);
 
 /* =========================
    CARD COLORS
 ========================= */
 
-$card-background: $surface;
-$card-background-soft: $surface-soft;
-$card-background-muted: $surface-muted;
+$card-background: var(--card-background);
+$card-background-soft: var(--card-background-soft);
+$card-background-muted: var(--card-background-muted);
 
-$card-border: $border;
-$card-border-hover: $border-strong;
-$card-border-active: $border-emphasis;
+$card-border: var(--card-border);
+$card-border-hover: var(--card-border-hover);
+$card-border-active: var(--card-border-active);
 
-$card-text: $text-primary;
-$card-text-secondary: $text-secondary;
-$card-text-muted: $text-muted;
+$card-text: var(--card-text);
+$card-text-secondary: var(--card-text-secondary);
+$card-text-muted: var(--card-text-muted);
 
 /* Card variants */
 
-$card-primary-background: $primary-soft;
-$card-primary-border: rgb(49 92 73 / 16%);
-$card-primary-text: $primary;
+$card-primary-background: var(--card-primary-background);
+$card-primary-border: var(--card-primary-border);
+$card-primary-text: var(--card-primary-text);
 
-$card-secondary-background: $secondary-soft;
-$card-secondary-border: rgb(196 122 53 / 18%);
-$card-secondary-text: $secondary;
+$card-secondary-background: var(--card-secondary-background);
+$card-secondary-border: var(--card-secondary-border);
+$card-secondary-text: var(--card-secondary-text);
 
-$card-success-background: $success-soft;
-$card-success-border: $border-success;
-$card-success-text: $success;
+$card-success-background: var(--card-success-background);
+$card-success-border: var(--card-success-border);
+$card-success-text: var(--card-success-text);
 
-$card-warning-background: $warning-soft;
-$card-warning-border: $border-warning;
-$card-warning-text: $warning;
+$card-warning-background: var(--card-warning-background);
+$card-warning-border: var(--card-warning-border);
+$card-warning-text: var(--card-warning-text);
 
-$card-danger-background: $danger-soft;
-$card-danger-border: $border-error;
-$card-danger-text: $danger;
+$card-danger-background: var(--card-danger-background);
+$card-danger-border: var(--card-danger-border);
+$card-danger-text: var(--card-danger-text);
 
-$card-info-background: $info-soft;
-$card-info-border: $border-info;
-$card-info-text: $info;
+$card-info-background: var(--card-info-background);
+$card-info-border: var(--card-info-border);
+$card-info-text: var(--card-info-text);

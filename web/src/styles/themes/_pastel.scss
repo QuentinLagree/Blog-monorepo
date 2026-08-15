@@ -1,0 +1,165 @@
+[data-theme='cream'] {
+  /* =========================
+     COLORS — BASE
+  ========================= */
+
+  --white: #fffefb;
+  --black: #2f2a24;
+
+  /* =========================
+     COLORS — TEXT
+  ========================= */
+
+  --text-primary: #403830;
+  --text-secondary: #75695d;
+  --text-muted: #a09589;
+
+  /* =========================
+     COLORS — SURFACES
+  ========================= */
+
+  --background: #f7f1e8;
+
+  --surface: #fffaf3;
+  --surface-soft: #f1e8dc;
+  --surface-muted: #e8ddd0;
+
+  /* Aliases temporaires */
+
+  --container-background: var(--surface);
+  --container-background-soft: var(--surface-soft);
+
+  /* =========================
+     COLORS — BRAND
+  ========================= */
+
+  /* Sauge douce */
+
+  --primary: #8fa28d;
+  --primary-hover: #7d927b;
+  --primary-active: #6c816a;
+  --primary-soft: #e2eadf;
+
+  /* Abricot / caramel pastel */
+
+  --secondary: #d4a17d;
+  --secondary-hover: #c5916d;
+  --secondary-active: #b6815e;
+  --secondary-soft: #f1dfd1;
+
+  /* =========================
+     COLORS — STATES
+  ========================= */
+
+  --success: #88a88d;
+  --success-hover: #78997d;
+  --success-active: #68886d;
+  --success-soft: #e2ece1;
+
+  --danger: #c98d85;
+  --danger-hover: #bb7d75;
+  --danger-active: #aa6d66;
+  --danger-soft: #f1dfdc;
+
+  --error: var(--danger);
+  --error-hover: var(--danger-hover);
+  --error-active: var(--danger-active);
+  --error-soft: var(--danger-soft);
+
+  --warning: #c6a873;
+  --warning-hover: #b89863;
+  --warning-active: #a48754;
+  --warning-soft: #f2e7ce;
+
+  --info: #8eaab4;
+  --info-hover: #7c9aa5;
+  --info-active: #6b8995;
+  --info-soft: #e0eaed;
+
+  /* =========================
+     BORDERS
+  ========================= */
+
+  --border-light: #eee6dc;
+  --border: #ded3c6;
+  --border-strong: #cabdaf;
+  --border-emphasis: #b3a393;
+
+  --border-focus: var(--primary);
+
+  --border-success: #b8ccb8;
+  --border-warning: #d8c79f;
+  --border-error: #ddb9b3;
+  --border-info: #b8cbd2;
+
+  /* Aliases */
+
+  --success-border: var(--border-success);
+  --warning-border: var(--border-warning);
+  --error-border: var(--border-error);
+  --info-border: var(--border-info);
+
+  /* =========================
+     UI STATES
+  ========================= */
+
+  --hover-background: #efe5d9;
+  --active-background: #e6dacd;
+  --selected-background: var(--primary-soft);
+
+  --focus-border: var(--primary);
+  --focus-ring: rgb(143 162 141 / 22%);
+
+  /* =========================
+     FORMS
+  ========================= */
+
+  --input-placeholder: rgb(117 105 93 / 62%);
+
+  --option-background: var(--surface-soft);
+  --option-background-focus: var(--primary-soft);
+
+  /* =========================
+     CARD COLORS
+  ========================= */
+
+  --card-background: var(--surface);
+  --card-background-soft: var(--surface-soft);
+  --card-background-muted: var(--surface-muted);
+
+  --card-border: var(--border);
+  --card-border-hover: var(--border-strong);
+  --card-border-active: var(--border-emphasis);
+
+  --card-text: var(--text-primary);
+  --card-text-secondary: var(--text-secondary);
+  --card-text-muted: var(--text-muted);
+
+  /* =========================
+     CARD VARIANTS
+  ========================= */
+
+  --card-primary-background: var(--primary-soft);
+  --card-primary-border: rgb(143 162 141 / 26%);
+  --card-primary-text: #667963;
+
+  --card-secondary-background: var(--secondary-soft);
+  --card-secondary-border: rgb(212 161 125 / 28%);
+  --card-secondary-text: #9b6f51;
+
+  --card-success-background: var(--success-soft);
+  --card-success-border: var(--border-success);
+  --card-success-text: #647b67;
+
+  --card-warning-background: var(--warning-soft);
+  --card-warning-border: var(--border-warning);
+  --card-warning-text: #897143;
+
+  --card-danger-background: var(--danger-soft);
+  --card-danger-border: var(--border-error);
+  --card-danger-text: #96645e;
+
+  --card-info-background: var(--info-soft);
+  --card-info-border: var(--border-info);
+  --card-info-text: #607c87;
+}

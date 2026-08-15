@@ -1,0 +1,160 @@
+:root,
+[data-theme="light"] {
+  /* =========================
+     COLORS — BASE
+  ========================= */
+
+  --white: #ffffff;
+  --black: #1c1c1a;
+
+  /* =========================
+     COLORS — TEXT
+  ========================= */
+
+  --text-primary: #1c1c1a;
+  --text-secondary: #6f6f68;
+  --text-muted: #9a978e;
+
+  /* =========================
+     COLORS — SURFACES
+  ========================= */
+
+  --background: #fafaf7;
+
+  --surface: #ffffff;
+  --surface-soft: #f4f2ec;
+  --surface-muted: #edeae2;
+
+  /* Aliases temporaires */
+
+  --container-background: var(--surface);
+  --container-background-soft: var(--surface-soft);
+
+  /* =========================
+     COLORS — BRAND
+  ========================= */
+
+  --primary: #315c49;
+  --primary-hover: #264a3a;
+  --primary-active: #1f3d30;
+  --primary-soft: #e4eee9;
+
+  --secondary: #c47a35;
+  --secondary-hover: #a9652a;
+  --secondary-active: #8c5220;
+  --secondary-soft: #f4e6d8;
+
+  /* =========================
+     COLORS — STATES
+  ========================= */
+
+  --success: #2f7d5b;
+  --success-hover: #286b4e;
+  --success-active: #205940;
+  --success-soft: #e1f1e9;
+
+  --danger: #b42318;
+  --danger-hover: #981f16;
+  --danger-active: #7f1a12;
+  --danger-soft: #fde7e4;
+
+  --error: var(--danger);
+  --error-hover: var(--danger-hover);
+  --error-active: var(--danger-active);
+  --error-soft: var(--danger-soft);
+
+  --warning: #b7791f;
+  --warning-hover: #9d6519;
+  --warning-active: #824f14;
+  --warning-soft: #f7ecd8;
+
+  --info: #315c7c;
+  --info-hover: #284f66;
+  --info-active: #214255;
+  --info-soft: #e2ecf3;
+
+  /* =========================
+     BORDERS
+  ========================= */
+
+  --border-light: #edeae2;
+  --border: #e6e3da;
+  --border-strong: #d8d3c7;
+  --border-emphasis: #beb7a8;
+
+  --border-focus: var(--primary);
+
+  --border-success: #a8d8bd;
+  --border-warning: #e0c18d;
+  --border-error: #f0a8a0;
+  --border-info: #afc6d8;
+
+  /* Aliases */
+
+  --success-border: var(--border-success);
+  --warning-border: var(--border-warning);
+  --error-border: var(--border-error);
+  --info-border: var(--border-info);
+
+  /* =========================
+     UI STATES
+  ========================= */
+
+  --hover-background: var(--surface-soft);
+  --active-background: var(--surface-muted);
+  --selected-background: var(--primary-soft);
+
+  --focus-border: var(--primary);
+  --focus-ring: rgb(49 92 73 / 16%);
+
+  /* =========================
+     FORMS
+  ========================= */
+
+  --input-placeholder: rgb(154 151 142 / 75%);
+
+  --option-background: var(--surface-soft);
+  --option-background-focus: var(--primary-soft);
+
+  /* =========================
+     CARD COLORS
+  ========================= */
+
+  --card-background: var(--surface);
+  --card-background-soft: var(--surface-soft);
+  --card-background-muted: var(--surface-muted);
+
+  --card-border: var(--border);
+  --card-border-hover: var(--border-strong);
+  --card-border-active: var(--border-emphasis);
+
+  --card-text: var(--text-primary);
+  --card-text-secondary: var(--text-secondary);
+  --card-text-muted: var(--text-muted);
+
+  /* Card variants */
+
+  --card-primary-background: var(--primary-soft);
+  --card-primary-border: rgb(49 92 73 / 16%);
+  --card-primary-text: var(--primary);
+
+  --card-secondary-background: var(--secondary-soft);
+  --card-secondary-border: rgb(196 122 53 / 18%);
+  --card-secondary-text: var(--secondary);
+
+  --card-success-background: var(--success-soft);
+  --card-success-border: var(--border-success);
+  --card-success-text: var(--success);
+
+  --card-warning-background: var(--warning-soft);
+  --card-warning-border: var(--border-warning);
+  --card-warning-text: var(--warning);
+
+  --card-danger-background: var(--danger-soft);
+  --card-danger-border: var(--border-error);
+  --card-danger-text: var(--danger);
+
+  --card-info-background: var(--info-soft);
+  --card-info-border: var(--border-info);
+  --card-info-text: var(--info);
+}
