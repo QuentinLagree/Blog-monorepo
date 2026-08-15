@@ -28,10 +28,11 @@
                           label: 'Thème',
                           required: true,
                           placeholder: 'Sélectionne un thème',
-                          default_choice: 'Système',
+                          default_choice: themeLabels[_preferences.getPreference('theme')],
                           choices: [
                             'Système',
                             'Clair',
+                            'Crème',
                             'Sombre'
                           ]
                         }">
@@ -49,7 +50,7 @@
                           label: 'Taille du texte',
                           required: true,
                           placeholder: 'Sélectionne une taille',
-                          default_choice: 'Moyenne',
+                          default_choice: fontSizeLabels[_preferences.getPreference('fontSize')],
                           choices: [
                             'Petite',
                             'Moyenne',

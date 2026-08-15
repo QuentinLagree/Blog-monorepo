@@ -1,5 +1,6 @@
 import {
   Component,
+  effect,
   inject,
   OnInit,
 } from '@angular/core';
@@ -40,16 +41,25 @@ export class AppComponent implements OnInit {
   readonly prod: boolean = environment.production;
 
 
+  constructor () {
+      this._preferences.loadGlobalPreferences();
+  }
+  
   ngOnInit(): void {
     const userId =
       this._session.getUserIdSync();
 
     if (!userId) {
+      this._preferences.loadGlobalPreferences(true)
       return;
     }
 
     this._preferences
       .loadPreferences()
-      .subscribe();
+      .subscribe({
+        next: () => {
+          this._preferences.loadGlobalPreferences();
+        }
+      });
   }
 }

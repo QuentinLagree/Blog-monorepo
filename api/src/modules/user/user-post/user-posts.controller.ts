@@ -15,7 +15,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBasicAuth, ApiBody, ApiProperty, ApiQuery, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { Post as Article, PostRead } from '@prisma/client';
 import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
 import { PostOwnerOrAdminGuard } from 'src/commons/guards/post-owner-or-admin.guard';
@@ -47,6 +47,10 @@ export class UserToPostController {
   ) { }
 
   @UseGuards(AuthGuardSession(), UserOwnerOrAdminGuard)
+  @ApiBasicAuth()
+  @ApiProperty({
+    
+  })
   @Get('drafts/:id')
   async getAllUserDrafts(
     @Param('id', ParseIntPipe) id: number,
@@ -232,6 +236,9 @@ export class UserToPostController {
     );
   }
 
+
+
+  
   @Get(':postId/reading-status')
   @UseGuards(AuthGuardSession())
   async getReadingStatus(

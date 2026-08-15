@@ -223,6 +223,7 @@ describe('ArticleService', () => {
         take: 10,
         skip: 0,
         where: {
+          postReads: {},
           published_at: {
             not: null,
           },
@@ -275,6 +276,7 @@ describe('ArticleService', () => {
         take: 10,
         skip: 0,
         where: {
+          postReads: {},
           published_at: null,
         },
       });

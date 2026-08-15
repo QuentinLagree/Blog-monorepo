@@ -1,36 +1,38 @@
-import { Component, effect, inject, input, InputSignal, signal, WritableSignal } from "@angular/core";
+import { Component, DestroyRef, effect, inject, input, InputSignal, signal, WritableSignal } from "@angular/core";
 import { UpdateUserPreferences, UserPreferences, UserPreferencesService } from "../preferences.service";
 import { SwitchButtonComponent } from "src/app/shared/ui/form/switch-button/switch-button";
 import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { SelectValidatorFactory } from "src/app/shared/ui/form/selects/models/select-validator.factory";
-import { HttpContext } from "@angular/common/http";
-import { SUCCESS_MESSAGE } from "src/app/shared/helpers/toasts/models/toasts.config";
-import { Message } from "src/app/shared/types/message.type";
 import { User, UserService } from "src/app/shared/services/user.service";
-import { finalize, firstValueFrom } from "rxjs";
+import { debounceTime, distinctUntilChanged, filter, finalize, firstValueFrom } from "rxjs";
 import { SelectComponent } from "src/app/shared/ui/form/selects/selects";
 import { BaseButtonComponent } from "src/app/shared/ui/form/buttons/base-button";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { HttpContext } from "@angular/common/http";
+import { ToastService } from "src/app/shared/helpers/toasts/toaster.service";
 
 type ThemeControlValue =
     | 'Système'
     | 'Clair'
-    | 'Sombre';
+    | 'Sombre'
+    | 'Crème';
 
 type FontSizeControlValue =
     | 'Petite'
     | 'Moyenne'
     | 'Grande';
 
+const SAVE_DELAY = 1000;
 
 @Component({
     selector: 'app-profil-preferences',
     standalone: true,
     imports: [
-    SwitchButtonComponent,
-    SelectComponent,
-    ReactiveFormsModule,
-    BaseButtonComponent
-],
+        SwitchButtonComponent,
+        SelectComponent,
+        ReactiveFormsModule,
+        BaseButtonComponent
+    ],
     templateUrl: './profil-preferences.html',
     styleUrls: ['./profil-preferences.scss', '../profil-collapse.scss']
 })
@@ -38,13 +40,10 @@ type FontSizeControlValue =
 export class ProfilPreferencesComponent {
     sessionId: InputSignal<number> = input.required()
 
-    
-  private readonly _user =
-    inject(UserService);
+    private readonly destroyRef = inject(DestroyRef);
+    private readonly _toast = inject(ToastService)
 
-  
-    
-    private readonly _preferences =
+    readonly _preferences =
         inject(UserPreferencesService);
 
     readonly preferencesLoading =
@@ -68,11 +67,12 @@ export class ProfilPreferencesComponent {
 
     showPreferences = false;
 
-    private readonly themeLabels: Record<
+    readonly themeLabels: Record<
         UserPreferences['theme'],
         ThemeControlValue
     > = {
             system: 'Système',
+            cream: 'Crème',
             light: 'Clair',
             dark: 'Sombre',
         };
@@ -81,12 +81,13 @@ export class ProfilPreferencesComponent {
         ThemeControlValue,
         UserPreferences['theme']
     > = {
-            Système: 'system',
-            Clair: 'light',
-            Sombre: 'dark',
+            "Système": 'system',
+            "Crème": 'cream',
+            "Clair": 'light',
+            "Sombre": 'dark',
         };
 
-    private readonly fontSizeLabels: Record<
+    readonly fontSizeLabels: Record<
         UserPreferences['fontSize'],
         FontSizeControlValue
     > = {
@@ -99,14 +100,14 @@ export class ProfilPreferencesComponent {
         FontSizeControlValue,
         UserPreferences['fontSize']
     > = {
-            Petite: 'small',
-            Moyenne: 'medium',
-            Grande: 'large',
+            "Petite": 'small',
+            "Moyenne": 'medium',
+            "Grande": 'large',
         };
 
     readonly themeControl =
         new FormControl<ThemeControlValue>(
-            'Système',
+            "Système",
             {
                 nonNullable: true,
                 validators: [
@@ -128,7 +129,7 @@ export class ProfilPreferencesComponent {
                         validate: true,
                         required: true,
                     }),
-                ],
+                ], 
             },
         );
 
@@ -227,7 +228,8 @@ export class ProfilPreferencesComponent {
             this.showContributionsControl,
     });
 
-    constructor () {
+    constructor() {
+        this.initAutoSave()
         effect(() => {
             if (!this._preferences.loaded()) {
                 return;
@@ -238,12 +240,34 @@ export class ProfilPreferencesComponent {
 
             this.fillPreferencesForm(preferences);
         });
-         this.loadPreferences();
+        this.loadPreferences();
     }
 
-    
 
-    
+    private initAutoSave(): void {
+        this.preferencesForm.valueChanges
+            .pipe(
+                debounceTime(SAVE_DELAY),
+
+                filter(() => this.preferencesForm.valid),
+
+                distinctUntilChanged(
+                    (previous, current) =>
+                        JSON.stringify(previous) === JSON.stringify(current),
+                ),
+
+                takeUntilDestroyed(this.destroyRef),
+            )
+            .subscribe(() => {
+                this._toast.success("Les préférences ont été sauvegarder !", {
+                    duration: 1000
+                })
+                this.savePreferences();
+            });
+    }
+
+
+
 
     loadPreferences(): void {
         if (
@@ -283,10 +307,10 @@ export class ProfilPreferencesComponent {
 
         const payload: UpdateUserPreferences = {
             theme:
-                this.themeValues[values.theme],
+                this.themeValues[this.capitalizeFirstLetter(values.theme) as ThemeControlValue],
 
             fontSize:
-                this.fontSizeValues[values.fontSize],
+                this.fontSizeValues[this.capitalizeFirstLetter(values.fontSize) as FontSizeControlValue],
 
             reduceAnimations:
                 values.reduceAnimations,
@@ -333,6 +357,7 @@ export class ProfilPreferencesComponent {
             )
             .subscribe({
                 next: () => {
+                    this._preferences.loadGlobalPreferences()
                     this.preferencesForm.markAsPristine();
                     this.preferencesForm.markAsUntouched();
                 },
@@ -393,5 +418,9 @@ export class ProfilPreferencesComponent {
         this.preferencesForm.markAsPristine();
         this.preferencesForm.markAsUntouched();
     }
+
+    private capitalizeFirstLetter(val: string) {
+    return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+}
 
 }

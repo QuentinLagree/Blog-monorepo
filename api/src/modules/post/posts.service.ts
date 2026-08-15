@@ -34,7 +34,11 @@ export class ArticleService {
   }
 
 
-  async index(paginationDto: PaginationDto): Promise<[Article[], MetaPaginationDto]> {
+  async index(paginationDto: PaginationDto, userId?: number): Promise<[Article[], MetaPaginationDto]> {
+    let hasReading: boolean = true
+    if (!paginationDto.reading && userId)  {
+      hasReading = false
+    }
     const page = paginationDto.page ?? 1;
     const limit = paginationDto.limit ?? 10;
     const published = paginationDto.published;
@@ -42,11 +46,17 @@ export class ArticleService {
       this._prisma.post.findMany({
         take: limit,
         skip: (page - 1) * limit,
-        where:
-          paginationDto.published === undefined
+        where: 
+          paginationDto.published === undefined && paginationDto.reading === undefined
             ? {}
             : {
               published_at: paginationDto.published ? { not: null } : null,
+              postReads: (hasReading) ? {} : {
+                none: {
+                  completed: true,
+                  userId
+                }
+              }
             },
       }),
       this._prisma.post.count({
@@ -66,7 +76,7 @@ export class ArticleService {
     ]
   }
 
-  async indexWhere(where: Prisma.PostWhereInput) {
+  async indexWhere(where: Prisma.PostWhereInput, reading: boolean = true) {
     return this._prisma.post.findMany({ where });
   }
 
@@ -78,7 +88,8 @@ export class ArticleService {
     uniqueProperties: Prisma.PostWhereUniqueInput,
   ): Promise<Article> {
     const post = await this._prisma.post.findUnique({
-      where: uniqueProperties,
+      where: uniqueProperties
+
     });
     if (!post) throw new PostNotFoundException(uniqueProperties.id ??
       'unknown');

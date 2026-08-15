@@ -18,7 +18,7 @@ import { CheckboxConfig } from './models/checkbox-config';
   selector: 'app-switch-button',
   standalone: true,
   templateUrl: './switch-button.html',
-  styleUrls: ['./switch-button.scss'],
+  styles: "@use 'base' as *;",
   imports: [
     ReactiveFormsModule,
   ],

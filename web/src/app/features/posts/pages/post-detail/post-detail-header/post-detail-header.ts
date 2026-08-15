@@ -1,8 +1,10 @@
 import { DatePipe } from '@angular/common';
 import {
   Component,
+  inject,
   input,
   output,
+  signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
@@ -11,6 +13,7 @@ import {
 } from 'src/app/shared/services/user.service';
 import { PostDetailAsideComponent } from '../post-detail-aside/post-detail-aside';
 import { Post } from '../../../model/post.model';
+import { UserPreferencesService } from 'src/app/features/account/pages/profil/preferences.service';
 
 
 @Component({
@@ -25,6 +28,9 @@ import { Post } from '../../../model/post.model';
     './post-detail-header.html',
 })
 export class PostDetailHeaderComponent {
+
+  private readonly _preferences = inject(UserPreferencesService)
+  
   readonly auth =
     input.required<boolean>()
   
@@ -36,9 +42,6 @@ export class PostDetailHeaderComponent {
 
   readonly readingTime =
     input.required<number>();
-
-  readonly showReadingTime =
-    input.required<boolean>();
 
   readonly isPostRead =
     input.required<boolean>();
@@ -69,4 +72,6 @@ export class PostDetailHeaderComponent {
 
   readonly shareRequested =
     output<void>();
+
+  readonly showReadingTime = signal(this._preferences.getPreference('showReadingTime'))
 }

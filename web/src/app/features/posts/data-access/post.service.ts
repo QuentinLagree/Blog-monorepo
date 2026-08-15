@@ -52,10 +52,11 @@ export class PostService {
   getAllPublishedPost(
     page: number,
     limit: number,
+    reading: boolean = true,
     options?: HttpOptions,
   ): Observable<Message> {
     return this._http.getData(
-      `posts?page=${page}&limit=${limit}&published=true`,
+      `posts?page=${page}&limit=${limit}&published=true&reading=${reading}`,
       options,
     );
   }

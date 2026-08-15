@@ -9,6 +9,7 @@ import { PaginationDto } from 'src/modules/pagination/pagination.dto';
 import { slugServiceMock, userServiceMock } from '../mocks/mocks';
 import { createPostMock } from '../mocks/create_post.mocks';
 import { createUserMock } from '../mocks/create.user.mocks';
+import { Session } from '@fastify/secure-session';
 
 describe('PostController', () => {
   let postController: PostController;
@@ -59,12 +60,21 @@ describe('PostController', () => {
       limit: 10,
       totalArticle: 0,
     };
+    const sessionUser = {
+        id: 1,
+        email: 'test@test.com',
+        role: 'User',
+      };
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue(sessionUser),
+      };
 
     articleServiceMock.index.mockResolvedValue([[], meta]);
 
-    const response = await postController.index(payload);
+    const response = await postController.index(payload, sessionMock as any);
 
-    expect(articleServiceMock.index).toHaveBeenCalledWith(payload);
+    expect(articleServiceMock.index).toHaveBeenCalledWith(payload, sessionUser.id);
 
     expect(response).toEqual(
       makeMessage(
@@ -85,6 +95,15 @@ describe('PostController', () => {
       createPostMock({ id: 1 }),
       createPostMock({ id: 2 }),
     ];
+    const sessionUser = {
+        id: 1,
+        email: 'test@test.com',
+        role: 'User',
+      };
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue(sessionUser),
+      };
 
     const meta = {
       currentPage: 1,
@@ -94,9 +113,9 @@ describe('PostController', () => {
 
     articleServiceMock.index.mockResolvedValue([posts, meta]);
 
-    const response = await postController.index(payload);
+    const response = await postController.index(payload, sessionMock as any);
 
-    expect(articleServiceMock.index).toHaveBeenCalledWith(payload);
+    expect(articleServiceMock.index).toHaveBeenCalledWith(payload, sessionUser.id);
 
     expect(response).toEqual(
       makeMessage(
@@ -114,15 +133,25 @@ describe('PostController', () => {
       limit: 10,
     } as PaginationDto;
 
+    const sessionUser = {
+        id: 1,
+        email: 'test@test.com',
+        role: 'User',
+      };
+
+      const sessionMock = {
+        get: jest.fn().mockReturnValue(sessionUser),
+      };
+
     const error = new Error('Posts loading failed');
 
     articleServiceMock.index.mockRejectedValue(error);
 
     await expect(
-      postController.index(payload),
+      postController.index(payload, sessionMock as any),
     ).rejects.toThrow(error);
 
-    expect(articleServiceMock.index).toHaveBeenCalledWith(payload);
+    expect(articleServiceMock.index).toHaveBeenCalledWith(payload, sessionUser.id);
   });
 });
 

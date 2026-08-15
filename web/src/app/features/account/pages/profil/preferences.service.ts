@@ -13,11 +13,11 @@ import {
 } from 'rxjs';
 
 import { SUCCESS_MESSAGE } from 'src/app/shared/helpers/toasts/models/toasts.config';
-import { HttpRequestService } from 'src/app/shared/services/http-service/get-request';
+import { HttpOptions, HttpRequestService } from 'src/app/shared/services/http-service/get-request';
 import { Message } from 'src/app/shared/types/message.type';
 
 export interface UserPreferences {
-  theme: 'system' | 'light' | 'dark';
+  theme: 'system' | 'light' | 'dark' | 'cream';
   fontSize: 'small' | 'medium' | 'large';
 
   reduceAnimations: boolean;
@@ -40,7 +40,7 @@ export type UpdateUserPreferences =
   Partial<UserPreferences>;
 
 const DEFAULT_PREFERENCES: UserPreferences = {
-  theme: 'system',
+  theme: 'light',
   fontSize: 'medium',
 
   reduceAnimations: false,
@@ -66,12 +66,12 @@ export class UserPreferencesService {
   private readonly _http = inject(HttpRequestService);
 
   private readonly _preferences =
-  signal<UserPreferences>(
-    DEFAULT_PREFERENCES,
-  );
+    signal<UserPreferences>(
+      DEFAULT_PREFERENCES,
+    );
 
-readonly preferences =
-  this._preferences.asReadonly();
+  readonly preferences =
+    this._preferences.asReadonly();
   private readonly _loading = signal(false);
   private readonly _loaded = signal(false);
 
@@ -81,19 +81,13 @@ readonly preferences =
   readonly loaded =
     this._loaded.asReadonly();
 
-  readonly showReadingTime = computed(
-    () =>
-      this._preferences().showReadingTime,
-  );
-
   readonly visibleProfil = computed(
     () => this.preferences().profileVisible
   )
 
-  readonly showAuthorDetails = computed(
-    () =>
-      this._preferences().showAuthorDetails,
-  );
+  readonly hideReadPost = computed(
+    () => this.preferences().hideReadPosts
+  )
 
   readonly reduceAnimations = computed(
     () =>
@@ -101,55 +95,88 @@ readonly preferences =
   );
 
   readonly theme = computed(
-    () => this._preferences().theme,
+    () =>
+      this._preferences().theme,
   );
+
+  loadGlobalPreferences(offline = false): void {
+  const reduceAnimations = this.getPreference('reduceAnimations');
+  const themePreference = this.getPreference('theme');
+  const fontSizePreference = this.getPreference('fontSize')
+
+  const prefersDarkMode = window.matchMedia(
+    '(prefers-color-scheme: dark)'
+  ).matches;
+
+  const systemTheme = prefersDarkMode ? 'dark' : 'light';
+
+  const theme =
+    offline || themePreference === 'system'
+      ? systemTheme
+      : themePreference;
+
+  document.body.setAttribute(
+    'data-reduce-motion',
+    String(!!reduceAnimations)
+  );
+
+  document.body.setAttribute('data-theme', theme);
+
+  document.body.setAttribute('data-font-size', fontSizePreference)
+}
 
   readonly fontSize = computed(
     () => this._preferences().fontSize,
   );
 
   loadPreferences(
-  force = false,
-): Observable<Message<UserPreferences>> {
-  if (
-    this._loaded() &&
-    !force
-  ) {
-    return of({
-      data: this._preferences(),
-    } as Message<UserPreferences>);
+    force = false,
+  ): Observable<Message<UserPreferences>> {
+    if (
+      this._loaded() &&
+      !force
+    ) {
+      return of({
+        data: this._preferences(),
+      } as Message<UserPreferences>);
+    }
+
+    this._loading.set(true);
+
+    return this._http
+      .getData(
+        'users/preferences',
+        {
+          context: new HttpContext().set(
+            SUCCESS_MESSAGE,
+            false,
+          ),
+        },
+      )
+      .pipe(
+        tap(({ data }) => {
+          this._preferences.set(data);
+          this._loaded.set(true);
+        }),
+        finalize(() => {
+          this._loading.set(false);
+        }),
+      );
   }
 
-  this._loading.set(true);
-
-  return this._http
-    .getData(
-      'users/preferences',
-      {
-        context: new HttpContext().set(
-          SUCCESS_MESSAGE,
-          false,
-        ),
-      },
-    )
-    .pipe(
-      tap(({ data }) => {
-        this._preferences.set(data);
-        this._loaded.set(true);
-      }),
-      finalize(() => {
-        this._loading.set(false);
-      }),
-    );
-}
-
   updatePreferences(
-    payload: UpdateUserPreferences,
+    payload: UpdateUserPreferences
   ): Observable<Message<UserPreferences>> {
     return this._http
       .patchData(
         'users/preferences',
         payload,
+        {
+          context: new HttpContext().set(
+            SUCCESS_MESSAGE,
+            false,
+          ),
+        }
       )
       .pipe(
         tap(({ data }) => {

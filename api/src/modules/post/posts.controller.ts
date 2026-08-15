@@ -6,6 +6,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseBoolPipe,
   ParseIntPipe,
   Patch,
   Post,
@@ -15,7 +16,7 @@ import {
   UseGuards,
   UseInterceptors
 } from '@nestjs/common';
-import { ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBasicAuth, ApiBody, ApiCookieAuth, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Post as Articles } from '@prisma/client';
 import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
 import { PostOwnerOrAdminGuard } from 'src/commons/guards/post-owner-or-admin.guard';
@@ -41,13 +42,12 @@ export class PostController {
   ) {}
 
   @Get()
-  @ApiQuery({
-    name: 'PaginationDto', type: PaginationDto
-  })
+  @ApiCookieAuth()
   async index(
-    @Query() payload: PaginationDto
+    @Query() payload: PaginationDto,
+    @Session() session: secureSession.Session
   ): Promise<Message<Articles[] | null, MetaPaginationDto>> {
-    const [posts, meta] = await this._articles.index(payload);
+    const [posts, meta] = await this._articles.index(payload, (session.get('user') ? session.get('user').id : undefined));
     return posts.length == 0
       ? makeMessage(
         'List of all posts is empty.',

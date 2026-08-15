@@ -5,6 +5,7 @@ import { HeaderContentComponent } from "src/app/shared/ui/content/header-content
 import { HeaderSectionComponent } from "src/app/shared/ui/content/header-section/header-section";
 import { HomeArticlesComponent } from "./home-articles/home-articles";
 import { LoginModalComponent } from "src/app/shared/helpers/modal/login-modal/login-modal";
+import { UserPreferencesService } from '../account/pages/profil/preferences.service';
 
 @Component({
   selector: 'app-home',

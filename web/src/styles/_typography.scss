@@ -17,7 +17,7 @@
 .text-title-xl {
   color: $text-primary;
 
-  font-size: clamp(2.6rem, 7vw, 5rem);
+  font-size: $title-xl;
   font-weight: $font-bold;
   line-height: 0.96;
   letter-spacing: -0.065em;
@@ -26,7 +26,7 @@
 .text-title-lg {
   color: $text-primary;
 
-  font-size: clamp(2rem, 5vw, 4rem);
+  font-size: $title-lg;
   font-weight: $font-bold;
   line-height: 1;
   letter-spacing: $tracking-title;
@@ -35,7 +35,7 @@
 .text-title-md {
   color: $text-primary;
 
-  font-size: clamp(1.45rem, 3vw, 2.25rem);
+  font-size: $title-md;
   font-weight: $font-bold;
   line-height: $leading-tight;
   letter-spacing: $tracking-tight;
@@ -44,7 +44,7 @@
 .text-title-sm {
   color: $text-primary;
 
-  font-size: $text-xl;
+  font-size: $title-sm;
   font-weight: $font-bold;
   line-height: $leading-tight;
   letter-spacing: -0.025em;
@@ -98,7 +98,7 @@
 
   color: $text-primary;
 
-  font-size: clamp(1.7rem, 4vw, 3rem);
+  font-size: $title-md;
   font-weight: $font-bold;
   line-height: $leading-tight;
   letter-spacing: $tracking-title;

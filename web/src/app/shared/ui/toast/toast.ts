@@ -6,8 +6,8 @@ import { IconLoaderService } from '../../services/icons-loader';
 @Component({
   selector: 'app-toast-container',
   standalone: true,
-  styles: "@use 'base' as *;",
-  templateUrl: './toast.html'
+  templateUrl: './toast.html',
+  styleUrl: './toast.scss'
 })
 export class ToastContainerComponent {
   private readonly _iconLoader: IconLoaderService = inject(IconLoaderService);

@@ -78,6 +78,8 @@ export class PostReadingProgressService {
       return;
     }
 
+    console.log(postId)
+
     try {
       const response:
         Message<ReadingStatus> =

@@ -161,10 +161,6 @@ export class PostDetailComponent {
   readonly isPostRead =
     this.reading.completed;
 
-  readonly showReadingTime =
-    inject(UserPreferencesService)
-      .showReadingTime;
-
   private readonly routeSlug =
     toSignal(
       this._route.paramMap.pipe(

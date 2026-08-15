@@ -5,10 +5,6 @@ import { MarkdownSyntaxOptions } from "../../ui/context-menu/config/context-menu
 
 type MarkdownLineType = "blocquote" | "list" | "number-list" | "tasklist"
 
-export const MarkdownHelper = (markdown_editor: ElementRef) => {
-    console.log(markdown_editor.nativeElement)
-}
-
 export const getSyntaxSelection = (syntax: string, caraceter: string = '$'): number => {
     return syntax.indexOf(caraceter) + 1;
 }

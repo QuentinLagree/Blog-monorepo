@@ -1,30 +1,20 @@
-import { DatePipe } from '@angular/common';
 import { HttpContext } from '@angular/common/http';
 import {
   Component,
-  computed,
   effect,
   inject,
-  resource,
   signal,
-  WritableSignal,
+  WritableSignal
 } from '@angular/core';
 import {
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
+  ReactiveFormsModule
 } from '@angular/forms';
 import {
-  finalize,
-  firstValueFrom,
+  firstValueFrom
 } from 'rxjs';
 
-import { PostService } from 'src/app/features/posts/data-access/post.service';
-import { Post } from 'src/app/features/posts/model/post.model';
 
-import { ConfirmModalComponent } from 'src/app/shared/helpers/modal/confirm-modal/confirm-modal';
 import { SUCCESS_MESSAGE } from 'src/app/shared/helpers/toasts/models/toasts.config';
-import { ToastService } from 'src/app/shared/helpers/toasts/toaster.service';
 import { BreadcrumbService } from 'src/app/shared/services/breadcrumb.service';
 import { SessionService } from 'src/app/shared/services/session.service';
 import {
@@ -33,14 +23,11 @@ import {
 } from 'src/app/shared/services/user.service';
 import { Message } from 'src/app/shared/types/message.type';
 
-import { BaseButtonComponent } from 'src/app/shared/ui/form/buttons/base-button';
-import { DangerButtonComponent } from 'src/app/shared/ui/form/buttons/button-danger/button-danger';
+import { ProfilHeaderSectionComponent } from "../components/profil-header-section";
+import { ProfilDangerZoneSectionComponent } from "../profil-danger-zone/profil-danger-zone";
 import { ProfilHeaderComponent } from "../profil-header/profil-header";
 import { ProfilPostsComponent } from '../profil-posts/profil-posts';
-import { ProfilHeaderSectionComponent } from "../components/profil-header-section";
 import { ProfilPreferencesComponent } from "../profil-preferences/profil-preferences";
-import { ProfilDangerZoneSectionComponent } from "../profil-danger-zone/profil-danger-zone";
-import { UserPreferencesService } from '../preferences.service';
 
 
 @Component({

@@ -1,0 +1,45 @@
+:root,
+[data-font-size="medium"] {
+/* =========================
+   FONT SIZES
+========================= */
+
+--text-2xs: 0.6875rem; // 11px
+--text-xs: 0.75rem;    // 12px
+--text-sm: 0.875rem;   // 14px
+--text-md: 1rem;       // 16px
+--text-lg: 1.125rem;   // 18px
+--text-xl: 1.25rem;    // 20px
+--text-2xl: 1.5rem;    // 24px
+--text-3xl: 2rem;      // 32px
+--text-4xl: 2.5rem;    // 40px
+--text-5xl: 3rem;      // 48px
+--text-6xl: 4rem;      // 64px
+
+/* =========================
+   RESPONSIVE FONT SIZES
+========================= */
+
+--title-xl: clamp(2.6rem, 7vw, 5rem);
+--title-lg: clamp(2rem, 5vw, 4rem);
+--title-md: clamp(1.45rem, 3vw, 2.25rem);
+--title-sm: 1.25rem;
+
+--body-lg: 1.125rem;
+--body-md: 1rem;
+--body-sm: 0.875rem;
+
+
+/* =========================
+   CONTENT TYPOGRAPHY
+========================= */
+
+--article-font-size: 1.04rem;
+--article-line-height: --leading-loose;
+
+--article-title-size: clamp(2rem, 5vw, 4rem);
+--article-heading-size: clamp(1.5rem, 3vw, 2.25rem);
+--article-subheading-size: 1.35rem;
+
+--article-code-size: 0.92rem;
+}
