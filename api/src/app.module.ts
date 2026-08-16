@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 
 import { ConfigModule } from '@nestjs/config';
 
-import { AppController } from './app.controller';
 import { LoggerService } from './commons/logger/logger.service';
 import { ConfigurationModule } from './config/config.module';
 import { moduleModules } from './modules/app-modules';
@@ -15,9 +14,6 @@ import { moduleModules } from './modules/app-modules';
     }),
     ConfigurationModule,
     ...moduleModules,
-  ],
-  controllers: [
-    AppController,
   ],
   providers: [
     LoggerService,

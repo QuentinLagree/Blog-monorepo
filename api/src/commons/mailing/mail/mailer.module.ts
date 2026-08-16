@@ -3,11 +3,9 @@ import { Global, Module } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailingService } from 'src/commons/mailing/mailing.service';
-import { MailingController } from 'src/commons/mailing/mailing.controller';
 
 @Global()
 @Module({
-  controllers: [MailingController],
   imports: [
     ConfigModule,
     MailerModule.forRootAsync({
