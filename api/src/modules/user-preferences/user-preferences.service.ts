@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
 import { PrismaService } from 'src/commons/prisma/prisma.service';
-import { UpdateUserPreferenceDto } from '../user-preferences/dto/update-preferences.user.dto';
+import { UpdateUserPreferenceDto } from './dto/update-preferences.user.dto';
 import { USER_PREFERENCE_FIELDS, UserPreferenceField } from './helper/user.preferences.fields';
 import { InvalidPreferenceFieldException } from './exceptions/invalid-preference-field.exception';
 

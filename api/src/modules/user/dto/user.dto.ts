@@ -6,9 +6,9 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { UserEntity } from '../entities/user.entities';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class UserDto extends UserEntity {
+export class UserDto   {
   @IsDefined({
     message: 'Le Nom de famille doit être défini.',
   })
@@ -18,7 +18,12 @@ export class UserDto extends UserEntity {
   @MaxLength(50, {
     message: 'Le nom de famille doit contenir au maximum 50 caractères.',
   })
-  override nom: string;
+  @ApiProperty({
+    example: "Doe",
+    type:"string",
+    description: "Nom de l'utilisateur"
+  })
+  nom: string;
   @IsDefined({
     message: 'Le Prénom doit être défini.',
   })
@@ -27,14 +32,19 @@ export class UserDto extends UserEntity {
     message: 'Le Prénom doit contenir au maximum 16 caractères.',
   })
   @IsString()
-  override prenom: string;
+  @ApiProperty({
+    example: "John",
+    type:"string",
+    description: "Prénom de l'utilisateur",
+  })
+  prenom: string;
   @IsNotEmpty()
   @IsString()
   @MinLength(2, { message: 'Le Pseudo doit contenir au moins 2 caractères.' })
   @MaxLength(16, {
     message: 'Le Pseudo doit contenir au maximum 16 caractères.',
   })
-  override pseudo: string;
+  pseudo: string;
   @IsNotEmpty({
     message: "L'email doit être défini.",
   })
@@ -45,7 +55,7 @@ export class UserDto extends UserEntity {
   @MaxLength(255, {
     message: "L'email doit contenir au maximum 255 caractères.",
   })
-  override email: string;
+  email: string;
   @IsNotEmpty({
     message: "L'Adresse email doit être défini.",
   })
@@ -56,10 +66,10 @@ export class UserDto extends UserEntity {
   @MaxLength(255, {
     message: 'Le mot de passe doit contenir au maximum 255 caractères.',
   })
-  override password: string;
+  password: string;
   @IsString()
   @MaxLength(255, {
     message: 'Le rôle doit contenir au maximum 255 caractères.',
   })
-  override role: string;
+  role: string;
 }

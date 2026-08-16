@@ -1,20 +1,12 @@
-import { OmitType } from '@nestjs/swagger';
 import {
   IsDefined,
   MinLength,
   MaxLength,
   IsString,
-  IsNotEmpty,
   IsEmail,
 } from 'class-validator';
-import { UserEntity } from '../entities/user.entities';
 
-export class CreateUserDto extends OmitType(UserEntity, [
-  'id',
-  'updated_at',
-  'created_at',
-  'posts',
-] as const) {
+export class CreateUserDto  {
   @IsDefined({
     message: 'Le Nom de famille doit être défini.',
   })
@@ -34,14 +26,14 @@ export class CreateUserDto extends OmitType(UserEntity, [
   })
   @IsString()
   prenom: string;
-  @IsNotEmpty()
+  @IsDefined()
   @IsString()
   @MinLength(2, { message: 'Le Pseudo doit contenir au moins 2 caractères.' })
   @MaxLength(16, {
     message: 'Le Pseudo doit contenir au maximum 16 caractères.',
   })
   pseudo: string;
-  @IsNotEmpty({
+  @IsDefined({
     message: "L'email doit être défini.",
   })
   @IsEmail({}, { message: "L'email n'est pas valide." })
@@ -52,7 +44,7 @@ export class CreateUserDto extends OmitType(UserEntity, [
     message: "L'email doit contenir au maximum 255 caractères.",
   })
   email: string;
-  @IsNotEmpty({
+  @IsDefined({
     message: "L'Adresse email doit être défini.",
   })
   @MinLength(4, {
@@ -63,9 +55,4 @@ export class CreateUserDto extends OmitType(UserEntity, [
     message: 'Le mot de passe doit contenir au maximum 255 caractères.',
   })
   password: string;
-  @IsString()
-  @MaxLength(255, {
-    message: 'Le rôle doit contenir au maximum 255 caractères.',
-  })
-  role: string;
 }

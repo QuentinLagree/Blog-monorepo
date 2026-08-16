@@ -22,12 +22,11 @@ import { UserEntity } from 'src/modules/user/entities/user.entities';
 import { Inject } from '@nestjs/common';
 import { Queue } from 'bullmq';
 
-import { AuthService } from '../auth/auth.service';
 import { UserService } from '../user/user.service';
-import { UserEmail } from './dto/user-email.dto';
-import { UserPasswordFields } from './dto/passwords-fields.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { makeMessage } from 'src/commons/logger/logger.helper';
 import { PasswordNotMatchException } from '../auth/exceptions/password-not-same.exception';
+import { ResetEmailDto } from './dto/reset-email.dto';
 
 @ApiTags('Mot de passe')
 @UseInterceptors(new TransformDataMessageIntoObjectSerialization([UserEntity]))
@@ -35,7 +34,6 @@ import { PasswordNotMatchException } from '../auth/exceptions/password-not-same.
 export class PasswordRecoveryController {
   constructor(
     @Inject(MAIL_QUEUE) private readonly __mails_queue: Queue,
-    private readonly _auth: AuthService,
     private readonly _user: UserService,
     private readonly _token: TokenService,
     private readonly _mailer: MailingService,
@@ -63,8 +61,8 @@ export class PasswordRecoveryController {
 
   @Post('reset')
 async changePassword(
-  @Body() payload: UserPasswordFields,
-): Promise<Message<unknown>> {
+  @Body() payload: ResetPasswordDto,
+): Promise<Message<ResetEmailDto>> {
   
   const tokenId = TOKEN.add(payload.token);
 
@@ -91,11 +89,11 @@ async changePassword(
 }
 
   @ApiBody({
-    type: UserEmail,
+    type: ResetEmailDto,
   })
   @Post('forgot')
   async requestPasswordReset(
-    @Body() payload: UserEmail,
+    @Body() payload: ResetEmailDto,
     @Req() request: FastifyRequest,
   ): Promise<Message<null>> {
     const { email } = payload;

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { VerificationTokens } from '@prisma/client';
 import { randomBytes } from 'node:crypto';
 import { TOKEN } from 'src/commons/types/token.types';
-import { VerificationEmailDto } from 'src/commons/verifications_email/verification_email.dto';
+import { VerificationEmailDto } from 'src/commons/verifications_email/dto/verification_email.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { ResetTokenAlreadyActiveException } from 'src/modules/handle-password/exceptions/reset-token-already-active.exception';
 import { TokenExpiredOrInvalidException } from 'src/modules/handle-password/exceptions/token-expired-or-invalid.exception';

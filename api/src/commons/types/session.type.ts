@@ -1,4 +1,4 @@
-import { UserSession } from "src/modules/auth/dto/user-session.dto";
+import { UserSession } from "./session-user.type";
 
 export type SessionType = {
   loggedIn: boolean;

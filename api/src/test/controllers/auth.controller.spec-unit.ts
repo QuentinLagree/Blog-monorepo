@@ -2,9 +2,9 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { AuthController } from 'src/modules/auth/auth.controller';
 import { AuthService } from 'src/modules/auth/auth.service';
 import { UserLoginCredentials } from 'src/modules/auth/dto/user-login-credentials.dto';
-import { UserDto } from 'src/modules/user/dto/user.dto';
 import { UserService } from 'src/modules/user/user.service';
 import { makeMessage } from 'src/commons/logger/logger.helper';
+import { CreateUserDto } from 'src/modules/user/dto/create-user.dto';
 
 describe('AuthController', () => {
   let authController: AuthController;
@@ -185,7 +185,7 @@ describe('AuthController', () => {
 
   describe('register', () => {
     it('should register user and return success message', async () => {
-      const payload = createUserDtoMock() as UserDto;
+      const payload = createUserDtoMock() as CreateUserDto;
 
       const createdUser = createUserMock({
         id: 1,
@@ -208,7 +208,7 @@ describe('AuthController', () => {
     });
 
     it('should throw an error if register fails', async () => {
-      const payload = createUserDtoMock() as UserDto;
+      const payload = createUserDtoMock() as CreateUserDto;
       const error = new Error('User already exists');
 
       userServiceMock.create.mockRejectedValue(error);

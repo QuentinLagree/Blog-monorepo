@@ -1,17 +1,13 @@
-import { HttpCode, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { UserDto } from './dto/user.dto';
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { UserUpdateDto } from './dto/update-user.dto';
 import { PasswordService } from 'src/commons/services/argon.service';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { UserAlreadyExistException } from './exceptions/user-already-exist.exception';
 import { Role } from 'src/commons/roles/role.enum';
-import { PasswordNotMatchException } from '../auth/exceptions/password-not-same.exception';
-import { LikedPostDto } from './dto/liked-post.dto';
-import { ArticleService } from '../post/posts.service';
-import { PostDoesntLikeOrUnlikeByAuthor } from './exceptions/post-doesnt-like-unlike-same-author.exception';
-import { PostDoesntLikeOrUnlikeAlready } from './exceptions/post-doesnt-like-unlike-already.exception';
+import { LikedPostDto } from './user-activities/dto/liked-post.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 
 export const userSelect = {
   id: true,
@@ -53,7 +49,7 @@ export class UserService {
       'unknown');
     return user;
   }
-  async create(data: UserDto & { posts?: Prisma.PostCreateWithoutAuthorInput[] }): Promise<Promise<userSelectPayload>> {
+  async create(data: CreateUserDto & { posts?: Prisma.PostCreateWithoutAuthorInput[] }): Promise<Promise<userSelectPayload>> {
     const { email, pseudo, posts, password, ...userData } = data;
 
     const existingUser = await this._prisma.user.findFirst({

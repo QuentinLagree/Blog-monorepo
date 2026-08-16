@@ -1,10 +1,8 @@
 import { PartialType, OmitType } from '@nestjs/swagger';
 import { IsNotEmpty, Length, IsString, IsEmail, IsDate } from 'class-validator';
-import { VerificationEmailEntity } from './verification_email.entities';
+import { VerificationEmailEntity } from '../entities/verification_email.entities';
 
-export class VerificationEmailDto extends PartialType(
-  OmitType(VerificationEmailEntity, ['id', 'created_at'] as const),
-) {
+export class VerificationEmailDto {
   @IsNotEmpty()
   @IsString()
   @IsEmail()

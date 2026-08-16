@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { VerificationTokens } from '@prisma/client';
 
-export class VerificationEmailEntity implements VerificationTokens {
+export class VerificationEmailEntity {
   @ApiProperty()
   id: number;
 

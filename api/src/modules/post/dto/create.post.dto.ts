@@ -10,15 +10,15 @@ export class CreatePostDto {
   @IsString()
   @IsNotEmpty()
   @Length(5, 85)
-  title!: string;
+  title: string;
 
   @IsDefined()
   @IsString()
   @IsNotEmpty()
-  content!: string;
+  content: string;
 
   @IsDefined()
   @IsString()
   @IsNotEmpty()
-  description!: string;
+  description: string;
 }

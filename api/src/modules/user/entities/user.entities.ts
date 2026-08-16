@@ -18,13 +18,11 @@ export class UserEntity implements User {
   @Exclude({
     toPlainOnly: true,
   })
-  @ApiProperty()
   password: string;
 
   @Exclude({
     toPlainOnly: true,
   })
-  @ApiProperty()
   role: string;
 
   @ApiProperty()

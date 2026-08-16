@@ -1,4 +1,4 @@
-import { IsDefined, isDefined, IsNumber } from "class-validator";
+import { IsDefined, IsNumber } from "class-validator";
 
 export class LikedPostDto {
     @IsNumber()

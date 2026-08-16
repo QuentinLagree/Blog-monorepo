@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { promises as fs } from 'fs';
 import { join } from 'path';
 import Handlebars from 'handlebars';
-import { VerificationEmailDto } from '../verifications_email/verification_email.dto';
+import { VerificationEmailDto } from '../verifications_email/dto/verification_email.dto';
 import { User } from '@prisma/client';
 import { FailSendingMailException } from './exceptions/fail-sending-mail.exception';
 

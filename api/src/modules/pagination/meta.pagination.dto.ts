@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsBoolean, IsIn, IsInt, IsNumber, IsNumberString, IsPositive, Min } from "class-validator";
+import { IsIn, IsInt, IsNumber, IsPositive, Min } from "class-validator";
 
 export class MetaPaginationDto {
     @IsNumber()
@@ -7,7 +7,7 @@ export class MetaPaginationDto {
     @IsInt()
     @Min(1)
     totalArticle: number
-    
+
     @IsNumber()
     @Type(() => Number)
     @IsInt()
@@ -21,5 +21,5 @@ export class MetaPaginationDto {
     @IsIn([2, 5, 10, 20])
     limit: number;
 
-    
+
 }

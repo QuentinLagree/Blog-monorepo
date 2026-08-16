@@ -8,7 +8,7 @@ import { AuthModule } from 'src/modules/auth/auth.module';
 import { PostsModule } from 'src/modules/post/posts.module';
 import { UserModule } from 'src/modules/user/user.module';
 import { UserPreferencesModule } from
-  'src/modules/user-preferences/user-preferences.module';
+  'src/modules/user/user-preferences/user-preferences.module';
 
 import { TestMocksModule } from './test.mock-module';
 import { TestPasswordRecoveryModule } from

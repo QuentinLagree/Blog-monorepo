@@ -1,6 +1,6 @@
 import { PrismaService } from 'src/commons/prisma/prisma.service';
-import { InvalidPreferenceFieldException } from 'src/modules/user-preferences/exceptions/invalid-preference-field.exception';
-import { UserPreferenceService } from 'src/modules/user-preferences/user-preferences.service';
+import { InvalidPreferenceFieldException } from 'src/modules/user/user-preferences/exceptions/invalid-preference-field.exception';
+import { UserPreferenceService } from 'src/modules/user/user-preferences/user-preferences.service';
 
 describe('UserPreferenceService', () => {
   let service: UserPreferenceService;

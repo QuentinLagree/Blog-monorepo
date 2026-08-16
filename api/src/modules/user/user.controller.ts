@@ -12,20 +12,20 @@ import {
   UseGuards,
   UseInterceptors
 } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiBody, ApiCookieAuth, ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiParam, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBody, ApiCookieAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/commons/decorators/role.decorator';
 import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
 import { RolesGuard } from 'src/commons/guards/role.guard';
 import { UserOwnerOrAdminGuard } from 'src/commons/guards/user-owner-or-admin.guard';
 import { Role } from 'src/commons/roles/role.enum';
-import { Message, MessageDto } from 'src/commons/types/dto/message/message';
-import { makeMessage } from '../../commons/logger/logger.helper';
+import { ApiMessageResponse } from 'src/commons/types/dto/message/api-message-response.decorator';
+import { Message } from 'src/commons/types/dto/message/message';
 import { TransformDataMessageIntoObjectSerialization } from '../../commons/interceptors/transform_data_message_into_object_serialization.interceptor';
+import { makeMessage } from '../../commons/logger/logger.helper';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UserUpdateDto } from './dto/update-user.dto';
-import { UserDto } from './dto/user.dto';
 import { UserEntity } from './entities/user.entities';
 import { userSelectPayload, UserService } from './user.service';
-import { ApiMessageResponse } from 'src/commons/types/dto/message/api-message-response.decorator';
 
 @ApiTags('Utilisateurs')
 @Controller('user')
@@ -66,7 +66,7 @@ export class UserController {
   example: 42,
   description: "Identifiant unique de l'utilisateur",
 })
-@ApiMessageResponse(UserDto, {
+@ApiMessageResponse(UserEntity, {
   description: "Utilisateur récupéré avec succès.",
   messageExemple: "Utilisateur récupérer."
 })
@@ -88,13 +88,13 @@ export class UserController {
 
   @Post()
   @ApiBody({ 
-    type: UserDto,
+    type: CreateUserDto,
   })
   @SerializeOptions({
     ignoreDecorators: true,
   })
   async store(
-    @Body() payload: UserDto,
+    @Body() payload: CreateUserDto,
   ): Promise<Message<userSelectPayload>> {
     const created_user = await this._user.create(payload);
     return makeMessage(
@@ -125,7 +125,7 @@ export class UserController {
     );
   }
 
-  @UseGuards(AuthGuardSession(), RolesGuard)
+  @UseGuards(AuthGuardSession(), RolesGuard)  
   @Roles(Role.Admin)
   @Delete(':id')
   async destroy(@Param('id', ParseIntPipe) id: number): Promise<Message<null>> {

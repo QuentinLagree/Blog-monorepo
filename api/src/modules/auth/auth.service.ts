@@ -9,11 +9,11 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { UserLoginCredentials } from './dto/user-login-credentials.dto';
-import { UserSession } from './dto/user-session.dto';
 import { PasswordService } from 'src/commons/services/argon.service';
 import { EmailOrPasswordNotMatchException } from './exceptions/email-or-password-not-match.exception';
 import { UserAlreadySessionActive } from './exceptions/user-already-session-active.exception';
 import { PasswordNotMatchException } from './exceptions/password-not-same.exception';
+import { UserSession } from 'src/commons/types/session-user.type';
 
 @Injectable()
 export class AuthService {

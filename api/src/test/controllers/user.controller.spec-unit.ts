@@ -1,15 +1,12 @@
 import { UserController } from "src/modules/user/user.controller";
-import { userSelectPayload, UserService } from "src/modules/user/user.service";
 import { makeMessage } from "src/commons/logger/logger.helper";
-import { User } from "@prisma/client";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { createUserCreateDto, createUserMock } from "../mocks/create.user.mocks";
 import { UserNotFoundException } from "src/modules/user/exceptions/user-not-found.exception";
-import { HttpStatus } from "@nestjs/common";
-import { UserDto } from "src/modules/user/dto/user.dto";
 import { UserAlreadyExistException } from "src/modules/user/exceptions/user-already-exist.exception";
 import { UserUpdateDto } from "src/modules/user/dto/update-user.dto";
 import { userServiceMock } from "../mocks/mocks";
+import { CreateUserDto } from "src/modules/user/dto/create-user.dto";
+import { UserService } from "src/modules/user/user.service";
 
 describe('UserController', () => {
     let userController: UserController;
@@ -94,7 +91,7 @@ describe('UserController', () => {
 
             userServiceMock.create.mockResolvedValue(new_user);
 
-            const response = await userController.store(dto as UserDto);
+            const response = await userController.store(dto as CreateUserDto);
 
             expect(response).toEqual(
                 makeMessage(
@@ -113,7 +110,7 @@ describe('UserController', () => {
                 new UserAlreadyExistException('email'),
             );
 
-            await expect(userController.store(dto as UserDto)).rejects.toThrow(UserAlreadyExistException);
+            await expect(userController.store(dto as CreateUserDto)).rejects.toThrow(UserAlreadyExistException);
 
             expect(userServiceMock.create).toHaveBeenCalledWith(dto);
         })

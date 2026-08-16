@@ -6,7 +6,7 @@ import { makeMessage } from 'src/commons/logger/logger.helper';
 import { TOKEN } from 'src/commons/types/token.types';
 import { PasswordNotMatchException } from 'src/modules/auth/exceptions/password-not-same.exception';
 import { PasswordRecoveryController } from 'src/modules/handle-password/password_recovery.controller';
-import { UserPasswordFields } from 'src/modules/handle-password/dto/passwords-fields.dto';
+import { ResetPasswordDto } from 'src/modules/handle-password/dto/reset-password.dto';
 import { UserEmail } from 'src/modules/handle-password/dto/user-email.dto';
 
 describe('PasswordRecoveryController', () => {
@@ -126,7 +126,7 @@ describe('PasswordRecoveryController', () => {
         token: VALID_TOKEN,
         password: 'new-password',
         confirm_password: 'new-password',
-      } as UserPasswordFields;
+      } as ResetPasswordDto;
 
       const tokenId = TOKEN.add(payload.token);
       const updatedUser = createUserMock({
@@ -168,7 +168,7 @@ describe('PasswordRecoveryController', () => {
         token: VALID_TOKEN,
         password: 'new-password',
         confirm_password: 'different-password',
-      } as UserPasswordFields;
+      } as ResetPasswordDto;
 
       const tokenId = TOKEN.add(payload.token);
 
@@ -193,7 +193,7 @@ describe('PasswordRecoveryController', () => {
         token: ANOTHER_VALID_TOKEN ,
         password: 'new-password',
         confirm_password: 'new-password',
-      } as UserPasswordFields;
+      } as ResetPasswordDto;
 
       const tokenId = TOKEN.add(payload.token);
       const error = new Error('Invalid token');
@@ -219,7 +219,7 @@ describe('PasswordRecoveryController', () => {
         token: VALID_TOKEN,
         password: 'new-password',
         confirm_password: 'new-password',
-      } as UserPasswordFields;
+      } as ResetPasswordDto;
 
       const tokenId = TOKEN.add(payload.token);
       const error = new Error('Update failed');
