@@ -1,8 +1,8 @@
 // src/test/unit/user-preference/user-preference.controller.spec.ts
 
 import { makeMessage } from 'src/commons/logger/logger.helper';
-import { UserPreferenceController } from 'src/modules/user/user-preferences/user-preferences.controller';
-import { UserPreferenceService } from 'src/modules/user/user-preferences/user-preferences.service';
+import { UserPreferenceController } from 'src/modules/user-preferences/user-preferences.controller';
+import { UserPreferenceService } from 'src/modules/user-preferences/user-preferences.service';
 
 describe('UserPreferenceController', () => {
   let controller: UserPreferenceController;

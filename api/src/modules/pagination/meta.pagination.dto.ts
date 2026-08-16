@@ -5,7 +5,6 @@ export class MetaPaginationDto {
     @IsNumber()
     @Type(() => Number)
     @IsInt()
-    @Min(1)
     totalArticle: number
 
     @IsNumber()

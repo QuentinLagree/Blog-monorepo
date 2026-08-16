@@ -15,7 +15,7 @@ import { UpdatePostDto } from './dto/update.post.dto';
 import { PostNotFoundException } from './exceptions/post-not-found.exception';
 import { StatusLikeDto } from './dto/status-like.dto';
 import { MetaPaginationDto } from '../pagination/meta.pagination.dto';
-import { StatusReadingDto } from '../user/dto/status-reading.dto';
+import { StatusReadingDto } from '../user-activities/dto/status-reading.dto';
 
 @Injectable()
 export class ArticleService {

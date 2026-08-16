@@ -7,7 +7,7 @@ import { TOKEN } from 'src/commons/types/token.types';
 import { PasswordNotMatchException } from 'src/modules/auth/exceptions/password-not-same.exception';
 import { PasswordRecoveryController } from 'src/modules/handle-password/password_recovery.controller';
 import { ResetPasswordDto } from 'src/modules/handle-password/dto/reset-password.dto';
-import { UserEmail } from 'src/modules/handle-password/dto/user-email.dto';
+import { ResetEmailDto } from 'src/modules/handle-password/dto/reset-email.dto';
 
 describe('PasswordRecoveryController', () => {
   let passwordRecoveryController: PasswordRecoveryController;
@@ -62,7 +62,6 @@ describe('PasswordRecoveryController', () => {
 
     passwordRecoveryController = new PasswordRecoveryController(
       mailsQueueMock as any,
-      authServiceMock as unknown as AuthService,
       userServiceMock as unknown as UserService,
       tokenServiceMock as unknown as TokenService,
       mailingServiceMock as unknown as MailingService,
@@ -251,7 +250,7 @@ describe('PasswordRecoveryController', () => {
     it('should generate token, save verification token and add recovery email to queue', async () => {
       const payload = {
         email: 'test@test.com',
-      } as UserEmail;
+      } as ResetEmailDto;
 
       const requestMock = {
         raw: {
@@ -333,7 +332,7 @@ describe('PasswordRecoveryController', () => {
     it('should use localhost origin if request origin is missing', async () => {
       const payload = {
         email: 'test@test.com',
-      } as UserEmail;
+      } as ResetEmailDto;
 
       const requestMock = {
         raw: {
@@ -381,7 +380,7 @@ describe('PasswordRecoveryController', () => {
     it('should throw an error if user email does not exist', async () => {
       const payload = {
         email: 'unknown@test.com',
-      } as UserEmail;
+      } as ResetEmailDto;
 
       const requestMock = {
         raw: {
@@ -415,7 +414,7 @@ describe('PasswordRecoveryController', () => {
     it('should throw an error if queue add fails', async () => {
       const payload = {
         email: 'test@test.com',
-      } as UserEmail;
+      } as ResetEmailDto;
 
       const requestMock = {
         raw: {

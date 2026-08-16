@@ -3,11 +3,6 @@ import { IsDate, IsDateString, IsNotEmpty, IsNumber, IsPositive } from "class-va
 import { PostsEntity } from "../entities/posts.entities";
 
 export class PublishedPostDto {
-    
-    @IsNotEmpty()
-    @IsNumber()
-    @IsPositive()
-    id: number;
 
     
     @IsDateString()

@@ -45,25 +45,32 @@ export class PostController {
   ) { }
 
   @Get()
-  @ApiCookieAuth()
-  async index(
-    @Query() payload: PaginationDto,
-    @Session() session: secureSession.Session
-  ): Promise<Message<Articles[] | null, MetaPaginationDto>> {
-    const [posts, meta] = await this._articles.index(payload, (session.get('user') ? session.get('user').id : undefined));
-    return posts.length == 0
-      ? makeMessage(
+@ApiCookieAuth()
+async index(
+  @Query() payload: PaginationDto,
+  @Session() session: secureSession.Session,
+): Promise<Message<Articles[], MetaPaginationDto>> {
+  const user = session.get('user');
+
+  const [posts, meta] = await this._articles.index(
+    payload,
+    user?.id,
+  );
+
+  return posts.length === 0
+    ? makeMessage<Articles[], MetaPaginationDto>(
         'List of all posts is empty.',
         'La liste des publications est vide',
         [],
+        meta
       )
-      : makeMessage<Articles[], MetaPaginationDto>(
+    : makeMessage<Articles[], MetaPaginationDto>(
         'List of all posts',
         'Liste de toutes les publications',
         posts,
-        meta
+        meta,
       );
-  }
+}
 
   @UseGuards(AuthGuardSession(), UserOwnerOrAdminGuard)
   @ApiBasicAuth()

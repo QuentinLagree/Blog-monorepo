@@ -4,13 +4,11 @@ import { makeMessage } from 'src/commons/logger/logger.helper';
 import { CreatePostDto } from 'src/modules/post/dto/create.post.dto';
 import { PublishedPostDto } from 'src/modules/post/dto/published-post.dto';
 import { PostAlreadyPublishException } from 'src/modules/user/exceptions/post-already-publish.exception';
-import { UserNotFoundException } from 'src/modules/user/exceptions/user-not-found.exception';
 import { postServiceMock, userServiceMock } from '../mocks/mocks';
-import { createUserMock } from '../mocks/create.user.mocks';
-import { UserActivityController } from 'src/modules/user/user-activities/user-activities.controller';
 import { createPostMock } from '../mocks/create_post.mocks';
 import { PostRead } from '@prisma/client';
-import { StatusReadingDto } from 'src/modules/user/dto/status-reading.dto';
+import { UserActivityController } from 'src/modules/user-activities/user-activities.controller';
+import { StatusReadingDto } from 'src/modules/user-activities/dto/status-reading.dto';
 
 describe('UserToPostController', () => {
   let userToPostController: UserActivityController;

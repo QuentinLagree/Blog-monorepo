@@ -57,11 +57,7 @@ describe('PostController', () => {
       limit: 10,
     } as PaginationDto;
 
-    const meta = {
-      currentPage: 1,
-      limit: 10,
-      totalArticle: 0,
-    };
+    const meta = undefined;
     const sessionUser = {
         id: 1,
         email: 'test@test.com',
@@ -83,6 +79,7 @@ describe('PostController', () => {
         'List of all posts is empty.',
         'La liste des publications est vide',
         [],
+        meta
       ),
     );
   });

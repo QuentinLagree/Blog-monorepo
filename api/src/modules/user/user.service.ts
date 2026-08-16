@@ -6,8 +6,8 @@ import { PasswordService } from 'src/commons/services/argon.service';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { UserAlreadyExistException } from './exceptions/user-already-exist.exception';
 import { Role } from 'src/commons/roles/role.enum';
-import { LikedPostDto } from './user-activities/dto/liked-post.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { LikedPostDto } from '../user-activities/dto/liked-post.dto';
 
 export const userSelect = {
   id: true,

@@ -43,7 +43,6 @@ describe('AuthController e2e', () => {
           nom: 'Doe',
           prenom: 'John',
           password: 'password123',
-          role: Role.User
         }).expect(201)
 
         
@@ -82,7 +81,6 @@ describe('AuthController e2e', () => {
           nom: 'Doe',
           prenom: 'John',
           password: 'password123',
-          role: Role.User
         }).expect(409);
     });
 

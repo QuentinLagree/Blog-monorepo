@@ -1,19 +1,20 @@
-import path from 'path';
-import { ConsoleTransport } from '../logger/console.transporter';
-import { FileTransport } from '../logger/file-transport';
-import { Logger } from '../logger/logger.log';
-import { PlainFormatter } from '../logger/plain-formatter';
-import { Message } from '../types/dto/message/message';
-import { MessageOptions } from '../types/dto/message/message-options';
+import path from "path";
+import { ConsoleTransport } from "./console.transporter";
+import { FileTransport } from "./file-transport";
+import { PlainFormatter } from "./plain-formatter";
+import { Message } from "../types/dto/message/message";
+import { MessageOptions } from "../types/dto/message/message-options";
+import { Logger } from "./logger.log";
 
-export function makeMessage<T = any, K= any>(
+export function makeMessage<T = any, K = {}>(
   log: string,
   message: string,
   data: T,
-  meta: K = undefined,
+  meta?: K,
   options?: MessageOptions,
-): Message<T> {
-  const formatter = new PlainFormatter('fr-FR', /*useUTC*/ false);
+): Message<T, K> {
+  const formatter = new PlainFormatter('fr-FR', false);
+
   const logger = new Logger({
     transports: [
       new FileTransport({
@@ -23,10 +24,15 @@ export function makeMessage<T = any, K= any>(
       new ConsoleTransport(formatter),
     ],
   });
-  const isTest =
-    process.env['NODE_ENV'] === 'test' || process.env['JEST_WORKER_ID'] !== undefined;
 
-  options = { log: options?.log ?? true, level: options?.level ?? 'Info' };
+  const isTest =
+    process.env['NODE_ENV'] === 'test' ||
+    process.env['JEST_WORKER_ID'] !== undefined;
+
+  options = {
+    log: options?.log ?? true,
+    level: options?.level ?? 'Info',
+  };
 
   if (options.log && !isTest) {
     if (options.level === 'Info') {
