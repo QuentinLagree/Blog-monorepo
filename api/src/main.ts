@@ -39,6 +39,7 @@ async function bootstrap() {
     .setDescription('Api for blog !')
     .setVersion('1.0')
     .setBasePath('/api/')
+    .addCookieAuth('session')
     .build();
 
   app.useGlobalPipes(

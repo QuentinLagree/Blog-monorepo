@@ -66,7 +66,7 @@ export class PostService {
     options?: HttpOptions,
   ) {
     return this._http.postData(
-      'users/posts',
+      'posts',
       post,
       options,
     );
@@ -77,7 +77,7 @@ export class PostService {
     options?: HttpOptions,
   ) {
     return this._http.patchData(
-      `users/posts/${post.id}/publish`,
+      `posts/${post.id}/publish`,
       post,
       options,
     );
@@ -88,7 +88,7 @@ export class PostService {
     options?: HttpOptions,
   ): Observable<Message<Post>> {
     return this._http.getData(
-      `posts/${id}`,
+      `posts/post/${id}`,
       options,
     );
   }
@@ -108,7 +108,7 @@ export class PostService {
     options?: HttpOptions,
   ): Observable<Message<Post[]>> {
     return this._http.getData(
-      `users/posts/drafts/${userId}`,
+      `posts/drafts/${userId}`,
       options,
     );
   }
@@ -118,7 +118,7 @@ export class PostService {
     options?: HttpOptions,
   ): Observable<Message<Post[]>> {
     return this._http.getData(
-      `users/posts/${userId}`,
+      `posts/${userId}`,
       options,
     );
   }

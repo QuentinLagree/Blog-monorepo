@@ -23,7 +23,7 @@ import { UserPreferenceService } from './user-preferences.service';
 import { UserPreferenceQueryDto } from './dto/query-preferences.user.dto';
 import { UpdateUserPreferenceDto } from './dto/update-preferences.user.dto';
 
-@ApiTags('Préférences utilisateur')
+@ApiTags('Préférences')
 @Controller('users/preferences')
 @UseGuards(AuthGuardSession())
 export class UserPreferenceController {

@@ -3,7 +3,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
-import { AppController } from 'src/app.controller';
 
 import { AuthModule } from 'src/modules/auth/auth.module';
 import { PostsModule } from 'src/modules/post/posts.module';
@@ -14,7 +13,7 @@ import { UserPreferencesModule } from
 import { TestMocksModule } from './test.mock-module';
 import { TestPasswordRecoveryModule } from
   './test-password-recovery.module';
-import { UserPostsModule } from 'src/modules/user/user-post/user-posts.module';
+import { UserPostsModule } from 'src/modules/user/user-activities/user-activities.module';
 
 @Module({
   imports: [
@@ -31,9 +30,6 @@ import { UserPostsModule } from 'src/modules/user/user-post/user-posts.module';
     UserPostsModule,
     TestPasswordRecoveryModule,
     UserPreferencesModule,
-  ],
-  controllers: [
-    AppController,
   ],
 })
 export class TestAppModule {}

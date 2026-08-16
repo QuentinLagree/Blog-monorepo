@@ -29,7 +29,7 @@ import { UserPasswordFields } from './dto/passwords-fields.dto';
 import { makeMessage } from 'src/commons/logger/logger.helper';
 import { PasswordNotMatchException } from '../auth/exceptions/password-not-same.exception';
 
-@ApiTags('Gestion du mot de passe')
+@ApiTags('Mot de passe')
 @UseInterceptors(new TransformDataMessageIntoObjectSerialization([UserEntity]))
 @Controller('password')
 export class PasswordRecoveryController {

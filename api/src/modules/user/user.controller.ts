@@ -12,26 +12,32 @@ import {
   UseGuards,
   UseInterceptors
 } from '@nestjs/common';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBody, ApiCookieAuth, ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiParam, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Roles } from 'src/commons/decorators/role.decorator';
 import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
 import { RolesGuard } from 'src/commons/guards/role.guard';
 import { UserOwnerOrAdminGuard } from 'src/commons/guards/user-owner-or-admin.guard';
 import { Role } from 'src/commons/roles/role.enum';
-import { Message } from 'src/commons/types/dto/message/message';
+import { Message, MessageDto } from 'src/commons/types/dto/message/message';
 import { makeMessage } from '../../commons/logger/logger.helper';
 import { TransformDataMessageIntoObjectSerialization } from '../../commons/interceptors/transform_data_message_into_object_serialization.interceptor';
 import { UserUpdateDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { UserEntity } from './entities/user.entities';
 import { userSelectPayload, UserService } from './user.service';
+import { ApiMessageResponse } from 'src/commons/types/dto/message/api-message-response.decorator';
 
-@ApiTags('Gestion des utilisateurs')
+@ApiTags('Utilisateurs')
 @Controller('user')
 @UseInterceptors(new TransformDataMessageIntoObjectSerialization([UserEntity]))
 export class UserController {
   constructor(private readonly _user: UserService) {}
 
+  @ApiCookieAuth('session')
+  @ApiOperation({
+    summary: "Récupérer les utilisateurs",
+    description: "Récupère une liste d'utilisateurs. Cette liste peut être vide. L'utilisateur doit être connecté."
+  })
   @UseGuards(AuthGuardSession(), RolesGuard)
   @Roles(Role.Admin, Role.User)
   @Get()
@@ -50,7 +56,26 @@ export class UserController {
         users,
       );
   }
+  @ApiOperation({
+    summary: "Récupérer un utilisateur par son identifiant",
+    description: "Récupère les informations d'un utilisateur à partir de son identifiant unique."
+  })
+@ApiParam({
+  name: 'id',
+  type: Number,
+  example: 42,
+  description: "Identifiant unique de l'utilisateur",
+})
+@ApiMessageResponse(UserDto, {
+  description: "Utilisateur récupéré avec succès.",
+  messageExemple: "Utilisateur récupérer."
+})
 
+@ApiMessageResponse(null, { status: 400, description: "L'identifiant n'est pas valide.", messageExemple: "L'identifiant n'est pas valide." })
+
+@ApiMessageResponse(null, { status: 404, description: "L'utilisateur est introuvable.", messageExemple: "l'utilisateur : 42 n'existe pas." })
+
+@ApiMessageResponse(null, { status: 500, description: "Le serveur ne répond plus.", messageExemple: "Le serveur ne répond plus, réessayer ultérieurement ou contactez un administrateur." })
   @Get('/:id')
   async show(@Param('id', ParseIntPipe) id: number): Promise<Message<userSelectPayload | null>> {
     const user = await this._user.show({ id });

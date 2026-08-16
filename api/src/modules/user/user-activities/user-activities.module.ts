@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PostsModule } from 'src/modules/post/posts.module';
 import { UserModule } from '../user.module';
-import { UserToPostController } from './user-posts.controller';
+import { UserActivityController } from './user-activities.controller';
 import { PostOwnerOrAdminGuard } from 'src/commons/guards/post-owner-or-admin.guard';
 
 @Module({
@@ -10,7 +10,7 @@ import { PostOwnerOrAdminGuard } from 'src/commons/guards/post-owner-or-admin.gu
     PostsModule,
   ],
   controllers: [
-    UserToPostController,
+    UserActivityController,
   ],
   providers: [
     PostOwnerOrAdminGuard,
