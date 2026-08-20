@@ -91,8 +91,7 @@ export class ArticleService {
       where: uniqueProperties
 
     });
-    if (!post) throw new PostNotFoundException(uniqueProperties.id ??
-      'unknown');
+    if (!post) throw new PostNotFoundException(uniqueProperties.id);
     return post;
   }
 

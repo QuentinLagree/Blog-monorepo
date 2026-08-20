@@ -4,8 +4,8 @@ import { PasswordService } from 'src/commons/services/argon.service';
 import { UserNotFoundException } from 'src/modules/user/exceptions/user-not-found.exception';
 import { UserAlreadyExistException } from 'src/modules/user/exceptions/user-already-exist.exception';
 import { Role } from 'src/commons/roles/role.enum';
-import { UserDto } from 'src/modules/user/dto/user.dto';
 import { UserUpdateDto } from 'src/modules/user/dto/update-user.dto';
+import { CreateUserDto } from 'src/modules/user/dto/create-user.dto';
 
 describe('UserService', () => {
   let userService: UserService;
@@ -123,7 +123,7 @@ describe('UserService', () => {
 
   describe('create', () => {
     it('should create a user', async () => {
-      const dto = createUserDtoMock() as UserDto;
+      const dto = createUserDtoMock() as CreateUserDto;
       const hashedPassword = 'hashed-password';
       const createdUser = createUserMock({
         email: dto.email,
@@ -165,7 +165,7 @@ describe('UserService', () => {
     it('should throw UserAlreadyExistException if email already exists', async () => {
       const dto = createUserDtoMock({
         email: 'existing@test.com',
-      }) as UserDto;
+      }) as CreateUserDto;
 
       prismaMock.user.findFirst.mockResolvedValue(
         createUserMock({
@@ -185,7 +185,7 @@ describe('UserService', () => {
     it('should throw UserAlreadyExistException if pseudo already exists', async () => {
       const dto = createUserDtoMock({
         pseudo: 'existingpseudo',
-      }) as UserDto;
+      }) as CreateUserDto;
 
       prismaMock.user.findFirst.mockResolvedValue(
         createUserMock({

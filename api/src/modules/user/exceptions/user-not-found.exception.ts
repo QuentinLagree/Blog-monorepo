@@ -1,13 +1,18 @@
 import { HttpStatus } from '@nestjs/common';
-import { AppException } from 'src/commons/app.exception';
+import { ApiExceptionDocumentation, AppException } from 'src/commons/app.exception';
 
 export class UserNotFoundException extends AppException {
-  constructor(uniqueProperties: any) {
+  static readonly status = HttpStatus.NOT_FOUND;
+
+  static readonly documentation = {
+    description: "L'utilisateur demandé est introuvable.",
+    messageExample: "L'utilisateur 42 n'existe pas."
+  } satisfies ApiExceptionDocumentation
+  constructor(identifier: string | number) {
     super(
-      `User Not Found with ${uniqueProperties}`,
-      `l'utilisateur : ${uniqueProperties} n'existe pas.`,
-      null,
-      HttpStatus.NOT_FOUND,
+      `User Not Found with ${identifier}`,
+      `l'utilisateur : ${identifier} n'existe pas.`,
+      UserNotFoundException.status
     );
   }
 }

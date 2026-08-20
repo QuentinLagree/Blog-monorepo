@@ -1,19 +1,37 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class AppException<T = any> extends HttpException {
+export type ApiExceptionDocumentation = {
+  description: string;
+  messageExample: string;
+};
+
+export type DocumentedAppExceptionClass = {
+  readonly status: HttpStatus;
+  readonly documentation: ApiExceptionDocumentation;
+  readonly prototype: AppException;
+};
+
+export class AppException extends HttpException {
+  public readonly data: null = null;
+  
   constructor(
     public readonly log: string,
     public readonly userMessage: string,
-    public readonly data: T | null = null,
-    status: HttpStatus = HttpStatus.BAD_REQUEST,
+    status: HttpStatus,
+    data: Error | null = null,
   ) {
     super(
       {
         log,
         message: userMessage,
-        data,
+        data
       },
       status,
     );
+
+  }
+
+  static getStatus () {
+    return status;
   }
 }

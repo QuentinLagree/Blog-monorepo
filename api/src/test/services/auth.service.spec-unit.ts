@@ -2,9 +2,9 @@ import { AuthService } from 'src/modules/auth/auth.service';
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { PasswordService } from 'src/commons/services/argon.service';
 import { EmailOrPasswordNotMatchException } from 'src/modules/auth/exceptions/email-or-password-not-match.exception';
-import { UserAlreadySessionActive } from 'src/modules/auth/exceptions/user-already-session-active.exception';
 import { Role } from 'src/commons/roles/role.enum';
 import { UserLoginCredentials } from 'src/modules/auth/dto/user-login-credentials.dto';
+import { UserHaveAlreadyActiveSessionException } from 'src/modules/auth/exceptions/user-have-already-active-session.exception';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -147,7 +147,7 @@ describe('AuthService', () => {
 
       expect(() =>
         authService.setUserSession(sessionMock as any, currentUser),
-      ).toThrow(UserAlreadySessionActive);
+      ).toThrow(UserHaveAlreadyActiveSessionException);
 
       expect(sessionMock.set).not.toHaveBeenCalled();
     });

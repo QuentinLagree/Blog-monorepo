@@ -11,9 +11,8 @@ import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { UserLoginCredentials } from './dto/user-login-credentials.dto';
 import { PasswordService } from 'src/commons/services/argon.service';
 import { EmailOrPasswordNotMatchException } from './exceptions/email-or-password-not-match.exception';
-import { UserAlreadySessionActive } from './exceptions/user-already-session-active.exception';
-import { PasswordNotMatchException } from './exceptions/password-not-same.exception';
 import { UserSession } from 'src/commons/types/session-user.type';
+import { UserHaveAlreadyActiveSessionException } from './exceptions/user-have-already-active-session.exception';
 
 @Injectable()
 export class AuthService {
@@ -41,7 +40,7 @@ export class AuthService {
 
   setUserSession(session: Session, user: UserSession): void {
     if (session.get('user')) {
-      throw new UserAlreadySessionActive();
+      throw new UserHaveAlreadyActiveSessionException();
     }
     session.set('user', user);
   }

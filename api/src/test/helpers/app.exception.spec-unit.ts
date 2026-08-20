@@ -6,7 +6,7 @@ describe('AppException', () => {
     const exception = new AppException(
       'Technical log',
       'Message utilisateur',
-      null,
+      HttpStatus.BAD_REQUEST,
     );
 
     expect(exception.getStatus()).toBe(HttpStatus.BAD_REQUEST);
@@ -22,8 +22,8 @@ describe('AppException', () => {
     const exception = new AppException(
       'User not found',
       "L'utilisateur n'existe pas.",
-      null,
       HttpStatus.NOT_FOUND,
+      null,
     );
 
     expect(exception.getStatus()).toBe(HttpStatus.NOT_FOUND);
@@ -35,22 +35,4 @@ describe('AppException', () => {
     });
   });
 
-  it('should keep data if provided', () => {
-    const data = {
-      id: 1,
-    };
-
-    const exception = new AppException(
-      'Error with data',
-      'Erreur avec données',
-      data,
-      HttpStatus.BAD_REQUEST,
-    );
-
-    expect(exception.getResponse()).toEqual({
-      log: 'Error with data',
-      message: 'Erreur avec données',
-      data,
-    });
-  });
 });

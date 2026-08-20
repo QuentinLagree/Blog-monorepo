@@ -8,7 +8,7 @@ import {
   ApiResponse,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { MessageDto } from './message';
+import { ApiResponseDto } from '../types/dto/message/message';
 
 
 type ApiMessageResponseOptions = {
@@ -20,7 +20,7 @@ type ApiMessageResponseOptions = {
 };
 
 export function ApiMessageResponse(
-  model: Type<unknown> | null,
+  model: Type<unknown> | null | [],
   options: ApiMessageResponseOptions = {},
 ) {
   const {
@@ -30,9 +30,9 @@ export function ApiMessageResponse(
     meta,
   } = options;
 
-  const extraModels: Type<unknown>[] = [MessageDto];
+  const extraModels: Type<unknown>[] = [ApiResponseDto];
 
-  if (model) {
+  if (model && !(model instanceof Array)) {
     extraModels.push(model);
   }
 
@@ -43,18 +43,20 @@ export function ApiMessageResponse(
   const dataSchema = !model
     ? {
         type: 'object',
+        example: model,
         nullable: true,
-        example: null,
+        description: "Données ou message d'erreur envoyé avec la réponse de l'API."
       }
     : isArray
       ? {
           type: 'array',
+        
           items: {
-            $ref: getSchemaPath(model),
+            $ref: getSchemaPath((model instanceof Array) ? () => {return []} : model),
           },
         }
       : {
-          $ref: getSchemaPath(model),
+          $ref: getSchemaPath((model instanceof Array) ? () => {return []} : model),
         };
 
   return applyDecorators(
@@ -66,18 +68,19 @@ export function ApiMessageResponse(
       schema: {
         allOf: [
           {
-            $ref: getSchemaPath(MessageDto),
+            $ref: getSchemaPath(ApiResponseDto),
           },
           {
             properties: {
               message: {
                 type: "string",
-                example: options.messageExemple
+                example: options.messageExemple,
               },
               data: dataSchema,
 
               ...(meta && {
                 meta: {
+                  description: "Salut je suis une descritpion",
                   $ref: getSchemaPath(meta),
                 },
               }),

@@ -8,6 +8,7 @@ import { UserAlreadyExistException } from './exceptions/user-already-exist.excep
 import { Role } from 'src/commons/roles/role.enum';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LikedPostDto } from '../user-activities/dto/liked-post.dto';
+import { PublicUserDto } from './dto/public-user.dto';
 
 export const userSelect = {
   id: true,
@@ -18,7 +19,6 @@ export const userSelect = {
   role: true,
   created_at: true,
   updated_at: true,
-  posts: true,
 } satisfies Prisma.UserSelect;
 
 export type userSelectPayload = Prisma.UserGetPayload<{ select: typeof userSelect }>
@@ -43,10 +43,16 @@ export class UserService {
       select: userSelect
     });
 
-    if (!user) throw new UserNotFoundException(uniqueProperties.id ??
-      uniqueProperties.email ??
-      uniqueProperties.pseudo ??
-      'unknown');
+    const userIdentifier =
+      typeof uniqueProperties.id === 'string' || typeof uniqueProperties.id === 'number'
+        ? uniqueProperties.id
+        : typeof uniqueProperties.email === 'string'
+          ? uniqueProperties.email
+          : typeof uniqueProperties.pseudo === 'string'
+            ? uniqueProperties.pseudo
+            : 'unknown';
+
+    if (!user) throw new UserNotFoundException(userIdentifier);
     return user;
   }
   async create(data: CreateUserDto & { posts?: Prisma.PostCreateWithoutAuthorInput[] }): Promise<Promise<userSelectPayload>> {
@@ -85,7 +91,7 @@ export class UserService {
   }
 
   async update(
-    where: Prisma.UserWhereUniqueInput,
+    where: Prisma.UserWhereUniqueInput, 
     data: UserUpdateDto,
   ): Promise<userSelectPayload> {
     const { posts, ...userData } = data as UserUpdateDto & { posts?: unknown };

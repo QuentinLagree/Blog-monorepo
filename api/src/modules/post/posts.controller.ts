@@ -73,7 +73,7 @@ async index(
 }
 
   @UseGuards(AuthGuardSession(), UserOwnerOrAdminGuard)
-  @ApiBasicAuth()
+  
   @ApiProperty({
 
   })

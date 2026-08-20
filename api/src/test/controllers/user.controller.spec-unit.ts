@@ -30,7 +30,7 @@ describe('UserController', () => {
                 makeMessage(
                     'List of all users is empty.',
                     'La liste des utilisateurs est vide',
-                    null,
+                    [],
                 ),
             );
 

@@ -1,13 +1,19 @@
 import { HttpStatus } from '@nestjs/common';
-import { AppException } from 'src/commons/app.exception';
+import { ApiExceptionDocumentation, AppException } from 'src/commons/app.exception';
 
 export class PostNotFoundException extends AppException {
-  constructor(id: any) {
+  static readonly status = HttpStatus.NOT_FOUND
+
+  static readonly description = {
+     description: "La publication demandé est introuvable.",
+     messageExample: "La publication 137 n'existe pas"
+  } satisfies ApiExceptionDocumentation
+  
+  constructor(id: number) {
     super(
       `Post Not Found with id ${id}`,
       `La publication ${id} n'existe pas.`,
-      null,
-      HttpStatus.NOT_FOUND,
+      PostNotFoundException.status,
     );
   }
 }
