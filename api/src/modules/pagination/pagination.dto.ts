@@ -4,7 +4,12 @@ import { Transform, Type } from "class-transformer";
 import { IsBoolean, isBoolean, IsBooleanString, IsIn, IsInt, IsNumber, IsNumberString, IsPositive, Min } from "class-validator";
 
 export class PaginationDto {
-    @ApiPropertyOptional()
+    @ApiPropertyOptional({
+    name: 'page',
+    type: Number,
+    example: 1,
+    description: "Numéro de page",
+  })
     @IsNumber()
     @Type(() => Number)
     @IsInt()
@@ -12,7 +17,12 @@ export class PaginationDto {
 
     page?: number = 1;
 
-    @ApiPropertyOptional()
+    @ApiPropertyOptional({
+        name: 'limit',
+        type: Number,
+        example: 2,
+        description: "Limite d'article à afficher",
+      })
     @IsNumber()
     @Type(() => Number)
     @IsPositive()
@@ -20,8 +30,11 @@ export class PaginationDto {
     limit?: number = 5;
 
     @ApiProperty({
-        default: 'false'
-    })
+    name: 'published?',
+    type: Boolean,
+    example: false,
+    description: "Afficher les articles publiés ?",
+  })
     @Transform(({ value }) => {
         if (value === true || value === 'true') return true;
         if (value === false || value === 'false') return false;
@@ -32,8 +45,11 @@ export class PaginationDto {
     published?: boolean = false
 
     @ApiProperty({
-        default: 'true'
-    })
+    name: 'reading?',
+    type: Boolean,
+    example: true,
+    description: "Afficher les articles déjà lu par l'utilisateur connecté ?",
+  })
     @Transform(({ value }) => {
         if (value === true || value === 'true') return true;
         if (value === false || value === 'false') return false;

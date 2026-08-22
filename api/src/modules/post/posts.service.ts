@@ -16,6 +16,10 @@ import { PostNotFoundException } from './exceptions/post-not-found.exception';
 import { StatusLikeDto } from './dto/status-like.dto';
 import { MetaPaginationDto } from '../pagination/meta.pagination.dto';
 import { StatusReadingDto } from '../user-activities/dto/status-reading.dto';
+import { PostSummaryDto } from './dto/post-summary.dto';
+import { Articles } from './dto/posts.dto';
+
+export type userSelectItem = Prisma.UserGetPayload<{ select: typeof userSelect }>
 
 @Injectable()
 export class ArticleService {
@@ -34,9 +38,9 @@ export class ArticleService {
   }
 
 
-  async index(paginationDto: PaginationDto, userId?: number): Promise<[Article[], MetaPaginationDto]> {
+  async index(paginationDto: PaginationDto, userId?: number): Promise<[PostSummaryDto[], MetaPaginationDto]> {
     let hasReading: boolean = true
-    if (!paginationDto.reading && userId)  {
+    if (!paginationDto.reading && userId) {
       hasReading = false
     }
     const page = paginationDto.page ?? 1;
@@ -46,7 +50,11 @@ export class ArticleService {
       this._prisma.post.findMany({
         take: limit,
         skip: (page - 1) * limit,
-        where: 
+        omit: {
+          content: true,
+          created_at: true
+        },
+        where:
           paginationDto.published === undefined && paginationDto.reading === undefined
             ? {}
             : {
@@ -76,8 +84,22 @@ export class ArticleService {
     ]
   }
 
-  async indexWhere(where: Prisma.PostWhereInput, reading: boolean = true) {
-    return this._prisma.post.findMany({ where });
+  async indexWhere(where: Prisma.PostWhereInput) {
+    return this._prisma.post.findMany({
+      where,
+      include: {
+        author: {
+          select: {
+            id: true,
+            pseudo: true
+          }
+        }
+      },
+      omit: {
+        content: true,
+        created_at: true
+      }
+    });
   }
 
   async indexOneWhere(where: Prisma.PostWhereUniqueInput): Promise<Article | null> {
@@ -272,19 +294,5 @@ export class ArticleService {
         completed: progress >= 95,
       },
     });
-  }
-
-  private validateReadingProgress(
-    progress: number,
-  ): void {
-    if (
-      !Number.isInteger(progress) ||
-      progress < 0 ||
-      progress > 100
-    ) {
-      throw new BadRequestException(
-        'La progression doit être un nombre entier compris entre 0 et 100.',
-      );
-    }
   }
 }

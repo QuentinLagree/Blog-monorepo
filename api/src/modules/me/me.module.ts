@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 
 import { PasswordModule } from 'src/commons/services/password.module';
 
-import { UserController } from './user.controller';
-import { UserService } from './user.service';
 import { PrismaModule } from 'src/commons/prisma/prisma.module';
+import { MeController } from './me.controller';
+import { UserService } from '../user/user.service';
 import { ArticleService } from '../post/posts.service';
 
 @Module({
@@ -13,7 +13,7 @@ import { ArticleService } from '../post/posts.service';
     PrismaModule
   ],
   controllers: [
-    UserController,
+    MeController,
   ],
   providers: [
     UserService,
@@ -24,4 +24,4 @@ import { ArticleService } from '../post/posts.service';
     ArticleService
   ],
 })
-export class UserModule {}
+export class MeModule {}

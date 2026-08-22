@@ -3,7 +3,7 @@ import { User } from '@prisma/client';
 import { IsNotEmpty, Length, IsString, IsNumber, IsArray } from 'class-validator';
 import { PostsEntity } from '../entities/posts.entities';
 
-export class Posts extends PartialType(PostsEntity) {
+export class Articles extends PartialType(PostsEntity) {
   @IsNotEmpty()
   override id: number;
   @IsNotEmpty()

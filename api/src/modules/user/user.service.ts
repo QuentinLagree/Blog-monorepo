@@ -12,13 +12,14 @@ import { PublicUserDto } from './dto/public-user.dto';
 
 export const userSelect = {
   id: true,
-  email: true,
   pseudo: true,
-  nom: true,
-  prenom: true,
   role: true,
   created_at: true,
-  updated_at: true,
+} satisfies Prisma.UserSelect;
+
+export const userSelectExistingUser = {
+  email: true,
+  pseudo: true,
 } satisfies Prisma.UserSelect;
 
 export type userSelectPayload = Prisma.UserGetPayload<{ select: typeof userSelect }>
@@ -62,7 +63,7 @@ export class UserService {
       where: {
         OR: [{ email }, { pseudo }],
       },
-      select: userSelect
+      select: userSelectExistingUser
     });
     if (existingUser?.email === email) {
       throw new UserAlreadyExistException('email');
@@ -84,8 +85,7 @@ export class UserService {
         posts: posts && posts.length > 0 ? { create: posts } : undefined,
       },
       select: {
-        ...userSelect,
-        posts: true
+        ...userSelect
       }
     });
   }

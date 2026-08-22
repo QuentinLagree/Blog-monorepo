@@ -33,25 +33,6 @@ export class AuthController {
     private readonly _user: UserService,
   ) { }
 
-  @Get('/session')
-  async status(
-    @Session() session: secureSession.Session,
-  ): Promise<Message<SessionType>> {
-    const user = session.get('user');
-
-    if (user) {
-      return makeMessage('', 'La session est bien active.', {
-        loggedIn: true,
-        user,
-      });
-    } else {
-      throw new HttpException(
-        makeMessage('', 'Aucune session active', { loggedIn: false }),
-        HttpStatus.UNAUTHORIZED,
-      );
-    }
-  }
-
   @UseGuards(AuthGuardSession())
   @Post('/logout')
   async logout(@Session() session: secureSession.Session) {

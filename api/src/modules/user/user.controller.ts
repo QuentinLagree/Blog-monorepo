@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   SerializeOptions,
   UseGuards,
   UseInterceptors
@@ -30,13 +31,16 @@ import { UserEntity } from './entities/user.entities';
 import { UserAlreadyExistException } from './exceptions/user-already-exist.exception';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { UserNotHaveAuthorisation } from './exceptions/user-not-have-authorisation.exception';
-import { UserService } from './user.service';
+import { userSelectPayload, UserService } from './user.service';
+import { Post as Articles } from '@prisma/client';
+import { ArticleService } from '../post/posts.service';
+import { PostSummaryDto } from '../post/dto/post-summary.dto';
 
 @ApiTags('Utilisateurs')
-@Controller('user')
+@Controller('users')
 @UseInterceptors(new TransformDataMessageIntoObjectSerialization([UserEntity]))
 export class UserController {
-  constructor(private readonly _user: UserService) { }
+  constructor(private readonly _user: UserService, private readonly _article: ArticleService) { }
 
   @ApiCookieAuth('session')
   @ApiOperation({
@@ -190,7 +194,7 @@ export class UserController {
       updatedUser,
     );
   }
-@ApiCookieAuth('session')
+  @ApiCookieAuth('session')
   @ApiOperation({
     summary: "Supprimer un utilisateur par son identifiant.",
     description: "Supprime toutes les informations d’un utilisateur à partir de son identifiant unique. Cette opération est réservée à un administrateur uniquement."
@@ -219,5 +223,92 @@ export class UserController {
       'La suppression de votre compte utilisateur est un succès !',
       null,
     );
+  }
+
+@ApiCookieAuth('session')
+  @ApiOperation({
+    summary: "Récupérer tous les brouillons d'un utlisateur par son identifiant.",
+    description: "Récupère tous les brouillon d'un utilisateur. Il faut être connecter pour effectué cette action."
+  })
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    example: 42,
+    description: "Identifiant unique de l'utilisateur",
+  })
+  @ApiMessageResponse(PostSummaryDto, {
+    description: "Afficher la liste de tous les brouillons de l'utilisateur johndoe42.",
+    messageExemple: "Liste de tous les brouillon de johndoe42.",
+    isArray: true,
+  })
+  @ApiExceptionsResponse([
+    UserNotHaveAuthorisation,
+    UserNotFoundException
+  ])
+  @Get('/:id/drafts')
+  async getAllDraftsOfUser(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Message<PostSummaryDto[]>> {
+    const user: userSelectPayload = await this._user.show({ id });
+
+    const drafts: PostSummaryDto[] = await this._article.indexWhere({
+      authorId: id,
+      published_at: null,
+    });
+    return drafts.length === 0
+      ? makeMessage(
+        `List of all draft posts of ${user.pseudo} is empty.`,
+        `La liste des brouillons de l'utilisateur ${user.pseudo} est vide.`,
+        [],
+      )
+      : makeMessage(
+        `List of all draft posts of user ${user.pseudo}`,
+        `Liste de tous les brouillons de ${user.pseudo}.`,
+        drafts,
+      );
+  }
+
+  @UseGuards(AuthGuardSession(), RolesGuard)
+  @Roles(Role.Admin)
+  @ApiCookieAuth('session')
+  @ApiOperation({
+    summary: "Récupérer toutes les publications d'un utlisateur par son identifiant.",
+    description: "Récupère toutes les publications d'un utilisateur. Il faut avoir le rôle d'administrateur."
+  })
+  @ApiParam({
+    name: 'id',
+    type: Number,
+    example: 42,
+    description: "Identifiant unique de l'utilisateur.",
+  })
+  @ApiMessageResponse(PostSummaryDto, {
+    description: "Afficher la liste de tous les brouillons de l'utilisateur johndoe42.",
+    messageExemple: "Liste de tous les brouillon de johndoe42.",
+    isArray: true,
+  })
+  @ApiExceptionsResponse([
+    UserNotHaveAuthorisation,
+    UserNotFoundException
+  ])
+  @Get('/:id/posts')
+  async getAllPostsOfUser(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Message<PostSummaryDto[]>> {
+    const user: userSelectPayload = await this._user.show({ id });
+
+    const drafts: PostSummaryDto[] = await this._article.indexWhere({
+      authorId: id,
+    });
+    return drafts.length === 0
+      ? makeMessage(
+        `List of all posts of ${user.pseudo} is empty.`,
+        `La liste des publications de l'utilisateur ${user.pseudo} est vide.`,
+        [],
+      )
+      : makeMessage(
+        `List of all posts of user ${user.pseudo}`,
+        `Liste de toute les publications de ${user.pseudo}.`,
+        drafts,
+      );
   }
 }
