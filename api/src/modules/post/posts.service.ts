@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Injectable
 } from '@nestjs/common';
 import { Post as Article, Post, PostRead, Prisma } from '@prisma/client';

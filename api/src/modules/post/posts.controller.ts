@@ -40,6 +40,13 @@ import { CurrentUser } from '../me/decorators/current.decorator';
 import { UserSession } from 'src/commons/types/session-user.type';
 import { ApiMessageResponse } from 'src/commons/decorators/api-message-response.decorator';
 import { ApiExceptionsResponse } from 'src/commons/decorators/api-exception-response.decorator';
+import { PostNotFoundException } from './exceptions/post-not-found.exception';
+import { UserNotFoundException } from '../user/exceptions/user-not-found.exception';
+import { CreatePostFailException } from './exceptions/fatal_errors/create-post-fail.exception';
+import { UpdatePostFailException } from './exceptions/fatal_errors/update-post-fail.exception';
+import { PostNotFoundWithSlugException } from './exceptions/post-not-found-with-slug.exception';
+import { SlugInvalidFormat } from './exceptions/slug-invalid-format.exception';
+import { UserNotHaveAuthorisation } from '../user/exceptions/user-not-have-authorisation.exception';
 
 @ApiTags('Publications')
 @Controller('posts')
@@ -52,52 +59,82 @@ export class PostController {
 
   @Get()
   @ApiOperation({
-    summary: "Récupère la liste paginée des publications.",
-    description: "Récupère la liste paginée des publications. Le paramètre reading permet, pour un utilisateur connecté, de masquer les publications déjà lues. Il est ignoré pour les utilisateurs non authentifiés."
+    summary: "Récupère la liste paginée des articles.",
+    description: "Récupère la liste paginée des articles. Le paramètre reading permet, pour un utilisateur connecté, de masquer les articles déjà lues. Il est ignoré pour les utilisateurs non authentifiés."
   })
   @ApiMessageResponse(PostSummaryDto, {
     isArray: true,
-    messageExemple: "Liste de toute les publications",
+    messageExemple: "Liste de tous les articles",
     description: "Récupère tous les articles avec pagination.",
     meta: MetaPaginationDto,
     status: 200
   })
-  @ApiExceptionsResponse([], { properties_validator: true })
-async index(
-  @Query() payload: PaginationDto,
-  @CurrentUser() user: UserSession
-): Promise<Message<PostSummaryDto[], MetaPaginationDto>> {
+  @ApiExceptionsResponse([])
+  async index(
+    @Query() payload: PaginationDto,
+    @CurrentUser() user: UserSession
+  ): Promise<Message<PostSummaryDto[], MetaPaginationDto>> {
 
-  const [posts, meta] = await this._articles.index(
-    payload,
-    user?.id,
-  );
+    const [posts, meta] = await this._articles.index(
+      payload,
+      user?.id,
+    );
 
-  return posts.length === 0
-    ? makeMessage<PostSummaryDto[], MetaPaginationDto>(
+    return posts.length === 0
+      ? makeMessage<PostSummaryDto[], MetaPaginationDto>(
         'List of all posts is empty.',
         'La liste des publications est vide',
         [],
         meta
       )
-    : makeMessage<PostSummaryDto[], MetaPaginationDto>(
+      : makeMessage<PostSummaryDto[], MetaPaginationDto>(
         'List of all posts',
-        'Liste de toutes les publications',
+        'Liste de tous les articles.',
         posts,
         meta,
       );
-}
+  }
 
+  @ApiOperation({
+    summary: "Récupère un article avec son identifiant",
+    description: "Récupère un article avec son identifiant unique."
+  })
+  @ApiMessageResponse(PostSummaryDto, {
+    description: "Récupère l'article avec son identifiant. Retourne un article avec des informations essentielles.",
+    messageExemple: "L'article 42 a bien été trouvé.",
+  })
+  @ApiExceptionsResponse([
+    PostNotFoundException,
+  ])
+  @ApiParam({
+    name: "id",
+    description: "Identifiant unique de la publication",
+    example: 42,
+    type: Number
+  })
   @Get(':id')
   async show(@Param('id', ParseIntPipe) id: number): Promise<Message<PostDetailDto>> {
     const article = await this._articles.show({ id });
     return makeMessage(
       `Post found with ID: ${article.id}!`,
-      `La publication ${article.id} a bien été trouvé.`,
+      `L'article ${article.id} a bien été trouvé.`,
       article,
     );
   }
 
+  @ApiCookieAuth('session')
+  @ApiOperation({
+    summary: "Créer un article",
+    description: "Créé un article grâce au données. Cette article n'est pas encore publié. Il faut être connecté pour effectuer la création d'un article."
+  })
+  @ApiMessageResponse(PostSummaryDto, {
+    description: "Message de succès lors de la création de l'article.",
+    messageExemple: "La publication est créée, allez sur la page d'accueil ou votre compte pour la visualiser."
+  })
+  @ApiExceptionsResponse([
+    UserNotFoundException,
+    CreatePostFailException
+  ])
   @UseGuards(AuthGuardSession())
   @ApiBody({
     type: CreatePostDto,
@@ -105,32 +142,53 @@ async index(
   @Post()
   async createPost(
     @Body() payload: CreatePostDto,
-    @Session() session: secureSession.Session,
+    @CurrentUser() user: UserSession,
   ): Promise<Message<PostSummaryDto>> {
-    const sessionUser = session.get('user');
 
     const author = await this._user.show({
-      id: sessionUser.id,
+      id: user.id,
     });
 
     const createdPost = await this._articles.store(payload, author);
 
     return makeMessage(
       'Post created success',
-      'La publication est créée, allez sur votre compte pour la visualiser.',
+      'La publication est créée, allez sur la page d\'accueil ou votre compte pour la visualiser.',
       createdPost,
     );
   }
 
+  @ApiCookieAuth('session')
+  @ApiOperation({
+    summary: "Publier un article",
+    description: "Publie un article déjà créer. Il faut être connecté pour publié un article."
+  })
+  @ApiMessageResponse(PostSummaryDto, {
+    description: "Succès lors de la publication de l'article.",
+    messageExemple: "La publication a été publiée."
+  })
+  @ApiExceptionsResponse([
+    PostNotFoundException,
+    PostAlreadyPublishException,
+    UpdatePostFailException,
+    UserNotFoundException,
+    UserNotHaveAuthorisation
+  ])
   @UseGuards(AuthGuardSession(), PostOwnerOrAdminGuard)
   @ApiBody({
     type: PublishedPostDto,
+  })
+  @ApiParam({
+    name: "id",
+    description: "Identifiant unique de la publication",
+    example: 42,
+    type: Number
   })
   @Patch(':id/publish')
   async publishPost(
     @Param('id', ParseIntPipe) id: number,
     @Body() payload: PublishedPostDto,
-    @Session() session: secureSession.Session,
+    @CurrentUser() user: UserSession,
   ): Promise<Message<PostSummaryDto>> {
     const post = await this._articles.show({ id });
 
@@ -141,7 +199,7 @@ async index(
     const updatedPost = await this._articles.update(
       { id },
       payload,
-      session.get('user').id,
+      user.id,
     );
 
     return makeMessage(
@@ -151,7 +209,25 @@ async index(
     );
   }
 
-
+  @ApiOperation({
+    summary: "Récupérer un article avec le slug.",
+    description: "Récupère un article grâce à son slug, il faut que ce slug soit valide."
+  })
+  @ApiMessageResponse(PostSummaryDto, {
+    description: "Succès lorsque l'article est trouvé grâce au slug.",
+    messageExemple: "Article trouvé !"
+  })
+  @ApiExceptionsResponse([
+    SlugInvalidFormat,
+    PostNotFoundWithSlugException,
+    PostNotFoundException
+  ])
+  @ApiParam({
+    name: "slug_title",
+    description: "Identifiant créer à partir du titre et de l'id de l'article.",
+    example: "valid-slug-2",
+    type: "string"
+  })
   @Get("/slug/:slug_title")
   async slugTestWithID(@Param('slug_title') slug: string): Promise<Message<PostDetailDto>> {
     const article = await this._slug.getPostWithSlug(slug);
@@ -163,6 +239,26 @@ async index(
   }
 
 
+  @ApiOperation({
+    summary: "Motifier un article.",
+    description: "modifie un article grâce à son id, il faut être connecté. Egalement être l'auteur de l'article ou un administrateur."
+  })
+  @ApiParam({
+    name: "id",
+    description: "Identifiant unique de la publication",
+    example: 42,
+    type: Number
+  })
+  @ApiMessageResponse(PostSummaryDto, {
+    description: "Message de succès lors de la modification de l'article.",
+    messageExemple: "La publication a été modifiée !"
+  })
+  @ApiExceptionsResponse([
+    UserNotFoundException,
+    UserNotHaveAuthorisation,
+    PostNotFoundException,
+    UpdatePostFailException
+  ])
   @UseGuards(AuthGuardSession(), PostOwnerOrAdminGuard)
   @Patch('/:id')
   async updatePost(@Param('id', ParseIntPipe) id: number,

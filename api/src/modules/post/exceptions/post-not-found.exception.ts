@@ -4,7 +4,7 @@ import { ApiExceptionDocumentation, AppException } from 'src/commons/app.excepti
 export class PostNotFoundException extends AppException {
   static readonly status = HttpStatus.NOT_FOUND
 
-  static readonly description = {
+  static readonly documentation = {
      description: "La publication demandé est introuvable.",
      messageExample: "La publication 137 n'existe pas"
   } satisfies ApiExceptionDocumentation
