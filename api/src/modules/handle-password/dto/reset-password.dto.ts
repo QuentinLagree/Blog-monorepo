@@ -16,7 +16,4 @@ export class ResetPasswordDto {
   @MinLength(4)
   @IsString()
   confirm_password: string;
-  @ApiProperty()
-  @IsString()
-  token: string
 }

@@ -6,7 +6,7 @@ import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { Role } from 'src/commons/roles/role.enum';
 import { PaginationDto } from '../pagination/pagination.dto';
 import { UserNotFoundException } from '../user/exceptions/user-not-found.exception';
-import { UserNotHaveAuthorisation } from '../user/exceptions/user-not-have-authorisation.exception';
+import { UserNotHaveAuthorisation } from '../user/exceptions/user-not-have-authorization';
 import { userSelect, userSelectPayload } from '../user/user.service';
 import { CreatePostDto } from './dto/create.post.dto';
 import { PublishedPostDto } from './dto/published-post.dto';
@@ -19,6 +19,13 @@ import { PostSummaryDto } from './dto/post-summary.dto';
 import { Articles } from './dto/posts.dto';
 
 export type userSelectItem = Prisma.UserGetPayload<{ select: typeof userSelect }>
+const postLikeCount = {
+  _count: {
+    select: {
+      likes: true,
+    },
+  },
+} satisfies Prisma.PostInclude;
 
 @Injectable()
 export class ArticleService {
@@ -37,68 +44,101 @@ export class ArticleService {
   }
 
 
-  async index(paginationDto: PaginationDto, userId?: number): Promise<[PostSummaryDto[], MetaPaginationDto]> {
-    let hasReading: boolean = true
-    if (!paginationDto.reading && userId) {
-      hasReading = false
-    }
-    const page = paginationDto.page ?? 1;
-    const limit = paginationDto.limit ?? 10;
-    const published = paginationDto.published;
-    const [posts, total] = await this._prisma.$transaction([
-      this._prisma.post.findMany({
-        take: limit,
-        skip: (page - 1) * limit,
-        omit: {
-          content: true,
-          created_at: true
-        },
-        where:
-          paginationDto.published === undefined && paginationDto.reading === undefined
-            ? {}
-            : {
-              published_at: paginationDto.published ? { not: null } : null,
-              postReads: (hasReading) ? {} : {
-                none: {
-                  completed: true,
-                  userId
-                }
-              }
-            },
-      }),
-      this._prisma.post.count({
-        where: {
-          published_at: (published) ? { not: null } : null
-        }
-      })
-    ]);
+async index(
+  paginationDto: PaginationDto,
+  userId?: number,
+): Promise<[PostSummaryDto[], MetaPaginationDto]> {
+  const page = paginationDto.page ?? 1;
+  const limit = paginationDto.limit ?? 10;
 
-    return [
-      posts,
-      {
-        currentPage: page,
-        limit,
-        totalArticle: total
-      }
-    ]
+  const where: Prisma.PostWhereInput = {};
+
+  if (paginationDto.published !== undefined) {
+    where.published_at = paginationDto.published
+      ? { not: null }
+      : null;
   }
 
-  async indexWhere(where: Prisma.PostWhereInput) {
-    return this._prisma.post.findMany({
+  if (paginationDto.reading === false && userId) {
+    where.postReads = {
+      none: {
+        completed: true,
+        userId,
+      },
+    };
+  }
+
+  const [posts, total] = await this._prisma.$transaction([
+    this._prisma.post.findMany({
+      take: limit,
+      skip: (page - 1) * limit,
+
+      where,
+
+      include: {
+        author: {
+          select: {
+            id: true,
+            pseudo: true,
+          },
+        },
+        ...postLikeCount,
+      },
+
+      omit: {
+        content: true,
+        created_at: true,
+      },
+    }),
+
+    this._prisma.post.count({
+      where,
+    }),
+  ]);
+
+  return [
+    posts.map(({ _count, ...post }) => ({
+      ...post,
+      like: {
+        count: _count.likes,
+      },
+    })),
+    {
+      currentPage: page,
+      limit,
+      totalArticle: total,
+    },
+  ];
+}
+
+  async indexWhere(
+    where: Prisma.PostWhereInput,
+  ): Promise<PostSummaryDto[]> {
+    const posts = await this._prisma.post.findMany({
       where,
       include: {
         author: {
           select: {
             id: true,
-            pseudo: true
-          }
-        }
+            pseudo: true,
+          },
+        },
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
       },
       omit: {
         content: true,
-        created_at: true
-      }
+        created_at: true,
+      },
     });
+
+    return posts.map(({ _count, ...post }) => ({
+      ...post,
+      likeCount: _count.likes,
+    }));
   }
 
   async indexOneWhere(where: Prisma.PostWhereUniqueInput): Promise<Article | null> {
@@ -181,7 +221,7 @@ export class ArticleService {
     return post.published_at !== null;
   }
 
-  async getLikeCount(postId: number): Promise<StatusLikeDto> {
+  private async getLikeCount(postId: number): Promise<StatusLikeDto> {
     return {
       liked: false, likesCount: await this._prisma.like.count({
         where: {
@@ -293,5 +333,16 @@ export class ArticleService {
         completed: progress >= 95,
       },
     });
+  }
+
+  private mapLikeCount<
+    T extends { _count: { likes: number } }
+  >(post: T) {
+    const { _count, ...data } = post;
+
+    return {
+      ...data,
+      like: { count: _count.likes },
+    };
   }
 }

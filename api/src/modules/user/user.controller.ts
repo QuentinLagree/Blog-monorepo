@@ -8,7 +8,6 @@ import {
   ParseIntPipe,
   Post,
   Put,
-  Query,
   SerializeOptions,
   UseGuards,
   UseInterceptors
@@ -24,17 +23,16 @@ import { Role } from 'src/commons/roles/role.enum';
 import { Message } from 'src/commons/types/dto/message/message';
 import { TransformDataMessageIntoObjectSerialization } from '../../commons/interceptors/transform_data_message_into_object_serialization.interceptor';
 import { makeMessage } from '../../commons/logger/logger.helper';
+import { PostSummaryDto } from '../post/dto/post-summary.dto';
+import { ArticleService } from '../post/posts.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PublicUserDto } from './dto/public-user.dto';
 import { UserUpdateDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entities';
 import { UserAlreadyExistException } from './exceptions/user-already-exist.exception';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
-import { UserNotHaveAuthorisation } from './exceptions/user-not-have-authorisation.exception';
+import { UserNotHaveAuthorisation } from './exceptions/user-not-have-authorization';
 import { userSelectPayload, UserService } from './user.service';
-import { Post as Articles } from '@prisma/client';
-import { ArticleService } from '../post/posts.service';
-import { PostSummaryDto } from '../post/dto/post-summary.dto';
 
 @ApiTags('Utilisateurs')
 @Controller('users')
@@ -53,7 +51,7 @@ export class UserController {
     isArray: true
   })
   @ApiMessageResponse([], {
-    description: "Renvoie une liste vide si il n'y a aucun utilisateru.",
+    description: "Renvoie une liste vide si il n'y a aucun utilisateur.",
     messageExemple: "La liste des utilisateurs est vide.",
     isArray: true,
     status: 201
@@ -227,7 +225,7 @@ export class UserController {
 
 @ApiCookieAuth('session')
   @ApiOperation({
-    summary: "Récupérer tous les brouillons d'un utlisateur par son identifiant.",
+    summary: "Récupérer tous les brouillons d'un utilisateur par son identifiant.",
     description: "Récupère tous les brouillon d'un utilisateur. Il faut être connecter pour effectué cette action."
   })
   @ApiParam({
@@ -272,7 +270,7 @@ export class UserController {
   @Roles(Role.Admin)
   @ApiCookieAuth('session')
   @ApiOperation({
-    summary: "Récupérer toutes les publications d'un utlisateur par son identifiant.",
+    summary: "Récupérer toutes les publications d'un utilisateur par son identifiant.",
     description: "Récupère toutes les publications d'un utilisateur. Il faut avoir le rôle d'administrateur."
   })
   @ApiParam({

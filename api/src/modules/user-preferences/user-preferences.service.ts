@@ -14,9 +14,17 @@ export class UserPreferenceService {
 
     async getPreferences(
         userId: number,
-        fields?: string,
+        fields?: UserPreferenceField[],
     ): Promise<Record<string, unknown>> {
-        const select = this.buildSelect(fields);
+        const select = fields?.length
+            ? fields.reduce<Record<string, true>>(
+                (acc, field) => {
+                    acc[field] = true;
+                    return acc;
+                },
+                {},
+            )
+            : undefined;
 
         return this._prisma.userPreference.upsert({
             where: {

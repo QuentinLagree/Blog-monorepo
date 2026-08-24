@@ -5,7 +5,7 @@ import { Reflector } from '@nestjs/core';
 import { RolesGuard } from 'src/commons/guards/role.guard';
 import { Role } from 'src/commons/roles/role.enum';
 import { UnauthorizedSessionInactive } from 'src/modules/auth/exceptions/unautorisation-session-inactive.exception';
-import { UserNotHaveAuthorisation } from 'src/modules/user/exceptions/user-not-have-authorisation.exception';
+import { UserNotHaveAuthorisation } from 'src/modules/user/exceptions/user-not-have-authorization';
 import { UserService } from 'src/modules/user/user.service';
 
 describe('RolesGuard', () => {

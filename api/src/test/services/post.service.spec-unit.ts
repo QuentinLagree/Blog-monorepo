@@ -3,7 +3,7 @@ import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { Role } from 'src/commons/roles/role.enum';
 import { PostNotFoundException } from 'src/modules/post/exceptions/post-not-found.exception';
 import { UserNotFoundException } from 'src/modules/user/exceptions/user-not-found.exception';
-import { UserNotHaveAuthorisation } from 'src/modules/user/exceptions/user-not-have-authorisation.exception';
+import { UserNotHaveAuthorisation } from 'src/modules/user/exceptions/user-not-have-authorization';
 import { CreatePostDto } from 'src/modules/post/dto/create.post.dto';
 import { UpdatePostDto } from 'src/modules/post/dto/update.post.dto';
 import { PublishedPostDto } from 'src/modules/post/dto/published-post.dto';

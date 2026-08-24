@@ -1,3 +1,5 @@
+import { TokenInvalidFormat } from "src/modules/handle-password/exceptions/token-invalid-format.exception";
+
 export class TOKEN {
   private token: string;
 
@@ -9,7 +11,7 @@ export class TOKEN {
 
   public static add(token: string) {
     if (!new RegExp('[0-9a-fA-F]{32}').test(token)) {
-      throw new Error('Le token doit être du format Hexadécimal.');
+      throw new TokenInvalidFormat();
     }
     return new TOKEN(token);
   }

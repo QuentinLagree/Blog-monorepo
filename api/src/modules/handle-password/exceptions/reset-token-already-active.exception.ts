@@ -1,4 +1,4 @@
-// src/commons/exceptions/reset-token-already-active.exception.ts
+// src/commons/exceptions/reset-token-already-active.exception.ts 
 
 import { HttpStatus } from '@nestjs/common';
 import { ApiExceptionDocumentation, AppException } from 'src/commons/app.exception';

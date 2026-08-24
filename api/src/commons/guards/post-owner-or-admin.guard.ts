@@ -39,7 +39,7 @@ export class PostOwnerOrAdminGuard implements CanActivate {
 
     if (!isAdmin && !isAuthor) {
       throw new ForbiddenException(
-        "Vous n'avez pas l'autorisation de modifier cette publication.",
+        "Vous n'avez pas l'autorisation d'effectuer une action sur cette publication.",
       );
     }
 

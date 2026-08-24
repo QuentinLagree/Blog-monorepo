@@ -2,5 +2,14 @@
     "prisma.pinToPrisma6": true,
     "jest.rootPath": "api",
     "jest.jestCommandLine": "pnpm jest --config jest.config.ts --runInBand",
-        "jest.runMode": "on-demand"
+        "jest.runMode": "on-demand",
+        "cSpell.enabledFileTypes": {
+            "typescript": true
+        },
+        "cSpell.words": [
+            "déconnection",
+            "Lagree",
+            "unautorisation"
+        ],
+        "cSpell.language": "en,fr"
 }

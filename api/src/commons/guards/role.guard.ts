@@ -10,7 +10,7 @@ import { Reflector } from '@nestjs/core';
 import { FastifyRequest } from 'fastify';
 import { UserService } from 'src/modules/user/user.service';
 import { ROLES_KEY } from '../decorators/role.decorator';
-import { UserNotHaveAuthorisation } from 'src/modules/user/exceptions/user-not-have-authorisation.exception';
+import { UserNotHaveAuthorisation } from 'src/modules/user/exceptions/user-not-have-authorization';
 import { UnauthorizedSessionInactive } from 'src/modules/auth/exceptions/unautorisation-session-inactive.exception';
 import { UserNotFoundException } from 'src/modules/user/exceptions/user-not-found.exception';
 

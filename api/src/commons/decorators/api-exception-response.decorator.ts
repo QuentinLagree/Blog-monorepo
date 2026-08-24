@@ -22,7 +22,7 @@ export function ApiExceptionsResponse(
   return applyDecorators(
     (options.properties_validator) ? ApiMessageResponse(null, {
       status: 400,
-      description: "Cette erreur est déclanché lorsque un ou plusieurs paramètres ne sont pas valides.",
+      description: "Cette erreur est déclenché lorsque un ou plusieurs paramètres ne sont pas valides.",
       messageExemple: "Un ou plusieurs paramètres fournis ne respectent pas les contraintes de validation."
     }) : () => {},
     ...exceptionsDecorators,

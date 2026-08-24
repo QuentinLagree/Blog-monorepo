@@ -46,7 +46,8 @@ import { CreatePostFailException } from './exceptions/fatal_errors/create-post-f
 import { UpdatePostFailException } from './exceptions/fatal_errors/update-post-fail.exception';
 import { PostNotFoundWithSlugException } from './exceptions/post-not-found-with-slug.exception';
 import { SlugInvalidFormat } from './exceptions/slug-invalid-format.exception';
-import { UserNotHaveAuthorisation } from '../user/exceptions/user-not-have-authorisation.exception';
+import { UserNotHaveAuthorisation } from '../user/exceptions/user-not-have-authorization';
+import { DeletePostFailException } from './exceptions/fatal_errors/delete-post-fail.exception';
 
 @ApiTags('Publications')
 @Controller('posts')
@@ -240,8 +241,8 @@ export class PostController {
 
 
   @ApiOperation({
-    summary: "Motifier un article.",
-    description: "modifie un article grâce à son id, il faut être connecté. Egalement être l'auteur de l'article ou un administrateur."
+    summary: "Modifier un article.",
+    description: "modifie un article grâce à son id, il faut être connecté. Également être l'auteur de l'article ou un administrateur."
   })
   @ApiParam({
     name: "id",
@@ -272,6 +273,19 @@ export class PostController {
     );
   }
 
+  @ApiCookieAuth('session')
+  @ApiOperation({
+    summary: "Supprimer un article.",
+    description: "Supprime un article avec son identifiant unique. Seul l'auteur de l'article ou un administrateur peut effectuer cette action."
+  })
+  @ApiMessageResponse(null, {
+    description: "Succès lors de la suppression.",
+    messageExemple: "La suppression de votre publication est un succès !"
+  })
+  @ApiExceptionsResponse([
+    PostNotFoundException,
+    DeletePostFailException
+  ])
   @UseGuards(AuthGuardSession(), PostOwnerOrAdminGuard)
   @Delete(':id')
   async destroy(@Param('id', ParseIntPipe) id: number): Promise<Message<null>> {
