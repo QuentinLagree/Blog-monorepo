@@ -36,7 +36,7 @@ export class AuthController {
     private readonly _user: UserService,
   ) { }
 
-  @ApiCookieAuth('session')
+  @ApiCookieAuth()
   @ApiOperation({
     summary: "Déconnection d'un utilisateur.",
     description: "Déconnecte-toi de ton compte. Il faut être connecté pour effectuer cette action."

@@ -36,7 +36,7 @@ import { PostDoesntLikeOrUnlikeByAuthor } from '../user/exceptions/post-doesnt-l
 import { PostNotFoundException } from '../post/exceptions/post-not-found.exception';
 
 @UseGuards(AuthGuardSession())
-@ApiCookieAuth('session')
+@ApiCookieAuth()
 @ApiTags('Activités utilisateurs')
 @Controller('users/posts')
 export class UserActivityController {

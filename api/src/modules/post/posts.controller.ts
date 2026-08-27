@@ -123,7 +123,7 @@ export class PostController {
     );
   }
 
-  @ApiCookieAuth('session')
+  @ApiCookieAuth()
   @ApiOperation({
     summary: "Créer un article",
     description: "Créé un article grâce au données. Cette article n'est pas encore publié. Il faut être connecté pour effectuer la création d'un article."
@@ -159,7 +159,7 @@ export class PostController {
     );
   }
 
-  @ApiCookieAuth('session')
+  @ApiCookieAuth()
   @ApiOperation({
     summary: "Publier un article",
     description: "Publie un article déjà créer. Il faut être connecté pour publié un article."
@@ -273,7 +273,7 @@ export class PostController {
     );
   }
 
-  @ApiCookieAuth('session')
+  @ApiCookieAuth()
   @ApiOperation({
     summary: "Supprimer un article.",
     description: "Supprime un article avec son identifiant unique. Seul l'auteur de l'article ou un administrateur peut effectuer cette action."

@@ -30,7 +30,7 @@ import { UserSession } from 'src/commons/types/session-user.type';
 import { CurrentUser } from '../me/decorators/current.decorator';
 import { InvalidPreferenceFieldException } from './exceptions/invalid-preference-field.exception';
 
-@ApiCookieAuth('session')
+@ApiCookieAuth()
 @ApiTags('Préférences')
 @Controller('users/preferences')
 @UseGuards(AuthGuardSession())

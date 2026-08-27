@@ -1,3 +1,4 @@
+import { FailSendingMailException } from 'src/commons/mailing/exceptions/fail-sending-mail.exception';
 import {
   Body,
   Controller,
@@ -33,6 +34,9 @@ import { UserAlreadyExistException } from './exceptions/user-already-exist.excep
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { UserNotHaveAuthorisation } from './exceptions/user-not-have-authorization';
 import { userSelectPayload, UserService } from './user.service';
+import { groupByExceptions } from 'src/commons/utils/group-by-exceptions.utils';
+import { PostNotFoundException } from '../post/exceptions/post-not-found.exception';
+import { InvalidPreferenceFieldException } from '../user-preferences/exceptions/invalid-preference-field.exception';
 
 @ApiTags('Utilisateurs')
 @Controller('users')
@@ -40,7 +44,7 @@ import { userSelectPayload, UserService } from './user.service';
 export class UserController {
   constructor(private readonly _user: UserService, private readonly _article: ArticleService) { }
 
-  @ApiCookieAuth('session')
+  @ApiCookieAuth()
   @ApiOperation({
     summary: "Récupérer les utilisateurs",
     description: "Récupère une liste d'utilisateurs. Cette liste peut être vide. L'utilisateur doit être connecté."
@@ -49,12 +53,6 @@ export class UserController {
     description: "Renvoie la liste de tous les utilisateurs avec leurs informations publiques.",
     messageExemple: "Liste de tous les utilisateurs.",
     isArray: true
-  })
-  @ApiMessageResponse([], {
-    description: "Renvoie une liste vide si il n'y a aucun utilisateur.",
-    messageExemple: "La liste des utilisateurs est vide.",
-    isArray: true,
-    status: 201
   })
   @UseGuards(AuthGuardSession(), RolesGuard)
   @Roles(Role.Admin, Role.User)
@@ -89,7 +87,8 @@ export class UserController {
     messageExemple: "L'utilisateur 42 a bien été trouvé."
   })
   @ApiExceptionsResponse([
-    UserNotFoundException
+    UserNotFoundException,
+    PostNotFoundException
   ])
   @ApiMessageResponse(null, { status: 400, description: "L'identifiant n'est pas valide.", messageExemple: "L'identifiant n'est pas valide." })
   @Get('/:id')
@@ -146,7 +145,7 @@ export class UserController {
   }
 
 
-  @ApiCookieAuth('session')
+  @ApiCookieAuth()
   @ApiOperation({
     summary: "Modifier un utilisateur par son identifiant.",
     description: "Modifie les informations d’un utilisateur à partir de son identifiant unique. Cette opération est réservée à l’utilisateur concerné ou à un administrateur."
@@ -192,7 +191,7 @@ export class UserController {
       updatedUser,
     );
   }
-  @ApiCookieAuth('session')
+  @ApiCookieAuth()
   @ApiOperation({
     summary: "Supprimer un utilisateur par son identifiant.",
     description: "Supprime toutes les informations d’un utilisateur à partir de son identifiant unique. Cette opération est réservée à un administrateur uniquement."
@@ -223,7 +222,7 @@ export class UserController {
     );
   }
 
-@ApiCookieAuth('session')
+@ApiCookieAuth()
   @ApiOperation({
     summary: "Récupérer tous les brouillons d'un utilisateur par son identifiant.",
     description: "Récupère tous les brouillon d'un utilisateur. Il faut être connecter pour effectué cette action."
@@ -268,7 +267,7 @@ export class UserController {
 
   @UseGuards(AuthGuardSession(), RolesGuard)
   @Roles(Role.Admin)
-  @ApiCookieAuth('session')
+  @ApiCookieAuth()
   @ApiOperation({
     summary: "Récupérer toutes les publications d'un utilisateur par son identifiant.",
     description: "Récupère toutes les publications d'un utilisateur. Il faut avoir le rôle d'administrateur."

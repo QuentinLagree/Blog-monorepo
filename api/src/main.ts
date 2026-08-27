@@ -38,7 +38,6 @@ async function bootstrap() {
     .setTitle('Blog')
     .setDescription('Api for blog !')
     .setVersion('1.0')
-    .setBasePath('/api/')
     .addCookieAuth('session')
     .build();
 

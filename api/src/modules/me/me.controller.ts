@@ -14,7 +14,7 @@ import { PostSummaryDto } from "../post/dto/post-summary.dto";
 import { SessionType } from "src/commons/types/session.type";
 import { UnauthorizedSessionInactive } from "../auth/exceptions/unautorisation-session-inactive.exception";
 
-@ApiCookieAuth('session')
+@ApiCookieAuth()
 @UseGuards(AuthGuardSession())
 @ApiTags("Mon compte")
 @Controller('/me')
