@@ -13,10 +13,12 @@
 - [📚 Ce que j'ai appris](#what_learn)
 - [🚧 Roadmap](#roadmap)
 
-### Plateforme de blog Full Stack développée avec **Angular** et **NestJS**.
+### Plateforme de blog Full Stack développée avec **Angular** et **NestJS**
 
 <a id="presentation"></a>
+
 # 📖 Présentation
+
 Ce projet a pour objectif de reproduire une application de blog moderne tout en mettant en pratique des concepts avancés de développement Full Stack tels que :
 
 - Architecture modulaire
@@ -68,8 +70,8 @@ L'application dispose d'un système complet d'authentification comprenant la cr�
 
 <p align="center"> <img src="https://github.com/user-attachments/assets/e1598cd1-1c74-4234-8039-48d50bf557aa" alt="Page d'authentification" width="800" /> </p>
 
-
 <a id="fonctionnalites"></a>
+
 # 🚀 Fonctionnalités
 
 ## Gestion des utilisateurs
@@ -141,6 +143,7 @@ Blog-monorepo
 
 ---
 <a id="stack"></a>
+
 # 🛠️ Stack technique
 
 ## Frontend
@@ -241,6 +244,7 @@ Cette approche améliore la réactivité de l'application et permet également d
 
 Même si mon projet reste personnel, je voulais apprendre à utiliser une solution proche de celles employées en entreprise pour les traitements asynchrones.
 <a id="install"></a>
+
 # ⚙️ Installation
 
 ## Cloner le projet
@@ -312,6 +316,7 @@ pnpm dev
 ---
 
 <a id="script"></a>
+
 # 📦 Scripts disponibles
 
 ## Général
@@ -413,7 +418,7 @@ Build Angular.
 Le backend dispose de plusieurs scripts permettant de tester les différentes couches de l'application.
 
 | Commande | Description |
-|----------|-------------|
+| ---------- | ------------- |
 | `pnpm api:test` | Lance les tests unitaires |
 | `pnpm api:test:watch` | Lance les tests en mode watch |
 | `pnpm api:test:cov` | Génère le rapport de couverture des tests |
@@ -421,6 +426,7 @@ Le backend dispose de plusieurs scripts permettant de tester les différentes co
 | `pnpm api:test:debug` | Lance les tests en mode debug |
 
 <a id="security"></a>
+
 # 🔒 Sécurité
 
 - Validation des DTO
@@ -431,6 +437,7 @@ Le backend dispose de plusieurs scripts permettant de tester les différentes co
 
 ---
 <a id="difficulty"></a>
+
 # 🧠 Difficultés rencontrées
 
 Au cours du développement, plusieurs difficultés techniques m'ont amené à faire évoluer l'architecture du projet.
@@ -470,6 +477,7 @@ J'ai donc centralisé la gestion des erreurs en créant un **Exception Filter** 
 
 Cette séparation des responsabilités rend le code plus lisible, plus maintenable et facilite les tests.
 Les endpoints avait trop de responsabilité.
+
 - la gestion des erreurs
 - le renvoie de la réponse
 - La validation des données de la requête
@@ -479,6 +487,7 @@ J'ai remarqué cette anomalie, lors des testes unitaires, trop de contrainte, tr
 Pour remédier àa cette problématique. J'ai créé un filtres de toutes les erreurs possibles de prisma, et ensuite les renvoie d'erreur se font directement dans les service. Par exemple quand un utilisateur n'est pas trouvé en base de données : UserNotFoundException, et ceci permet d'avoir un message personnalisé en fonction des erreurs.
 
 <a id="what_learn"></a>
+
 # 📚 Ce que j'ai appris
 
 Au travers de ce projet, j'ai approfondi plusieurs notions importantes :
@@ -494,8 +503,9 @@ Au travers de ce projet, j'ai approfondi plusieurs notions importantes :
 - Gestion d'état
 
 ---
-<a id="roadmap"></a>
-# 🚧 Roadmap
+<a id="roadmap"/>
+
+## 🚧 Roadmap
 
 ## À venir
 
@@ -518,7 +528,7 @@ Au travers de ce projet, j'ai approfondi plusieurs notions importantes :
 Développeur Full Stack Junior
 
 GitHub :
-https://github.com/QuentinLagree
+<https://github.com/QuentinLagree>
 
 LinkedIn :
-https://www.linkedin.com/in/quentin-lagree
+<https://www.linkedin.com/in/quentin-lagree>

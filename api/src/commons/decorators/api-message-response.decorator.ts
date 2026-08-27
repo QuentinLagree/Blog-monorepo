@@ -80,7 +80,7 @@ export function ApiMessageResponse(
 
               ...(meta && {
                 meta: {
-                  description: "Salut je suis une descritpion",
+                  description: "Salut je suis une description",
                   $ref: getSchemaPath(meta),
                 },
               }),

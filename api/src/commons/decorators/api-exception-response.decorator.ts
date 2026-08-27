@@ -108,16 +108,6 @@ export function ApiExceptionsResponse(
 
   return applyDecorators(
     ApiExtraModels(ApiResponseDto),
-
-    options.properties_validator
-      ? ApiMessageResponse(null, {
-        status: 400,
-        description:
-          "Un ou plusieurs paramètres ne sont pas valides.",
-        messageExemple:
-          'Un ou plusieurs paramètres fournis ne respectent pas les contraintes de validation.',
-      })
-      : () => { },
     ...responseDecorators,
   );
 };
