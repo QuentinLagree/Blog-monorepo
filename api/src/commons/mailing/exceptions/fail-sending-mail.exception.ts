@@ -11,7 +11,6 @@ export class FailSendingMailException extends AppException {
   } satisfies ApiExceptionDocumentation
     constructor() {
         super(
-          `Mail sending failed`,
           `Une erreur est survenue lors de l'envoie du mail. celui ci n'est donc pas envoyé. Réesayer ultérieurement.`,
           FailSendingMailException.status,
         );

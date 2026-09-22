@@ -10,7 +10,6 @@ export class UnauthorizedSessionInactive extends AppException {
   } satisfies ApiExceptionDocumentation
   constructor() {
     super(
-      `User Session is inactive`,
       `Il faut être connecté pour accéder à cette ressource.`,
       UnauthorizedSessionInactive.status
     );

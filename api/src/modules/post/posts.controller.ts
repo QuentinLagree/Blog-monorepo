@@ -42,12 +42,12 @@ import { ApiMessageResponse } from 'src/commons/decorators/api-message-response.
 import { ApiExceptionsResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { PostNotFoundException } from './exceptions/post-not-found.exception';
 import { UserNotFoundException } from '../user/exceptions/user-not-found.exception';
-import { CreatePostFailException } from './exceptions/fatal_errors/create-post-fail.exception';
-import { UpdatePostFailException } from './exceptions/fatal_errors/update-post-fail.exception';
+import { CreatePostFailException } from '../../commons/exceptions/create-post-fail.exception';
+import { UpdatePostFailException } from '../../commons/exceptions/update-post-fail.exception';
 import { PostNotFoundWithSlugException } from './exceptions/post-not-found-with-slug.exception';
 import { SlugInvalidFormat } from './exceptions/slug-invalid-format.exception';
 import { UserNotHaveAuthorisation } from '../user/exceptions/user-not-have-authorization';
-import { DeletePostFailException } from './exceptions/fatal_errors/delete-post-fail.exception';
+import { DeletePostFailException } from '../../commons/exceptions/delete-post-fail.exception';
 
 @ApiTags('Publications')
 @Controller('posts')

@@ -12,7 +12,6 @@ export class TokenExpiredOrInvalidException extends AppException {
   
   constructor() {
     super(
-      'Token is expired or invalid',
       'Le token est invalide ou expiré...',
       TokenExpiredOrInvalidException.status,
     );

@@ -7,15 +7,13 @@ export class CreatePostFailException extends AppException {
 
   static readonly documentation = {
     description: "La création d'un article à eu une erreur non gérée.",
-    messageExample: "La publication a eu un echec lors de sa création, réessayer ultérieurement ou contactez l'administration."
+    messageExample: "La publication a eu un échec lors de sa création, réessayer ultérieurement ou contactez l'administration."
   } satisfies ApiExceptionDocumentation
   
-  constructor(error: Error) {
+  constructor() {
     super(
-      `The publication failed during creation.`,
-      `La publication a eu un echec lors de sa création, réessayer ultérieurement ou contactez l'administration.`,
+      `La publication a eu un échec lors de sa création, réessayer ultérieurement ou contactez l'administration.`,
       CreatePostFailException.status,
-      error,
     );
   }
 }

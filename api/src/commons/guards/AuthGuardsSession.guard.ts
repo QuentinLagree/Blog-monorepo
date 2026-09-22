@@ -1,13 +1,10 @@
-import { CanActivate, ExecutionContext, UnauthorizedException, mixin } from "@nestjs/common";
+import { CanActivate, ExecutionContext, mixin } from "@nestjs/common";
 import { FastifyRequest, FastifyReply } from "fastify";
-import { makeMessage } from "../logger/logger.helper";
-import { Message } from "../types/dto/message/message";
 import { Url } from "../types/url.types";
 import { UnauthorizedSessionInactive } from "src/modules/auth/exceptions/unautorisation-session-inactive.exception";
 
 export const AuthGuardSession = (
   urlRedirect?: Url,
-  outputMessage?: Message<any>,
 ) => {
   class UserGuardSession implements CanActivate {
     canActivate(context: ExecutionContext): boolean {

@@ -10,7 +10,6 @@ export class PostDoesntLikeOrUnlikeAlready extends AppException {
   } satisfies ApiExceptionDocumentation
   constructor() {
     super(
-      `Like or unlike.`,
       `Tu ne peux pas like une publication que tu as déjà like ou inversement.`,
       PostDoesntLikeOrUnlikeAlready.status
     );

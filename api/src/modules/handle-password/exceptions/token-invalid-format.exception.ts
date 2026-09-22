@@ -12,7 +12,6 @@ export class TokenInvalidFormat extends AppException {
   
   constructor() {
     super(
-      'Token is invalid format',
       'Le token a un format invalide, il faut qu\'il ai un format héxadécimal.',
       TokenInvalidFormat.status,
     );

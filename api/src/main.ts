@@ -1,18 +1,18 @@
+import helmet from '@fastify/helmet';
+import fastifySecureSession from '@fastify/secure-session';
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import fastifySecureSession from '@fastify/secure-session';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import fs from 'node:fs';
-import { BadRequestException, ValidationPipe } from '@nestjs/common';
-import { PrismaService } from './commons/prisma/prisma.service';
-import helmet from '@fastify/helmet';
-import { ValidationError } from 'class-validator';
+import { AppModule } from './app.module';
+import { ErrorValidationPipeException } from './commons/exceptions/error-validation-pipe.exception';
 import { PrismaExceptionFilter } from './commons/filters/prisma.filter';
-import { makeMessage } from './commons/logger/logger.helper';
+import { PrismaService } from './commons/prisma/prisma.service';
+import { MessageValidationError } from './commons/types/dto/message/validation-error-message';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -47,17 +47,11 @@ async function bootstrap() {
       whitelist: true,
       stopAtFirstError: true,
       validationError: {
-        target: true,
-        value: true,
+        target: false,
+        value: false
       },
-      exceptionFactory: (errors: ValidationError[]) => {
-      return new BadRequestException(
-        makeMessage(
-          'Validation failed',
-          'Les données envoyées sont incorrectes.',
-          errors,
-        ),
-      );
+      exceptionFactory: (errors: Omit<MessageValidationError[], 'children'>) => {
+      return new ErrorValidationPipeException(errors.map(({ property, constraints }) => ({property, constraints})));
     },
     }),
   );

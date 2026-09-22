@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { ValidationError } from 'class-validator';
 
 export type ApiExceptionDocumentation = {
   description: string;
@@ -12,17 +13,15 @@ export type DocumentedAppExceptionClass = {
 };
 
 export class AppException extends HttpException {
-  public readonly data: null = null;
+  public readonly data: null | ValidationError[] = null;
   
   constructor(
-    public readonly log: string,
     public readonly userMessage: string,
     status: HttpStatus,
-    data: Error | null = null,
+    data: Error | ValidationError[] | null = null,
   ) {
     super(
       {
-        log,
         message: userMessage,
         data
       },

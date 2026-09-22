@@ -11,7 +11,6 @@ export class PostNotFoundException extends AppException {
   
   constructor(id: number) {
     super(
-      `Post Not Found with id ${id}`,
       `La publication ${id} n'existe pas.`,
       PostNotFoundException.status,
     );

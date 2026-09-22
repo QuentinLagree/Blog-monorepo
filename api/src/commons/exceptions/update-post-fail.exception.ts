@@ -7,14 +7,12 @@ export class UpdatePostFailException extends AppException {
 
   static readonly documentation = {
     description: "La modification d'un article à eu une erreur non gérée.",
-    messageExample: "La publication a eu un echec lors de la modification, réessayer ultérieurement ou contactez l'administration."
+    messageExample: "La publication a eu un échec lors de la modification, réessayer ultérieurement ou contactez l'administration."
   } satisfies ApiExceptionDocumentation
-  constructor(error: Error) {
+  constructor() {
     super(
-      `The publication failed during modification.`,
-      `La publication a eu un echec lors de la modification, réessayer ultérieurement ou contactez l'administration.`,
+      `La publication a eu un échec lors de la modification, réessayer ultérieurement ou contactez l'administration.`,
       UpdatePostFailException.status,
-      error,
     );
   }
 }

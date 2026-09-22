@@ -14,7 +14,6 @@ export class UserAlreadyExistException extends AppException {
   
   constructor(property: Property) {
     super(
-      `${property} already use.`,
       `${property} déjà utilisé, connectez-vous si c'est bien vous.`,
       UserAlreadyExistException.status
     );

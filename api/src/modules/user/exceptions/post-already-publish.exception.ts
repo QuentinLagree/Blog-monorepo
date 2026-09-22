@@ -7,11 +7,10 @@ export class PostAlreadyPublishException extends AppException {
 
   static readonly documentation = {
     description: "L'utilisateur a déjà publié un article.",
-    messageExample: "La publication est déjà publié, si vous n'êtes pas à l'origine de cette action, contactez immédiatement l'aministrateur."
+    messageExample: "La publication est déjà publié, si vous n'êtes pas à l'origine de cette action, contactez immédiatement l'administrateur."
   } satisfies ApiExceptionDocumentation
     constructor() {
     super(
-      `Post Publish fail`,
       `La publication est déjà publié, si vous n'êtes pas à l'origine de cette action, contactez immédiatement l'aministrateur.`,
       PostAlreadyPublishException.status
     );

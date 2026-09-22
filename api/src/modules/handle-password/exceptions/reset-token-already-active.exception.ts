@@ -13,7 +13,6 @@ export class ResetTokenAlreadyActiveException extends AppException {
   } satisfies ApiExceptionDocumentation
   constructor() {
     super(
-      'Reset token already active',
       'Une demande de réinitialisation est déjà active. Veuillez vérifier vos emails ou réessayer plus tard.',
       ResetTokenAlreadyActiveException.status,
     );

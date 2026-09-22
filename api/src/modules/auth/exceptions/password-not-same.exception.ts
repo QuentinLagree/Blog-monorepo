@@ -11,7 +11,6 @@ export class PasswordNotMatchException extends AppException {
   } satisfies ApiExceptionDocumentation
   constructor() {
     super(
-      `User logged failed (password not same)`,
       `Les deux mots de passe doivent correspondre...`,
       PasswordNotMatchException.status
     );

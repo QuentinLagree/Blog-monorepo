@@ -12,7 +12,6 @@ export class PostDoesntLikeOrUnlikeByAuthor extends AppException {
   } satisfies ApiExceptionDocumentation
   constructor() {
     super(
-      `Author can't like or unlike post.`,
       `L'auteur ne peux pas like ou unlike son propre article.`,
       PostDoesntLikeOrUnlikeByAuthor.status,
     );

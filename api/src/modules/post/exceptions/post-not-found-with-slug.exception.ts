@@ -11,7 +11,6 @@ export class PostNotFoundWithSlugException extends AppException {
     } satisfies ApiExceptionDocumentation
   constructor(slug: string) {
     super(
-      `Post Not Found with slug "${slug}"`,
       `La publication avec le slug : "${slug}", n'existe pas.`,
       PostNotFoundWithSlugException.status,
     );

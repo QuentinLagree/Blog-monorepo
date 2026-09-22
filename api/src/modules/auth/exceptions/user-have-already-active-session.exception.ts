@@ -12,7 +12,6 @@ export class UserHaveAlreadyActiveSessionException extends AppException {
   
   constructor() {
     super(
-      `User logged failed (already logged)`,
       `Tu es déjà connecté...`,
       UserHaveAlreadyActiveSessionException.status,
     );

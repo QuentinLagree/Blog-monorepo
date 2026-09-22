@@ -7,15 +7,13 @@ export class FindPostFailException extends AppException {
 
   static readonly documentation = {
     description: "La recherche de la publication à fourni une erreur non gérée.",
-    messageExample: "La publication a eu un echec lors de la recherche, réessayer ultérieurement ou contactez l'administration"
+    messageExample: "La publication a eu un échec lors de la recherche, réessayer ultérieurement ou contactez l'administration"
   } satisfies ApiExceptionDocumentation
   
-  constructor(error: Error) {
+  constructor() {
     super(
-      `The publication failed during the search.`,
-      `La publication a eu un echec lors de la recherche, réessayer ultérieurement ou contactez l'administration.`,
+      `La publication a eu un échec lors de la recherche, réessayer ultérieurement ou contactez l'administration.`,
       FindPostFailException.status,
-      error
     );
   }
 }

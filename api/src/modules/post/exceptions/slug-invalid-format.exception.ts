@@ -11,7 +11,6 @@ export class SlugInvalidFormat extends AppException {
   } satisfies ApiExceptionDocumentation
   constructor(slug: string) {
     super(
-      `Invalid slug ${slug}`,
       `Le paramètre : '${slug}' n'est pas valide.`,
       SlugInvalidFormat.status
     );

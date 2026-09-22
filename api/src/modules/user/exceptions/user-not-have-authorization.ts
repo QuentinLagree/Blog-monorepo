@@ -11,7 +11,6 @@ export class UserNotHaveAuthorisation extends AppException {
   } satisfies ApiExceptionDocumentation
   constructor() {
     super(
-      `You dosn't have the authorisation`,
       `Vous n'avez pas l'autorisation d'accéder à cette ressource.`,
       UserNotHaveAuthorisation.status
     );

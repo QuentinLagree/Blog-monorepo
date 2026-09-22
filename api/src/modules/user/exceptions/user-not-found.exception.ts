@@ -10,7 +10,6 @@ export class UserNotFoundException extends AppException {
   } satisfies ApiExceptionDocumentation
   constructor(identifier: string | number) {
     super(
-      `User Not Found with ${identifier}`,
       `l'utilisateur : ${identifier} n'existe pas.`,
       UserNotFoundException.status
     );
