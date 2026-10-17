@@ -13,9 +13,12 @@ import { makeMessage } from "src/commons/logger/logger.helper";
 import { PostSummaryDto } from "../post/dto/post-summary.dto";
 import { SessionType } from "src/commons/types/session.type";
 import { UnauthorizedSessionInactive } from "../auth/exceptions/unautorisation-session-inactive.exception";
+import { getDtoMetaData, getDtoPropertyPriority } from "src/commons/types/dto/temp/metadata";
+import { CreatePostDto } from "../post/dto/create.post.dto";
+import { ApiExceptionsResponse } from "src/commons/decorators/api-exception-response.decorator";
 
 @ApiCookieAuth()
-@UseGuards(AuthGuardSession())
+// TODO @UseGuards(AuthGuardSession())
 @ApiTags("Mon compte")
 @Controller('/me')
 export class MeController {
@@ -24,6 +27,15 @@ export class MeController {
         private readonly _user: UserService,
         private readonly _articles: ArticleService,
     ) { }
+
+    @ApiExceptionsResponse([], {
+      properties_validator: true,
+      dto: CreatePostDto
+    })
+    @Get('metadata')
+    async getMetaData () {
+      return getDtoPropertyPriority(CreatePostDto)
+    }
 
     @Get()
       async status(

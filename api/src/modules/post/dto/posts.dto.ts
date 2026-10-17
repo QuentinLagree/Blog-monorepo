@@ -1,6 +1,6 @@
-import { PartialType, OmitType } from '@nestjs/swagger';
+import { PartialType } from '@nestjs/swagger';
 import { User } from '@prisma/client';
-import { IsNotEmpty, Length, IsString, IsNumber, IsArray } from 'class-validator';
+import { IsArray, IsNotEmpty } from 'class-validator';
 import { PostsEntity } from '../entities/posts.entities';
 
 export class Articles extends PartialType(PostsEntity) {

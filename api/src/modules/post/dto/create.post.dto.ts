@@ -3,14 +3,20 @@ import {
   IsDefined,
   IsNotEmpty,
   IsString,
-  Length,
+  MaxLength,
+  MinLength,
 } from 'class-validator';
 
 export class CreatePostDto {
   @IsDefined()
   @IsString()
   @IsNotEmpty()
-  @Length(5, 85)
+  @MaxLength(85, {
+    message: "Le titre doit contenir au maximum $constraint1 caractères."
+  })
+  @MinLength(5, {
+    message: "Le titre doit contenir au minimum $constraint1 caractères."
+  })
   @ApiProperty({
     description: "Titre de l'article",
     type: 'string',
@@ -21,6 +27,7 @@ export class CreatePostDto {
   @IsDefined()
   @IsString()
   @IsNotEmpty()
+  @MinLength(10)
   @ApiProperty({
     description: "Contenu de l'article",
     type: 'string',
@@ -31,6 +38,7 @@ export class CreatePostDto {
   @IsDefined()
   @IsString()
   @IsNotEmpty()
+  @MinLength(2)
   @ApiProperty({
     description: "Description de l'article",
     type: 'string',
