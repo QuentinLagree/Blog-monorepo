@@ -101,7 +101,7 @@ export class PasswordRecoveryController {
       }
     }
   })
-  @ApiMessageResponse(ResetPasswordDto, {
+  @ApiMessageResponse(null, {
     description: "Réinitialiser son mot de passe grâce aux informations.",
     messageExemple: "La modification de votre mot de passe est un succès, vous pouvez désormais vous connecter.",
     status: 201
@@ -155,7 +155,7 @@ async changePassword(
       }
     }
   })
-  @ApiMessageResponse(ResetPasswordDto, {
+  @ApiMessageResponse(null, {
     description: "Succès lors de l'envoi de l'email avec un email valide et un email correspondant à un utilisateur enregistré dans le système.",
     messageExemple: "Vous allez recevoir un email sur johndoe42@gmail.com pour réinitialiser votre mot de passe.",
   })

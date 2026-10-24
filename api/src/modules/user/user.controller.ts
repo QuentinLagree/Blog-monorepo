@@ -1,4 +1,3 @@
-import { FailSendingMailException } from 'src/commons/mailing/exceptions/fail-sending-mail.exception';
 import {
   Body,
   Controller,
@@ -25,6 +24,7 @@ import { Message } from 'src/commons/types/dto/message/message';
 import { TransformDataMessageIntoObjectSerialization } from '../../commons/interceptors/transform_data_message_into_object_serialization.interceptor';
 import { makeMessage } from '../../commons/logger/logger.helper';
 import { PostSummaryDto } from '../post/dto/post-summary.dto';
+import { PostNotFoundException } from '../post/exceptions/post-not-found.exception';
 import { ArticleService } from '../post/posts.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PublicUserDto } from './dto/public-user.dto';
@@ -34,9 +34,6 @@ import { UserAlreadyExistException } from './exceptions/user-already-exist.excep
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { UserNotHaveAuthorisation } from './exceptions/user-not-have-authorization';
 import { userSelectPayload, UserService } from './user.service';
-import { groupByExceptions } from 'src/commons/utils/group-by-exceptions.utils';
-import { PostNotFoundException } from '../post/exceptions/post-not-found.exception';
-import { InvalidPreferenceFieldException } from '../user-preferences/exceptions/invalid-preference-field.exception';
 
 @ApiTags('Utilisateurs')
 @Controller('users')
@@ -91,6 +88,7 @@ export class UserController {
     PostNotFoundException
   ])
   @ApiMessageResponse(null, { status: 400, description: "L'identifiant n'est pas valide.", messageExemple: "L'identifiant n'est pas valide." })
+  @HttpCode(200)
   @Get('/:id')
   async show(@Param('id', ParseIntPipe) id: number): Promise<Message<PublicUserDto>> {
     const user = await this._user.show({ id });
@@ -204,7 +202,8 @@ export class UserController {
   })
   @ApiMessageResponse(null, {
     description: "Utilisateur supprimé avec succès.",
-    messageExemple: "La suppression de votre compte utilisateur est un succès !"
+    messageExemple: "La suppression de votre compte utilisateur est un succès !",
+    status: 204
   })
   @ApiExceptionsResponse([
     UserNotHaveAuthorisation,
@@ -212,6 +211,7 @@ export class UserController {
   ])
   @UseGuards(AuthGuardSession(), RolesGuard)
   @Roles(Role.Admin)
+  @HttpCode(204)
   @Delete(':id')
   async destroy(@Param('id', ParseIntPipe) id: number): Promise<Message<null>> {
     await this._user.destroy({ id });
@@ -242,6 +242,8 @@ export class UserController {
     UserNotHaveAuthorisation,
     UserNotFoundException
   ])
+  @HttpCode(200)
+  @UseGuards(AuthGuardSession)
   @Get('/:id/drafts')
   async getAllDraftsOfUser(
     @Param('id', ParseIntPipe) id: number,
@@ -287,6 +289,7 @@ export class UserController {
     UserNotHaveAuthorisation,
     UserNotFoundException
   ])
+  @HttpCode(200)
   @Get('/:id/posts')
   async getAllPostsOfUser(
     @Param('id', ParseIntPipe) id: number,

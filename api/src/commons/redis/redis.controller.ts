@@ -6,9 +6,9 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import Redis from 'ioredis';
-import { Message } from '../types/dto/message/message';
-import { makeMessage } from '../logger/logger.helper';
 import { AuthGuardSession } from '../guards/AuthGuardsSession.guard';
+import { makeMessage } from '../logger/logger.helper';
+import { Message } from '../types/dto/message/message';
 import { Url } from '../types/url.types';
 import { REDIS } from './redis.token';
 
@@ -21,10 +21,7 @@ export class RedisController {
     ) {}
     
   @Get('status')
-  @UseGuards(AuthGuardSession(new Url("/"), {
-    message: "Tu n'es pas autoriser à acceder à cette ressource.",
-    data: null
-  }))
+  @UseGuards(AuthGuardSession(new Url("/")))
   async health(): Promise<Message<"wait" | "reconnecting" | "connecting" | "connect" | "ready" | "close" | "end">> {
     return makeMessage('Redis Status', "Récupération du status de Redis", this._redis.status);
   }

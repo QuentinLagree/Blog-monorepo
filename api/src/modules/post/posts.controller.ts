@@ -1,53 +1,47 @@
-import * as secureSession from '@fastify/secure-session';
-
 import {
   Body,
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
-  ParseBoolPipe,
   ParseIntPipe,
   Patch,
   Post,
   Query,
-  SerializeOptions,
-  Session,
   UseGuards,
   UseInterceptors
 } from '@nestjs/common';
-import { ApiBasicAuth, ApiBody, ApiCookieAuth, ApiOperation, ApiParam, ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiCookieAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiExceptionsResponse } from 'src/commons/decorators/api-exception-response.decorator';
+import { ApiMessageResponse } from 'src/commons/decorators/api-message-response.decorator';
 import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
 import { PostOwnerOrAdminGuard } from 'src/commons/guards/post-owner-or-admin.guard';
 import { TransformDataMessageIntoObjectSerialization } from 'src/commons/interceptors/transform_data_message_into_object_serialization.interceptor';
 import { makeMessage } from 'src/commons/logger/logger.helper';
 import { SlugService } from 'src/commons/services/slug.service';
 import { Message } from 'src/commons/types/dto/message/message';
+import { UserSession } from 'src/commons/types/session-user.type';
 import { PostsEntity } from 'src/modules/post/entities/posts.entities';
+import { CreatePostFailException } from '../../commons/exceptions/create-post-fail.exception';
+import { DeletePostFailException } from '../../commons/exceptions/delete-post-fail.exception';
+import { UpdatePostFailException } from '../../commons/exceptions/update-post-fail.exception';
+import { CurrentUser } from '../me/decorators/current.decorator';
 import { MetaPaginationDto } from '../pagination/meta.pagination.dto';
 import { PaginationDto } from '../pagination/pagination.dto';
-import { userSelectPayload, UserService } from '../user/user.service';
-import { CreatePostDto } from './dto/create.post.dto';
-import { UpdatePostDto } from './dto/update.post.dto';
-import { ArticleService } from './posts.service';
-import { UserOwnerOrAdminGuard } from 'src/commons/guards/user-owner-or-admin.guard';
-import { PublishedPostDto } from './dto/published-post.dto';
 import { PostAlreadyPublishException } from '../user/exceptions/post-already-publish.exception';
-import { PostSummaryDto } from './dto/post-summary.dto';
-import { Articles } from './dto/posts.dto';
-import { PostDetailDto } from './dto/post-detail.dto';
-import { CurrentUser } from '../me/decorators/current.decorator';
-import { UserSession } from 'src/commons/types/session-user.type';
-import { ApiMessageResponse } from 'src/commons/decorators/api-message-response.decorator';
-import { ApiExceptionsResponse } from 'src/commons/decorators/api-exception-response.decorator';
-import { PostNotFoundException } from './exceptions/post-not-found.exception';
 import { UserNotFoundException } from '../user/exceptions/user-not-found.exception';
-import { CreatePostFailException } from '../../commons/exceptions/create-post-fail.exception';
-import { UpdatePostFailException } from '../../commons/exceptions/update-post-fail.exception';
-import { PostNotFoundWithSlugException } from './exceptions/post-not-found-with-slug.exception';
-import { SlugInvalidFormat } from './exceptions/slug-invalid-format.exception';
 import { UserNotHaveAuthorisation } from '../user/exceptions/user-not-have-authorization';
-import { DeletePostFailException } from '../../commons/exceptions/delete-post-fail.exception';
+import { UserService } from '../user/user.service';
+import { CreatePostDto } from './dto/create.post.dto';
+import { PostDetailDto } from './dto/post-detail.dto';
+import { PostSummaryDto } from './dto/post-summary.dto';
+import { PublishedPostDto } from './dto/published-post.dto';
+import { UpdatePostDto } from './dto/update.post.dto';
+import { PostNotFoundWithSlugException } from './exceptions/post-not-found-with-slug.exception';
+import { PostNotFoundException } from './exceptions/post-not-found.exception';
+import { SlugInvalidFormat } from './exceptions/slug-invalid-format.exception';
+import { ArticleService } from './posts.service';
 
 @ApiTags('Publications')
 @Controller('posts')
@@ -68,9 +62,9 @@ export class PostController {
     messageExemple: "Liste de tous les articles",
     description: "Récupère tous les articles avec pagination.",
     meta: MetaPaginationDto,
-    status: 200
   })
   @ApiExceptionsResponse([])
+  @HttpCode(200)
   async index(
     @Query() payload: PaginationDto,
     @CurrentUser() user: UserSession
@@ -113,8 +107,9 @@ export class PostController {
     example: 42,
     type: Number
   })
+  @HttpCode(200)
   @Get(':id')
-  async show(@Param('id', ParseIntPipe) id: number): Promise<Message<PostDetailDto>> {
+  async show(@Param('id', ParseIntPipe) id: number): Promise<Message<PostSummaryDto>> {
     const article = await this._articles.show({ id });
     return makeMessage(
       `Post found with ID: ${article.id}!`,
@@ -185,6 +180,7 @@ export class PostController {
     example: 42,
     type: Number
   })
+  @HttpCode(201)
   @Patch(':id/publish')
   async publishPost(
     @Param('id', ParseIntPipe) id: number,
@@ -229,8 +225,9 @@ export class PostController {
     example: "valid-slug-2",
     type: "string"
   })
+  @HttpCode(200)
   @Get("/slug/:slug_title")
-  async slugTestWithID(@Param('slug_title') slug: string): Promise<Message<PostDetailDto>> {
+  async slugTestWithID(@Param('slug_title') slug: string): Promise<Message<PostSummaryDto>> {
     const article = await this._slug.getPostWithSlug(slug);
     return makeMessage(
       'Post found !',
@@ -261,6 +258,7 @@ export class PostController {
     UpdatePostFailException
   ])
   @UseGuards(AuthGuardSession(), PostOwnerOrAdminGuard)
+  @HttpCode(200)
   @Patch('/:id')
   async updatePost(@Param('id', ParseIntPipe) id: number,
     @Body() payload: UpdatePostDto,
@@ -280,13 +278,15 @@ export class PostController {
   })
   @ApiMessageResponse(null, {
     description: "Succès lors de la suppression.",
-    messageExemple: "La suppression de votre publication est un succès !"
+    messageExemple: "La suppression de votre publication est un succès !",
+    status: 204
   })
   @ApiExceptionsResponse([
     PostNotFoundException,
     DeletePostFailException
   ])
   @UseGuards(AuthGuardSession(), PostOwnerOrAdminGuard)
+  @HttpCode(204)
   @Delete(':id')
   async destroy(@Param('id', ParseIntPipe) id: number): Promise<Message<null>> {
     await this._articles.destroy({ id });

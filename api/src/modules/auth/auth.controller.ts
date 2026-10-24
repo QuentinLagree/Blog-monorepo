@@ -2,6 +2,7 @@ import * as secureSession from '@fastify/secure-session';
 import {
   Body,
   Controller,
+  HttpCode,
   Post,
   SerializeOptions,
   Session,
@@ -43,12 +44,14 @@ export class AuthController {
   })
   @ApiMessageResponse(null, {
     description: "Effectue la déconnection du compte utilisateur.",
-    messageExemple: "La déconnection de ton compte s'est effectué avec succès"
+    messageExemple: "La déconnection de ton compte s'est effectué avec succès",
+    status: 204
   })
   @ApiExceptionsResponse([
     UnauthorizedSessionInactive
   ], { properties_validator: false })
   @UseGuards(AuthGuardSession())
+  @HttpCode(204)
   @Post('/logout')
   async logout(@Session() session: secureSession.Session) {
     session.delete();
@@ -89,6 +92,7 @@ export class AuthController {
       }
     }
   })
+  @HttpCode(200)
   @Post('/login')
   async login(
     @Body() payload: UserLoginCredentials,
@@ -120,7 +124,8 @@ export class AuthController {
   @ApiMessageResponse(PublicUserDto,
     {
       description: "Succès lors de l'enregistrement.",
-      messageExemple: "L'enregistrement est un succès."
+      messageExemple: "L'enregistrement est un succès.",
+      status: 201
     }
   )
   @ApiExceptionsResponse([
@@ -129,6 +134,7 @@ export class AuthController {
   @SerializeOptions({
     ignoreDecorators: true,
   })
+  @HttpCode(201)
   @Post('/register')
   async register(@Body() payload: CreateUserDto): Promise<Message<PublicUserDto>> {
       return makeMessage(

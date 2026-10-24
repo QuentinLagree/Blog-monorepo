@@ -1,14 +1,13 @@
-import request from 'supertest';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
+import request from 'supertest';
 
+import { createLoggedAgent } from './helpers/auth.helper-e2e';
 import { createE2EApp } from './helpers/create-e2e-app';
 import { resetDatabase } from './helpers/reset-database.helper-e2e';
-import { createLoggedAgent } from './helpers/auth.helper-e2e';
 
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { PasswordService } from 'src/commons/services/argon.service';
 import { createTestUser } from './helpers/create_user-helper-e2e';
-import { Role } from 'src/commons/roles/role.enum';
 
 describe('AuthController e2e', () => {
   let app: NestFastifyApplication;

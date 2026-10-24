@@ -150,6 +150,7 @@ export class UserActivityController {
   @ApiExceptionsResponse([
     UserNotHaveAuthorisation,
   ])
+  @HttpCode(200)
   @Get(':postId/like-status')
   async getLikeStatus(
     @Param('postId', ParseIntPipe) postId: number,
@@ -185,6 +186,7 @@ export class UserActivityController {
     required: true,
     type: "number"
   })
+  @HttpCode(200)
   @Get(':postId/reading-status')
   async getReadingStatus(
     @Param('postId', ParseIntPipe)
@@ -251,6 +253,7 @@ export class UserActivityController {
     type: "number"
   })
 
+  @HttpCode(200)
   @Patch(':postId/reading-progress')
   async updateReadingProgress(
     @Param('postId', ParseIntPipe)
@@ -260,7 +263,7 @@ export class UserActivityController {
     payload: UpdatePostReadingDto,
 
     @CurrentUser() user: UserSession
-  ): Promise<Message<PostRead>> {
+  ): Promise<Message<StatusReadingDto>> {
 
     const postRead =
       await this._posts.updateReadingProgress(
@@ -272,7 +275,11 @@ export class UserActivityController {
     return makeMessage(
       `Reading progress updated for post ${postId}`,
       'La progression de lecture a été mise à jour.',
-      postRead,
+      {
+        progress: postRead.progress,
+        hasStarted: true,
+        completed: postRead.completed
+      }
     );
   }
 }
