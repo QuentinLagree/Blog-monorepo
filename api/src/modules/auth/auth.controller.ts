@@ -12,7 +12,7 @@ import {
 import { ApiBody, ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiExceptionsResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiMessageResponse } from 'src/commons/decorators/api-message-response.decorator';
-import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
+import { createAuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
 import { Message } from 'src/commons/types/dto/message/message';
 import { TransformDataMessageIntoObjectSerialization } from '../../commons/interceptors/transform_data_message_into_object_serialization.interceptor';
 import { makeMessage } from '../../commons/logger/logger.helper';
@@ -50,7 +50,7 @@ export class AuthController {
   @ApiExceptionsResponse([
     UnauthorizedSessionInactive
   ], { properties_validator: false })
-  @UseGuards(AuthGuardSession())
+  @UseGuards(createAuthGuardSession())
   @HttpCode(204)
   @Post('/logout')
   async logout(@Session() session: secureSession.Session) {

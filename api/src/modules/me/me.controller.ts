@@ -1,21 +1,24 @@
-import { Controller, Get, HttpException, HttpStatus, Query, Res, UseGuards } from "@nestjs/common";
+import { Controller, Get } from "@nestjs/common";
 import { ApiCookieAuth, ApiTags } from "@nestjs/swagger";
-import { UserService } from "../user/user.service";
-import { CurrentUser } from "./decorators/current.decorator";
-import { AuthGuardSession } from "src/commons/guards/AuthGuardsSession.guard";
-import { UserSession } from "src/commons/types/session-user.type";
-import { PaginationDto } from "../pagination/pagination.dto";
-import { Post as Articles } from '@prisma/client';
-import { Message } from "src/commons/types/dto/message/message";
-import { MetaPaginationDto } from "../pagination/meta.pagination.dto";
-import { ArticleService } from "../post/posts.service";
 import { makeMessage } from "src/commons/logger/logger.helper";
-import { PostSummaryDto } from "../post/dto/post-summary.dto";
+import { Message } from "src/commons/types/dto/message/message";
+import { getDtoPropertyPriority } from "src/commons/types/dto/temp/metadata";
+import { UserSession } from "src/commons/types/session-user.type";
 import { SessionType } from "src/commons/types/session.type";
 import { UnauthorizedSessionInactive } from "../auth/exceptions/unautorisation-session-inactive.exception";
-import { getDtoMetaData, getDtoPropertyPriority } from "src/commons/types/dto/temp/metadata";
+import { MetaPaginationDto } from "../pagination/meta.pagination.dto";
 import { CreatePostDto } from "../post/dto/create.post.dto";
+import { PostSummaryDto } from "../post/dto/post-summary.dto";
+import { ArticleService } from "../post/posts.service";
+import { UserService } from "../user/user.service";
+import { CurrentUser } from "./decorators/current.decorator";
 import { ApiExceptionsResponse } from "src/commons/decorators/api-exception-response.decorator";
+import { UserNotFoundException } from "../user/exceptions/user-not-found.exception";
+import { UserNotHaveAuthorisation } from "../user/exceptions/user-not-have-authorization";
+import { EmailOrPasswordNotMatchException } from "../auth/exceptions/email-or-password-not-match.exception";
+import { PostNotFoundException } from "../post/exceptions/post-not-found.exception";
+import { CreatePostFailException } from "src/commons/exceptions/create-post-fail.exception";
+import { UpdatePostFailException } from "src/commons/exceptions/update-post-fail.exception";
 
 @ApiCookieAuth()
 // TODO @UseGuards(AuthGuardSession())
@@ -27,11 +30,7 @@ export class MeController {
         private readonly _user: UserService,
         private readonly _articles: ArticleService,
     ) { }
-
-    @ApiExceptionsResponse([], {
-      properties_validator: true,
-      dto: CreatePostDto
-    })
+    @ApiExceptionsResponse([UserNotFoundException, UserNotHaveAuthorisation, EmailOrPasswordNotMatchException, PostNotFoundException, CreatePostFailException, UpdatePostFailException])
     @Get('metadata')
     async getMetaData () {
       return getDtoPropertyPriority(CreatePostDto)

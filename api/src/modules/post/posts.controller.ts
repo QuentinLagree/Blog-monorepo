@@ -15,7 +15,7 @@ import {
 import { ApiBody, ApiCookieAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ApiExceptionsResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiMessageResponse } from 'src/commons/decorators/api-message-response.decorator';
-import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
+import { createAuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
 import { PostOwnerOrAdminGuard } from 'src/commons/guards/post-owner-or-admin.guard';
 import { TransformDataMessageIntoObjectSerialization } from 'src/commons/interceptors/transform_data_message_into_object_serialization.interceptor';
 import { makeMessage } from 'src/commons/logger/logger.helper';
@@ -131,7 +131,7 @@ export class PostController {
     UserNotFoundException,
     CreatePostFailException
   ])
-  @UseGuards(AuthGuardSession())
+  @UseGuards(createAuthGuardSession())
   @ApiBody({
     type: CreatePostDto,
   })
@@ -170,7 +170,7 @@ export class PostController {
     UserNotFoundException,
     UserNotHaveAuthorisation
   ])
-  @UseGuards(AuthGuardSession(), PostOwnerOrAdminGuard)
+  @UseGuards(createAuthGuardSession(), PostOwnerOrAdminGuard)
   @ApiBody({
     type: PublishedPostDto,
   })
@@ -257,7 +257,7 @@ export class PostController {
     PostNotFoundException,
     UpdatePostFailException
   ])
-  @UseGuards(AuthGuardSession(), PostOwnerOrAdminGuard)
+  @UseGuards(createAuthGuardSession(), PostOwnerOrAdminGuard)
   @HttpCode(200)
   @Patch('/:id')
   async updatePost(@Param('id', ParseIntPipe) id: number,
@@ -285,7 +285,7 @@ export class PostController {
     PostNotFoundException,
     DeletePostFailException
   ])
-  @UseGuards(AuthGuardSession(), PostOwnerOrAdminGuard)
+  @UseGuards(createAuthGuardSession(), PostOwnerOrAdminGuard)
   @HttpCode(204)
   @Delete(':id')
   async destroy(@Param('id', ParseIntPipe) id: number): Promise<Message<null>> {

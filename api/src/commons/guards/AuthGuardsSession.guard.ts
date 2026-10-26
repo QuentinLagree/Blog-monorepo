@@ -3,7 +3,7 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { Url } from "../types/url.types";
 import { UnauthorizedSessionInactive } from "src/modules/auth/exceptions/unautorisation-session-inactive.exception";
 
-export const AuthGuardSession = (
+export const createAuthGuardSession = (
   urlRedirect?: Url,
 ) => {
   class UserGuardSession implements CanActivate {

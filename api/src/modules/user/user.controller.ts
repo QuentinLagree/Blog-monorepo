@@ -16,7 +16,7 @@ import { ApiBody, ApiCookieAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs
 import { ApiExceptionsResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiMessageResponse } from 'src/commons/decorators/api-message-response.decorator';
 import { Roles } from 'src/commons/decorators/role.decorator';
-import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
+import { createAuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
 import { RolesGuard } from 'src/commons/guards/role.guard';
 import { UserOwnerOrAdminGuard } from 'src/commons/guards/user-owner-or-admin.guard';
 import { Role } from 'src/commons/roles/role.enum';
@@ -34,6 +34,7 @@ import { UserAlreadyExistException } from './exceptions/user-already-exist.excep
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { UserNotHaveAuthorisation } from './exceptions/user-not-have-authorization';
 import { userSelectPayload, UserService } from './user.service';
+import { UnauthorizedSessionInactive } from '../auth/exceptions/unautorisation-session-inactive.exception';
 
 @ApiTags('Utilisateurs')
 @Controller('users')
@@ -51,7 +52,7 @@ export class UserController {
     messageExemple: "Liste de tous les utilisateurs.",
     isArray: true
   })
-  @UseGuards(AuthGuardSession(), RolesGuard)
+  @UseGuards(createAuthGuardSession(), RolesGuard)
   @Roles(Role.Admin, Role.User)
   @Get()
   @HttpCode(200)
@@ -173,7 +174,7 @@ export class UserController {
     UserNotHaveAuthorisation,
     UserNotFoundException,
   ])
-  @UseGuards(AuthGuardSession(), UserOwnerOrAdminGuard)
+  @UseGuards(createAuthGuardSession(), UserOwnerOrAdminGuard)
   @Put('/:id')
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -209,7 +210,7 @@ export class UserController {
     UserNotHaveAuthorisation,
     UserNotFoundException
   ])
-  @UseGuards(AuthGuardSession(), RolesGuard)
+  @UseGuards(createAuthGuardSession(), RolesGuard)
   @Roles(Role.Admin)
   @HttpCode(204)
   @Delete(':id')
@@ -243,7 +244,7 @@ export class UserController {
     UserNotFoundException
   ])
   @HttpCode(200)
-  @UseGuards(AuthGuardSession)
+  @UseGuards(createAuthGuardSession())
   @Get('/:id/drafts')
   async getAllDraftsOfUser(
     @Param('id', ParseIntPipe) id: number,
@@ -267,7 +268,7 @@ export class UserController {
       );
   }
 
-  @UseGuards(AuthGuardSession(), RolesGuard)
+  @UseGuards(createAuthGuardSession(), RolesGuard)
   @Roles(Role.Admin)
   @ApiCookieAuth()
   @ApiOperation({

@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiCookieAuth, ApiOperation, ApiQuery, ApiTags, getSchemaPath } from '@nestjs/swagger';
 
-import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
+import { createAuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
 import { makeMessage } from 'src/commons/logger/logger.helper';
 import { Message } from 'src/commons/types/dto/message/message';
 
@@ -33,7 +33,7 @@ import { InvalidPreferenceFieldException } from './exceptions/invalid-preference
 @ApiCookieAuth()
 @ApiTags('Préférences')
 @Controller('users/preferences')
-@UseGuards(AuthGuardSession())
+@UseGuards(createAuthGuardSession())
 export class UserPreferenceController {
   constructor(
     private readonly _preferences: UserPreferenceService,

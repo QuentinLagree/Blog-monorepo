@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import Redis from 'ioredis';
-import { AuthGuardSession } from '../guards/AuthGuardsSession.guard';
+import { createAuthGuardSession } from '../guards/AuthGuardsSession.guard';
 import { makeMessage } from '../logger/logger.helper';
 import { Message } from '../types/dto/message/message';
 import { Url } from '../types/url.types';
@@ -21,7 +21,7 @@ export class RedisController {
     ) {}
     
   @Get('status')
-  @UseGuards(AuthGuardSession(new Url("/")))
+  @UseGuards(createAuthGuardSession(new Url("/")))
   async health(): Promise<Message<"wait" | "reconnecting" | "connecting" | "connect" | "ready" | "close" | "end">> {
     return makeMessage('Redis Status', "Récupération du status de Redis", this._redis.status);
   }

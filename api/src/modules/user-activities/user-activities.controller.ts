@@ -15,7 +15,7 @@ import {
   UseInterceptors
 } from '@nestjs/common';
 import { ApiBody, ApiCookieAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
-import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
+import { createAuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
 import { makeMessage } from 'src/commons/logger/logger.helper';
 import { Message } from 'src/commons/types/dto/message/message';
 import { StatusReadingDto } from './dto/status-reading.dto';
@@ -35,7 +35,7 @@ import { PostDoesntLikeOrUnlikeAlready } from '../user/exceptions/post-doesnt-li
 import { PostDoesntLikeOrUnlikeByAuthor } from '../user/exceptions/post-doesnt-like-unlike-same-author.exception';
 import { PostNotFoundException } from '../post/exceptions/post-not-found.exception';
 
-@UseGuards(AuthGuardSession())
+@UseGuards(createAuthGuardSession())
 @ApiCookieAuth()
 @ApiTags('Activités utilisateurs')
 @Controller('users/posts')

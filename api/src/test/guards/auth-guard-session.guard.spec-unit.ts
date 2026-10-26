@@ -1,5 +1,5 @@
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
-import { AuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
+import { createAuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
 import { UnauthorizedSessionInactive } from 'src/modules/auth/exceptions/unautorisation-session-inactive.exception';
 
 describe('AuthGuardSession', () => {
@@ -18,7 +18,7 @@ describe('AuthGuardSession', () => {
   };
 
   it('should return true if session contains user', () => {
-    const GuardClass = AuthGuardSession();
+    const GuardClass = createAuthGuardSession();
     const guard = new GuardClass();
 
     const context = createExecutionContextMock({
@@ -34,7 +34,7 @@ describe('AuthGuardSession', () => {
   });
 
   it('should throw UnauthorizedSessionInactive if session does not contain user', () => {
-    const GuardClass = AuthGuardSession();
+    const GuardClass = createAuthGuardSession();
     const guard = new GuardClass();
 
     const context = createExecutionContextMock({});
@@ -43,7 +43,7 @@ describe('AuthGuardSession', () => {
   });
 
   it('should throw UnauthorizedSessionInactive with custom output message', () => {
-    const GuardClass = AuthGuardSession(undefined, {
+    const GuardClass = createAuthGuardSession(undefined, {
       log: 'Session expired',
       message: 'Votre session a expiré.',
       data: null,
@@ -66,7 +66,7 @@ describe('AuthGuardSession', () => {
       redirect: jest.fn(),
     };
 
-    const GuardClass = AuthGuardSession(urlRedirectMock as any);
+    const GuardClass = createAuthGuardSession(urlRedirectMock as any);
     const guard = new GuardClass();
 
     const context = createExecutionContextMock({}, responseMock);

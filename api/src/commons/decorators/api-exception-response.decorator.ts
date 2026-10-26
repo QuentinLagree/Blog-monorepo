@@ -21,6 +21,7 @@ import { getDtoPropertyPriority } from '../types/dto/temp/metadata';
 
 import { buildValidationMessages } from '../types/dto/temp/message-validator-builder';
 import { MessageValidationError } from '../types/dto/message/validation-error-message';
+import { UnauthorizedSessionInactive } from 'src/modules/auth/exceptions/unautorisation-session-inactive.exception';
 
 
 type DtoClass = new (...args: any[]) => object;
@@ -28,6 +29,7 @@ type DtoClass = new (...args: any[]) => object;
 
 type ExceptionsDecoratorOptions = {
   properties_validator: boolean;
+  isPublic?: boolean;
   dto?: DtoClass;
 };
 
@@ -46,6 +48,7 @@ export function ApiExceptionsResponse(
   exceptions: DocumentedAppExceptionClass[],
   options: ExceptionsDecoratorOptions = {
     properties_validator: true,
+    isPublic: false
   },
 ) {
   /*
@@ -80,6 +83,8 @@ export function ApiExceptionsResponse(
           'Une erreur interne est survenue, réessayez plus tard ou contactez un administrateur.',
       },
     },
+
+    UnauthorizedSessionInactive,
 
     ...(options.properties_validator && options.dto
       ? [
