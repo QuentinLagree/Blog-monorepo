@@ -29,6 +29,6 @@ export class UserPreferenceQueryDto {
       : value
   )
   @IsArray()
-  @IsIn(USER_PREFERENCE_FIELDS, { each: true })
+  @IsIn(USER_PREFERENCE_FIELDS, { each: true, message: "Les préférences doit être parmi les valeurs suivantes : $constraint1" })
   fields?: UserPreferenceField[];
 }

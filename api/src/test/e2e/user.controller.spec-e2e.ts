@@ -7,7 +7,6 @@ import { createLoggedAgent, createLoggedAdminAgent } from './helpers/auth.helper
 
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { PasswordService } from 'src/commons/services/argon.service';
-import { Role } from 'src/commons/roles/role.enum';
 import { createTestUser } from './helpers/create_user-helper-e2e';
 
 describe('UserController e2e', () => {

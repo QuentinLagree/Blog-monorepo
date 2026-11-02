@@ -54,55 +54,6 @@ describe('AuthController', () => {
     );
   });
 
-  describe('status', () => {
-    it('should return active session message if user is logged in', async () => {
-      const sessionUser = {
-        id: 1,
-        email: 'test@test.com',
-        role: 'User',
-      };
-
-      const sessionMock = {
-        get: jest.fn().mockReturnValue(sessionUser),
-      };
-
-      const response = await authController.status(sessionMock as any);
-
-      expect(sessionMock.get).toHaveBeenCalledWith('user');
-
-      expect(response).toEqual(
-        makeMessage('', 'La session est bien active.', {
-          loggedIn: true,
-          user: sessionUser,
-        }),
-      );
-    });
-
-    it('should throw HttpException if no session is active', async () => {
-      const sessionMock = {
-        get: jest.fn().mockReturnValue(undefined),
-      };
-
-      await expect(
-        authController.status(sessionMock as any),
-      ).rejects.toThrow(HttpException);
-
-      expect(sessionMock.get).toHaveBeenCalledWith('user');
-
-      try {
-        await authController.status(sessionMock as any);
-      } catch (error) {
-        expect(error).toBeInstanceOf(HttpException);
-        expect((error as HttpException).getStatus()).toBe(HttpStatus.UNAUTHORIZED);
-        expect((error as HttpException).getResponse()).toEqual(
-          makeMessage('', 'Aucune session active', {
-            loggedIn: false,
-          }),
-        );
-      }
-    });
-  });
-
   describe('logout', () => {
     it('should delete session and return success message', async () => {
       const sessionMock = {

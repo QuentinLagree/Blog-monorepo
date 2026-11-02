@@ -23,9 +23,6 @@ import { SlugService } from 'src/commons/services/slug.service';
 import { Message } from 'src/commons/types/dto/message/message';
 import { UserSession } from 'src/commons/types/session-user.type';
 import { PostsEntity } from 'src/modules/post/entities/posts.entities';
-import { CreatePostFailException } from '../../commons/exceptions/create-post-fail.exception';
-import { DeletePostFailException } from '../../commons/exceptions/delete-post-fail.exception';
-import { UpdatePostFailException } from '../../commons/exceptions/update-post-fail.exception';
 import { CurrentUser } from '../me/decorators/current.decorator';
 import { MetaPaginationDto } from '../pagination/meta.pagination.dto';
 import { PaginationDto } from '../pagination/pagination.dto';
@@ -34,7 +31,6 @@ import { UserNotFoundException } from '../user/exceptions/user-not-found.excepti
 import { UserNotHaveAuthorisation } from '../user/exceptions/user-not-have-authorization';
 import { UserService } from '../user/user.service';
 import { CreatePostDto } from './dto/create.post.dto';
-import { PostDetailDto } from './dto/post-detail.dto';
 import { PostSummaryDto } from './dto/post-summary.dto';
 import { PublishedPostDto } from './dto/published-post.dto';
 import { UpdatePostDto } from './dto/update.post.dto';
@@ -63,7 +59,7 @@ export class PostController {
     description: "Récupère tous les articles avec pagination.",
     meta: MetaPaginationDto,
   })
-  @ApiExceptionsResponse([])
+  @ApiExceptionsResponse([], { isPublic: true })
   @HttpCode(200)
   async index(
     @Query() payload: PaginationDto,
@@ -129,7 +125,6 @@ export class PostController {
   })
   @ApiExceptionsResponse([
     UserNotFoundException,
-    CreatePostFailException
   ])
   @UseGuards(createAuthGuardSession())
   @ApiBody({
@@ -164,10 +159,9 @@ export class PostController {
     messageExemple: "La publication a été publiée."
   })
   @ApiExceptionsResponse([
+    UserNotFoundException,
     PostNotFoundException,
     PostAlreadyPublishException,
-    UpdatePostFailException,
-    UserNotFoundException,
     UserNotHaveAuthorisation
   ])
   @UseGuards(createAuthGuardSession(), PostOwnerOrAdminGuard)
@@ -255,7 +249,6 @@ export class PostController {
     UserNotFoundException,
     UserNotHaveAuthorisation,
     PostNotFoundException,
-    UpdatePostFailException
   ])
   @UseGuards(createAuthGuardSession(), PostOwnerOrAdminGuard)
   @HttpCode(200)
@@ -283,7 +276,6 @@ export class PostController {
   })
   @ApiExceptionsResponse([
     PostNotFoundException,
-    DeletePostFailException
   ])
   @UseGuards(createAuthGuardSession(), PostOwnerOrAdminGuard)
   @HttpCode(204)

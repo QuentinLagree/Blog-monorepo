@@ -3,6 +3,7 @@ import {
   Catch,
   ExceptionFilter,
   HttpStatus,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { FastifyReply } from 'fastify';
 import { Prisma } from '@prisma/client';
@@ -46,14 +47,7 @@ export class PrismaExceptionFilter implements ExceptionFilter {
         );
 
       default:
-        return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(
-          makeMessage(
-            'Database Error',
-            "Une erreur est survenue avec la base de données.",
-            null,
-            { level: 'Fatal' },
-          ),
-        );
+        throw new InternalServerErrorException();
     }
   }
 }

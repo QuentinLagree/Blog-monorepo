@@ -17,8 +17,6 @@ import { UserNotFoundException } from "../user/exceptions/user-not-found.excepti
 import { UserNotHaveAuthorisation } from "../user/exceptions/user-not-have-authorization";
 import { EmailOrPasswordNotMatchException } from "../auth/exceptions/email-or-password-not-match.exception";
 import { PostNotFoundException } from "../post/exceptions/post-not-found.exception";
-import { CreatePostFailException } from "src/commons/exceptions/create-post-fail.exception";
-import { UpdatePostFailException } from "src/commons/exceptions/update-post-fail.exception";
 
 @ApiCookieAuth()
 // TODO @UseGuards(AuthGuardSession())
@@ -30,7 +28,7 @@ export class MeController {
         private readonly _user: UserService,
         private readonly _articles: ArticleService,
     ) { }
-    @ApiExceptionsResponse([UserNotFoundException, UserNotHaveAuthorisation, EmailOrPasswordNotMatchException, PostNotFoundException, CreatePostFailException, UpdatePostFailException])
+    @ApiExceptionsResponse([UserNotFoundException, UserNotHaveAuthorisation, EmailOrPasswordNotMatchException, PostNotFoundException])
     @Get('metadata')
     async getMetaData () {
       return getDtoPropertyPriority(CreatePostDto)

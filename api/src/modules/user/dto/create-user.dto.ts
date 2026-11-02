@@ -14,13 +14,13 @@ export class CreateUserDto  {
     example: "Doe"
   })
   @IsDefined({
-    message: 'Le Nom de famille doit être défini.',
+    message: 'Le nom de famille doit être défini.',
   })
   @MinLength(1, {
-    message: 'Le nom de famille doit contenir au moins 1 caractère.',
+    message: 'Le nom de famille doit contenir au moins $constraint1 caractère.',
   })
   @MaxLength(50, {
-    message: 'Le nom de famille doit contenir au maximum 50 caractères.',
+    message: 'Le nom de famille doit contenir au maximum $constraint1  caractères.',
   })
   nom: string;
   @ApiProperty({
@@ -29,11 +29,11 @@ export class CreateUserDto  {
     example: "John"
   })
   @IsDefined({
-    message: 'Le Prénom doit être défini.',
+    message: 'Le prénom doit être défini.',
   })
-  @MinLength(2, { message: 'Le Prénom doit contenir au moins 2 caractères.' })
+  @MinLength(2, { message: 'Le Prénom doit contenir au moins $constraint1 caractères.' })
   @MaxLength(16, {
-    message: 'Le Prénom doit contenir au maximum 16 caractères.',
+    message: 'Le Prénom doit contenir au maximum $constraint1 caractères.',
   })
   @IsString()
   prenom: string;
@@ -44,9 +44,9 @@ export class CreateUserDto  {
   })
   @IsDefined()
   @IsString()
-  @MinLength(2, { message: 'Le Pseudo doit contenir au moins 2 caractères.' })
+  @MinLength(2, { message: 'Le Pseudo doit contenir au moins $constraint1 caractères.' })
   @MaxLength(16, {
-    message: 'Le Pseudo doit contenir au maximum 16 caractères.',
+    message: 'Le pseudo doit contenir au maximum $constraint1 caractères.',
   })
   pseudo: string;
   @ApiProperty({
@@ -59,10 +59,10 @@ export class CreateUserDto  {
   })
   @IsEmail({}, { message: "L'email n'est pas valide." })
   @MinLength(5, {
-    message: "L'email doit avoir au minimum 5 caractères.",
+    message: "L'email doit avoir au minimum $constraint1 caractères.",
   })
   @MaxLength(255, {
-    message: "L'email doit contenir au maximum 255 caractères.",
+    message: "L'email doit contenir au maximum $constraint1 caractères.",
   })
   email: string;
   @ApiProperty({
@@ -74,11 +74,11 @@ export class CreateUserDto  {
     message: "Le mot de passe doit être défini.",
   })
   @MinLength(4, {
-    message: 'Le mot de passe doit avoir 4 caractères minimum.',
+    message: 'Le mot de passe doit avoir $constraint1 caractères minimum.',
   })
   @IsString()
   @MaxLength(255, {
-    message: 'Le mot de passe doit contenir au maximum 255 caractères.',
+    message: 'Le mot de passe doit contenir au maximum $constraint1 caractères.',
   })
   password: string;
 }

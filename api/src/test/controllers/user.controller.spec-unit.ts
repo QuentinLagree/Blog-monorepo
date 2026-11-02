@@ -7,15 +7,18 @@ import { UserUpdateDto } from "src/modules/user/dto/update-user.dto";
 import { userServiceMock } from "../mocks/mocks";
 import { CreateUserDto } from "src/modules/user/dto/create-user.dto";
 import { UserService } from "src/modules/user/user.service";
+import { ArticleService } from "src/modules/post/posts.service";
 
 describe('UserController', () => {
     let userController: UserController;
+    let articleService: ArticleService
 
     beforeEach(() => {
         jest.clearAllMocks();
 
         userController = new UserController(
             userServiceMock as unknown as UserService,
+            articleService as unknown as ArticleService
         );
 
     });

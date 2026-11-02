@@ -7,7 +7,7 @@ export class UserHaveAlreadyActiveSessionException extends AppException {
   
   static readonly documentation = {
     description: "L'utilisateur essaie de se connecter mais, celui ci est déjà connecté.",
-    messageExample:"Tu es déjà conntecté..."
+    messageExample:"Tu es déjà connecté..."
   } satisfies ApiExceptionDocumentation
   
   constructor() {

@@ -75,7 +75,9 @@ export class AuthController {
   @ApiExceptionsResponse([
     EmailOrPasswordNotMatchException,
     UserHaveAlreadyActiveSessionException,
-  ])
+  ], {
+    isPublic: true
+  })
   @ApiBody({
     type: UserLoginCredentials,
     description: "Le format de donnée pour la connection d'un utilisateur",
@@ -130,7 +132,10 @@ export class AuthController {
   )
   @ApiExceptionsResponse([
     UserAlreadyExistException,
-  ])
+  ], { isPublic: true,
+    dto: CreateUserDto,
+    properties_validator: true
+   })
   @SerializeOptions({
     ignoreDecorators: true,
   })

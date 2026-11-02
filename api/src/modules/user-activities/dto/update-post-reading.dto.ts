@@ -6,9 +6,15 @@ import {
 } from 'class-validator';
 
 export class UpdatePostReadingDto {
-  @IsInt()
-  @Min(0)
-  @Max(100)
+  @IsInt({
+    message: "La progression est un entier valide."
+  })
+  @Min(0, {
+    message: "La progression doit être au minimum de 0%."
+  })
+  @Max(100, {
+    message: "La progression doit pas dépassé 100%."
+  })
   @ApiProperty({
     description: 'Progression entre 0 et 100%',
     example: 55,

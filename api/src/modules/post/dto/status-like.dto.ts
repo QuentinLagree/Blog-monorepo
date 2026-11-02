@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean } from "class-validator";
+import { IsBoolean, IsNumber } from "class-validator";
 
 export class StatusLikeDto {
   @ApiProperty({
@@ -7,13 +7,15 @@ export class StatusLikeDto {
     type: "boolean",
     example: true
   })
-  @IsBoolean()
+  @IsBoolean({
+    message: "Le statut du like doit être un booléen (true ou false)."
+  })
   liked: boolean;
   @ApiProperty({
     description:"Nombre de likes que l'article à récolter.",
     type: "number",
     example: 2,
   })
-  @IsBoolean()
+  @IsNumber()
   likesCount: number;
 }

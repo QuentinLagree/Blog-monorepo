@@ -34,7 +34,6 @@ import { UserAlreadyExistException } from './exceptions/user-already-exist.excep
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { UserNotHaveAuthorisation } from './exceptions/user-not-have-authorization';
 import { userSelectPayload, UserService } from './user.service';
-import { UnauthorizedSessionInactive } from '../auth/exceptions/unautorisation-session-inactive.exception';
 
 @ApiTags('Utilisateurs')
 @Controller('users')
@@ -51,6 +50,9 @@ export class UserController {
     description: "Renvoie la liste de tous les utilisateurs avec leurs informations publiques.",
     messageExemple: "Liste de tous les utilisateurs.",
     isArray: true
+  })
+  @ApiExceptionsResponse([UserNotHaveAuthorisation], {
+    isPublic: true
   })
   @UseGuards(createAuthGuardSession(), RolesGuard)
   @Roles(Role.Admin, Role.User)
@@ -87,8 +89,9 @@ export class UserController {
   @ApiExceptionsResponse([
     UserNotFoundException,
     PostNotFoundException
-  ])
-  @ApiMessageResponse(null, { status: 400, description: "L'identifiant n'est pas valide.", messageExemple: "L'identifiant n'est pas valide." })
+  ], {
+    isPublic: true
+  })
   @HttpCode(200)
   @Get('/:id')
   async show(@Param('id', ParseIntPipe) id: number): Promise<Message<PublicUserDto>> {
@@ -111,7 +114,9 @@ export class UserController {
   })
   @ApiExceptionsResponse([
     UserAlreadyExistException,
-  ])
+  ], {
+    dto: CreateUserDto,
+  })
   @Post()
   @HttpCode(201)
   @ApiBody({
@@ -158,10 +163,17 @@ export class UserController {
   @ApiBody({
     type: UserUpdateDto,
     examples: {
-      "Quentin": {
-        summary: "Exemple de modification d'utilisateur",
+      "email": {
+        summary: "Exemple de modification d'utilisateur pour l'email",
         value: {
           email: "nouvelemail@gmail.com",
+        }
+      },
+      "pseudo": {
+        summary: "Exemple de modification d'utilisateur pour le pseudo",
+        description: "Le pseudo doit être unique.",
+        value: {
+          pseudo: "nouveau_pseudo",
         }
       },
     }
@@ -173,7 +185,7 @@ export class UserController {
   @ApiExceptionsResponse([
     UserNotHaveAuthorisation,
     UserNotFoundException,
-  ])
+  ], { dto: UserUpdateDto })
   @UseGuards(createAuthGuardSession(), UserOwnerOrAdminGuard)
   @Put('/:id')
   async update(
@@ -190,6 +202,7 @@ export class UserController {
       updatedUser,
     );
   }
+
   @ApiCookieAuth()
   @ApiOperation({
     summary: "Supprimer un utilisateur par son identifiant.",
@@ -240,7 +253,6 @@ export class UserController {
     isArray: true,
   })
   @ApiExceptionsResponse([
-    UserNotHaveAuthorisation,
     UserNotFoundException
   ])
   @HttpCode(200)
