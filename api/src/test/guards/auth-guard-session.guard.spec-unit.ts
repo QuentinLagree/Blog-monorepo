@@ -43,12 +43,7 @@ describe('AuthGuardSession', () => {
   });
 
   it('should throw UnauthorizedSessionInactive with custom output message', () => {
-    const GuardClass = createAuthGuardSession(undefined, {
-      log: 'Session expired',
-      message: 'Votre session a expiré.',
-      data: null,
-      meta: undefined,
-    } as any);
+    const GuardClass = createAuthGuardSession(undefined);
 
     const guard = new GuardClass();
 

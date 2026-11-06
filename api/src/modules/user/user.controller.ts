@@ -252,9 +252,7 @@ export class UserController {
     messageExemple: "Liste de tous les brouillon de johndoe42.",
     isArray: true,
   })
-  @ApiExceptionsResponse([
-    UserNotFoundException
-  ])
+  @ApiExceptionsResponse([UserNotFoundException])
   @HttpCode(200)
   @UseGuards(createAuthGuardSession())
   @Get('/:id/drafts')

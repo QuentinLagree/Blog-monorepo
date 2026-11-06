@@ -1,4 +1,5 @@
 import { TOKEN } from 'src/commons/types/token.types';
+import { TokenInvalidFormat } from 'src/modules/handle-password/exceptions/token-invalid-format.exception';
 
 describe('TOKEN', () => {
   const VALID_TOKEN = '1234567890abcdef1234567890abcdef';
@@ -13,13 +14,13 @@ describe('TOKEN', () => {
 
     it('should throw error if token is not hexadecimal', () => {
       expect(() => TOKEN.add('invalid-token')).toThrow(
-        'Le token doit être du format Hexadécimal.',
+        TokenInvalidFormat
       );
     });
 
     it('should throw error if token is too short', () => {
       expect(() => TOKEN.add('123abc')).toThrow(
-        'Le token doit être du format Hexadécimal.',
+        TokenInvalidFormat
       );
     });
   });

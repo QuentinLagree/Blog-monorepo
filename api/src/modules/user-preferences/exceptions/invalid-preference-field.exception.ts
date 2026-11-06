@@ -1,6 +1,8 @@
 import { BadRequestException, HttpStatus } from '@nestjs/common';
+import { UserPreference } from '@prisma/client';
 import { ApiExceptionDocumentation, AppException } from 'src/commons/app.exception';
 import { makeMessage } from 'src/commons/logger/logger.helper';
+import { UserPreferenceField } from '../helper/user.preferences.fields';
 
 export class InvalidPreferenceFieldException extends AppException {
   static readonly status = HttpStatus.BAD_REQUEST;
@@ -11,11 +13,11 @@ export class InvalidPreferenceFieldException extends AppException {
   
   constructor(fields: string[]) {
     super(
-        'Invalid preference fields',
         fields.length === 1
           ? `La préférence "${fields[0]}" n'existe pas.`
           : `Les préférences suivantes n'existent pas : ${fields.join(', ')}. Contactez un administrateur pour obtenir de l'aide.`,
           InvalidPreferenceFieldException.status,
+          fields as UserPreferenceField[]
     );
   }
 }

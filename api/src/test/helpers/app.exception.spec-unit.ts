@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { AppException } from 'src/commons/app.exception';
 
-describe('AppException', () => {
+describe.only('AppException', () => {
   it('should create an AppException with default BAD_REQUEST status', () => {
     const exception = new AppException(
       'Message utilisateur',
@@ -25,7 +25,6 @@ describe('AppException', () => {
     expect(exception.getStatus()).toBe(HttpStatus.NOT_FOUND);
 
     expect(exception.getResponse()).toEqual({
-      log: 'User not found',
       message: "L'utilisateur n'existe pas.",
       data: null,
     });

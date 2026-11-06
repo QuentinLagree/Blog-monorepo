@@ -6,9 +6,12 @@ import {
 } from '@nestjs/common';
 import { PostOwnerOrAdminGuard } from 'src/commons/guards/post-owner-or-admin.guard';
 import { Role } from 'src/commons/roles/role.enum';
+import { PostNotFoundException } from 'src/modules/post/exceptions/post-not-found.exception';
 import { ArticleService } from 'src/modules/post/posts.service';
+import { UserNotHaveAuthorisation } from 'src/modules/user/exceptions/user-not-have-authorization';
+import { UserSessionInvalidException } from 'src/modules/user/exceptions/user-session-invalid-expired.exception';
 
-describe('PostOwnerOrAdminGuard', () => {
+describe.only('PostOwnerOrAdminGuard', () => {
   let guard: PostOwnerOrAdminGuard;
 
   const articleServiceMock = {
@@ -106,17 +109,17 @@ describe('PostOwnerOrAdminGuard', () => {
     expect(response).toBe(true);
   });
 
-  it('should throw UnauthorizedException if session user is missing', async () => {
+  it('should throw UserSessionInvalidException if session user is missing', async () => {
     const context = createExecutionContextMock({}, { id: '1' });
 
     await expect(guard.canActivate(context)).rejects.toThrow(
-      UnauthorizedException,
+      UserSessionInvalidException,
     );
 
     expect(articleServiceMock.indexOneWhere).not.toHaveBeenCalled();
   });
 
-  it('should throw ForbiddenException if post id is invalid', async () => {
+  it('should throw PostNotFoundException if post id is invalid', async () => {
     const context = createExecutionContextMock(
       {
         user: {
@@ -130,13 +133,13 @@ describe('PostOwnerOrAdminGuard', () => {
     );
 
     await expect(guard.canActivate(context)).rejects.toThrow(
-      ForbiddenException,
+      PostNotFoundException,
     );
 
     expect(articleServiceMock.indexOneWhere).not.toHaveBeenCalled();
   });
 
-  it('should throw NotFoundException if post does not exist', async () => {
+  it('should throw PostNotFoundException if post does not exist', async () => {
     articleServiceMock.indexOneWhere.mockResolvedValue(null);
 
     const context = createExecutionContextMock(
@@ -152,7 +155,7 @@ describe('PostOwnerOrAdminGuard', () => {
     );
 
     await expect(guard.canActivate(context)).rejects.toThrow(
-      NotFoundException,
+      PostNotFoundException,
     );
 
     expect(articleServiceMock.indexOneWhere).toHaveBeenCalledWith({
@@ -160,7 +163,7 @@ describe('PostOwnerOrAdminGuard', () => {
     });
   });
 
-  it('should throw ForbiddenException if user is not author and not admin', async () => {
+  it('should throw UserNotHaveAuthorisation if user is not author and not admin', async () => {
     const post = createPostMock({
       id: 1,
       authorId: 1,
@@ -181,7 +184,7 @@ describe('PostOwnerOrAdminGuard', () => {
     );
 
     await expect(guard.canActivate(context)).rejects.toThrow(
-      ForbiddenException,
+      UserNotHaveAuthorisation,
     );
 
     expect(articleServiceMock.indexOneWhere).toHaveBeenCalledWith({

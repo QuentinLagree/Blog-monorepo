@@ -1,5 +1,6 @@
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { InvalidPreferenceFieldException } from 'src/modules/user-preferences/exceptions/invalid-preference-field.exception';
+import { UserPreferenceField } from 'src/modules/user-preferences/helper/user.preferences.fields';
 import { UserPreferenceService } from 'src/modules/user-preferences/user-preferences.service';
 
 describe('UserPreferenceService', () => {
@@ -61,22 +62,7 @@ describe('UserPreferenceService', () => {
           userId,
         },
         update: {},
-        select: {
-          theme: true,
-          language: true,
-          fontSize: true,
-          reduceAnimations: true,
-          showReadingTime: true,
-          showAuthorDetails: true,
-          hideReadPosts: true,
-          notifyOnLike: true,
-          notifyOnContribution: true,
-          emailNotifications: true,
-          newsletter: true,
-          profileVisible: true,
-          showLikedPosts: true,
-          showContributions: true,
-        },
+        select: undefined,
       });
 
       expect(result).toEqual(preferencesMock);
@@ -111,7 +97,7 @@ describe('UserPreferenceService', () => {
 
       const result = await service.getPreferences(
         userId,
-        'theme',
+        ["theme"],
       );
 
       expect(
@@ -143,7 +129,7 @@ describe('UserPreferenceService', () => {
 
       const result = await service.getPreferences(
         userId,
-        'theme,language,notifyOnLike',
+        ["theme","language","notifyOnLike"],
       );
 
       expect(
@@ -178,7 +164,7 @@ describe('UserPreferenceService', () => {
 
       await service.getPreferences(
         userId,
-        ' theme , language ',
+        ["theme", "language"],
       );
 
       expect(
@@ -201,7 +187,7 @@ describe('UserPreferenceService', () => {
 
       await service.getPreferences(
         userId,
-        'theme,,language,',
+        ["theme", "language"],
       );
 
       expect(
@@ -220,7 +206,7 @@ describe('UserPreferenceService', () => {
       await expect(
         service.getPreferences(
           userId,
-          'unknownColumn',
+          ['unknownColumn'] as unknown as UserPreferenceField[],
         ),
       ).rejects.toThrow(
         InvalidPreferenceFieldException,
@@ -237,12 +223,10 @@ describe('UserPreferenceService', () => {
       try {
         await service.getPreferences(
           userId,
-          'unknownColumn',
+          ["unknownColumn"] as unknown as UserPreferenceField[]
         );
 
-        throw new Error(
-          'Expected InvalidPreferenceFieldException',
-        );
+          throw new InvalidPreferenceFieldException(["unknownColumn"])
       } catch (error: unknown) {
         expect(error).toBeInstanceOf(
           InvalidPreferenceFieldException,
@@ -252,13 +236,11 @@ describe('UserPreferenceService', () => {
           error as InvalidPreferenceFieldException
         ).getResponse() as {
           message: string;
-          data: {
-            invalidFields: string[];
-          };
+          data: string[];
           meta?: unknown;
         };
 
-        expect(response.data.invalidFields).toEqual([
+        expect(response.data).toEqual([
           'unknownColumn',
         ]);
       }
@@ -272,7 +254,7 @@ describe('UserPreferenceService', () => {
       await expect(
         service.getPreferences(
           userId,
-          'theme,unknownColumn,language',
+          ["theme", "unknownColumn", "language"] as unknown as UserPreferenceField[]
         ),
       ).rejects.toThrow(
         InvalidPreferenceFieldException,
@@ -289,12 +271,10 @@ describe('UserPreferenceService', () => {
       try {
         await service.getPreferences(
           userId,
-          'unknownOne,theme,unknownTwo',
+          ["unknownOne","theme","unknownTwo"] as unknown as UserPreferenceField[],
         );
 
-        throw new Error(
-          'Expected InvalidPreferenceFieldException',
-        );
+        throw new InvalidPreferenceFieldException(["unknownTwo", "unknownOne"])
       } catch (error: unknown) {
         expect(error).toBeInstanceOf(
           InvalidPreferenceFieldException,
@@ -304,19 +284,17 @@ describe('UserPreferenceService', () => {
           error as InvalidPreferenceFieldException
         ).getResponse() as {
           message: string;
-          data: {
-            invalidFields: string[];
-          };
+          data: string[];
           meta?: unknown;
         };
 
-        expect(response.data.invalidFields).toEqual([
+        expect(response.data).toEqual([
           'unknownOne',
           'unknownTwo',
         ]);
 
         expect(response.message).toBe(
-          "Les préférences suivantes n'existent pas : unknownOne, unknownTwo.",
+          "Les préférences suivantes n'existent pas : unknownOne, unknownTwo. Contactez un administrateur pour obtenir de l'aide.",
         );
       }
 
@@ -329,7 +307,7 @@ describe('UserPreferenceService', () => {
       await expect(
         service.getPreferences(
           userId,
-          'theme,unknownOne,language,unknownTwo',
+          ["theme","unknownOne","language","unknownTwo"] as unknown as UserPreferenceField[],
         ),
       ).rejects.toThrow(
         InvalidPreferenceFieldException,

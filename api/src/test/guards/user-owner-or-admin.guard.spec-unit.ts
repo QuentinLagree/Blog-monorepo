@@ -5,6 +5,8 @@ import {
 } from '@nestjs/common';
 import { UserOwnerOrAdminGuard } from 'src/commons/guards/user-owner-or-admin.guard';
 import { Role } from 'src/commons/roles/role.enum';
+import { UserNotHaveAuthorisation } from 'src/modules/user/exceptions/user-not-have-authorization';
+import { UserSessionInvalidException } from 'src/modules/user/exceptions/user-session-invalid-expired.exception';
 
 describe('UserOwnerOrAdminGuard', () => {
   let guard: UserOwnerOrAdminGuard;
@@ -71,10 +73,10 @@ describe('UserOwnerOrAdminGuard', () => {
     expect(response).toBe(true);
   });
 
-  it('should throw UnauthorizedException if session user is missing', () => {
+  it('should throw UserSessionInvalidException if session user is missing', () => {
     const context = createExecutionContextMock({}, { id: '1' });
 
-    expect(() => guard.canActivate(context)).toThrow(UnauthorizedException);
+    expect(() => guard.canActivate(context)).toThrow(UserSessionInvalidException);
   });
 
   it('should throw ForbiddenException if param id is invalid', () => {
@@ -90,10 +92,10 @@ describe('UserOwnerOrAdminGuard', () => {
       },
     );
 
-    expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+    expect(() => guard.canActivate(context)).toThrow(UserNotHaveAuthorisation);
   });
 
-  it('should throw ForbiddenException if user is not owner and not admin', () => {
+  it('should throw UserNotHaveAuthorisation if user is not owner and not admin', () => {
     const context = createExecutionContextMock(
       {
         user: {
@@ -106,6 +108,6 @@ describe('UserOwnerOrAdminGuard', () => {
       },
     );
 
-    expect(() => guard.canActivate(context)).toThrow(ForbiddenException);
+    expect(() => guard.canActivate(context)).toThrow(UserNotHaveAuthorisation);
   });
 });

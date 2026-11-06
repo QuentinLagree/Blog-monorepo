@@ -23,7 +23,7 @@ describe('AuthController', () => {
     email: 'test@test.com',
     nom: 'Doe',
     prenom: 'John',
-    role: 'User',
+    role: 'user',
     password: 'hashed-password',
     created_at: new Date(),
     updated_at: new Date(),
@@ -67,7 +67,7 @@ describe('AuthController', () => {
       expect(response).toEqual(
         makeMessage(
           '',
-          "La déconnection de ton compte s'est éffectué avec succée",
+          "La déconnection de ton compte s'est effectué avec succès",
           null,
         ),
       );
@@ -81,7 +81,7 @@ describe('AuthController', () => {
       const loggedUser = createUserMock({
         id: 1,
         email: payload.email,
-        role: 'User',
+        role: 'user',
       });
 
       const sessionMock = {};

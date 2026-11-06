@@ -16,6 +16,17 @@ export class UserPreferenceService {
         userId: number,
         fields?: UserPreferenceField[],
     ): Promise<Record<string, unknown>> {
+
+        if (fields) {
+            const invalidFields = fields?.filter(
+                (field) => !USER_PREFERENCE_FIELDS.includes(field),
+            );
+            if (invalidFields?.length > 0) {
+                console.log(invalidFields.length)
+                throw new InvalidPreferenceFieldException(invalidFields)
+            }
+        }
+
         const select = fields?.length
             ? fields.reduce<Record<string, true>>(
                 (acc, field) => {

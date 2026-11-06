@@ -20,6 +20,8 @@ export class PostOwnerOrAdminGuard implements CanActivate {
     const sessionUser = request.session['user'];
     const postId = Number(request.params['id']);
 
+    if (!postId) throw new PostNotFoundException(postId)
+    
     if (!sessionUser) {
       throw new UserSessionInvalidException();
     }

@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
+import { UserPreferenceField } from 'src/modules/user-preferences/helper/user.preferences.fields';
 
 export type ApiExceptionDocumentation = {
   description: string;
@@ -18,7 +19,7 @@ export class AppException extends HttpException {
   constructor(
     public readonly userMessage: string,
     status: HttpStatus,
-    data: Error | ValidationError[] | null = null,
+    data: Error | ValidationError[] | UserPreferenceField[] | null = null,
   ) {
     super(
       {

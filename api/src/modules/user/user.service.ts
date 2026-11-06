@@ -63,8 +63,9 @@ export class UserService {
       where: {
         OR: [{ email }, { pseudo }],
       },
-      select: userSelectExistingUser
-    });
+      select: {
+        ...userSelectExistingUser,
+    }});
     if (existingUser?.email === email) {
       throw new UserAlreadyExistException('email');
     }

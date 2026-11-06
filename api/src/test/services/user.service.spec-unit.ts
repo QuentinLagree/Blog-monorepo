@@ -145,7 +145,7 @@ describe('UserService', () => {
       });
 
       expect(passwordServiceMock.hashPassword).toHaveBeenCalledWith(dto.password);
-
+      
       expect(prismaMock.user.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           email: dto.email,
@@ -155,7 +155,6 @@ describe('UserService', () => {
         }),
         select: {
           ...userSelect,
-          posts: true
         }
       });
 
@@ -233,7 +232,6 @@ describe('UserService', () => {
         }),
         select: {
           ...userSelect,
-          posts: true
         }
       });
 

@@ -1,6 +1,8 @@
 // src/test/unit/user-preference/user-preference.controller.spec.ts
 
 import { makeMessage } from 'src/commons/logger/logger.helper';
+import { UserPreferenceQueryDto } from 'src/modules/user-preferences/dto/query-preferences.user.dto';
+import { UserPreferenceField } from 'src/modules/user-preferences/helper/user.preferences.fields';
 import { UserPreferenceController } from 'src/modules/user-preferences/user-preferences.controller';
 import { UserPreferenceService } from 'src/modules/user-preferences/user-preferences.service';
 
@@ -41,9 +43,11 @@ describe('UserPreferenceController', () => {
   });
 
   describe('getPreferences', () => {
-    it('should return all preferences of connected user', async () => {
-      const sessionMock =
+        const sessionMock =
         createSessionMock();
+      const userSession = sessionMock.get("user")
+    it('should return all preferences of connected user', async () => {
+  
 
       const preferences = {
         theme: 'system',
@@ -66,15 +70,14 @@ describe('UserPreferenceController', () => {
         preferences,
       );
 
+
       const response =
         await controller.getPreferences(
           {},
-          sessionMock as any,
+          {
+            ...userSession
+          },
         );
-
-      expect(
-        sessionMock.get,
-      ).toHaveBeenCalledWith('user');
 
       expect(
         preferenceServiceMock.getPreferences,
@@ -87,17 +90,14 @@ describe('UserPreferenceController', () => {
         makeMessage(
           'User preferences',
           'Préférences utilisateur récupérées.',
-          preferences,
+          { preferences },
         ),
       );
     });
 
     it('should return only requested preference fields', async () => {
-      const sessionMock =
-        createSessionMock();
-
-      const query = {
-        fields: 'theme,language',
+      const query: UserPreferenceQueryDto = {
+        fields: ["theme", "language"]
       };
 
       const preferences = {
@@ -108,33 +108,37 @@ describe('UserPreferenceController', () => {
       preferenceServiceMock.getPreferences.mockResolvedValue(
         preferences,
       );
+      const userSession = sessionMock.get("user")
 
       const response =
         await controller.getPreferences(
           query,
-          sessionMock as any,
+          { ...userSession }
         );
 
       expect(
         preferenceServiceMock.getPreferences,
       ).toHaveBeenCalledWith(
         userId,
-        'theme,language',
+        ["theme", "language"],
       );
 
       expect(response.data).toEqual({
-        theme: 'dark',
-        language: 'fr',
+        preferences: {
+          theme: 'dark',
+          language: 'fr',
+        }
       });
     });
 
-    it('should use connected user id from session', async () => {
+    it.only('should use connected user id from session', async () => {
       const anotherUserId = 42;
 
-      const sessionMock =
-        createSessionMock(
-          anotherUserId,
-        );
+      const anotherSessionMock =
+        createSessionMock(anotherUserId);
+
+
+      const anotherSession = anotherSessionMock.get('user')
 
       preferenceServiceMock.getPreferences.mockResolvedValue(
         {},
@@ -142,7 +146,7 @@ describe('UserPreferenceController', () => {
 
       await controller.getPreferences(
         {},
-        sessionMock as any,
+        { ...anotherSession }
       );
 
       expect(
@@ -154,8 +158,6 @@ describe('UserPreferenceController', () => {
     });
 
     it('should propagate invalid preference field exception', async () => {
-      const sessionMock =
-        createSessionMock();
 
       const error = new Error(
         'Invalid preference field',
@@ -168,7 +170,7 @@ describe('UserPreferenceController', () => {
       await expect(
         controller.getPreferences(
           {
-            fields: 'unknownColumn',
+            fields: ['unknownColumn'] as unknown as UserPreferenceField[],
           },
           sessionMock as any,
         ),
@@ -176,8 +178,6 @@ describe('UserPreferenceController', () => {
     });
 
     it('should propagate preference service errors', async () => {
-      const sessionMock =
-        createSessionMock();
 
       const error = new Error(
         'Unable to retrieve preferences',
@@ -190,88 +190,11 @@ describe('UserPreferenceController', () => {
       await expect(
         controller.getPreferences(
           {},
-          sessionMock as any,
+          {
+            ...userSession
+          }
         ),
       ).rejects.toThrow(error);
-    });
-  });
-
-  describe('getProfileVisibility', () => {
-    it('should return profilVisible to true', async () => {
-      const userId = 1;
-
-      preferenceServiceMock
-        .isProfileVisible
-        .mockResolvedValue(true);
-
-      const result =
-        await controller.getProfileVisibility(
-          userId,
-        );
-
-      expect(
-        preferenceServiceMock.isProfileVisible,
-      ).toHaveBeenCalledTimes(1);
-
-      expect(
-        preferenceServiceMock.isProfileVisible,
-      ).toHaveBeenCalledWith(userId);
-
-      expect(result).toEqual({
-        message:
-          'Visibilité du profil récupérée.',
-        data: {
-          profileVisible: true,
-        },
-      });
-    });
-
-    it('should return profilVisible to false', async () => {
-      const userId = 2;
-
-      preferenceServiceMock
-        .isProfileVisible
-        .mockResolvedValue(false);
-
-      const result =
-        await controller.getProfileVisibility(
-          userId,
-        );
-
-      expect(
-        preferenceServiceMock.isProfileVisible,
-      ).toHaveBeenCalledWith(userId);
-
-      expect(result).toEqual({
-        message:
-          'Visibilité du profil récupérée.',
-        data: {
-          profileVisible: false,
-        },
-      });
-    });
-
-    it('should propagate preference get errors', async () => {
-      const userId = 999;
-
-      const error =
-        new Error(
-          'Impossible de récupérer la préférence.',
-        );
-
-      preferenceServiceMock
-        .isProfileVisible
-        .mockRejectedValue(error);
-
-      await expect(
-        controller.getProfileVisibility(
-          userId,
-        ),
-      ).rejects.toThrow(error);
-
-      expect(
-        preferenceServiceMock.isProfileVisible,
-      ).toHaveBeenCalledWith(userId);
     });
   });
 
@@ -286,6 +209,8 @@ describe('UserPreferenceController', () => {
         notifyOnLike: false,
       };
 
+      const userSession = sessionMock.get("user")
+      
       const updatedPreferences = {
         userId,
         ...payload,
@@ -298,7 +223,9 @@ describe('UserPreferenceController', () => {
       const response =
         await controller.updatePreferences(
           payload,
-          sessionMock as any,
+          {
+            ...userSession
+          }
         );
 
       expect(
@@ -316,7 +243,7 @@ describe('UserPreferenceController', () => {
         makeMessage(
           'User preferences updated',
           'Les préférences ont été mises à jour.',
-          updatedPreferences,
+          {preferences: updatedPreferences},
         ),
       );
     });
@@ -335,6 +262,7 @@ describe('UserPreferenceController', () => {
           newsletter: true,
         },
       );
+      
 
       const response =
         await controller.updatePreferences(

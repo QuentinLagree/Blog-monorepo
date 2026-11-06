@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsNumber } from "class-validator";
+import { IsBoolean, IsNumber, IsPositive } from "class-validator";
 
 export class StatusLikeDto {
   @ApiProperty({
@@ -16,6 +16,14 @@ export class StatusLikeDto {
     type: "number",
     example: 2,
   })
-  @IsNumber()
+  @IsNumber({
+    allowInfinity: false,
+    maxDecimalPlaces: 0
+  }, {
+    message: "Le nombre de like doit être un nombre entier."
+  })
+  @IsPositive({
+    message: "Le nombre de like doit être au dessus de 0. Il ne peux pas être négatif."
+  })
   likesCount: number;
 }

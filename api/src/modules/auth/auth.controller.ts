@@ -27,6 +27,7 @@ import { UserSessionDto } from './dto/user-session.dto';
 import { EmailOrPasswordNotMatchException } from './exceptions/email-or-password-not-match.exception';
 import { UnauthorizedSessionInactive } from './exceptions/unautorisation-session-inactive.exception';
 import { UserHaveAlreadyActiveSessionException } from './exceptions/user-have-already-active-session.exception';
+import { Role } from 'src/commons/roles/role.enum';
 
 @ApiTags('Authentification')
 @Controller('auth')
@@ -49,7 +50,7 @@ export class AuthController {
   })
   @ApiExceptionsResponse([
     UnauthorizedSessionInactive
-  ], { properties_validator: false })
+  ])
   @UseGuards(createAuthGuardSession())
   @HttpCode(204)
   @Post('/logout')
@@ -101,11 +102,13 @@ export class AuthController {
     @Session() session: secureSession.Session,
   ): Promise<Message<UserSessionDto>> {
     const logged_user = await this._auth.login(payload);
+    
+    const userRole = Object.values(Role).find((role) => role == logged_user.role.toLowerCase())
 
     this._auth.setUserSession(session, {
       id: logged_user.id,
       email: logged_user.email,
-      role: logged_user.role,
+      role: userRole,
     });
 
     return makeMessage(
@@ -114,7 +117,7 @@ export class AuthController {
       {
         id: logged_user.id,
         email: logged_user.email,
-        role: logged_user.role,
+        role: userRole,
       },
     );
   }
@@ -134,7 +137,6 @@ export class AuthController {
     UserAlreadyExistException,
   ], { isPublic: true,
     dto: CreateUserDto,
-    properties_validator: true
    })
   @SerializeOptions({
     ignoreDecorators: true,

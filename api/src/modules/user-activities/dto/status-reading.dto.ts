@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsNumber, Min } from "class-validator";
+import { IsBoolean, IsNumber, Max, Min } from "class-validator";
 
 export class StatusReadingDto {
   @ApiProperty({
@@ -14,7 +14,9 @@ export class StatusReadingDto {
     example: true,
     type: "boolean"
   })
-  @IsBoolean()
+  @IsBoolean({
+    message: "La complétion de l'article doit être un booléen (true ou false)"
+  })
   completed: boolean;
   @ApiProperty({
     description: "Progrès de lecture de l'article de 0% à 100%, à 95% l'article a été lu.",
@@ -22,7 +24,11 @@ export class StatusReadingDto {
     type: "number"
   })
   @IsNumber()
-  @Min(0)
-  @Min(100)
+  @Min(0, {
+    message: "La progression doit être au minimum à $constraint1%."
+  })
+  @Max(100, {
+    message: "La progression doit être au maximum à $constraint1%."
+  })
   progress: number;
 };
