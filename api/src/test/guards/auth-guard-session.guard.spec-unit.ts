@@ -1,4 +1,4 @@
-import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { ExecutionContext } from '@nestjs/common';
 import { createAuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
 import { UnauthorizedSessionInactive } from 'src/modules/auth/exceptions/unautorisation-session-inactive.exception';
 
@@ -39,17 +39,21 @@ describe('AuthGuardSession', () => {
 
     const context = createExecutionContextMock({});
 
-    expect(() => guard.canActivate(context)).toThrow(UnauthorizedSessionInactive);
+    expect(() => guard.canActivate(context)).toThrow(
+      UnauthorizedSessionInactive,
+    );
   });
 
-  it('should throw UnauthorizedSessionInactive with custom output message', () => {
+  it('should throw UnauthorizedSessionInactive when redirect is explicitly undefined', () => {
     const GuardClass = createAuthGuardSession(undefined);
 
     const guard = new GuardClass();
 
     const context = createExecutionContextMock({});
 
-    expect(() => guard.canActivate(context)).toThrow(UnauthorizedSessionInactive);
+    expect(() => guard.canActivate(context)).toThrow(
+      UnauthorizedSessionInactive,
+    );
   });
 
   it('should redirect and return false if urlRedirect is provided and session is missing', () => {

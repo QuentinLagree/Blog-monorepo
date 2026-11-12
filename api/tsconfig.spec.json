@@ -5,9 +5,5 @@
     "module": "CommonJS",
     "moduleResolution": "node"
   },
-  "include": [
-    "src/**/*.ts",
-    "test/**/*.ts",
-    "**/*.spec-unit.ts"
-  ]
+  "include": ["src/**/*.ts", "test/**/*.ts", "**/*.spec-unit.ts"]
 }

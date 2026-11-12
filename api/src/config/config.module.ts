@@ -7,17 +7,7 @@ import { RedisModule } from 'src/commons/redis/redis.module';
 
 @Global()
 @Module({
-  imports: [
-    MailModule,
-    PrismaModule,
-    RedisModule,
-    BullMQModule,
-  ],
-  exports: [
-    MailModule,
-    PrismaModule,
-    RedisModule,
-    BullMQModule,
-  ],
+  imports: [MailModule, PrismaModule, RedisModule, BullMQModule],
+  exports: [MailModule, PrismaModule, RedisModule, BullMQModule],
 })
 export class ConfigurationModule {}

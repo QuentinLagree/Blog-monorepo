@@ -9,9 +9,7 @@ import { map } from 'rxjs/internal/operators/map';
 import { Observable } from 'rxjs/internal/Observable';
 
 @Injectable()
-export class TransformDataMessageIntoObjectSerialization
-  implements NestInterceptor
-{
+export class TransformDataMessageIntoObjectSerialization implements NestInterceptor {
   constructor(
     private readonly targetClasses: (new (...args: any[]) => any)[],
   ) {}

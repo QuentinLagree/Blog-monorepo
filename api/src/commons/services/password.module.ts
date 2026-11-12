@@ -5,11 +5,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
   imports: [PrismaModule],
-  providers: [
-    PasswordService,
-  ],
-  exports: [
-    PasswordService,
-  ],
+  providers: [PasswordService],
+  exports: [PasswordService],
 })
 export class PasswordModule {}

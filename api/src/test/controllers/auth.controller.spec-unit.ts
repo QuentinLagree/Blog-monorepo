@@ -1,9 +1,8 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { sessionVersion } from 'src/commons/services/session-version';
 import { AuthController } from 'src/modules/auth/auth.controller';
 import { AuthService } from 'src/modules/auth/auth.service';
 import { UserLoginCredentials } from 'src/modules/auth/dto/user-login-credentials.dto';
 import { UserService } from 'src/modules/user/user.service';
-import { makeMessage } from 'src/commons/logger/logger.helper';
 import { CreateUserDto } from 'src/modules/user/dto/create-user.dto';
 
 describe('AuthController', () => {
@@ -46,7 +45,7 @@ describe('AuthController', () => {
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
 
     authController = new AuthController(
       authServiceMock as unknown as AuthService,
@@ -64,13 +63,11 @@ describe('AuthController', () => {
 
       expect(sessionMock.delete).toHaveBeenCalledTimes(1);
 
-      expect(response).toEqual(
-        makeMessage(
-          '',
-          "La déconnection de ton compte s'est effectué avec succès",
-          null,
-        ),
-      );
+      expect(response).toEqual({
+        message: "La déconnection de ton compte s'est effectué avec succès",
+        data: null,
+        meta: undefined,
+      });
     });
   });
 
@@ -89,33 +86,26 @@ describe('AuthController', () => {
       authServiceMock.login.mockResolvedValue(loggedUser);
       authServiceMock.setUserSession.mockReturnValue(undefined);
 
-      const response = await authController.login(
-        payload,
-        sessionMock as any,
-      );
+      const response = await authController.login(payload, sessionMock as any);
 
       expect(authServiceMock.login).toHaveBeenCalledWith(payload);
 
-      expect(authServiceMock.setUserSession).toHaveBeenCalledWith(
-        sessionMock,
-        {
+      expect(authServiceMock.setUserSession).toHaveBeenCalledWith(sessionMock, {
+        id: loggedUser.id,
+        email: loggedUser.email,
+        role: loggedUser.role,
+        credentialVersion: sessionVersion(loggedUser.password),
+      });
+
+      expect(response).toEqual({
+        message: 'La connection est un succès.',
+        data: {
           id: loggedUser.id,
           email: loggedUser.email,
           role: loggedUser.role,
         },
-      );
-
-      expect(response).toEqual(
-        makeMessage(
-          `User Login Success (${loggedUser.id})`,
-          'La connection est un succès.',
-          {
-            id: loggedUser.id,
-            email: loggedUser.email,
-            role: loggedUser.role,
-          },
-        ),
-      );
+        meta: undefined,
+      });
     });
 
     it('should throw an error if login fails', async () => {
@@ -149,13 +139,12 @@ describe('AuthController', () => {
 
       expect(userServiceMock.create).toHaveBeenCalledWith(payload);
 
-      expect(response).toEqual(
-        makeMessage(
-          'User register !',
+      expect(response).toEqual({
+        message:
           "L'enregistrement de ton compte s'est déroulé avec succès. Maintenant tu peux te connecter.",
-          createdUser,
-        ),
-      );
+        data: createdUser,
+        meta: undefined,
+      });
     });
 
     it('should throw an error if register fails', async () => {
@@ -164,11 +153,27 @@ describe('AuthController', () => {
 
       userServiceMock.create.mockRejectedValue(error);
 
-      await expect(
-        authController.register(payload),
-      ).rejects.toThrow(error);
+      await expect(authController.register(payload)).rejects.toThrow(error);
 
       expect(userServiceMock.create).toHaveBeenCalledWith(payload);
+    });
+  });
+
+  it('should propagate a session creation failure after successful authentication', async () => {
+    const payload = createLoginDtoMock();
+    const user = createUserMock();
+    const session = {} as Parameters<AuthController['login']>[1];
+    const error = new Error('Session creation failed');
+    authServiceMock.login.mockResolvedValue(user);
+    authServiceMock.setUserSession.mockImplementation(() => {
+      throw error;
+    });
+    await expect(authController.login(payload, session)).rejects.toBe(error);
+    expect(authServiceMock.setUserSession).toHaveBeenCalledWith(session, {
+      id: user.id,
+      email: user.email,
+      role: 'user',
+      credentialVersion: sessionVersion(user.password),
     });
   });
 });

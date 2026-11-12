@@ -10,6 +10,7 @@ export class FileTransport implements LogTransport {
   private currentFilePath?: string;
   private rotateDaily: boolean;
   private filePrefix: string;
+  private pending: Promise<void> = Promise.resolve();
 
   constructor(private opts: FileTransportOptions) {
     this.rotateDaily = opts.rotateDaily ?? true;
@@ -38,12 +39,15 @@ export class FileTransport implements LogTransport {
     if (this.stream && this.currentFilePath === filePath) return;
 
     // (re)ouvrir si jour différent / autre fichier
-    await this.close();
+    await this.closeStream();
     this.stream = createWriteStream(filePath, { flags: 'a' });
+    // write callbacks propagate the failure to the caller; prevent an additional
+    // unhandled stream error event on open/write failures.
+    this.stream.on('error', () => {});
     this.currentFilePath = filePath;
   }
 
-  async write(entry: LogEntry): Promise<void> {
+  private async writeEntry(entry: LogEntry): Promise<void> {
     await this.openStreamIfNeeded(entry.timestamp);
     return new Promise((resolve, reject) => {
       const line = this.opts.formatter.format(entry) + '\n';
@@ -51,16 +55,25 @@ export class FileTransport implements LogTransport {
     });
   }
 
+  write(entry: LogEntry): Promise<void> {
+    const task = this.pending.then(() => this.writeEntry(entry));
+    this.pending = task.catch(() => {});
+    return task;
+  }
+
   async flush(): Promise<void> {
-    if (!this.stream) return;
-    await new Promise<void>((resolve) =>
-      this.stream!.once('drain', () => resolve()),
-    );
+    await this.pending;
   }
 
   async close(): Promise<void> {
+    await this.pending;
+    await this.closeStream();
+  }
+
+  private async closeStream(): Promise<void> {
     if (!this.stream) return;
-    await new Promise<void>((resolve) => this.stream!.end(resolve));
+    if (!this.stream.destroyed)
+      await new Promise<void>((resolve) => this.stream!.end(resolve));
     this.stream = undefined;
     this.currentFilePath = undefined;
   }

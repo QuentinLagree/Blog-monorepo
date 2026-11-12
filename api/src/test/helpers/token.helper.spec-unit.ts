@@ -13,15 +13,11 @@ describe('TOKEN', () => {
     });
 
     it('should throw error if token is not hexadecimal', () => {
-      expect(() => TOKEN.add('invalid-token')).toThrow(
-        TokenInvalidFormat
-      );
+      expect(() => TOKEN.add('invalid-token')).toThrow(TokenInvalidFormat);
     });
 
     it('should throw error if token is too short', () => {
-      expect(() => TOKEN.add('123abc')).toThrow(
-        TokenInvalidFormat
-      );
+      expect(() => TOKEN.add('123abc')).toThrow(TokenInvalidFormat);
     });
   });
 
@@ -33,5 +29,20 @@ describe('TOKEN', () => {
     it('should return false for invalid token', () => {
       expect(TOKEN.hasValid('invalid-token')).toBe(false);
     });
+  });
+
+  describe('exact token length', () => {
+    it.each([VALID_TOKEN + 'a', '!' + VALID_TOKEN, VALID_TOKEN + '\n'])(
+      'should reject a token with extra characters: %s',
+      (value) => {
+        expect(() => TOKEN.add(value)).toThrow(TokenInvalidFormat);
+      },
+    );
+    it.each([VALID_TOKEN + 'a', '!' + VALID_TOKEN, VALID_TOKEN + '\n'])(
+      'should report an oversized or prefixed token as invalid: %s',
+      (value) => {
+        expect(TOKEN.hasValid(value)).toBe(false);
+      },
+    );
   });
 });

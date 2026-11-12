@@ -1,8 +1,9 @@
 // src/commons/redis/redis.module.ts
 import { Global, Module, Provider } from '@nestjs/common';
 import Redis, { RedisOptions } from 'ioredis';
-import { REDIS } from './redis.token';
+import { REDIS, REDIS_HTTP } from './redis.token';
 import { RedisService } from './redis.service';
+import { RedisController } from './redis.controller';
 
 const RedisProvider: Provider = {
   provide: REDIS,
@@ -19,9 +20,42 @@ const RedisProvider: Provider = {
   },
 };
 
+const HttpRedisProvider: Provider = {
+  provide: REDIS_HTTP,
+  useFactory: async () => {
+    const client = new Redis(process.env['REDIS_URL'] ?? 'redis://redis:6379', {
+      maxRetriesPerRequest: 1,
+      enableOfflineQueue: false,
+      commandTimeout: 1500,
+      connectTimeout: 1500,
+      lazyConnect: true,
+    });
+    client.on('error', (error) => console.error('[redis-http]', error.message));
+    let timer: ReturnType<typeof setTimeout>;
+    try {
+      await Promise.race([
+        client.connect(),
+        new Promise<never>((_, reject) => {
+          timer = setTimeout(
+            () => reject(new Error('Redis HTTP startup timed out')),
+            1500,
+          );
+        }),
+      ]);
+    } catch (error) {
+      client.disconnect();
+      throw error;
+    } finally {
+      clearTimeout(timer);
+    }
+    return client;
+  },
+};
+
 @Global()
 @Module({
-  providers: [RedisProvider, RedisService],
-  exports: [REDIS],
+  controllers: [RedisController],
+  providers: [RedisProvider, HttpRedisProvider, RedisService],
+  exports: [REDIS, REDIS_HTTP],
 })
 export class RedisModule {}

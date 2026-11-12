@@ -12,20 +12,25 @@ import {
   Post,
   Session,
   UseGuards,
-  UseInterceptors
 } from '@nestjs/common';
-import { ApiBody, ApiCookieAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiCookieAuth,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { createAuthGuardSession } from 'src/commons/guards/AuthGuardsSession.guard';
 import { makeMessage } from 'src/commons/logger/logger.helper';
 import { Message } from 'src/commons/types/dto/message/message';
 import { StatusReadingDto } from './dto/status-reading.dto';
 import { UpdatePostReadingDto } from './dto/update-post-reading.dto';
 import { StatusLikeDto } from '../post/dto/status-like.dto';
-import { PostsEntity } from '../post/entities/posts.entities';
+
 import { ArticleService } from '../post/posts.service';
-import { UserEntity } from '../user/entities/user.entities';
+
 import { UserService } from '../user/user.service';
-import { PostRead } from '@prisma/client';
+
 import { ApiMessageResponse } from 'src/commons/decorators/api-message-response.decorator';
 import { ApiExceptionsResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { CurrentUser } from '../me/decorators/current.decorator';
@@ -43,22 +48,24 @@ export class UserActivityController {
   constructor(
     private readonly _user: UserService,
     private readonly _posts: ArticleService,
-  ) { }
+  ) {}
 
   @ApiOperation({
-    summary: 'Ajout d\'un like sur un article.',
-    description: "L'utilisateur a ajouté un like sur un article. Il faut être connecté et également l'article ne doit pas appartenir à l'utilisateur connecté pour effectué cette action."
+    summary: "Ajout d'un like sur un article.",
+    description:
+      "L'utilisateur a ajouté un like sur un article. Il faut être connecté et également l'article ne doit pas appartenir à l'utilisateur connecté pour effectué cette action.",
   })
   @ApiMessageResponse(StatusLikeDto, {
-    description: "Le like a été ajouté avec succès. Si l'utilisateur est bien connecté.",
-    messageExemple: "Le like a été effectué avec succès.",
-    status: 201
+    description:
+      "Le like a été ajouté avec succès. Si l'utilisateur est bien connecté.",
+    messageExemple: 'Le like a été effectué avec succès.',
+    status: 201,
   })
   @ApiParam({
     name: 'postId',
     description: "L'identifiant unique de l'article.",
     required: true,
-    type: "number"
+    type: 'number',
   })
   @ApiExceptionsResponse([
     PostDoesntLikeOrUnlikeAlready,
@@ -69,17 +76,15 @@ export class UserActivityController {
   @Post(':postId/add-like')
   async likePost(
     @Param('postId', ParseIntPipe) postId: number,
-    @CurrentUser() user: UserSession
+    @CurrentUser() user: UserSession,
   ): Promise<Message<StatusLikeDto>> {
+    await this._posts.showForReader({ id: postId }, user);
     await this._user.addLike({
       user_id: user.id,
       post_id: postId,
     });
 
-    const status = await this._posts.getLikeStatus(
-      user.id,
-      postId,
-    );
+    const status = await this._posts.getLikeStatus(user.id, postId);
 
     return makeMessage(
       `Like post ${postId}`,
@@ -90,18 +95,20 @@ export class UserActivityController {
 
   @ApiOperation({
     summary: "Supprimer un like d'un article.",
-    description: "L'utilisateur a supprimé un like sur un article. Il faut être connecté et également l'article ne doit pas appartenir à l'utilisateur connecté pour effectué cette action."
+    description:
+      "L'utilisateur a supprimé un like sur un article. Il faut être connecté et également l'article ne doit pas appartenir à l'utilisateur connecté pour effectué cette action.",
   })
   @ApiMessageResponse(StatusLikeDto, {
-    description: "Le like a été supprimé avec succès. Si l'utilisateur est bien connecté.",
-    messageExemple: "Le like a été supprimé avec succès.",
-    status: 201
+    description:
+      "Le like a été supprimé avec succès. Si l'utilisateur est bien connecté.",
+    messageExemple: 'Le like a été supprimé avec succès.',
+    status: 201,
   })
   @ApiParam({
     name: 'postId',
     description: "L'identifiant unique de l'article.",
     required: true,
-    type: "number"
+    type: 'number',
   })
   @ApiExceptionsResponse([
     PostDoesntLikeOrUnlikeAlready,
@@ -115,16 +122,14 @@ export class UserActivityController {
     @Session() session: secureSession.Session,
   ): Promise<Message<StatusLikeDto>> {
     const sessionUser = session.get('user');
+    await this._posts.showForReader({ id: postId }, sessionUser);
 
     await this._user.unlikePost({
       user_id: sessionUser.id,
       post_id: postId,
     });
 
-    const status = await this._posts.getLikeStatus(
-      sessionUser.id,
-      postId,
-    );
+    const status = await this._posts.getLikeStatus(sessionUser.id, postId);
 
     return makeMessage(
       `Unlike post ${postId}`,
@@ -135,31 +140,29 @@ export class UserActivityController {
 
   @ApiOperation({
     summary: 'Récupérer le status du like',
-    description: "Récupère le status de like d'un article grâce à son id unique. Il faut être connecté."
+    description:
+      "Récupère le status de like d'un article grâce à son id unique. Il faut être connecté.",
   })
   @ApiMessageResponse(StatusLikeDto, {
-    description: "Données représentant le status du like d'une publication. Si l'utilisateur connecté à liker l'article (liked?) et le nombre de likes total de l'article.",
-    messageExemple: "Statut du like de l'article."
+    description:
+      "Données représentant le status du like d'une publication. Si l'utilisateur connecté à liker l'article (liked?) et le nombre de likes total de l'article.",
+    messageExemple: "Statut du like de l'article.",
   })
   @ApiParam({
     name: 'postId',
     description: "L'identifiant unique de l'article.",
     required: true,
-    type: "number"
+    type: 'number',
   })
-  @ApiExceptionsResponse([
-    UserNotHaveAuthorisation,
-  ])
+  @ApiExceptionsResponse([UserNotHaveAuthorisation])
   @HttpCode(200)
   @Get(':postId/like-status')
   async getLikeStatus(
     @Param('postId', ParseIntPipe) postId: number,
     @CurrentUser() user: UserSession,
   ): Promise<Message<StatusLikeDto>> {
-    const status = await this._posts.getLikeStatus(
-      user.id,
-      postId,
-    );
+    await this._posts.showForReader({ id: postId }, user);
+    const status = await this._posts.getLikeStatus(user.id, postId);
 
     return makeMessage(
       `Get like status ${postId}`,
@@ -169,35 +172,31 @@ export class UserActivityController {
   }
 
   @ApiOperation({
-    summary: "Récupérer la progression de lecture d'un article grâce à l'id unique de celui-ci.",
-    description: "Récupère la progression de lecture d'un article avec son identifiant unique. Il faut être connecté pour effectuer cette action."
+    summary:
+      "Récupérer la progression de lecture d'un article grâce à l'id unique de celui-ci.",
+    description:
+      "Récupère la progression de lecture d'un article avec son identifiant unique. Il faut être connecté pour effectuer cette action.",
   })
   @ApiMessageResponse(StatusReadingDto, {
-    description: "La progression a été trouvé.",
-    messageExemple: "Statut de lecture de l'article."
+    description: 'La progression a été trouvé.',
+    messageExemple: "Statut de lecture de l'article.",
   })
-  @ApiExceptionsResponse([
-    UserNotHaveAuthorisation,
-    PostNotFoundException
-  ])
+  @ApiExceptionsResponse([UserNotHaveAuthorisation, PostNotFoundException])
   @ApiParam({
     name: 'postId',
     description: "L'identifiant unique de l'article.",
     required: true,
-    type: "number"
+    type: 'number',
   })
   @HttpCode(200)
   @Get(':postId/reading-status')
   async getReadingStatus(
     @Param('postId', ParseIntPipe)
     postId: number,
-    @CurrentUser() user: UserSession
+    @CurrentUser() user: UserSession,
   ): Promise<Message<StatusReadingDto>> {
-    const status =
-      await this._posts.getReadingStatus(
-        user.id,
-        postId,
-      );
+    await this._posts.showForReader({ id: postId }, user);
+    const status = await this._posts.getReadingStatus(user.id, postId);
 
     return makeMessage(
       `Reading status for post ${postId}`,
@@ -206,53 +205,50 @@ export class UserActivityController {
     );
   }
 
-
   @ApiOperation({
-    summary: "Modifier la progression de lecture d'un article grâce à l'id unique de celui-ci.",
-    description: "Modifie la progression de lecture d'un article avec son identifiant unique. Il faut être connecté pour effectuer cette action."
+    summary:
+      "Modifier la progression de lecture d'un article grâce à l'id unique de celui-ci.",
+    description:
+      "Modifie la progression de lecture d'un article avec son identifiant unique. Il faut être connecté pour effectuer cette action.",
   })
   @ApiBody({
     type: UpdatePostReadingDto,
-    description: "Le format de la progression à saisir.",
+    description: 'Le format de la progression à saisir.',
     examples: {
       default: {
-        summary: "Valeur intermédiaire",
-        description: "Progression intermédiaire",
+        summary: 'Valeur intermédiaire',
+        description: 'Progression intermédiaire',
         value: {
-          progress: 55
-        }
+          progress: 55,
+        },
       },
       hight: {
-        summary: "Valeur élevée",
-        description: "Forte progression",
+        summary: 'Valeur élevée',
+        description: 'Forte progression',
         value: {
-          progress: 98
-        }
+          progress: 98,
+        },
       },
       low: {
-        summary: "Valeur faible",
-        description: "Faible progression",
+        summary: 'Valeur faible',
+        description: 'Faible progression',
         value: {
-          progress: 8
-        }
-      }
+          progress: 8,
+        },
+      },
     },
   })
   @ApiMessageResponse(StatusReadingDto, {
-    description: "La progression a été sauvegardé.",
-    messageExemple: "La progression de lecture a été mise à jour."
+    description: 'La progression a été sauvegardé.',
+    messageExemple: 'La progression de lecture a été mise à jour.',
   })
-  @ApiExceptionsResponse([
-    UserNotHaveAuthorisation,
-    PostNotFoundException
-  ])
+  @ApiExceptionsResponse([UserNotHaveAuthorisation, PostNotFoundException])
   @ApiParam({
     name: 'postId',
     description: "L'identifiant unique de l'article.",
     required: true,
-    type: "number"
+    type: 'number',
   })
-
   @HttpCode(200)
   @Patch(':postId/reading-progress')
   async updateReadingProgress(
@@ -262,15 +258,15 @@ export class UserActivityController {
     @Body()
     payload: UpdatePostReadingDto,
 
-    @CurrentUser() user: UserSession
+    @CurrentUser() user: UserSession,
   ): Promise<Message<StatusReadingDto>> {
+    await this._posts.showForReader({ id: postId }, user);
 
-    const postRead =
-      await this._posts.updateReadingProgress(
-        user.id,
-        postId,
-        payload.progress,
-      );
+    const postRead = await this._posts.updateReadingProgress(
+      user.id,
+      postId,
+      payload.progress,
+    );
 
     return makeMessage(
       `Reading progress updated for post ${postId}`,
@@ -278,8 +274,8 @@ export class UserActivityController {
       {
         progress: postRead.progress,
         hasStarted: true,
-        completed: postRead.completed
-      }
+        completed: postRead.completed,
+      },
     );
   }
 }

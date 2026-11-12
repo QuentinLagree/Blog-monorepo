@@ -4,34 +4,34 @@ import { Exclude } from 'class-transformer';
 
 export class UserEntity implements User {
   @ApiProperty({
-    type: "string",
+    type: 'string',
     description: "Identifiant unique de l'utilisateur",
     example: 42,
   })
   id: number;
 
- @ApiProperty({
-    type: "string",
+  @ApiProperty({
+    type: 'string',
     description: "Le nom de famille de l'utilisateur",
-    example: "Doe"
+    example: 'Doe',
   })
   nom: string;
   @ApiProperty({
-    type: "string",
+    type: 'string',
     description: "Le prénom de l'utilisateur",
-    example: "John"
+    example: 'John',
   })
   prenom: string;
   @ApiProperty({
     type: 'string',
     description: "Le pseudonyme unique de l'utilisateur.",
-    example: "johndoe42"
+    example: 'johndoe42',
   })
   pseudo: string;
   @ApiProperty({
     type: 'string',
     description: "l'Email unique de l'utilisateur.",
-    example: "johndoe42@gmail.com"
+    example: 'johndoe42@gmail.com',
   })
   email: string;
 
@@ -45,26 +45,25 @@ export class UserEntity implements User {
   })
   role: string;
 
-  
   @ApiProperty({
     type: 'string',
     format: 'date-time',
-    description: "Date et heure de création du compte utilisateur.",
-    example: "2026-08-10T00:00:00.000Z"
+    description: 'Date et heure de création du compte utilisateur.',
+    example: '2026-08-10T00:00:00.000Z',
   })
   created_at: Date;
   @ApiProperty({
     type: 'string',
     format: 'date-time',
-    description: "Date et heure de modification du compte utilisateur.",
-    example: "2026-08-17T00:00:00.000Z"
+    description: 'Date et heure de modification du compte utilisateur.',
+    example: '2026-08-17T00:00:00.000Z',
   })
   updated_at: Date;
 
   @ApiProperty({
     type: 'array',
     description: "Publications de l'utilisateur.",
-    example: "[]"
+    example: '[]',
   })
   posts?: Post[];
 

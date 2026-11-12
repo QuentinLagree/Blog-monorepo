@@ -4,15 +4,19 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "deleteOutDir": true,
-    "builder": "swc",
+    "builder": {
+      "type": "swc",
+      "options": {
+        "ignore": ["**/test/**"]
+      }
+    },
     "typeCheck": true,
     "assets": [
       {
-        "include": "src/commons/mailing/mail/templates/*",
-        "outDir": "dist/commons/mailing/mail/templates"
+        "include": "commons/mailing/mail/templates/**/*",
+        "watchAssets": true
       }
     ],
     "watchAssets": true
-    
   }
 }

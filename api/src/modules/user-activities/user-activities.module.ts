@@ -5,15 +5,8 @@ import { PostOwnerOrAdminGuard } from 'src/commons/guards/post-owner-or-admin.gu
 import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [
-    UserModule,
-    PostsModule,
-  ],
-  controllers: [
-    UserActivityController,
-  ],
-  providers: [
-    PostOwnerOrAdminGuard,
-  ]
+  imports: [UserModule, PostsModule],
+  controllers: [UserActivityController],
+  providers: [PostOwnerOrAdminGuard],
 })
 export class UserPostsModule {}

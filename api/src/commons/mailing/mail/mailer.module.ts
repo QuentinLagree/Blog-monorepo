@@ -32,4 +32,4 @@ import { MailingService } from 'src/commons/mailing/mailing.service';
   providers: [MailingService],
   exports: [MailerModule, MailingService],
 })
-export class MailModule { }
+export class MailModule {}

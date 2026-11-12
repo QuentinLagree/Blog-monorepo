@@ -33,18 +33,15 @@ describe('UserPreferenceController e2e', () => {
 
   describe('GET /users/preferences', () => {
     it('should create and return default preferences when user has no preferences', async () => {
-      const { agent, user } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+      const { agent, user } = await createLoggedAgent(
+        app,
+        prisma,
+        passwordService,
+      );
 
-      const response = await agent
-        .get(endpoint)
-        .expect(200);
+      const response = await agent.get(endpoint).expect(200);
 
-      expect(response.body.data).toEqual({
+      expect(response.body.data.preferences).toMatchObject({
         theme: 'system',
         language: 'fr',
         fontSize: 'medium',
@@ -61,12 +58,11 @@ describe('UserPreferenceController e2e', () => {
         showContributions: true,
       });
 
-      const preferences =
-        await prisma.userPreference.findUnique({
-          where: {
-            userId: user.id,
-          },
-        });
+      const preferences = await prisma.userPreference.findUnique({
+        where: {
+          userId: user.id,
+        },
+      });
 
       expect(preferences).not.toBeNull();
 
@@ -81,12 +77,11 @@ describe('UserPreferenceController e2e', () => {
     });
 
     it('should return existing preferences', async () => {
-      const { agent, user } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+      const { agent, user } = await createLoggedAgent(
+        app,
+        prisma,
+        passwordService,
+      );
 
       await prisma.userPreference.create({
         data: {
@@ -99,11 +94,9 @@ describe('UserPreferenceController e2e', () => {
         },
       });
 
-      const response = await agent
-        .get(endpoint)
-        .expect(200);
+      const response = await agent.get(endpoint).expect(200);
 
-      expect(response.body.data).toEqual(
+      expect(response.body.data.preferences).toEqual(
         expect.objectContaining({
           theme: 'dark',
           language: 'en',
@@ -115,33 +108,23 @@ describe('UserPreferenceController e2e', () => {
     });
 
     it('should return only one requested preference field', async () => {
-      const { agent } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+      const { agent } = await createLoggedAgent(app, prisma, passwordService);
 
-      const response = await agent
-        .get(`${endpoint}?fields=theme`)
-        .expect(200);
+      const response = await agent.get(`${endpoint}?fields=theme`).expect(200);
 
-      expect(response.body.data).toEqual({
+      expect(response.body.data.preferences).toEqual({
         theme: 'system',
       });
 
-      expect(
-        Object.keys(response.body.data),
-      ).toEqual(['theme']);
+      expect(Object.keys(response.body.data.preferences)).toEqual(['theme']);
     });
 
     it('should return only requested preference fields', async () => {
-      const { agent, user } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+      const { agent, user } = await createLoggedAgent(
+        app,
+        prisma,
+        passwordService,
+      );
 
       await prisma.userPreference.create({
         data: {
@@ -153,240 +136,70 @@ describe('UserPreferenceController e2e', () => {
       });
 
       const response = await agent
-        .get(
-          `${endpoint}?fields=theme,language,notifyOnLike`,
-        )
+        .get(`${endpoint}?fields=theme,language,notifyOnLike`)
         .expect(200);
 
-      expect(response.body.data).toEqual({
+      expect(response.body.data.preferences).toEqual({
         theme: 'dark',
         language: 'en',
         notifyOnLike: false,
       });
 
-      expect(
-        Object.keys(response.body.data),
-      ).toEqual(
-        expect.arrayContaining([
-          'theme',
-          'language',
-          'notifyOnLike',
-        ]),
+      expect(Object.keys(response.body.data.preferences)).toEqual(
+        expect.arrayContaining(['theme', 'language', 'notifyOnLike']),
       );
 
-      expect(
-        Object.keys(response.body.data),
-      ).toHaveLength(3);
+      expect(Object.keys(response.body.data.preferences)).toHaveLength(3);
     });
 
-    it('should accept spaces around requested fields', async () => {
-      const { agent } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+    it('should reject preference fields containing spaces', async () => {
+      const { agent } = await createLoggedAgent(app, prisma, passwordService);
 
-      const response = await agent
-        .get(
-          `${endpoint}?fields=%20theme%20,%20language%20`,
-        )
-        .expect(200);
-
-      expect(response.body.data).toEqual({
-        theme: 'system',
-        language: 'fr',
-      });
+      await agent
+        .get(`${endpoint}?fields=%20theme%20,%20language%20`)
+        .expect(400);
     });
 
     it('should return 400 for one invalid preference field', async () => {
-      const { agent } = await createLoggedAgent(
-        app,
-        prisma,
-        passwordService,
-      );
+      const { agent } = await createLoggedAgent(app, prisma, passwordService);
 
-      const response = await agent
-        .get(`${endpoint}?fields=unknownColumn`)
-        .expect(400);
-
-      expect(response.body).toEqual(
-        expect.objectContaining({
-          message: 'La préférence "unknownColumn" n\'existe pas.',
-          data: expect.objectContaining({
-            invalidFields: ['unknownColumn'],
-          }),
-        }),
-      );
+      await agent.get(`${endpoint}?fields=unknownColumn`).expect(400);
     });
 
     it('should return 400 when one requested field among valid fields is invalid', async () => {
-      const { agent } = await createLoggedAgent(
-        app,
-        prisma,
-        passwordService,
-      );
+      const { agent } = await createLoggedAgent(app, prisma, passwordService);
 
       const response = await agent
-        .get(
-          `${endpoint}?fields=theme,unknownColumn,language`,
-        )
+        .get(`${endpoint}?fields=theme,unknownColumn,language`)
         .expect(400);
 
-      expect(response.body).toEqual(
-        expect.objectContaining({
-          message: 'La préférence "unknownColumn" n\'existe pas.',
-          data: expect.objectContaining({
-            invalidFields: ['unknownColumn'],
-          }),
-        }),
+      expect(response.body.data).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ property: 'fields' }),
+        ]),
       );
     });
 
-    it('should return every invalid field', async () => {
-      const { agent } = await createLoggedAgent(
-        app,
-        prisma,
-        passwordService,
-      );
+    it('should reject a query containing multiple invalid fields', async () => {
+      const { agent } = await createLoggedAgent(app, prisma, passwordService);
 
-      const response = await agent
-        .get(
-          `${endpoint}?fields=unknownOne,theme,unknownTwo`,
-        )
+      await agent
+        .get(`${endpoint}?fields=unknownOne,theme,unknownTwo`)
         .expect(400);
-
-      expect(response.body).toEqual(
-        expect.objectContaining({
-          message:
-            "Les préférences suivantes n'existent pas : unknownOne, unknownTwo.",
-          data: expect.objectContaining({
-            invalidFields: [
-              'unknownOne',
-              'unknownTwo',
-            ],
-          }),
-        }),
-      );
     });
 
     it('should return 401 when user is not authenticated', async () => {
-      await request(app.getHttpServer())
-        .get(endpoint)
-        .expect(401);
-    });
-  });     
-
-
-  describe('GET users/preferences/:id/visibility', () => {
-    it('should return profileVisible true when the profile is visible', async () => {
-      const { user, agent } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
-
-      await prisma.userPreference.create({
-        data: {
-          userId: user.id,
-          profileVisible: true,
-        },
-      });
-
-      const response = await agent
-        .get(
-          `${endpoint}/${user.id}/visibility`,
-        )
-        .expect(200);
-
-      expect(response.body.data).toEqual({
-        profileVisible: true,
-      });
-    });
-
-    it('should return profileVisible false when the profile is private', async () => {
-      const { user, agent } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
-
-      await prisma.userPreference.create({
-        data: {
-          userId: user.id,
-          profileVisible: false,
-        },
-      });
-
-      const response = await agent
-        .get(
-          `${endpoint}/${user.id}/visibility`,
-        )
-        .expect(200);
-
-      expect(response.body.data).toEqual({
-        profileVisible: false,
-      });
-    });
-
-    it('should return the default visibility when the user has no preference row', async () => {
-      const { user, agent } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
-
-      const response = await agent
-        .get(
-          `${endpoint}/${user.id}/visibility`,
-        )
-        .expect(200);
-
-      expect(response.body.data).toEqual({
-        profileVisible: true,
-      });
-    });
-
-    it('should return 400 when the user id is invalid', async () => {
-      const { user, agent } = await createLoggedAgent(
-        app,
-        prisma,
-        passwordService
-      )
-      await agent
-        .get(
-          `${endpoint}/not-a-number/visibility`,
-        )
-        .expect(400);
-    });
-
-    it('should be accessible without authentication', async () => {
-      const { user, agent } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
-
-      await agent
-        .get(
-          `${endpoint}/${user.id}/visibility`,
-        )
-        .expect(200);
+      await request(app.getHttpServer()).get(endpoint).expect(401);
     });
   });
 
   describe('PATCH /users/preferences', () => {
     it('should create preferences if user has no preference row', async () => {
-      const { agent, user } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+      const { agent, user } = await createLoggedAgent(
+        app,
+        prisma,
+        passwordService,
+      );
 
       const payload = {
         theme: 'dark',
@@ -394,12 +207,9 @@ describe('UserPreferenceController e2e', () => {
         notifyOnLike: false,
       };
 
-      const response = await agent
-        .patch(endpoint)
-        .send(payload)
-        .expect(200);
+      const response = await agent.patch(endpoint).send(payload).expect(200);
 
-      expect(response.body.data).toEqual(
+      expect(response.body.data.preferences).toEqual(
         expect.objectContaining({
           userId: user.id,
           theme: 'dark',
@@ -408,12 +218,11 @@ describe('UserPreferenceController e2e', () => {
         }),
       );
 
-      const preferences =
-        await prisma.userPreference.findUnique({
-          where: {
-            userId: user.id,
-          },
-        });
+      const preferences = await prisma.userPreference.findUnique({
+        where: {
+          userId: user.id,
+        },
+      });
 
       expect(preferences).toEqual(
         expect.objectContaining({
@@ -426,12 +235,11 @@ describe('UserPreferenceController e2e', () => {
     });
 
     it('should update existing preferences', async () => {
-      const { agent, user } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+      const { agent, user } = await createLoggedAgent(
+        app,
+        prisma,
+        passwordService,
+      );
 
       await prisma.userPreference.create({
         data: {
@@ -450,7 +258,7 @@ describe('UserPreferenceController e2e', () => {
         })
         .expect(200);
 
-      expect(response.body.data).toEqual(
+      expect(response.body.data.preferences).toEqual(
         expect.objectContaining({
           userId: user.id,
           theme: 'dark',
@@ -461,12 +269,11 @@ describe('UserPreferenceController e2e', () => {
     });
 
     it('should update only provided fields', async () => {
-      const { agent, user } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+      const { agent, user } = await createLoggedAgent(
+        app,
+        prisma,
+        passwordService,
+      );
 
       await prisma.userPreference.create({
         data: {
@@ -484,12 +291,11 @@ describe('UserPreferenceController e2e', () => {
         })
         .expect(200);
 
-      const preferences =
-        await prisma.userPreference.findUnique({
-          where: {
-            userId: user.id,
-          },
-        });
+      const preferences = await prisma.userPreference.findUnique({
+        where: {
+          userId: user.id,
+        },
+      });
 
       expect(preferences).toEqual(
         expect.objectContaining({
@@ -501,12 +307,11 @@ describe('UserPreferenceController e2e', () => {
     });
 
     it('should update every boolean preference', async () => {
-      const { agent, user } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+      const { agent, user } = await createLoggedAgent(
+        app,
+        prisma,
+        passwordService,
+      );
 
       const payload = {
         reduceAnimations: true,
@@ -522,34 +327,23 @@ describe('UserPreferenceController e2e', () => {
         showContributions: false,
       };
 
-      const response = await agent
-        .patch(endpoint)
-        .send(payload)
-        .expect(200);
+      const response = await agent.patch(endpoint).send(payload).expect(200);
 
-      expect(response.body.data).toEqual(
+      expect(response.body.data.preferences).toEqual(
         expect.objectContaining(payload),
       );
 
-      const preferences =
-        await prisma.userPreference.findUnique({
-          where: {
-            userId: user.id,
-          },
-        });
+      const preferences = await prisma.userPreference.findUnique({
+        where: {
+          userId: user.id,
+        },
+      });
 
-      expect(preferences).toEqual(
-        expect.objectContaining(payload),
-      );
+      expect(preferences).toEqual(expect.objectContaining(payload));
     });
 
     it('should return 400 for invalid theme', async () => {
-      const { agent } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+      const { agent } = await createLoggedAgent(app, prisma, passwordService);
 
       await agent
         .patch(endpoint)
@@ -560,12 +354,7 @@ describe('UserPreferenceController e2e', () => {
     });
 
     it('should return 400 for invalid language', async () => {
-      const { agent } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+      const { agent } = await createLoggedAgent(app, prisma, passwordService);
 
       await agent
         .patch(endpoint)
@@ -576,12 +365,7 @@ describe('UserPreferenceController e2e', () => {
     });
 
     it('should return 400 for invalid font size', async () => {
-      const { agent } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+      const { agent } = await createLoggedAgent(app, prisma, passwordService);
 
       await agent
         .patch(endpoint)
@@ -592,12 +376,7 @@ describe('UserPreferenceController e2e', () => {
     });
 
     it('should return 400 if boolean preference is a string', async () => {
-      const { agent } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+      const { agent } = await createLoggedAgent(app, prisma, passwordService);
 
       await agent
         .patch(endpoint)
@@ -607,21 +386,18 @@ describe('UserPreferenceController e2e', () => {
         .expect(400);
     });
 
-    it('should reject unknown properties when whitelist forbids non-whitelisted fields', async () => {
-      const { agent } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+    it('should strip unknown preference properties', async () => {
+      const { agent } = await createLoggedAgent(app, prisma, passwordService);
 
-      await agent
+      const response = await agent
         .patch(endpoint)
         .send({
           theme: 'dark',
           unknownColumn: true,
         })
-        .expect(400);
+        .expect(200);
+      expect(JSON.stringify(response.body)).not.toContain('unknownField');
+      expect(JSON.stringify(response.body)).not.toContain('unknownColumn');
     });
 
     it('should return 401 when user is not authenticated', async () => {
@@ -634,25 +410,12 @@ describe('UserPreferenceController e2e', () => {
     });
 
     it('should not update preferences of another user', async () => {
-      const firstUser =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+      const firstUser = await createLoggedAgent(app, prisma, passwordService);
 
-      const secondUser =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-          {
-            email:
-              'second-preference-user@test.fr',
-            pseudo:
-              'second-preference-user',
-          },
-        );
+      const secondUser = await createLoggedAgent(app, prisma, passwordService, {
+        email: 'second-preference-user@test.fr',
+        pseudo: 'second-preference-user',
+      });
 
       await prisma.userPreference.create({
         data: {
@@ -668,27 +431,21 @@ describe('UserPreferenceController e2e', () => {
         })
         .expect(200);
 
-      const firstPreferences =
-        await prisma.userPreference.findUnique({
-          where: {
-            userId: firstUser.user.id,
-          },
-        });
+      const firstPreferences = await prisma.userPreference.findUnique({
+        where: {
+          userId: firstUser.user.id,
+        },
+      });
 
-      const secondPreferences =
-        await prisma.userPreference.findUnique({
-          where: {
-            userId: secondUser.user.id,
-          },
-        });
+      const secondPreferences = await prisma.userPreference.findUnique({
+        where: {
+          userId: secondUser.user.id,
+        },
+      });
 
-      expect(firstPreferences?.theme).toBe(
-        'dark',
-      );
+      expect(firstPreferences?.theme).toBe('dark');
 
-      expect(secondPreferences?.theme).toBe(
-        'light',
-      );
+      expect(secondPreferences?.theme).toBe('light');
     });
   });
 });

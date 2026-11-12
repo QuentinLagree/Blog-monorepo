@@ -15,8 +15,6 @@ import { moduleModules } from './modules/app-modules';
     ConfigurationModule,
     ...moduleModules,
   ],
-  providers: [
-    LoggerService,
-  ],
+  providers: [LoggerService],
 })
 export class AppModule {}

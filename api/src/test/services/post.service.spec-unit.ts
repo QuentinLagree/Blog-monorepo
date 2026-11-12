@@ -8,36 +8,37 @@ import { CreatePostDto } from 'src/modules/post/dto/create.post.dto';
 import { UpdatePostDto } from 'src/modules/post/dto/update.post.dto';
 import { PublishedPostDto } from 'src/modules/post/dto/published-post.dto';
 import { PaginationDto } from 'src/modules/pagination/pagination.dto';
+import { userSelectPayload } from 'src/modules/user/user.service';
 
 describe('ArticleService', () => {
   let articleService: ArticleService;
 
   const prismaMock = {
-  $transaction: jest.fn(),
+    $transaction: jest.fn(),
 
-  post: {
-    count: jest.fn(),
-    findMany: jest.fn(),
-    findUnique: jest.fn(),
-    create: jest.fn(),
-    update: jest.fn(),
-    delete: jest.fn(),
-  },
+    post: {
+      count: jest.fn(),
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    },
 
-  user: {
-    findUnique: jest.fn(),
-  },
+    user: {
+      findUnique: jest.fn(),
+    },
 
-  like: {
-    count: jest.fn(),
-    findUnique: jest.fn(),
-  },
+    like: {
+      count: jest.fn(),
+      findUnique: jest.fn(),
+    },
 
-  postRead: {
-    findUnique: jest.fn(),
-    upsert: jest.fn(),
-  },
-};
+    postRead: {
+      findUnique: jest.fn(),
+      upsert: jest.fn(),
+    },
+  };
 
   const createPostMock = (override = {}) => ({
     id: 1,
@@ -64,22 +65,90 @@ describe('ArticleService', () => {
     ...override,
   });
 
-  beforeEach(() => {
-    jest.clearAllMocks();
+  const createPostWithCountMock = (override = {}) => {
+    const {
+      created_at: _created_at,
+      content: _content,
+      ...postWithoutContent
+    } = createPostMock();
+    return {
+      author: {
+        id: 1,
+        pseudo: 'testuser',
+      },
+      _count: {
+        likes: 5,
+      },
+      ...postWithoutContent,
+      ...override,
+    };
+  };
 
-    articleService = new ArticleService(
-      prismaMock as unknown as PrismaService,
-    );
+  beforeEach(() => {
+    jest.resetAllMocks();
+
+    articleService = new ArticleService(prismaMock as unknown as PrismaService);
   });
 
-  describe('countAll', () => {
+  describe('count', () => {
     it('should count all posts', async () => {
       prismaMock.post.count.mockResolvedValue(5);
 
-      const response = await articleService.countAll();
+      const response = await articleService.count();
+
+      expect(prismaMock.post.count).toHaveBeenCalledWith({
+        where: {},
+      });
+      expect(prismaMock.post.count).toHaveBeenCalledTimes(1);
+      expect(response).toBe(5);
+    });
+
+    it('should return 0 when no posts exist', async () => {
+      prismaMock.post.count.mockResolvedValue(0);
+      const response = await articleService.count();
+
+      expect(prismaMock.post.count).toHaveBeenCalledWith({
+        where: {},
+      });
+      expect(prismaMock.post.count).toHaveBeenCalledTimes(1);
+      expect(response).toBe(0);
+    });
+
+    it('should count only published posts when published is true', async () => {
+      prismaMock.post.count.mockResolvedValue(5);
+
+      const response = await articleService.count(true);
+
+      expect(prismaMock.post.count).toHaveBeenCalledWith({
+        where: {
+          published_at: {
+            not: null,
+          },
+        },
+      });
 
       expect(prismaMock.post.count).toHaveBeenCalledTimes(1);
       expect(response).toBe(5);
+    });
+    it('should count only draft posts when published is false', async () => {
+      prismaMock.post.count.mockResolvedValue(5);
+
+      const response = await articleService.count(false);
+
+      expect(prismaMock.post.count).toHaveBeenCalledWith({
+        where: {
+          published_at: null,
+        },
+      });
+
+      expect(prismaMock.post.count).toHaveBeenCalledTimes(1);
+      expect(response).toBe(5);
+    });
+    it('should propagate the error when Prisma count fails', async () => {
+      const error = new Error('Database error');
+      prismaMock.post.count.mockRejectedValue(error);
+
+      await expect(articleService.count()).rejects.toThrow(error);
     });
   });
 
@@ -88,28 +157,54 @@ describe('ArticleService', () => {
       const paginationDto = {
         page: 1,
         limit: 10,
+        published: false,
       } as PaginationDto;
 
       const posts = [
-        createPostMock({ id: 1 }),
-        createPostMock({ id: 2 }),
+        createPostWithCountMock({ id: 1 }),
+        createPostWithCountMock({
+          id: 2,
+          _count: {
+            likes: 8,
+          },
+        }),
       ];
 
-      prismaMock.post.findMany.mockReturnValue(posts as any);
-      prismaMock.post.count.mockReturnValue(2 as any);
+      prismaMock.post.findMany.mockReturnValue(posts);
+      prismaMock.post.count.mockReturnValue(50);
 
-      prismaMock.$transaction.mockResolvedValue([
-        posts,
-        2,
-      ]);
+      prismaMock.$transaction.mockResolvedValue([posts, 50]);
 
       const response = await articleService.index(paginationDto);
 
-      expect(prismaMock.post.findMany).toHaveBeenCalledWith({
-        take: 10,
-        skip: 0,
-        where: {},
-      });
+      expect(response[0]).toHaveLength(2); // Vérifie le nombre d'article retourné.
+
+      expect(prismaMock.post.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          take: 10,
+          skip: 0,
+          where: {
+            published_at: null,
+          },
+          omit: {
+            created_at: true,
+            content: true,
+          },
+          include: expect.objectContaining({
+            _count: {
+              select: {
+                likes: true,
+              },
+            },
+            author: {
+              select: {
+                id: true,
+                pseudo: true,
+              },
+            },
+          }),
+        }),
+      );
 
       expect(prismaMock.post.count).toHaveBeenCalledWith({
         where: {
@@ -117,16 +212,24 @@ describe('ArticleService', () => {
         },
       });
 
-      expect(prismaMock.$transaction).toHaveBeenCalled();
+      expect(prismaMock.$transaction).toHaveBeenCalledWith([posts, 50]);
 
-      expect(response).toEqual([
-        posts,
-        {
-          currentPage: 1,
-          limit: 10,
-          totalArticle: 2,
-        },
-      ]);
+      response[0].forEach((post, index) => {
+        const mock = posts[index];
+        expect(post.id).toBe(mock.id);
+        expect(post.like.count).toBe(mock._count.likes);
+        expect(post.author.id).toBe(1);
+        expect(post.author.pseudo).toBe('testuser');
+        expect(post).not.toHaveProperty('_count');
+        expect(post).not.toHaveProperty('created_at');
+        expect(post).not.toHaveProperty('content');
+      });
+
+      expect(response[1]).toEqual({
+        currentPage: 1,
+        limit: 10,
+        totalArticle: 50,
+      });
     });
 
     it('should calculate the correct skip value', async () => {
@@ -136,63 +239,49 @@ describe('ArticleService', () => {
       } as PaginationDto;
 
       const posts = [
-        createPostMock({ id: 11 }),
-        createPostMock({ id: 12 }),
+        createPostWithCountMock({ id: 11 }),
+        createPostWithCountMock({ id: 12 }),
       ];
 
-      prismaMock.post.findMany.mockReturnValue(posts as any);
-      prismaMock.post.count.mockReturnValue(12 as any);
+      prismaMock.post.findMany.mockReturnValue(posts);
+      prismaMock.post.count.mockReturnValue(12);
 
-      prismaMock.$transaction.mockResolvedValue([
-        posts,
-        12,
-      ]);
+      prismaMock.$transaction.mockResolvedValue([posts, 12]);
 
-      const response = await articleService.index(paginationDto);
+      await articleService.index(paginationDto);
 
-      expect(prismaMock.post.findMany).toHaveBeenCalledWith({
-        take: 5,
-        skip: 10,
-        where: {},
-      });
-
-      expect(response).toEqual([
-        posts,
-        {
-          currentPage: 3,
-          limit: 5,
-          totalArticle: 12,
-        },
-      ]);
+      expect(prismaMock.post.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          take: 5,
+          skip: 10,
+        }),
+      );
     });
 
     it('should use default pagination values', async () => {
       const paginationDto = {} as PaginationDto;
 
-      prismaMock.post.findMany.mockReturnValue([] as any);
-      prismaMock.post.count.mockReturnValue(0 as any);
+      prismaMock.post.findMany.mockReturnValue([]);
+      prismaMock.post.count.mockReturnValue(0);
 
-      prismaMock.$transaction.mockResolvedValue([
-        [],
-        0,
-      ]);
+      prismaMock.$transaction.mockResolvedValue([[], 0]);
 
       const response = await articleService.index(paginationDto);
 
-      expect(prismaMock.post.findMany).toHaveBeenCalledWith({
-        take: 10,
-        skip: 0,
-        where: {},
-      });
+      expect(prismaMock.post.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          take: 10,
+          skip: 0,
+          where: {},
+        }),
+      );
 
-      expect(response).toEqual([
-        [],
-        {
+      expect(response[1]).toEqual(
+        expect.objectContaining({
           currentPage: 1,
           limit: 10,
-          totalArticle: 0,
-        },
-      ]);
+        }),
+      );
     });
 
     it('should return only published posts when published is true', async () => {
@@ -203,49 +292,42 @@ describe('ArticleService', () => {
       } as PaginationDto;
 
       const posts = [
-        createPostMock({
+        createPostWithCountMock({
           id: 1,
+          published_at: new Date(),
+        }),
+        createPostWithCountMock({
+          id: 2,
           published_at: new Date(),
         }),
       ];
 
-      prismaMock.post.findMany.mockReturnValue(posts as any);
-      prismaMock.post.count.mockReturnValue(1 as any);
+      prismaMock.post.findMany.mockReturnValue(posts);
+      prismaMock.post.count.mockReturnValue(2);
 
-      prismaMock.$transaction.mockResolvedValue([
-        posts,
-        1,
-      ]);
+      prismaMock.$transaction.mockResolvedValue([posts, 2]);
 
-      const response = await articleService.index(paginationDto);
+      await articleService.index(paginationDto);
 
-      expect(prismaMock.post.findMany).toHaveBeenCalledWith({
-        take: 10,
-        skip: 0,
-        where: {
-          postReads: {},
-          published_at: {
-            not: null,
+      expect(prismaMock.post.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            published_at: {
+              not: null,
+            },
           },
-        },
-      });
+        }),
+      );
 
-      expect(prismaMock.post.count).toHaveBeenCalledWith({
-        where: {
-          published_at: {
-            not: null,
+      expect(prismaMock.post.count).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            published_at: {
+              not: null,
+            },
           },
-        },
-      });
-
-      expect(response).toEqual([
-        posts,
-        {
-          currentPage: 1,
-          limit: 10,
-          totalArticle: 1,
-        },
-      ]);
+        }),
+      );
     });
 
     it('should return only drafts when published is false', async () => {
@@ -256,45 +338,121 @@ describe('ArticleService', () => {
       } as PaginationDto;
 
       const posts = [
-        createPostMock({
+        createPostWithCountMock({
           id: 1,
           published_at: null,
         }),
       ];
 
-      prismaMock.post.findMany.mockReturnValue(posts as any);
-      prismaMock.post.count.mockReturnValue(1 as any);
+      prismaMock.post.findMany.mockReturnValue(posts);
+      prismaMock.post.count.mockReturnValue(1);
 
-      prismaMock.$transaction.mockResolvedValue([
-        posts,
-        1,
-      ]);
+      prismaMock.$transaction.mockResolvedValue([posts, 1]);
 
-      const response = await articleService.index(paginationDto);
+      await articleService.index(paginationDto);
 
-      expect(prismaMock.post.findMany).toHaveBeenCalledWith({
-        take: 10,
-        skip: 0,
+      expect(prismaMock.post.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            published_at: null,
+          },
+        }),
+      );
+      expect(prismaMock.post.count).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            published_at: null,
+          },
+        }),
+      );
+    });
+
+    it('should apply unfinished reading filter for the current user', async () => {
+      const paginationDto = {
+        page: 1,
+        limit: 10,
+        reading: false,
+      } satisfies PaginationDto;
+
+      prismaMock.post.findMany.mockReturnValue([]);
+      prismaMock.post.count.mockReturnValue(0);
+
+      prismaMock.$transaction.mockResolvedValue([[], 0]);
+
+      await articleService.index(paginationDto, 5);
+
+      const postReadsFilter = {
         where: {
-          postReads: {},
-          published_at: null,
+          postReads: {
+            none: {
+              completed: true,
+              userId: 5,
+            },
+          },
         },
-      });
+      };
 
-      expect(prismaMock.post.count).toHaveBeenCalledWith({
-        where: {
-          published_at: null,
-        },
-      });
+      expect(prismaMock.post.findMany).toHaveBeenCalledWith(
+        expect.objectContaining(postReadsFilter),
+      );
 
-      expect(response).toEqual([
-        posts,
-        {
-          currentPage: 1,
-          limit: 10,
-          totalArticle: 1,
-        },
-      ]);
+      expect(prismaMock.post.count).toHaveBeenCalledWith(
+        expect.objectContaining(postReadsFilter),
+      );
+    });
+
+    it('should not apply reading filter when reading is true', async () => {
+      const paginationDto = {
+        page: 1,
+        limit: 10,
+        reading: true,
+      } satisfies PaginationDto;
+
+      prismaMock.post.findMany.mockReturnValue([]);
+      prismaMock.post.count.mockReturnValue(0);
+
+      prismaMock.$transaction.mockResolvedValue([[], 0]);
+
+      await articleService.index(paginationDto, 5);
+
+      const expectedWhere = {
+        where: {},
+      };
+
+      expect(prismaMock.post.findMany).toHaveBeenCalledWith(
+        expect.objectContaining(expectedWhere),
+      );
+
+      expect(prismaMock.post.count).toHaveBeenCalledWith(
+        expect.objectContaining(expectedWhere),
+      );
+    });
+
+    it('should not apply reading filter when userId is undefined', async () => {
+      const paginationDto = {
+        page: 1,
+        limit: 10,
+        reading: false,
+      } satisfies PaginationDto;
+
+      prismaMock.post.findMany.mockReturnValue([]);
+      prismaMock.post.count.mockReturnValue(0);
+
+      prismaMock.$transaction.mockResolvedValue([[], 0]);
+
+      await articleService.index(paginationDto);
+
+      const expectedWhere = {
+        where: {},
+      };
+
+      expect(prismaMock.post.findMany).toHaveBeenCalledWith(
+        expect.objectContaining(expectedWhere),
+      );
+
+      expect(prismaMock.post.count).toHaveBeenCalledWith(
+        expect.objectContaining(expectedWhere),
+      );
     });
 
     it('should throw an error if the transaction fails', async () => {
@@ -305,58 +463,138 @@ describe('ArticleService', () => {
 
       const error = new Error('Database error');
 
-      prismaMock.post.findMany.mockReturnValue([] as any);
-      prismaMock.post.count.mockReturnValue(0 as any);
+      prismaMock.post.findMany.mockReturnValue([]);
+      prismaMock.post.count.mockResolvedValue(0);
       prismaMock.$transaction.mockRejectedValue(error);
 
-      await expect(
-        articleService.index(paginationDto),
-      ).rejects.toThrow(error);
+      await expect(articleService.index(paginationDto)).rejects.toThrow(error);
 
       expect(prismaMock.$transaction).toHaveBeenCalled();
     });
   });
 
   describe('indexWhere', () => {
-    it('should return posts with where filter', async () => {
-      const where = {
-        authorId: 1,
-        published_at: null,
+    it('should return posts matching the where filter with their like counts', async () => {
+      const whereFilterAuthorId = {
+        authorId: 5,
       };
 
-      const posts = [createPostMock({ authorId: 1 })];
+      const posts = [
+        createPostWithCountMock({
+          authorId: 5,
+          author: {
+            id: 5,
+            pseudo: 'testuser',
+          },
+        }),
+      ];
 
       prismaMock.post.findMany.mockResolvedValue(posts);
 
-      const response = await articleService.indexWhere(where);
+      const response = await articleService.indexWhere(whereFilterAuthorId);
 
-      expect(prismaMock.post.findMany).toHaveBeenCalledWith({
-        where,
+      expect(prismaMock.post.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            authorId: 5,
+          },
+          omit: {
+            created_at: true,
+            content: true,
+          },
+          include: expect.objectContaining({
+            author: {
+              select: {
+                id: true,
+                pseudo: true,
+              },
+            },
+            _count: {
+              select: {
+                likes: true,
+              },
+            },
+          }),
+        }),
+      );
+
+      expect(response).toHaveLength(posts.length);
+
+      response.forEach((post, index) => {
+        const mock = posts[index];
+        expect(post.id).toBe(mock.id);
+        expect(post.like.count).toBe(mock._count.likes);
+        expect(post.author.id).toBe(mock.authorId);
+        expect(post.author.pseudo).toBe(mock.author.pseudo);
+        expect(post).not.toHaveProperty('_count');
+        expect(post).not.toHaveProperty('created_at');
+        expect(post).not.toHaveProperty('content');
+      });
+    });
+
+    it('should return an empty array when no posts match the where filter', async () => {
+      prismaMock.post.findMany.mockResolvedValue([]);
+
+      const response = await articleService.indexWhere({
+        authorId: 999,
       });
 
-      expect(response).toEqual(posts);
+      expect(prismaMock.post.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            authorId: 999,
+          },
+        }),
+      );
+
+      expect(response).toEqual([]);
+    });
+
+    it('should propagate the error when Prisma findMany fails', async () => {
+      const error = new Error('Database error');
+
+      prismaMock.post.findMany.mockRejectedValue(error);
+
+      await expect(articleService.indexWhere({})).rejects.toThrow(error);
     });
   });
 
   describe('indexOneWhere', () => {
-    it('should return one post with unique where', async () => {
-      const where = { id: 1 };
-      const post = createPostMock({ id: 1 });
+    it('should return a post when it matches the unique filter', async () => {
+      const post = createPostMock({ id: 5 });
 
       prismaMock.post.findUnique.mockResolvedValue(post);
 
-      const response = await articleService.indexOneWhere(where);
-
+      const response = await articleService.indexOneWhere({ id: 5 });
       expect(prismaMock.post.findUnique).toHaveBeenCalledWith({
-        where,
+        where: {
+          id: 5,
+        },
       });
 
       expect(response).toEqual(post);
     });
+
+    it('should return null when no post matchs the unique filter', async () => {
+      prismaMock.post.findUnique.mockResolvedValue(null);
+
+      await expect(
+        articleService.indexOneWhere({ id: 999 }),
+      ).resolves.toBeNull();
+    });
+
+    it('should throw an error if findUnique fails', async () => {
+      const error = new Error('Database error');
+      prismaMock.post.findUnique.mockRejectedValue(error);
+
+      await expect(articleService.indexOneWhere({ id: 1 })).rejects.toThrow(
+        error,
+      );
+    });
   });
 
   describe('show', () => {
-    it('should return one post', async () => {
+    it('should return a post when it matches the unique filter', async () => {
       const post = createPostMock({ id: 1 });
 
       prismaMock.post.findUnique.mockResolvedValue(post);
@@ -364,45 +602,54 @@ describe('ArticleService', () => {
       const response = await articleService.show({ id: 1 });
 
       expect(prismaMock.post.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
+        where: {
+          id: 1,
+        },
       });
-
-      expect(response).toEqual(post);
+      expect(response).toBe(post);
     });
-
-    it('should throw PostNotFoundException if post is not found', async () => {
+    it('should throw PostNotFoundException when no post matches the unique filter', async () => {
       prismaMock.post.findUnique.mockResolvedValue(null);
 
-      await expect(articleService.show({ id: 1 })).rejects.toThrow(
-        PostNotFoundException,
+      await expect(articleService.show({ id: 999 })).rejects.toThrow(
+        new PostNotFoundException(999),
       );
+    });
 
-      expect(prismaMock.post.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
-      });
+    it('should throw an error if findUnique fails', async () => {
+      const error = new Error('Database error');
+      prismaMock.post.findUnique.mockRejectedValue(error);
+
+      await expect(articleService.show({ id: 1 })).rejects.toThrow(error);
     });
   });
 
   describe('store', () => {
-    it('should create a post', async () => {
-      const dto = {
+    it('should create a draft post with the provided data and author', async () => {
+      const dto: CreatePostDto = {
         title: 'Post test',
         content: 'Content test',
         description: 'Description test',
-      } as CreatePostDto;
+      };
 
-      const author = createUserMock({ id: 1 });
+      const author: userSelectPayload = createUserMock({ id: 1 });
       const createdPost = createPostMock({
         id: 1,
         title: dto.title,
         content: dto.content,
         description: dto.description,
         authorId: author.id,
+        author: {
+          id: 1,
+          pseudo: 'testuser',
+          role: 'user',
+          created_at: new Date(),
+        },
       });
 
       prismaMock.post.create.mockResolvedValue(createdPost);
 
-      const response = await articleService.store(dto, author as any);
+      const response = await articleService.store(dto, author);
 
       expect(prismaMock.post.create).toHaveBeenCalledWith({
         data: {
@@ -418,636 +665,749 @@ describe('ArticleService', () => {
         },
         include: {
           author: {
-            select: expect.any(Object),
+            select: {
+              id: true,
+              pseudo: true,
+              role: true,
+              created_at: true,
+            },
           },
         },
       });
 
       expect(response).toEqual(createdPost);
     });
+
+    it('should propagate the error when Prisma create fails', async () => {
+      const author: userSelectPayload = createUserMock({ id: 1 });
+      const dto: CreatePostDto = {
+        title: 'Post test',
+        content: 'Content test',
+        description: 'Description test',
+      };
+
+      const error = new Error('Database error');
+      prismaMock.post.create.mockRejectedValue(error);
+
+      await expect(articleService.store(dto, author)).rejects.toThrow(error);
+
+      expect(prismaMock.post.create).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('update', () => {
-    it('should update a post if user is author', async () => {
-      const where = { id: 1 };
-      const userId = 1;
-
-      const post = createPostMock({
-        id: 1,
-        authorId: userId,
-      });
-
-      const dto = {
-        title: 'Updated title',
-      } as UpdatePostDto;
-
-      const updatedPost = createPostMock({
-        id: 1,
-        authorId: userId,
-        title: 'Updated title',
-      });
+    it('should update a post when the user is an admin', async () => {
+      const dto: UpdatePostDto = {
+        content: 'content',
+      };
+      const post = createPostMock({ authorId: 1 });
+      const admin = createUserMock({ role: Role.Admin, id: 2 });
 
       prismaMock.post.findUnique.mockResolvedValue(post);
-      prismaMock.user.findUnique.mockResolvedValue({
-        role: Role.User,
+      prismaMock.user.findUnique.mockResolvedValue(admin);
+      prismaMock.post.update.mockResolvedValue({
+        ...post,
+        ...dto,
       });
-      prismaMock.post.update.mockResolvedValue(updatedPost);
+      const response = await articleService.update(
+        { id: post.id },
+        dto,
+        admin.id,
+      );
 
-      const response = await articleService.update(where, dto, userId);
+      expect(prismaMock.post.findUnique).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            id: post.id,
+          },
+        }),
+      );
 
-      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
-        where: { id: userId },
-        select: { role: true },
-      });
+      expect(prismaMock.user.findUnique).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            id: admin.id,
+          },
+          select: {
+            role: true,
+          },
+        }),
+      );
 
-      expect(prismaMock.post.update).toHaveBeenCalledWith({
-        where: {
-          id: post.id,
-        },
-        data: dto,
-      });
+      expect(prismaMock.post.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            id: post.id,
+          },
+          data: dto,
+        }),
+      );
 
-      expect(response).toEqual(updatedPost);
+      expect(response).toEqual(
+        expect.objectContaining({
+          content: dto.content,
+        }),
+      );
     });
 
-    it('should update a post if user is admin', async () => {
-      const where = { id: 1 };
-      const userId = 99;
-
-      const post = createPostMock({
-        id: 1,
-        authorId: 1,
-      });
-
-      const dto = {
-        title: 'Updated by admin',
-      } as UpdatePostDto;
-
-      const updatedPost = createPostMock({
-        id: 1,
-        title: 'Updated by admin',
-      });
+    it('should update a post when the user is the author', async () => {
+      const dto: PublishedPostDto = {
+        published_at: new Date(),
+      };
+      const post = createPostMock({ authorId: 1 });
+      const author = createUserMock({ role: Role.User, id: 1 });
 
       prismaMock.post.findUnique.mockResolvedValue(post);
-      prismaMock.user.findUnique.mockResolvedValue({
-        role: Role.Admin,
+      prismaMock.user.findUnique.mockResolvedValue(author);
+      prismaMock.post.update.mockResolvedValue({
+        ...post,
+        ...dto,
       });
-      prismaMock.post.update.mockResolvedValue(updatedPost);
+      const response = await articleService.update(
+        { id: post.id },
+        dto,
+        author.id,
+      );
 
-      const response = await articleService.update(where, dto, userId);
+      expect(prismaMock.post.findUnique).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            id: post.id,
+          },
+        }),
+      );
 
-      expect(prismaMock.post.update).toHaveBeenCalledWith({
-        where: {
-          id: post.id,
-        },
-        data: dto,
-      });
+      expect(prismaMock.user.findUnique).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            id: author.id,
+          },
+          select: {
+            role: true,
+          },
+        }),
+      );
 
-      expect(response).toEqual(updatedPost);
+      expect(prismaMock.post.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            id: post.id,
+          },
+          data: dto,
+        }),
+      );
+
+      expect(response).toEqual(
+        expect.objectContaining({
+          published_at: dto.published_at,
+        }),
+      );
     });
 
-    it('should throw UserNotFoundException if user does not exist', async () => {
-      const where = { id: 1 };
-      const userId = 1;
-      const post = createPostMock({ id: 1 });
-
+    it('should throw UserNotHaveAuthorisation when the user is neither admin nor author', async () => {
+      const dto: UpdatePostDto = {
+        content: 'content',
+      };
+      const post = createPostMock({ authorId: 1 });
+      const user = createUserMock({ role: Role.User, id: 2 });
       prismaMock.post.findUnique.mockResolvedValue(post);
-      prismaMock.user.findUnique.mockResolvedValue(null);
+      prismaMock.user.findUnique.mockResolvedValue(user);
 
       await expect(
-        articleService.update(where, { title: 'Updated' } as UpdatePostDto, userId),
-      ).rejects.toThrow(UserNotFoundException);
-
-      expect(prismaMock.post.update).not.toHaveBeenCalled();
-    });
-
-    it('should throw UserNotHaveAuthorisation if user is not author or admin', async () => {
-      const where = { id: 1 };
-      const userId = 2;
-
-      const post = createPostMock({
-        id: 1,
-        authorId: 1,
-      });
-
-      prismaMock.post.findUnique.mockResolvedValue(post);
-      prismaMock.user.findUnique.mockResolvedValue({
-        role: Role.User,
-      });
-
-      await expect(
-        articleService.update(where, { title: 'Updated' } as UpdatePostDto, userId),
+        articleService.update({ id: post.id }, dto, user.id),
       ).rejects.toThrow(UserNotHaveAuthorisation);
 
-      expect(prismaMock.post.update).not.toHaveBeenCalled();
+      expect(prismaMock.post.update).toHaveBeenCalledTimes(0);
     });
 
-    it('should publish a post with PublishedPostDto', async () => {
-      const where = { id: 1 };
-      const userId = 1;
-      const publishedAt = new Date();
-
-      const post = createPostMock({
-        id: 1,
-        authorId: userId,
-        published_at: null,
-      });
-
-      const dto = {
-        published_at: publishedAt,
-      } as PublishedPostDto;
-
-      const updatedPost = createPostMock({
-        id: 1,
-        authorId: userId,
-        published_at: publishedAt,
-      });
-
+    it('should throw UserNotFoundException when the user does not exist', async () => {
+      const post = createPostMock({ id: 10 });
+      const dto: UpdatePostDto = { content: 'content' };
       prismaMock.post.findUnique.mockResolvedValue(post);
-      prismaMock.user.findUnique.mockResolvedValue({
-        role: Role.User,
-      });
-      prismaMock.post.update.mockResolvedValue(updatedPost);
+      prismaMock.user.findUnique.mockResolvedValue(null);
+      const response = articleService.update({ id: post.id }, dto, 1);
 
-      const response = await articleService.update(where, dto, userId);
+      await expect(response).rejects.toThrow(UserNotFoundException);
+      await expect(response).rejects.toThrow("l'utilisateur : 1 n'existe pas.");
 
-      expect(prismaMock.post.update).toHaveBeenCalledWith({
-        where: {
-          id: post.id,
-        },
-        data: dto,
-      });
+      expect(prismaMock.post.update).toHaveBeenCalledTimes(0);
+      expect(prismaMock.user.findUnique).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            id: 1,
+          },
+        }),
+      );
+    });
 
-      expect(response).toEqual(updatedPost);
+    it('should throw PostNotFoundException when the post does not exist', async () => {
+      const dto: UpdatePostDto = { content: 'content' };
+      prismaMock.post.findUnique.mockResolvedValue(null);
+      await expect(articleService.update({ id: 999 }, dto, 1)).rejects.toThrow(
+        PostNotFoundException,
+      );
+
+      expect(prismaMock.user.findUnique).toHaveBeenCalledTimes(0);
+      expect(prismaMock.post.update).toHaveBeenCalledTimes(0);
+    });
+
+    it('should propagate the error when Prisma user.findUnique fails', async () => {
+      const error = new Error('user findUnique fails');
+      prismaMock.post.findUnique.mockResolvedValue(createPostMock({ id: 1 }));
+      prismaMock.user.findUnique.mockRejectedValue(error);
+
+      await expect(
+        articleService.update({ id: 1 }, { content: 'content' }, 999),
+      ).rejects.toThrow(error);
+      expect(prismaMock.post.update).toHaveBeenCalledTimes(0);
+    });
+
+    it('should propagate the error when Prisma post.update fails', async () => {
+      const error = new Error('Update fails');
+      prismaMock.post.findUnique.mockResolvedValue(createPostMock({ id: 1 }));
+      prismaMock.user.findUnique.mockResolvedValue(
+        createUserMock({ id: 1, role: Role.Admin }),
+      );
+      prismaMock.post.update.mockRejectedValue(error);
+
+      await expect(
+        articleService.update({ id: 1 }, { content: 'content' }, 1),
+      ).rejects.toThrow(error);
+      expect(prismaMock.post.update).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('destroy', () => {
     it('should delete a post', async () => {
-      const where = { id: 1 };
-      const post = createPostMock({ id: 1 });
-
+      const post = createPostMock({ id: 5 });
       prismaMock.post.findUnique.mockResolvedValue(post);
       prismaMock.post.delete.mockResolvedValue(post);
 
-      await articleService.destroy(where);
-
+      const response = await articleService.destroy({ id: 5 });
       expect(prismaMock.post.findUnique).toHaveBeenCalledWith({
-        where,
+        where: {
+          id: 5,
+        },
       });
-
       expect(prismaMock.post.delete).toHaveBeenCalledWith({
-        where,
+        where: {
+          id: 5,
+        },
       });
+      expect(response).toBeUndefined();
     });
 
-    it('should throw PostNotFoundException if post does not exist', async () => {
-      const where = { id: 1 };
-
+    it('should throw PostNotFoundException when the post does not exist', async () => {
       prismaMock.post.findUnique.mockResolvedValue(null);
-
-      await expect(articleService.destroy(where)).rejects.toThrow(
+      await expect(articleService.destroy({ id: 999 })).rejects.toThrow(
         PostNotFoundException,
       );
 
-      expect(prismaMock.post.delete).not.toHaveBeenCalled();
+      expect(prismaMock.post.delete).toHaveBeenCalledTimes(0);
+    });
+
+    it('should propagate the error when Prisma post.findUnique fails', async () => {
+      const error = new Error('Delete fails');
+      prismaMock.post.findUnique.mockRejectedValue(error);
+
+      await expect(articleService.destroy({ id: 1 })).rejects.toThrow(error);
+      expect(prismaMock.post.delete).toHaveBeenCalledTimes(0);
+    });
+
+    it('should propagate the error when Prisma post.delete fails', async () => {
+      const error = new Error('Delete fails');
+      prismaMock.post.findUnique.mockResolvedValue(createPostMock({ id: 1 }));
+      prismaMock.post.delete.mockRejectedValue(error);
+
+      await expect(articleService.destroy({ id: 1 })).rejects.toThrow(error);
+      expect(prismaMock.post.delete).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('isPublished', () => {
-    it('should return true if post has published_at', () => {
+    it('should return true if post has publish', () => {
       const post = createPostMock({
         published_at: new Date(),
       });
 
-      expect(articleService.isPublished(post as any)).toBe(true);
+      expect(articleService.isPublished(post)).toBe(true);
     });
 
-    it('should return false if post published_at is null', () => {
+    it('should return false if post has not publish', () => {
       const post = createPostMock({
         published_at: null,
       });
 
-      expect(articleService.isPublished(post as any)).toBe(false);
+      expect(articleService.isPublished(post)).toBe(false);
     });
   });
 
   describe('getLikeCount', () => {
-  it('should return the number of likes with liked set to false', async () => {
-    const postId = 1;
+    it('should return the number of likes with liked set to false', async () => {
+      const postId = 1;
 
-    prismaMock.like.count.mockResolvedValue(5);
+      prismaMock.like.count.mockResolvedValue(5);
 
-    const response = await articleService.getLikeCount(postId);
+      const response = await articleService.getLikeCount(postId);
 
-    expect(prismaMock.like.count).toHaveBeenCalledWith({
-      where: {
-        postId,
-      },
-    });
-
-    expect(response).toEqual({
-      liked: false,
-      likesCount: 5,
-    });
-  });
-
-  it('should return zero when the post has no likes', async () => {
-    const postId = 1;
-
-    prismaMock.like.count.mockResolvedValue(0);
-
-    const response = await articleService.getLikeCount(postId);
-
-    expect(response).toEqual({
-      liked: false,
-      likesCount: 0,
-    });
-  });
-
-  it('should propagate the error if counting likes fails', async () => {
-    const postId = 1;
-    const error = new Error('Database error');
-
-    prismaMock.like.count.mockRejectedValue(error);
-
-    await expect(
-      articleService.getLikeCount(postId),
-    ).rejects.toThrow(error);
-  });
-});
-
-describe('getLikeStatus', () => {
-  it('should return liked true when the user has liked the post', async () => {
-    const userId = 1;
-    const postId = 2;
-
-    const like = {
-      id: 1,
-      userId,
-      postId,
-      created_at: new Date(),
-    };
-
-    prismaMock.like.findUnique.mockReturnValue(like as any);
-    prismaMock.like.count.mockReturnValue(4 as any);
-
-    prismaMock.$transaction.mockResolvedValue([
-      like,
-      4,
-    ]);
-
-    const response = await articleService.getLikeStatus(
-      userId,
-      postId,
-    );
-
-    expect(prismaMock.like.findUnique).toHaveBeenCalledWith({
-      where: {
-        userId_postId: {
-          userId,
+      expect(prismaMock.like.count).toHaveBeenCalledWith({
+        where: {
           postId,
         },
-      },
+      });
+
+      expect(response).toEqual({
+        liked: false,
+        likesCount: 5,
+      });
     });
 
-    expect(prismaMock.like.count).toHaveBeenCalledWith({
-      where: {
-        postId,
-      },
+    it('should return zero when the post has no likes', async () => {
+      const postId = 1;
+
+      prismaMock.like.count.mockResolvedValue(0);
+
+      const response = await articleService.getLikeCount(postId);
+
+      expect(response).toEqual({
+        liked: false,
+        likesCount: 0,
+      });
     });
 
-    expect(prismaMock.$transaction).toHaveBeenCalledWith([
-      like,
-      4,
-    ]);
+    it('should propagate the error if counting likes fails', async () => {
+      const postId = 1;
+      const error = new Error('Database error');
 
-    expect(response).toEqual({
-      liked: true,
-      likesCount: 4,
-    });
-  });
+      prismaMock.like.count.mockRejectedValue(error);
 
-  it('should return liked false when the user has not liked the post', async () => {
-    const userId = 1;
-    const postId = 2;
-
-    prismaMock.like.findUnique.mockReturnValue(null as any);
-    prismaMock.like.count.mockReturnValue(3 as any);
-
-    prismaMock.$transaction.mockResolvedValue([
-      null,
-      3,
-    ]);
-
-    const response = await articleService.getLikeStatus(
-      userId,
-      postId,
-    );
-
-    expect(response).toEqual({
-      liked: false,
-      likesCount: 3,
+      await expect(articleService.getLikeCount(postId)).rejects.toThrow(error);
     });
   });
 
-  it('should propagate the error if the transaction fails', async () => {
-    const userId = 1;
-    const postId = 2;
-    const error = new Error('Transaction error');
+  describe('getLikeStatus', () => {
+    it('should return liked true when the user has liked the post', async () => {
+      const userId = 1;
+      const postId = 2;
 
-    prismaMock.like.findUnique.mockReturnValue(null as any);
-    prismaMock.like.count.mockReturnValue(0 as any);
-    prismaMock.$transaction.mockRejectedValue(error);
-
-    await expect(
-      articleService.getLikeStatus(userId, postId),
-    ).rejects.toThrow(error);
-
-    expect(prismaMock.$transaction).toHaveBeenCalled();
-  });
-});
-
-describe('getReadingStatus', () => {
-  it('should return the current reading status', async () => {
-    const userId = 1;
-    const postId = 2;
-    const post = createPostMock({ id: postId });
-
-    prismaMock.post.findUnique.mockResolvedValue(post);
-
-    prismaMock.postRead.findUnique.mockResolvedValue({
-      progress: 60,
-      completed: false,
-    });
-
-    const response = await articleService.getReadingStatus(
-      userId,
-      postId,
-    );
-
-    expect(prismaMock.post.findUnique).toHaveBeenCalledWith({
-      where: {
-        id: postId,
-      },
-    });
-
-    expect(prismaMock.postRead.findUnique).toHaveBeenCalledWith({
-      where: {
-        userId_postId: {
-          userId,
-          postId,
-        },
-      },
-      select: {
-        progress: true,
-        completed: true,
-      },
-    });
-
-    expect(response).toEqual({
-      hasStarted: true,
-      completed: false,
-      progress: 60,
-    });
-  });
-
-  it('should return a completed reading status', async () => {
-    const userId = 1;
-    const postId = 2;
-    const post = createPostMock({ id: postId });
-
-    prismaMock.post.findUnique.mockResolvedValue(post);
-
-    prismaMock.postRead.findUnique.mockResolvedValue({
-      progress: 100,
-      completed: true,
-    });
-
-    const response = await articleService.getReadingStatus(
-      userId,
-      postId,
-    );
-
-    expect(response).toEqual({
-      hasStarted: true,
-      completed: true,
-      progress: 100,
-    });
-  });
-
-  it('should return the default status when reading has not started', async () => {
-    const userId = 1;
-    const postId = 2;
-    const post = createPostMock({ id: postId });
-
-    prismaMock.post.findUnique.mockResolvedValue(post);
-    prismaMock.postRead.findUnique.mockResolvedValue(null);
-
-    const response = await articleService.getReadingStatus(
-      userId,
-      postId,
-    );
-
-    expect(response).toEqual({
-      hasStarted: false,
-      completed: false,
-      progress: 0,
-    });
-  });
-
-  it('should throw PostNotFoundException when the post does not exist', async () => {
-    const userId = 1;
-    const postId = 999;
-
-    prismaMock.post.findUnique.mockResolvedValue(null);
-
-    await expect(
-      articleService.getReadingStatus(userId, postId),
-    ).rejects.toThrow(PostNotFoundException);
-
-    expect(prismaMock.postRead.findUnique).not.toHaveBeenCalled();
-  });
-});
-
-describe('updateReadingProgress', () => {
-  it('should create the reading progress when it does not exist', async () => {
-    const userId = 1;
-    const postId = 2;
-    const progress = 50;
-
-    const postRead = {
-      id: 1,
-      userId,
-      postId,
-      progress,
-      completed: false,
-      created_at: new Date(),
-      updated_at: new Date(),
-    };
-
-    prismaMock.post.findUnique.mockResolvedValue({
-      id: postId,
-    });
-
-    prismaMock.postRead.upsert.mockResolvedValue(postRead);
-
-    const response = await articleService.updateReadingProgress(
-      userId,
-      postId,
-      progress,
-    );
-
-    expect(prismaMock.post.findUnique).toHaveBeenCalledWith({
-      where: {
-        id: postId,
-      },
-      select: {
-        id: true,
-      },
-    });
-
-    expect(prismaMock.postRead.upsert).toHaveBeenCalledWith({
-      where: {
-        userId_postId: {
-          userId,
-          postId,
-        },
-      },
-      create: {
+      const like = {
+        id: 1,
         userId,
         postId,
-        progress,
-        completed: false,
-      },
-      update: {
-        progress,
-        completed: false,
-      },
-    });
+        created_at: new Date(),
+      };
 
-    expect(response).toEqual(postRead);
-  });
+      prismaMock.like.findUnique.mockResolvedValue(like);
+      prismaMock.like.count.mockResolvedValue(4);
 
-  it('should mark reading as completed when progress is 95', async () => {
-    const userId = 1;
-    const postId = 2;
-    const progress = 95;
+      prismaMock.$transaction.mockResolvedValue([like, 4]);
 
-    const postRead = {
-      id: 1,
-      userId,
-      postId,
-      progress,
-      completed: true,
-    };
+      const response = await articleService.getLikeStatus(userId, postId);
 
-    prismaMock.post.findUnique.mockResolvedValue({
-      id: postId,
-    });
+      expect(prismaMock.like.findUnique).toHaveBeenCalledWith({
+        where: {
+          userId_postId: {
+            userId,
+            postId,
+          },
+        },
+      });
 
-    prismaMock.postRead.upsert.mockResolvedValue(postRead);
-
-    const response = await articleService.updateReadingProgress(
-      userId,
-      postId,
-      progress,
-    );
-
-    expect(prismaMock.postRead.upsert).toHaveBeenCalledWith({
-      where: {
-        userId_postId: {
-          userId,
+      expect(prismaMock.like.count).toHaveBeenCalledWith({
+        where: {
           postId,
         },
-      },
-      create: {
-        userId,
-        postId,
-        progress,
-        completed: true,
-      },
-      update: {
-        progress,
-        completed: true,
-      },
+      });
+
+      expect(prismaMock.$transaction).toHaveBeenCalledWith([
+        prismaMock.like.findUnique.mock.results[0].value,
+        prismaMock.like.count.mock.results[0].value,
+      ]);
+
+      expect(response).toEqual({
+        liked: true,
+        likesCount: 4,
+      });
     });
 
-    expect(response).toEqual(postRead);
+    it('should return liked false when the user has not liked the post', async () => {
+      const userId = 1;
+      const postId = 2;
+
+      prismaMock.like.findUnique.mockResolvedValue(null);
+      prismaMock.like.count.mockResolvedValue(3);
+
+      prismaMock.$transaction.mockResolvedValue([null, 3]);
+
+      const response = await articleService.getLikeStatus(userId, postId);
+
+      expect(response).toEqual({
+        liked: false,
+        likesCount: 3,
+      });
+    });
+
+    it('should propagate the error if the transaction fails', async () => {
+      const userId = 1;
+      const postId = 2;
+      const error = new Error('Transaction error');
+
+      prismaMock.like.findUnique.mockResolvedValue(null);
+      prismaMock.like.count.mockResolvedValue(0);
+      prismaMock.$transaction.mockRejectedValue(error);
+
+      await expect(
+        articleService.getLikeStatus(userId, postId),
+      ).rejects.toThrow(error);
+
+      expect(prismaMock.$transaction).toHaveBeenCalled();
+    });
   });
 
-  it('should mark reading as completed when progress is greater than 95', async () => {
-    const userId = 1;
-    const postId = 2;
-    const progress = 100;
+  describe('getReadingStatus', () => {
+    it('should return completed reading status when the user has finished the post', async () => {
+      const userId = 1;
+      const postId = 2;
 
-    prismaMock.post.findUnique.mockResolvedValue({
-      id: postId,
-    });
+      prismaMock.post.findUnique.mockResolvedValue(createPostMock({ id: 2 }));
+      prismaMock.postRead.findUnique.mockResolvedValue({
+        completed: true,
+        progress: 100,
+      });
 
-    prismaMock.postRead.upsert.mockResolvedValue({
-      id: 1,
-      userId,
-      postId,
-      progress,
-      completed: true,
-    });
-
-    await articleService.updateReadingProgress(
-      userId,
-      postId,
-      progress,
-    );
-
-    expect(prismaMock.postRead.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        create: expect.objectContaining({
-          completed: true,
+      const response = await articleService.getReadingStatus(userId, postId);
+      expect(prismaMock.post.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: 2,
+        },
+      });
+      expect(prismaMock.postRead.findUnique).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            userId_postId: {
+              userId: 1,
+              postId: 2,
+            },
+          },
+          select: {
+            progress: true,
+            completed: true,
+          },
         }),
-        update: expect.objectContaining({
-          completed: true,
-        }),
-      }),
-    );
-  });
+      );
 
-  it('should throw PostNotFoundException when the post does not exist', async () => {
-    const userId = 1;
-    const postId = 999;
-    const progress = 50;
-
-    prismaMock.post.findUnique.mockResolvedValue(null);
-
-    await expect(
-      articleService.updateReadingProgress(
-        userId,
-        postId,
-        progress,
-      ),
-    ).rejects.toThrow(PostNotFoundException);
-
-    expect(prismaMock.postRead.upsert).not.toHaveBeenCalled();
-  });
-
-  it('should propagate the error if the upsert fails', async () => {
-    const userId = 1;
-    const postId = 2;
-    const progress = 50;
-    const error = new Error('Database error');
-
-    prismaMock.post.findUnique.mockResolvedValue({
-      id: postId,
+      expect(response).toEqual({
+        hasStarted: true,
+        completed: true,
+        progress: 100,
+      });
     });
 
-    prismaMock.postRead.upsert.mockRejectedValue(error);
+    it('should return reading progress when the post is not completed', async () => {
+      const userId = 1;
+      const postId = 2;
 
-    await expect(
-      articleService.updateReadingProgress(
-        userId,
-        postId,
-        progress,
-      ),
-    ).rejects.toThrow(error);
+      prismaMock.post.findUnique.mockResolvedValue(createPostMock({ id: 2 }));
+      prismaMock.postRead.findUnique.mockResolvedValue({
+        completed: false,
+        progress: 25,
+      });
+
+      const response = await articleService.getReadingStatus(userId, postId);
+      expect(prismaMock.post.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: 2,
+        },
+      });
+      expect(prismaMock.postRead.findUnique).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            userId_postId: {
+              userId,
+              postId,
+            },
+          },
+          select: {
+            progress: true,
+            completed: true,
+          },
+        }),
+      );
+
+      expect(response).toEqual({
+        hasStarted: true,
+        completed: false,
+        progress: 25,
+      });
+    });
+
+    it('should return default reading status when the user has never started the post', async () => {
+      const userId = 1;
+      const postId = 2;
+
+      prismaMock.post.findUnique.mockResolvedValue(createPostMock({ id: 2 }));
+      prismaMock.postRead.findUnique.mockResolvedValue(null);
+
+      const response = await articleService.getReadingStatus(userId, postId);
+      expect(prismaMock.post.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: 2,
+        },
+      });
+      expect(prismaMock.postRead.findUnique).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            userId_postId: {
+              userId,
+              postId,
+            },
+          },
+          select: {
+            progress: true,
+            completed: true,
+          },
+        }),
+      );
+
+      expect(response).toEqual({
+        hasStarted: false,
+        completed: false,
+        progress: 0,
+      });
+    });
+
+    it('should throw PostNotFoundException when the post does not exist', async () => {
+      const userId = 1;
+      const postId = 2;
+
+      prismaMock.post.findUnique.mockResolvedValue(null);
+
+      await expect(
+        articleService.getReadingStatus(userId, postId),
+      ).rejects.toThrow(PostNotFoundException);
+      expect(prismaMock.post.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: 2,
+        },
+      });
+      expect(prismaMock.postRead.findUnique).toHaveBeenCalledTimes(0);
+    });
+
+    it('should propagate the error when Prisma postRead.findUnique fails', async () => {
+      const userId = 1;
+      const postId = 2;
+      const error = new Error('Get Reading status fails');
+
+      prismaMock.post.findUnique.mockResolvedValue(createPostMock({ id: 2 }));
+      prismaMock.postRead.findUnique.mockRejectedValue(error);
+
+      await expect(
+        articleService.getReadingStatus(userId, postId),
+      ).rejects.toThrow(error);
+      expect(prismaMock.post.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: 2,
+        },
+      });
+      expect(prismaMock.postRead.findUnique).toHaveBeenCalledTimes(1);
+    });
   });
-});
+
+  describe('updateReadingProgress', () => {
+    it('should reading progress with completed false when progress is below 95', async () => {
+      prismaMock.post.findUnique.mockResolvedValue(createPostMock({ id: 2 }));
+      prismaMock.postRead.upsert.mockResolvedValue({
+        progress: 94,
+        completed: false,
+      });
+
+      const response = await articleService.updateReadingProgress(1, 2, 94);
+
+      expect(prismaMock.post.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: 2,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      expect(prismaMock.postRead.upsert).toHaveBeenCalledWith({
+        where: {
+          userId_postId: {
+            userId: 1,
+            postId: 2,
+          },
+        },
+        create: {
+          userId: 1,
+          postId: 2,
+          progress: 94,
+          completed: false,
+        },
+        update: {
+          progress: 94,
+          completed: false,
+        },
+        select: {
+          progress: true,
+          completed: true,
+        },
+      });
+
+      expect(response).toEqual({
+        progress: 94,
+        completed: false,
+        hasStarted: true,
+      });
+    });
+    it('should mark reading as completed when progress is exactly 95', async () => {
+      prismaMock.post.findUnique.mockResolvedValue(createPostMock({ id: 2 }));
+      prismaMock.postRead.upsert.mockResolvedValue({
+        progress: 95,
+        completed: true,
+      });
+
+      const response = await articleService.updateReadingProgress(1, 2, 95);
+
+      expect(prismaMock.post.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: 2,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      expect(prismaMock.postRead.upsert).toHaveBeenCalledWith({
+        where: {
+          userId_postId: {
+            userId: 1,
+            postId: 2,
+          },
+        },
+        create: {
+          userId: 1,
+          postId: 2,
+          progress: 95,
+          completed: true,
+        },
+        update: {
+          progress: 95,
+          completed: true,
+        },
+        select: {
+          progress: true,
+          completed: true,
+        },
+      });
+
+      expect(response).toEqual({
+        progress: 95,
+        completed: true,
+        hasStarted: true,
+      });
+    });
+
+    it('should mark reading as completed when progress is greater than 95', async () => {
+      prismaMock.post.findUnique.mockResolvedValue(createPostMock({ id: 2 }));
+      prismaMock.postRead.upsert.mockResolvedValue({
+        progress: 98,
+        completed: true,
+      });
+
+      const response = await articleService.updateReadingProgress(1, 2, 98);
+
+      expect(prismaMock.post.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: 2,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      expect(prismaMock.postRead.upsert).toHaveBeenCalledWith({
+        where: {
+          userId_postId: {
+            userId: 1,
+            postId: 2,
+          },
+        },
+        create: {
+          userId: 1,
+          postId: 2,
+          progress: 98,
+          completed: true,
+        },
+        update: {
+          progress: 98,
+          completed: true,
+        },
+        select: {
+          progress: true,
+          completed: true,
+        },
+      });
+
+      expect(response).toEqual({
+        progress: 98,
+        completed: true,
+        hasStarted: true,
+      });
+    });
+
+    it('should throw PostNotFoundException when the post does not exist without calling upsert', async () => {
+      prismaMock.post.findUnique.mockResolvedValue(null);
+
+      await expect(
+        articleService.updateReadingProgress(1, 999, 50),
+      ).rejects.toThrow(PostNotFoundException);
+      expect(prismaMock.post.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: 999,
+        },
+        select: {
+          id: true,
+        },
+      });
+      expect(prismaMock.postRead.upsert).toHaveBeenCalledTimes(0);
+    });
+    it('should propagate the error when Prisma post.findUnique fails without calling upsert', async () => {
+      const error = new Error('Find Post fails');
+      prismaMock.post.findUnique.mockRejectedValue(error);
+
+      await expect(
+        articleService.updateReadingProgress(1, 2, 50),
+      ).rejects.toThrow(error);
+      expect(prismaMock.post.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: 2,
+        },
+        select: {
+          id: true,
+        },
+      });
+      expect(prismaMock.postRead.upsert).toHaveBeenCalledTimes(0);
+    });
+
+    it('should propagate the error when Prisma postRead.upsert fails', async () => {
+      const error = new Error('Creation or Update fails');
+      prismaMock.post.findUnique.mockResolvedValue(createPostMock({ id: 2 }));
+      prismaMock.postRead.upsert.mockRejectedValue(error);
+
+      await expect(
+        articleService.updateReadingProgress(1, 2, 50),
+      ).rejects.toThrow(error);
+      expect(prismaMock.post.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: 2,
+        },
+        select: {
+          id: true,
+        },
+      });
+      expect(prismaMock.postRead.upsert).toHaveBeenCalledTimes(1);
+    });
+  });
 });

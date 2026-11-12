@@ -17,7 +17,7 @@ export async function createTestUser(
   options: CreateTestUserOptions = {},
 ) {
   const unique = Date.now() + Math.floor(Math.random() * 10000);
-  const password = options.password ?? 'password123';
+  const password = options.password ?? 'password12345';
 
   return prisma.user.create({
     data: {

@@ -1,0 +1,12 @@
+node_modules
+.pnpm
+.pnpm-store
+dist
+coverage
+logs_files
+.env*
+!.env.example
+secret-key
+.git
+.vscode
+src/test

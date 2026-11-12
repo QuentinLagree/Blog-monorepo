@@ -3,9 +3,10 @@ import { LogEntry } from './types/log-entry';
 import { LogLevel } from './types/log-level.enum';
 
 export class Logger {
+  private readonly pending = new Set<Promise<void>>();
   constructor(private opts: LoggerOptions) {}
 
-  private async log(
+  private async write(
     level: LogLevel,
     message: string,
     context?: Record<string, unknown>,
@@ -21,6 +22,29 @@ export class Logger {
       // Ici, on remonte une seule erreur (ou bien tu fais un console.error “best effort”)
       throw (rejected as PromiseRejectedResult).reason;
     }
+  }
+
+  private log(
+    level: LogLevel,
+    message: string,
+    context?: Record<string, unknown>,
+  ): Promise<void> {
+    const task = this.write(level, message, context);
+    this.pending.add(task);
+    void task.then(
+      () => this.pending.delete(task),
+      () => this.pending.delete(task),
+    );
+    return task;
+  }
+
+  async close(): Promise<void> {
+    await Promise.allSettled([...this.pending]);
+    const results = await Promise.allSettled(
+      this.opts.transports.map((transport) => transport.close?.()),
+    );
+    const failed = results.find((result) => result.status === 'rejected');
+    if (failed?.status === 'rejected') throw failed.reason;
   }
 
   info(msg: string, ctx?: Record<string, unknown>) {

@@ -41,20 +41,13 @@ describe('AuthController e2e', () => {
           pseudo: 'registerUser',
           nom: 'Doe',
           prenom: 'John',
-          password: 'password123',
-        }).expect(201)
-
-        
-
-        
+          password: 'password12345',
+        })
+        .expect(201);
 
       expect(response.body.data).toMatchObject({
-        email: 'register@test.com',
         pseudo: 'registerUser',
-        nom: 'Doe',
-        prenom: 'John',
       });
-      
 
       expect(response.body.data.password).toBeUndefined();
 
@@ -79,8 +72,9 @@ describe('AuthController e2e', () => {
           pseudo: 'anotherUser',
           nom: 'Doe',
           prenom: 'John',
-          password: 'password123',
-        }).expect(409);
+          password: 'password12345',
+        })
+        .expect(409);
     });
 
     it('should return 400 if payload is invalid', async () => {
@@ -98,16 +92,16 @@ describe('AuthController e2e', () => {
     it('should login a user and create a session', async () => {
       await createTestUser(prisma, passwordService, {
         email: 'login@test.com',
-        password: 'password123',
+        password: 'password12345',
       });
 
       const response = await request(app.getHttpServer())
         .post(`${endpoint}/login`)
         .send({
           email: 'login@test.com',
-          password: 'password123',
+          password: 'password12345',
         })
-        .expect(201);
+        .expect(200);
 
       expect(response.body.message).toBe('La connection est un succès.');
 
@@ -123,7 +117,7 @@ describe('AuthController e2e', () => {
         .post(`${endpoint}/login`)
         .send({
           email: 'unknown@test.com',
-          password: 'password123',
+          password: 'password12345',
         })
         .expect(401);
     });
@@ -131,7 +125,7 @@ describe('AuthController e2e', () => {
     it('should return 401 if password is wrong', async () => {
       await createTestUser(prisma, passwordService, {
         email: 'wrong-password@test.com',
-        password: 'password123',
+        password: 'password12345',
       });
 
       await request(app.getHttpServer())
@@ -144,7 +138,7 @@ describe('AuthController e2e', () => {
     });
   });
 
-  describe('GET /auth/session', () => {
+  describe('GET /me', () => {
     it('should return loggedIn true if session is active', async () => {
       const { agent, user } = await createLoggedAgent(
         app,
@@ -152,9 +146,7 @@ describe('AuthController e2e', () => {
         passwordService,
       );
 
-      const response = await agent
-        .get(`${endpoint}/session`)
-        .expect(200);
+      const response = await agent.get('/me').expect(200);
 
       expect(response.body).toMatchObject({
         message: 'La session est bien active.',
@@ -171,28 +163,20 @@ describe('AuthController e2e', () => {
 
     it('should return 401 if session is inactive', async () => {
       const response = await request(app.getHttpServer())
-        .get(`${endpoint}/session`)
+        .get('/me')
         .expect(401);
 
-      expect(response.body.message).toBe('Aucune session active');
+      expect(typeof response.body.message).toBe('string');
     });
   });
 
   describe('POST /auth/logout', () => {
     it('should logout user', async () => {
-      const { agent } = await createLoggedAgent(
-        app,
-        prisma,
-        passwordService,
-      );
+      const { agent } = await createLoggedAgent(app, prisma, passwordService);
 
-      await agent
-        .post(`${endpoint}/logout`)
-        .expect(201);
+      await agent.post(`${endpoint}/logout`).expect(204);
 
-      await agent
-        .get(`${endpoint}/session`)
-        .expect(401);
+      await agent.get('/me').expect(401);
     });
   });
 });

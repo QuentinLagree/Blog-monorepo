@@ -1,9 +1,4 @@
-import {
-  ApiHideProperty,
-  ApiProperty,
-  ApiPropertyOptional,
-  ApiSchema,
-} from '@nestjs/swagger';
+import { ApiHideProperty, ApiProperty, ApiSchema } from '@nestjs/swagger';
 
 export type Message<T = unknown, K = unknown> = {
   log?: string;
@@ -13,7 +8,8 @@ export type Message<T = unknown, K = unknown> = {
 };
 
 @ApiSchema({
-  description: "Représentation des messages renvoyés de l'API. Peut contenir 'meta', si des données sont necéssaires en plus de 'data'."
+  description:
+    "Représentation des messages renvoyés de l'API. Peut contenir 'meta', si des données sont necéssaires en plus de 'data'.",
 })
 export class ApiResponseDto<T = unknown, K = unknown> {
   @ApiProperty({
@@ -27,7 +23,7 @@ export class ApiResponseDto<T = unknown, K = unknown> {
    * Le type réel sera défini par ApiMessageResponse().
    */
   @ApiProperty({
-    description: "Données ou message d'erreur envoyé avec la réponse de l'API."
+    description: "Données ou message d'erreur envoyé avec la réponse de l'API.",
   })
   data: T;
 

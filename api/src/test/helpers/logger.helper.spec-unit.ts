@@ -7,11 +7,7 @@ describe('makeMessage', () => {
       email: 'test@test.com',
     };
 
-    const response = makeMessage(
-      'User found',
-      'Utilisateur trouvé',
-      data,
-    );
+    const response = makeMessage('User found', 'Utilisateur trouvé', data);
 
     expect(response).toEqual({
       message: 'Utilisateur trouvé',
@@ -49,11 +45,7 @@ describe('makeMessage', () => {
   });
 
   it('should return message with null data', () => {
-    const response = makeMessage(
-      'No data',
-      'Aucune donnée',
-      null,
-    );
+    const response = makeMessage('No data', 'Aucune donnée', null);
 
     expect(response).toEqual({
       message: 'Aucune donnée',
@@ -62,29 +54,19 @@ describe('makeMessage', () => {
     });
   });
 
-  it('should not throw when log option is false', () => {
+  it('should build a response when logging is disabled', () => {
     expect(() =>
-      makeMessage(
-        'Log message',
-        'Message utilisateur',
-        null,
-        undefined,
-        { log: false },
-      ),
+      makeMessage('Log message', 'Message utilisateur', null, undefined, {
+        log: false,
+      }),
     ).not.toThrow();
   });
 
-  it('should not throw when level option is provided', () => {
-    const response = makeMessage(
-      'Success log',
-      'Succès',
-      null,
-      undefined,
-      {
-        log: true,
-        level: 'Success',
-      },
-    );
+  it('should build a response when a log level is supplied', () => {
+    const response = makeMessage('Success log', 'Succès', null, undefined, {
+      log: true,
+      level: 'Success',
+    });
 
     expect(response).toEqual({
       message: 'Succès',

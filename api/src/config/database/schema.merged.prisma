@@ -1,6 +1,7 @@
 // AUTO-GENERATED FILE. DO NOT EDIT.
 // Run: npm run prisma:build
 
+// Base Prisma : datasource + generator (pas de model ici)
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,8 +11,6 @@ datasource db {
   url          = env("DATABASE_URL")
   relationMode = "foreignKeys"
 }
-
-// Base Prisma : datasource + generator (pas de model ici)
 
 // ----- models/likes.prisma.part -----
 model Like {
@@ -95,14 +94,15 @@ model User {
   id       Int    @id @default(autoincrement())
   nom      String
   prenom   String
-  pseudo   String
+  pseudo   String @unique
   email    String @unique
   password String
   role     String
 
-  posts      Post[]
-  likes      Like[]
-  preference UserPreference?
+  posts         Post[]
+  likes         Like[]
+  preference    UserPreference?
+  recoveryToken VerificationTokens?
 
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt
@@ -113,9 +113,11 @@ model User {
 
 // ----- models/verification.prisma.part -----
 model VerificationTokens {
-  id    Int    @id @default(autoincrement())
-  email String @unique
-  code  String
+  id     Int    @id @default(autoincrement())
+  email  String @unique
+  code   String
+  userId Int    @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   expired_at DateTime
   created_at DateTime @default(now())

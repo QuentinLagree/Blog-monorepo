@@ -7,10 +7,10 @@ export type PostSeedData = {
 
 export const postsSeedData: PostSeedData[] = [
   {
-  title: 'Guide complet pour bien débuter avec Angular Signals',
-  description:
-    'Découvrez en détail le fonctionnement des Signals Angular, les valeurs calculées, les effets, les bonnes pratiques et leur utilisation dans une application réelle.',
-  content: `
+    title: 'Guide complet pour bien débuter avec Angular Signals',
+    description:
+      'Découvrez en détail le fonctionnement des Signals Angular, les valeurs calculées, les effets, les bonnes pratiques et leur utilisation dans une application réelle.',
+    content: `
 # Guide complet pour bien débuter avec Angular Signals
 
 Angular Signals est un système de réactivité introduit dans Angular afin de simplifier la gestion des états et des dépendances entre les données.
@@ -1255,8 +1255,8 @@ Les éléments essentiels à retenir sont :
 
 Pour une application Angular moderne, les Signals permettent de créer des composants plus lisibles et des services d'état plus faciles à maintenir. L'essentiel est de conserver une séparation claire entre l'état, les valeurs calculées et les effets secondaires.
 `,
-  published_at: new Date('2026-01-12T10:00:00.000Z'),
-},
+    published_at: new Date('2026-01-12T10:00:00.000Z'),
+  },
   {
     title: 'Construire une API REST avec NestJS',
     description:
@@ -1367,8 +1367,7 @@ Les modules métier doivent dépendre d'abstractions.
   },
   {
     title: 'Créer une pagination avec NestJS et Prisma',
-    description:
-      'Mettez en place une pagination côté serveur avec Prisma.',
+    description: 'Mettez en place une pagination côté serveur avec Prisma.',
     content: `
 # Créer une pagination côté serveur
 
@@ -1488,8 +1487,7 @@ getProfile() {
   },
   {
     title: 'Dockeriser une application NestJS',
-    description:
-      'Créez une image Docker pour exécuter une API NestJS.',
+    description: 'Créez une image Docker pour exécuter une API NestJS.',
     content: `
 # Dockeriser une application NestJS
 

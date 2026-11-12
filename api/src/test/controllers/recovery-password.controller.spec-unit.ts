@@ -1,13 +1,16 @@
-import { AuthService } from 'src/modules/auth/auth.service';
+import { PasswordRecoveryService } from 'src/modules/handle-password/password-recovery.service';
 import { UserService } from 'src/modules/user/user.service';
 import { TokenService } from 'src/commons/services/token.service';
 import { MailingService } from 'src/commons/mailing/mailing.service';
-import { makeMessage } from 'src/commons/logger/logger.helper';
 import { TOKEN } from 'src/commons/types/token.types';
 import { PasswordNotMatchException } from 'src/modules/auth/exceptions/password-not-same.exception';
 import { PasswordRecoveryController } from 'src/modules/handle-password/password_recovery.controller';
 import { ResetPasswordDto } from 'src/modules/handle-password/dto/reset-password.dto';
 import { ResetEmailDto } from 'src/modules/handle-password/dto/reset-email.dto';
+import { TokenInvalidFormat } from 'src/modules/handle-password/exceptions/token-invalid-format.exception';
+import { TokenExpiredOrInvalidException } from 'src/modules/handle-password/exceptions/token-expired-or-invalid.exception';
+import { UserNotFoundException } from 'src/modules/user/exceptions/user-not-found.exception';
+import { ResetTokenAlreadyActiveException } from 'src/modules/handle-password/exceptions/reset-token-already-active.exception';
 
 describe('PasswordRecoveryController', () => {
   let passwordRecoveryController: PasswordRecoveryController;
@@ -15,12 +18,9 @@ describe('PasswordRecoveryController', () => {
   const VALID_TOKEN = '1234567890abcdef1234567890abcdef';
   const ANOTHER_VALID_TOKEN = 'abcdefabcdefabcdefabcdefabcdefab';
 
-
   const mailsQueueMock = {
     add: jest.fn(),
   };
-
-  const authServiceMock = {};
 
   const userServiceMock = {
     show: jest.fn(),
@@ -32,8 +32,10 @@ describe('PasswordRecoveryController', () => {
     generate: jest.fn(),
     set: jest.fn(),
     delete: jest.fn(),
+    deleteMatching: jest.fn(),
   };
 
+  const recoveryMock = { reset: jest.fn() };
   const mailingServiceMock = {
     getOptionRecoveryEmail: jest.fn(),
   };
@@ -58,13 +60,14 @@ describe('PasswordRecoveryController', () => {
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
 
     passwordRecoveryController = new PasswordRecoveryController(
       mailsQueueMock as any,
       userServiceMock as unknown as UserService,
       tokenServiceMock as unknown as TokenService,
       mailingServiceMock as unknown as MailingService,
+      recoveryMock as unknown as PasswordRecoveryService,
     );
   });
 
@@ -74,29 +77,28 @@ describe('PasswordRecoveryController', () => {
       const rawToken = VALID_TOKEN;
       const tokenId = TOKEN.add(rawToken);
 
-      tokenServiceMock.assertVerificationTokenIsValid.mockResolvedValue(undefined);
+      tokenServiceMock.assertVerificationTokenIsValid.mockResolvedValue(
+        undefined,
+      );
 
       const response = await passwordRecoveryController.confirmResetToken(
         rawToken,
         email,
       );
 
-      expect(tokenServiceMock.assertVerificationTokenIsValid).toHaveBeenCalledWith(
-        email,
-        tokenId,
-      );
+      expect(
+        tokenServiceMock.assertVerificationTokenIsValid,
+      ).toHaveBeenCalledWith(email, tokenId);
 
-      expect(response).toEqual(
-        makeMessage(
-          '',
+      expect(response).toEqual({
+        message:
           'Succès lors du chargement de la page, veuillez entrer votre ancien mot de passe puis votre nouveau mot de passe.',
-          {
-            email,
-            token: tokenId,
-          },
-          { log: false },
-        ),
-      );
+        data: {
+          email,
+          token: tokenId.getToken,
+        },
+        meta: {},
+      });
     });
 
     it('should throw an error if token is not valid', async () => {
@@ -111,142 +113,77 @@ describe('PasswordRecoveryController', () => {
         passwordRecoveryController.confirmResetToken(rawToken, email),
       ).rejects.toThrow(error);
 
-      expect(tokenServiceMock.assertVerificationTokenIsValid).toHaveBeenCalledWith(
-        email,
-        tokenId,
-      );
+      expect(
+        tokenServiceMock.assertVerificationTokenIsValid,
+      ).toHaveBeenCalledWith(email, tokenId);
     });
   });
 
   describe('changePassword', () => {
-    it('should update user password if token is valid and passwords match', async () => {
-      const payload = {
-        email: 'test@test.com',
-        token: VALID_TOKEN,
-        password: 'new-password',
-        confirm_password: 'new-password',
-      } as ResetPasswordDto;
-
-      const tokenId = TOKEN.add(payload.token);
-      const updatedUser = createUserMock({
-        email: payload.email,
-      });
-
-      tokenServiceMock.assertVerificationTokenIsValid.mockResolvedValue(undefined);
-      userServiceMock.update.mockResolvedValue(updatedUser);
-      tokenServiceMock.delete.mockResolvedValue(undefined);
-
+    const payload: ResetPasswordDto = {
+      email: 'test@test.com',
+      token: VALID_TOKEN,
+      password: 'new-password',
+      confirm_password: 'new-password',
+    };
+    it('should delegate the atomic reset with the supplied token', async () => {
+      recoveryMock.reset.mockResolvedValue(undefined);
       const response = await passwordRecoveryController.changePassword(payload);
-
-      expect(tokenServiceMock.assertVerificationTokenIsValid).toHaveBeenCalledWith(
+      expect(recoveryMock.reset).toHaveBeenCalledWith(
         payload.email,
-        tokenId,
+        TOKEN.add(payload.token),
+        payload.password,
       );
-
-      expect(userServiceMock.update).toHaveBeenCalledWith(
-        { email: payload.email },
-        {
-          password: payload.confirm_password,
-        },
-      );
-
-      expect(tokenServiceMock.delete).toHaveBeenCalledWith(payload.email);
-
-      expect(response).toEqual(
-        makeMessage(
-          'updated user password',
-          'La modification de votre mot de passe est un succès, vous pouvez désormais vous connecter.',
-          updatedUser,
-        ),
-      );
+      expect(response.data).toBeNull();
     });
-
-    it('should throw PasswordNotMatchException if passwords do not match', async () => {
-      const payload = {
-        email: 'test@test.com',
-        token: VALID_TOKEN,
-        password: 'new-password',
-        confirm_password: 'different-password',
-      } as ResetPasswordDto;
-
-      const tokenId = TOKEN.add(payload.token);
-
-      tokenServiceMock.assertVerificationTokenIsValid.mockResolvedValue(undefined);
-
+    it('should reject different passwords before consuming a token', async () => {
       await expect(
-        passwordRecoveryController.changePassword(payload),
+        passwordRecoveryController.changePassword({
+          ...payload,
+          confirm_password: 'different',
+        }),
       ).rejects.toThrow(PasswordNotMatchException);
-
-      expect(tokenServiceMock.assertVerificationTokenIsValid).toHaveBeenCalledWith(
-        payload.email,
-        tokenId,
-      );
-
-      expect(userServiceMock.update).not.toHaveBeenCalled();
-      expect(tokenServiceMock.delete).not.toHaveBeenCalled();
+      expect(recoveryMock.reset).not.toHaveBeenCalled();
     });
-
-    it('should throw an error if token is not valid', async () => {
-      const payload = {
-        email: 'test@test.com',
-        token: ANOTHER_VALID_TOKEN ,
-        password: 'new-password',
-        confirm_password: 'new-password',
-      } as ResetPasswordDto;
-
-      const tokenId = TOKEN.add(payload.token);
-      const error = new Error('Invalid token');
-
-      tokenServiceMock.assertVerificationTokenIsValid.mockRejectedValue(error);
-
+    it('should reject malformed tokens before the transaction', async () => {
+      await expect(
+        passwordRecoveryController.changePassword({
+          ...payload,
+          token: 'invalid',
+        }),
+      ).rejects.toThrow(TokenInvalidFormat);
+      expect(recoveryMock.reset).not.toHaveBeenCalled();
+    });
+    it('should propagate a failed atomic reset', async () => {
+      const error = new TokenExpiredOrInvalidException();
+      recoveryMock.reset.mockRejectedValue(error);
       await expect(
         passwordRecoveryController.changePassword(payload),
-      ).rejects.toThrow(error);
-
-      expect(tokenServiceMock.assertVerificationTokenIsValid).toHaveBeenCalledWith(
-        payload.email,
-        tokenId,
-      );
-
-      expect(userServiceMock.update).not.toHaveBeenCalled();
-      expect(tokenServiceMock.delete).not.toHaveBeenCalled();
-    });
-
-    it('should throw an error if user password update fails', async () => {
-      const payload = {
-        email: 'test@test.com',
-        token: VALID_TOKEN,
-        password: 'new-password',
-        confirm_password: 'new-password',
-      } as ResetPasswordDto;
-
-      const tokenId = TOKEN.add(payload.token);
-      const error = new Error('Update failed');
-
-      tokenServiceMock.assertVerificationTokenIsValid.mockResolvedValue(undefined);
-      userServiceMock.update.mockRejectedValue(error);
-
-      await expect(
-        passwordRecoveryController.changePassword(payload),
-      ).rejects.toThrow(error);
-
-      expect(tokenServiceMock.assertVerificationTokenIsValid).toHaveBeenCalledWith(
-        payload.email,
-        tokenId,
-      );
-
-      expect(userServiceMock.update).toHaveBeenCalledWith(
-        { email: payload.email },
-        {
-          password: payload.confirm_password,
-        },
-      );
-
-      expect(tokenServiceMock.delete).not.toHaveBeenCalled();
+      ).rejects.toBe(error);
     });
   });
 
   describe('requestPasswordReset', () => {
+    it('should return the same response for a missing account and an active token', async () => {
+      userServiceMock.show.mockRejectedValueOnce(
+        new UserNotFoundException('unknown@test.com'),
+      );
+      const missing = await passwordRecoveryController.requestPasswordReset(
+        { email: 'unknown@test.com' },
+        {} as any,
+      );
+      userServiceMock.show.mockResolvedValueOnce(createUserMock());
+      tokenServiceMock.generate.mockResolvedValueOnce(VALID_TOKEN);
+      tokenServiceMock.set.mockRejectedValueOnce(
+        new ResetTokenAlreadyActiveException(),
+      );
+      const active = await passwordRecoveryController.requestPasswordReset(
+        { email: 'test@test.com' },
+        {} as any,
+      );
+      expect(missing).toEqual(active);
+      expect(mailsQueueMock.add).not.toHaveBeenCalled();
+    });
     it('should generate token, save verification token and add recovery email to queue', async () => {
       const payload = {
         email: 'test@test.com',
@@ -289,10 +226,10 @@ describe('PasswordRecoveryController', () => {
         requestMock as any,
       );
 
-      const expectedResetUrl = `${requestMock.raw.headers.origin}/auth/reset?token=${token.getToken}&email=${payload.email}`;
+      const expectedResetUrl = `http://localhost:4200/auth/reset?token=${token.getToken}&email=${encodeURIComponent(payload.email)}`;
 
       expect(userServiceMock.show).toHaveBeenCalledWith({
-        email: payload.email, 
+        email: payload.email,
       });
 
       expect(tokenServiceMock.generate).toHaveBeenCalledTimes(1);
@@ -317,19 +254,21 @@ describe('PasswordRecoveryController', () => {
 
       expect(mailsQueueMock.add).toHaveBeenCalledWith(
         'mail',
-        mailOptions,
+        {
+          ...mailOptions,
+          recovery: { email: payload.email, code: token.getToken },
+        },
+        { jobId: `recovery-${verificationToken.id}` },
       );
 
-      expect(response).toEqual(
-        makeMessage(
-          'Generate token and Send email successful',
-          `Vous allez recevoir un email sur ${payload.email} pour réinitialiser votre mot de passe.`,
-          null,
-        ),
-      );
+      expect(response).toEqual({
+        message: expect.stringContaining('Si un compte correspond'),
+        data: null,
+        meta: undefined,
+      });
     });
 
-    it('should use localhost origin if request origin is missing', async () => {
+    it('should use the configured frontend independently of request origin', async () => {
       const payload = {
         email: 'test@test.com',
       } as ResetEmailDto;
@@ -369,7 +308,7 @@ describe('PasswordRecoveryController', () => {
         requestMock as any,
       );
 
-      const expectedResetUrl = `http://localhost:3000/auth/reset?token=${token.getToken}&email=${payload.email}`;
+      const expectedResetUrl = `http://localhost:4200/auth/reset?token=${token.getToken}&email=${encodeURIComponent(payload.email)}`;
 
       expect(mailingServiceMock.getOptionRecoveryEmail).toHaveBeenCalledWith(
         verificationToken,
@@ -472,7 +411,11 @@ describe('PasswordRecoveryController', () => {
 
       expect(mailsQueueMock.add).toHaveBeenCalledWith(
         'mail',
-        mailOptions,
+        {
+          ...mailOptions,
+          recovery: { email: payload.email, code: token.getToken },
+        },
+        { jobId: `recovery-${verificationToken.id}` },
       );
     });
   });

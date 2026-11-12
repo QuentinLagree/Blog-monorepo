@@ -20,13 +20,13 @@ const config: Config = {
     '^src/(.*)$': '<rootDir>/src/$1',
     '^@src/(.*)$': '<rootDir>/src/$1',
     '^styles/(.*)$': '<rootDir>/src/styles/$1',
-    '^@styles/(.*)$': '<rootDir>/src/styles/$1'
+    '^@styles/(.*)$': '<rootDir>/src/styles/$1',
   },
 
   moduleDirectories: ['node_modules', '<rootDir>'],
 
   collectCoverageFrom: ['src/**/*.(t|j)s'],
-  coverageDirectory: 'coverage'
+  coverageDirectory: 'coverage',
 };
 
 export default config;

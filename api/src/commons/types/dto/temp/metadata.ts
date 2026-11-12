@@ -1,30 +1,21 @@
-import {
-    getMetadataStorage,
-    ValidationArguments,
-} from 'class-validator';
-
+import { getMetadataStorage, ValidationArguments } from 'class-validator';
 
 type DtoClass = new (...args: any[]) => object;
 
 type SelectedValidator = {
-    validator: string;
-    message?: string | ((args: ValidationArguments) => string);
-    constraints?: unknown[];
+  validator: string;
+  message?: string | ((args: ValidationArguments) => string);
+  constraints?: unknown[];
 };
 
 const primaryValidatorPriority = [
-    'isEmail',
-    'minLength',
-    'maxLength',
-    'isNotEmpty',
+  'isEmail',
+  'minLength',
+  'maxLength',
+  'isNotEmpty',
 ];
 
-const secondaryValidatorPriority = [
-    'isString',
-    'isNumber',
-    'isBoolean',
-];
-
+const secondaryValidatorPriority = ['isString', 'isNumber', 'isBoolean'];
 
 /**
  * Récupère les validateurs class-validator d'un DTO
@@ -36,36 +27,34 @@ const secondaryValidatorPriority = [
  *   email: ['isEmail', 'isString']
  * }
  */
-export const getDtoMetaData = (
-    dto: DtoClass,
-): Record<string, string[]> => {
-    const metadataStorage = getMetadataStorage();
+export const getDtoMetaData = (dto: DtoClass): Record<string, string[]> => {
+  const metadataStorage = getMetadataStorage();
 
-    const metadatas = metadataStorage.getTargetValidationMetadatas(
-        dto,
-        '',
-        false,
-        false,
-    );
+  const metadatas = metadataStorage.getTargetValidationMetadatas(
+    dto,
+    '',
+    false,
+    false,
+  );
 
-    const groupedValidators: Record<string, string[]> = {};
+  const groupedValidators: Record<string, string[]> = {};
 
-    metadatas.forEach((metadata) => {
-        const propertyName = metadata.propertyName;
-        const validatorName = metadata.name;
+  metadatas.forEach((metadata) => {
+    const propertyName = metadata.propertyName;
+    const validatorName = metadata.name;
 
-        if (!validatorName) {
-            return;
-        }
+    if (!validatorName) {
+      return;
+    }
 
-        if (!groupedValidators[propertyName]) {
-            groupedValidators[propertyName] = [];
-        }
+    if (!groupedValidators[propertyName]) {
+      groupedValidators[propertyName] = [];
+    }
 
-        groupedValidators[propertyName].push(validatorName);
-    });
+    groupedValidators[propertyName].push(validatorName);
+  });
 
-    return groupedValidators;
+  return groupedValidators;
 };
 
 /**
@@ -76,50 +65,50 @@ export const getDtoMetaData = (
  * de la ValidationMetadata correspondante.
  */
 export const getDtoPropertyPriority = (
-    dto: DtoClass,
+  dto: DtoClass,
 ): Record<string, SelectedValidator> => {
-    const metadataStorage = getMetadataStorage();
+  const metadataStorage = getMetadataStorage();
 
-    const metadatas = metadataStorage.getTargetValidationMetadatas(
-        dto,
-        '',
-        false,
-        false,
+  const metadatas = metadataStorage.getTargetValidationMetadatas(
+    dto,
+    '',
+    false,
+    false,
+  );
+
+  const properties = getDtoMetaData(dto);
+
+  const result: Record<string, SelectedValidator> = {};
+
+  Object.entries(properties).forEach(([propertyName, validators]) => {
+    const selectedValidator =
+      primaryValidatorPriority.find((validator) =>
+        validators.includes(validator),
+      ) ??
+      secondaryValidatorPriority.find((validator) =>
+        validators.includes(validator),
+      );
+
+    if (!selectedValidator) {
+      return;
+    }
+
+    const validatorMetadata = metadatas.find(
+      (metadata) =>
+        metadata.propertyName === propertyName &&
+        metadata.name === selectedValidator,
     );
 
-    const properties = getDtoMetaData(dto);
+    if (!validatorMetadata) {
+      return;
+    }
 
-    const result: Record<string, SelectedValidator> = {};
+    result[propertyName] = {
+      validator: selectedValidator,
+      message: validatorMetadata.message,
+      constraints: validatorMetadata.constraints,
+    };
+  });
 
-    Object.entries(properties).forEach(([propertyName, validators]) => {
-        const selectedValidator =
-            primaryValidatorPriority.find((validator) =>
-                validators.includes(validator),
-            ) ??
-            secondaryValidatorPriority.find((validator) =>
-                validators.includes(validator),
-            );
-
-        if (!selectedValidator) {
-            return;
-        }
-
-        const validatorMetadata = metadatas.find(
-            (metadata) =>
-                metadata.propertyName === propertyName &&
-                metadata.name === selectedValidator,
-        );
-
-        if (!validatorMetadata) {
-            return;
-        }
-
-        result[propertyName] = {
-            validator: selectedValidator,
-            message: validatorMetadata.message,
-            constraints: validatorMetadata.constraints,
-        };
-    });
-
-    return result;
+  return result;
 };

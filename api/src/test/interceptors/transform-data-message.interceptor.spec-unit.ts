@@ -1,6 +1,6 @@
 import { CallHandler, ExecutionContext } from '@nestjs/common';
 import { of, lastValueFrom } from 'rxjs';
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude } from 'class-transformer';
 import { TransformDataMessageIntoObjectSerialization } from 'src/commons/interceptors/transform_data_message_into_object_serialization.interceptor';
 
 class TestUserEntity {
@@ -56,6 +56,7 @@ describe('TransformDataMessageIntoObjectSerialization', () => {
     );
 
     expect(result.data).toBeInstanceOf(TestUserEntity);
+    expect(result.data).not.toHaveProperty('password');
     expect(result.data).toMatchObject({
       id: 1,
       email: 'test@test.com',
@@ -93,6 +94,9 @@ describe('TransformDataMessageIntoObjectSerialization', () => {
     expect(result.data).toHaveLength(2);
     expect(result.data[0]).toBeInstanceOf(TestUserEntity);
     expect(result.data[1]).toBeInstanceOf(TestUserEntity);
+    result.data.forEach((item: TestUserEntity) =>
+      expect(item).not.toHaveProperty('password'),
+    );
   });
 
   it('should keep null data unchanged', async () => {
@@ -175,5 +179,31 @@ describe('TransformDataMessageIntoObjectSerialization', () => {
     );
 
     expect(result.data).toBeInstanceOf(TestUserEntity);
+  });
+
+  it('should choose the class whose initialized properties match the data', async () => {
+    class UserTarget {
+      email = '';
+      constructor(partial: Partial<UserTarget>) {
+        Object.assign(this, partial);
+      }
+    }
+    class PostTarget {
+      title = '';
+      constructor(partial: Partial<PostTarget>) {
+        Object.assign(this, partial);
+      }
+    }
+    const interceptor = new TransformDataMessageIntoObjectSerialization([
+      UserTarget,
+      PostTarget,
+    ]);
+    const response = { message: 'Post', data: { title: 'Test' } };
+    const result = await lastValueFrom(
+      interceptor.intercept(contextMock, createCallHandlerMock(response)),
+    );
+    expect(result.data).toBeInstanceOf(PostTarget);
+    expect(result.data.title).toBe('Test');
+    expect(result.message).toBe('Post');
   });
 });

@@ -1,11 +1,6 @@
 // roles.guard.ts
-import {
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+// roles.guard.ts
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { FastifyRequest } from 'fastify';
 import { UserService } from 'src/modules/user/user.service';
@@ -39,7 +34,7 @@ export class RolesGuard implements CanActivate {
       throw new UnauthorizedSessionInactive();
     }
 
-    const dbUser = await this.usersService.show({id: sessionUser.id});
+    const dbUser = await this.usersService.show({ id: sessionUser.id });
 
     if (!dbUser) {
       throw new UserNotFoundException(sessionUser.id);

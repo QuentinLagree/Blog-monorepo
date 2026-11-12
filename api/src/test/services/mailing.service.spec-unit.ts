@@ -13,8 +13,8 @@ describe('MailingService', () => {
 
   const readFileMock = fs.readFile as jest.Mock;
 
-    beforeEach(() => {
-    jest.clearAllMocks();
+  beforeEach(() => {
+    jest.resetAllMocks();
 
     mailingService = new MailingService();
   });
@@ -27,7 +27,8 @@ describe('MailingService', () => {
         expired_at: new Date(),
       };
 
-      const url = 'http://localhost:3000/auth/reset?token=abc&email=test@test.com';
+      const url =
+        'http://localhost:3000/auth/reset?token=abc&email=test@test.com';
 
       readFileMock.mockResolvedValue(
         '<p>Email: {{email}}</p><p>Url: {{url}}</p>',
@@ -92,6 +93,29 @@ describe('MailingService', () => {
           pseudo: 'testuser',
         } as any),
       ).rejects.toThrow(FailSendingMailException);
+    });
+  });
+
+  it('should use the source template when the built template cannot be read', async () => {
+    readFileMock
+      .mockRejectedValueOnce(new Error('Built template missing'))
+      .mockResolvedValueOnce('<p>{{username}}</p>');
+    const user = {
+      id: 1,
+      email: 'test@test.com',
+      pseudo: 'testuser',
+    } as Parameters<MailingService['getOptionsWelcomeMail']>[0];
+    const response = await mailingService.getOptionsWelcomeMail(user);
+    expect(readFileMock).toHaveBeenCalledTimes(2);
+    expect(readFileMock).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining('welcome_mail.html'),
+      'utf8',
+    );
+    expect(response).toEqual({
+      to: user.email,
+      subject: 'Bienvenue !',
+      html: '<p>testuser</p>',
     });
   });
 });

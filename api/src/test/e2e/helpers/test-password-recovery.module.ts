@@ -1,3 +1,4 @@
+import { PasswordRecoveryService } from 'src/modules/handle-password/password-recovery.service';
 // api/test/helpers/test-password-recovery.module.ts
 
 import { Module } from '@nestjs/common';
@@ -13,6 +14,7 @@ import { PasswordRecoveryController } from 'src/modules/handle-password/password
 @Module({
   controllers: [PasswordRecoveryController],
   providers: [
+    PasswordRecoveryService,
     AuthService,
     UserService,
     TokenService,

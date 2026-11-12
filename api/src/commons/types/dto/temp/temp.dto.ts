@@ -1,15 +1,21 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, isString, MinLength } from "class-validator";
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
 export class TempDto {
-    @IsString()
-    @IsNotEmpty()
-    @IsEmail()
-    email: string
+  @IsString()
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
 
-    @IsString()
-    @MinLength(5)
-    password: string
+  @IsString()
+  @MinLength(5)
+  password: string;
 
-    @IsOptional()
-    role: string
+  @IsOptional()
+  role: string;
 }

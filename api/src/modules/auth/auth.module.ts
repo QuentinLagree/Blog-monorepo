@@ -7,19 +7,9 @@ import { PasswordModule } from 'src/commons/services/password.module';
 import { PrismaModule } from 'src/commons/prisma/prisma.module';
 
 @Module({
-  imports: [
-    PasswordModule,
-    UserModule,
-    PrismaModule
-  ],
-  controllers: [
-    AuthController,
-  ],
-  providers: [
-    AuthService,
-  ],
-  exports: [
-    AuthService,
-  ],
+  imports: [PasswordModule, UserModule, PrismaModule],
+  controllers: [AuthController],
+  providers: [AuthService],
+  exports: [AuthService],
 })
 export class AuthModule {}

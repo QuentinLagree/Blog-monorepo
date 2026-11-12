@@ -33,7 +33,7 @@ describe('PasswordRecoveryController e2e', () => {
     }
   });
 
-  describe('POST /password-recovery/request', () => {
+  describe('POST /password/forgot', () => {
     it('should request password recovery and add mail job', async () => {
       const user = await createTestUser(prisma, passwordService, {
         email: 'recovery@test.com',
@@ -44,19 +44,19 @@ describe('PasswordRecoveryController e2e', () => {
         .send({
           email: user.email,
         })
-        .expect(201);
+        .expect(200);
 
       expect(response.body.data).toBeDefined();
       expect(mailQueueMock.add).toHaveBeenCalled();
     });
 
-    it('should return 404 if email does not exist', async () => {
+    it('should accept an unknown email without revealing account existence', async () => {
       await request(app.getHttpServer())
         .post(`${endpoint}/forgot`)
         .send({
           email: 'unknown@test.com',
         })
-        .expect(404);
+        .expect(200);
     });
 
     it('should return 400 if email is invalid', async () => {
@@ -69,7 +69,7 @@ describe('PasswordRecoveryController e2e', () => {
     });
   });
 
-  describe('POST /password-recovery/reset', () => {
+  describe('POST /password/reset', () => {
     it('should reset password with valid token', async () => {
       const user = await createTestUser(prisma, passwordService, {
         email: 'reset@test.com',
@@ -80,6 +80,7 @@ describe('PasswordRecoveryController e2e', () => {
 
       await prisma.verificationTokens.create({
         data: {
+          userId: user.id,
           email: user.email,
           code: token,
           expired_at: new Date(Date.now() + 1000 * 60 * 15),
@@ -92,8 +93,9 @@ describe('PasswordRecoveryController e2e', () => {
           email: user.email,
           token,
           password: 'newPassword123',
-          confirm_password: 'newPassword123'
-        }).expect(201);
+          confirm_password: 'newPassword123',
+        })
+        .expect(201);
 
       const updatedUser = await prisma.user.findUnique({
         where: {
@@ -111,7 +113,7 @@ describe('PasswordRecoveryController e2e', () => {
       expect(passwordIsUpdated).toBe(true);
     });
 
-    it('should return an error if token is invalid', async () => {
+    it('should reject malformed reset payloads', async () => {
       const user = await createTestUser(prisma, passwordService, {
         email: 'invalid-token@test.com',
       });
@@ -123,9 +125,7 @@ describe('PasswordRecoveryController e2e', () => {
           token: 'invalid-token',
           password: 'newPassword123',
         })
-        .expect((response) => {
-          expect([400, 401, 404]).toContain(response.status);
-        });
+        .expect(400);
     });
 
     it('should return 400 if payload is invalid', async () => {
@@ -138,5 +138,163 @@ describe('PasswordRecoveryController e2e', () => {
         })
         .expect(400);
     });
+  });
+
+  describe('reset token authorization', () => {
+    const token = '1234567890abcdef1234567890abcdef';
+    const payload = (email: string) => ({
+      email,
+      token,
+      password: 'newPassword123',
+      confirm_password: 'newPassword123',
+    });
+    it('should confirm a valid token without consuming it', async () => {
+      const user = await createTestUser(prisma, passwordService);
+      await prisma.verificationTokens.create({
+        data: {
+          userId: user.id,
+          email: user.email,
+          code: token,
+          expired_at: new Date(Date.now() + 60000),
+        },
+      });
+      const response = await request(app.getHttpServer())
+        .get('/password/reset')
+        .query({ email: user.email, token })
+        .expect(200);
+      expect(response.body.data).toEqual({ email: user.email, token });
+      expect(await prisma.verificationTokens.count()).toBe(1);
+    });
+    it.each(['missing', 'expired', 'wrong-email'] as const)(
+      'should prevent password changes for a %s token',
+      async (scenario) => {
+        const user = await createTestUser(prisma, passwordService);
+        if (scenario !== 'missing')
+          await prisma.verificationTokens.create({
+            data: {
+              userId: user.id,
+              email: scenario === 'wrong-email' ? 'other@test.com' : user.email,
+              code: token,
+              expired_at: new Date(
+                Date.now() + (scenario === 'expired' ? -1000 : 60000),
+              ),
+            },
+          });
+        await request(app.getHttpServer())
+          .post('/password/reset')
+          .send(payload(user.email))
+          .expect(409);
+        const persisted = await prisma.user.findUniqueOrThrow({
+          where: { id: user.id },
+        });
+        expect(persisted.password).toBe(user.password);
+      },
+    );
+    it('should consume a reset token and reject its sequential reuse', async () => {
+      const user = await createTestUser(prisma, passwordService);
+      await prisma.verificationTokens.create({
+        data: {
+          userId: user.id,
+          email: user.email,
+          code: token,
+          expired_at: new Date(Date.now() + 60000),
+        },
+      });
+      await request(app.getHttpServer())
+        .post('/password/reset')
+        .send(payload(user.email))
+        .expect(201);
+      expect(
+        await prisma.verificationTokens.count({ where: { email: user.email } }),
+      ).toBe(0);
+      await request(app.getHttpServer())
+        .post('/password/reset')
+        .send({
+          ...payload(user.email),
+          password: 'anotherPassword123',
+          confirm_password: 'anotherPassword123',
+        })
+        .expect(409);
+      const persisted = await prisma.user.findUniqueOrThrow({
+        where: { id: user.id },
+      });
+      await expect(
+        passwordService.verifyPassword(persisted.password, 'newPassword123'),
+      ).resolves.toBe(true);
+    });
+    it('should reject missing tokens and different passwords without changing the account', async () => {
+      const user = await createTestUser(prisma, passwordService);
+      const { token: _omitted, ...withoutToken } = payload(user.email);
+      await request(app.getHttpServer())
+        .post('/password/reset')
+        .send(withoutToken)
+        .expect(400);
+      await request(app.getHttpServer())
+        .post('/password/reset')
+        .send({ ...payload(user.email), confirm_password: 'differentPassword' })
+        .expect(401);
+      expect(
+        (await prisma.user.findUniqueOrThrow({ where: { id: user.id } }))
+          .password,
+      ).toBe(user.password);
+    });
+    it('should reject malformed and expired tokens on confirmation', async () => {
+      const user = await createTestUser(prisma, passwordService);
+      await request(app.getHttpServer())
+        .get('/password/reset')
+        .query({ email: user.email, token: 'invalid' })
+        .expect(400);
+      await prisma.verificationTokens.create({
+        data: {
+          userId: user.id,
+          email: user.email,
+          code: token,
+          expired_at: new Date(Date.now() - 1000),
+        },
+      });
+      await request(app.getHttpServer())
+        .get('/password/reset')
+        .query({ email: user.email, token })
+        .expect(409);
+    });
+    it('should accept another request without replacing an active token', async () => {
+      const user = await createTestUser(prisma, passwordService);
+      await request(app.getHttpServer())
+        .post('/password/forgot')
+        .send({ email: user.email })
+        .expect(200);
+      await request(app.getHttpServer())
+        .post('/password/forgot')
+        .send({ email: user.email })
+        .expect(200);
+      expect(mailQueueMock.add).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('should replace an expired token and render the actual recovery email', async () => {
+    const user = await createTestUser(prisma, passwordService);
+    await prisma.verificationTokens.create({
+      data: {
+        userId: user.id,
+        email: user.email,
+        code: '1234567890abcdef1234567890abcdef',
+        expired_at: new Date(Date.now() - 1000),
+      },
+    });
+    await request(app.getHttpServer())
+      .post('/password/forgot')
+      .send({ email: user.email })
+      .expect(200);
+    const saved = await prisma.verificationTokens.findUniqueOrThrow({
+      where: { email: user.email },
+    });
+    expect(saved.expired_at.getTime()).toBeGreaterThan(Date.now());
+    expect(saved.code).toMatch(/^[0-9a-f]{32}$/);
+    expect(await prisma.verificationTokens.count()).toBe(1);
+    const [jobName, mail] = mailQueueMock.add.mock.calls[0];
+    expect(jobName).toBe('mail');
+    expect(mail.to).toBe(user.email);
+    expect(mail.html).toContain(saved.code);
+    expect(mail.html).not.toContain('{{url}}');
   });
 });

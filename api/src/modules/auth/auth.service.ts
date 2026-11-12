@@ -13,29 +13,29 @@ import { PasswordService } from 'src/commons/services/argon.service';
 import { EmailOrPasswordNotMatchException } from './exceptions/email-or-password-not-match.exception';
 import { UserSession } from 'src/commons/types/session-user.type';
 import { UserHaveAlreadyActiveSessionException } from './exceptions/user-have-already-active-session.exception';
+import { PasswordNotMatchException } from './exceptions/password-not-same.exception';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
-  private readonly _passwordManager: PasswordService) {}
-  
+    private readonly _passwordManager: PasswordService,
+  ) {}
 
   async login(logginDto: UserLoginCredentials): Promise<User> {
-    
-      const user = await this.prisma.user.findUnique({
-        where: { email: logginDto.email },
-      });
-      if (!user) throw new EmailOrPasswordNotMatchException();
+    const user = await this.prisma.user.findUnique({
+      where: { email: logginDto.email },
+    });
+    if (!user) throw new EmailOrPasswordNotMatchException();
 
-      let hasSamePassword: boolean = await this.comparePassword(
-        logginDto.password,
-        user.password,
-      );
+    let hasSamePassword: boolean = await this.comparePassword(
+      logginDto.password,
+      user.password,
+    );
 
-      if (!hasSamePassword) throw new EmailOrPasswordNotMatchException();
+    if (!hasSamePassword) throw new EmailOrPasswordNotMatchException();
 
-      return user;
+    return user;
   }
 
   setUserSession(session: Session, user: UserSession): void {
@@ -56,6 +56,8 @@ export class AuthService {
     password: string,
     confirm_password: string,
   ): Promise<void> {
-    
+    if (password !== confirm_password) {
+      throw new PasswordNotMatchException();
+    }
   }
 }

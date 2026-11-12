@@ -1,4 +1,4 @@
-import { UserSession } from "./session-user.type";
+import { UserSession } from './session-user.type';
 
 export type SessionType = {
   loggedIn: boolean;

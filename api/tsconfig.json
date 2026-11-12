@@ -1,29 +1,18 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "types": [
-      "node",
-      "jest"
-    ],
+    "types": ["node", "jest"],
     "paths": {
-      "src/*": [
-        "./src/*"
-      ],
-      "@src/*": [
-        "./src/*"
-      ],
-      "styles/*": [
-        "./src/styles/*"
-      ],
-      "@styles/*": [
-        "./src/styles/*"
-      ]
+      "src/*": ["./src/*"],
+      "@src/*": ["./src/*"],
+      "styles/*": ["./src/styles/*"],
+      "@styles/*": ["./src/styles/*"]
     },
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "ignoreDeprecations": "6.0",
+    "ignoreDeprecations": "5.0",
     "baseUrl": ".",
-    "outDir": "./dist/out-tsc",
+    "outDir": "./dist",
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "strict": false,
@@ -33,21 +22,12 @@
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "importHelpers": true,
     "target": "ES2022",
-    "module": "ES2022",
+    "module": "CommonJS",
     "useDefineForClassFields": false,
-    "lib": [
-      "ES2022",
-      "dom"
-    ],
+    "lib": ["ES2022", "dom"],
     "strictPropertyInitialization": false
-  },
-  "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false,
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": true
   }
 }

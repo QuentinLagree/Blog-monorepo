@@ -22,7 +22,10 @@ function extractBlocks(content: string, block: string): string[] {
   return [...content.matchAll(regex)].map((m) => m[0]);
 }
 
-function stripBlocks(content: string, blocks = ['datasource', 'generator']): string {
+function stripBlocks(
+  content: string,
+  blocks = ['datasource', 'generator'],
+): string {
   let result = content;
   for (const b of blocks) {
     const regex = new RegExp(`\\b${b}\\s+\\w+[\\s\\S]*?\\n}`, 'g');
@@ -40,7 +43,8 @@ async function main() {
   console.log('[merge-prisma] CWD:', cwd);
   console.log('[merge-prisma] DB root:', root);
 
-  if (!fs.existsSync(base)) die(`[merge-prisma] ❌ base.prisma introuvable: ${base}`);
+  if (!fs.existsSync(base))
+    die(`[merge-prisma] ❌ base.prisma introuvable: ${base}`);
 
   const baseContent = fs.readFileSync(base, 'utf8');
   const datasources = extractBlocks(baseContent, 'datasource').join('\n\n');
@@ -60,7 +64,9 @@ async function main() {
   modelFiles.forEach((f) => console.log('  -', path.relative(cwd, f)));
 
   if (modelFiles.length === 0) {
-    die('[merge-prisma] ❌ Aucun fichier .prisma trouvé dans src/config/database/models/');
+    die(
+      '[merge-prisma] ❌ Aucun fichier .prisma trouvé dans src/config/database/models/',
+    );
   }
 
   const parts: string[] = [header];

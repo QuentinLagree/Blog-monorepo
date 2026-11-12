@@ -10,9 +10,15 @@ import {
   Put,
   SerializeOptions,
   UseGuards,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiBody, ApiCookieAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiCookieAuth,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ApiExceptionsResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { ApiMessageResponse } from 'src/commons/decorators/api-message-response.decorator';
 import { Roles } from 'src/commons/decorators/role.decorator';
@@ -39,20 +45,25 @@ import { userSelectPayload, UserService } from './user.service';
 @Controller('users')
 @UseInterceptors(new TransformDataMessageIntoObjectSerialization([UserEntity]))
 export class UserController {
-  constructor(private readonly _user: UserService, private readonly _article: ArticleService) { }
+  constructor(
+    private readonly _user: UserService,
+    private readonly _article: ArticleService,
+  ) {}
 
   @ApiCookieAuth()
   @ApiOperation({
-    summary: "Récupérer les utilisateurs",
-    description: "Récupère une liste d'utilisateurs. Cette liste peut être vide. L'utilisateur doit être connecté."
+    summary: 'Récupérer les utilisateurs',
+    description:
+      "Récupère une liste d'utilisateurs. Cette liste peut être vide. L'utilisateur doit être connecté.",
   })
   @ApiMessageResponse(PublicUserDto, {
-    description: "Renvoie la liste de tous les utilisateurs avec leurs informations publiques.",
-    messageExemple: "Liste de tous les utilisateurs.",
-    isArray: true
+    description:
+      'Renvoie la liste de tous les utilisateurs avec leurs informations publiques.',
+    messageExemple: 'Liste de tous les utilisateurs.',
+    isArray: true,
   })
   @ApiExceptionsResponse([UserNotHaveAuthorisation], {
-    isPublic: true
+    isPublic: true,
   })
   @UseGuards(createAuthGuardSession(), RolesGuard)
   @Roles(Role.Admin, Role.User)
@@ -62,19 +73,20 @@ export class UserController {
     const users: PublicUserDto[] = await this._user.index();
     return users.length === 0
       ? makeMessage(
-        'List of all users is empty.',
-        'La liste des utilisateurs est vide',
-        [],
-      )
+          'List of all users is empty.',
+          'La liste des utilisateurs est vide',
+          [],
+        )
       : makeMessage(
-        'List of all users',
-        'Liste de tous les utilisateurs',
-        users,
-      );
+          'List of all users',
+          'Liste de tous les utilisateurs',
+          users,
+        );
   }
   @ApiOperation({
-    summary: "Récupérer un utilisateur par son identifiant",
-    description: "Récupère les informations d'un utilisateur à partir de son identifiant unique."
+    summary: 'Récupérer un utilisateur par son identifiant',
+    description:
+      "Récupère les informations d'un utilisateur à partir de son identifiant unique.",
   })
   @ApiParam({
     name: 'id',
@@ -83,18 +95,17 @@ export class UserController {
     description: "Identifiant unique de l'utilisateur",
   })
   @ApiMessageResponse(PublicUserDto, {
-    description: "Utilisateur récupéré avec succès.",
-    messageExemple: "L'utilisateur 42 a bien été trouvé."
+    description: 'Utilisateur récupéré avec succès.',
+    messageExemple: "L'utilisateur 42 a bien été trouvé.",
   })
-  @ApiExceptionsResponse([
-    UserNotFoundException,
-    PostNotFoundException
-  ], {
-    isPublic: true
+  @ApiExceptionsResponse([UserNotFoundException, PostNotFoundException], {
+    isPublic: true,
   })
   @HttpCode(200)
   @Get('/:id')
-  async show(@Param('id', ParseIntPipe) id: number): Promise<Message<PublicUserDto>> {
+  async show(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Message<PublicUserDto>> {
     const user = await this._user.show({ id });
     return makeMessage(
       `User found with ID: ${user.id}!`,
@@ -104,17 +115,16 @@ export class UserController {
   }
 
   @ApiOperation({
-    summary: "Créer un nouvel utilisateur.",
-    description: "Créé un nouvel utilisateur avec ses informations personnelles."
+    summary: 'Créer un nouvel utilisateur.',
+    description:
+      'Créé un nouvel utilisateur avec ses informations personnelles.',
   })
   @ApiMessageResponse(PublicUserDto, {
     status: 201,
-    description: "Utilisateur créé avec succès.",
-    messageExemple: "L'utilisateur est bien enregistré !"
+    description: 'Utilisateur créé avec succès.',
+    messageExemple: "L'utilisateur est bien enregistré !",
   })
-  @ApiExceptionsResponse([
-    UserAlreadyExistException,
-  ], {
+  @ApiExceptionsResponse([UserAlreadyExistException], {
     dto: CreateUserDto,
   })
   @Post()
@@ -122,24 +132,22 @@ export class UserController {
   @ApiBody({
     type: CreateUserDto,
     examples: {
-      "Quentin": {
+      Quentin: {
         summary: "Exemple de création d'utilisateur",
         value: {
-          nom: "Lagree",
-          prenom: "Quentin",
-          pseudo: "QLagree",
-          email: "lagreequentindev21@gmail.com",
-          password: "password1234"
-        }
+          nom: 'Lagree',
+          prenom: 'Quentin',
+          pseudo: 'QLagree',
+          email: 'lagreequentindev21@gmail.com',
+          password: 'password1234',
+        },
       },
-    }
+    },
   })
   @SerializeOptions({
     ignoreDecorators: true,
   })
-  async store(
-    @Body() payload: CreateUserDto,
-  ): Promise<Message<PublicUserDto>> {
+  async store(@Body() payload: CreateUserDto): Promise<Message<PublicUserDto>> {
     const createdUser = await this._user.create(payload);
     return makeMessage(
       'User created !',
@@ -148,11 +156,11 @@ export class UserController {
     );
   }
 
-
   @ApiCookieAuth()
   @ApiOperation({
-    summary: "Modifier un utilisateur par son identifiant.",
-    description: "Modifie les informations d’un utilisateur à partir de son identifiant unique. Cette opération est réservée à l’utilisateur concerné ou à un administrateur."
+    summary: 'Modifier un utilisateur par son identifiant.',
+    description:
+      'Modifie les informations d’un utilisateur à partir de son identifiant unique. Cette opération est réservée à l’utilisateur concerné ou à un administrateur.',
   })
   @ApiParam({
     name: 'id',
@@ -163,39 +171,36 @@ export class UserController {
   @ApiBody({
     type: UserUpdateDto,
     examples: {
-      "email": {
+      email: {
         summary: "Exemple de modification d'utilisateur pour l'email",
         value: {
-          email: "nouvelemail@gmail.com",
-        }
+          email: 'nouvelemail@gmail.com',
+        },
       },
-      "pseudo": {
+      pseudo: {
         summary: "Exemple de modification d'utilisateur pour le pseudo",
-        description: "Le pseudo doit être unique.",
+        description: 'Le pseudo doit être unique.',
         value: {
-          pseudo: "nouveau_pseudo",
-        }
+          pseudo: 'nouveau_pseudo',
+        },
       },
-    }
+    },
   })
   @ApiMessageResponse(PublicUserDto, {
-    description: "Utilisateur modifié avec succès.",
-    messageExemple: "La modification de vos informations est bien sauvegardée !"
+    description: 'Utilisateur modifié avec succès.',
+    messageExemple:
+      'La modification de vos informations est bien sauvegardée !',
   })
-  @ApiExceptionsResponse([
-    UserNotHaveAuthorisation,
-    UserNotFoundException,
-  ], { dto: UserUpdateDto })
+  @ApiExceptionsResponse([UserNotHaveAuthorisation, UserNotFoundException], {
+    dto: UserUpdateDto,
+  })
   @UseGuards(createAuthGuardSession(), UserOwnerOrAdminGuard)
   @Put('/:id')
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() payload: UserUpdateDto,
   ): Promise<Message<PublicUserDto>> {
-    let updatedUser = await this._user.update(
-      { id },
-      payload
-    );
+    let updatedUser = await this._user.update({ id }, payload);
     return makeMessage(
       'User updated !',
       'La modification de vos informations est bien sauvegardée !',
@@ -205,8 +210,9 @@ export class UserController {
 
   @ApiCookieAuth()
   @ApiOperation({
-    summary: "Supprimer un utilisateur par son identifiant.",
-    description: "Supprime toutes les informations d’un utilisateur à partir de son identifiant unique. Cette opération est réservée à un administrateur uniquement."
+    summary: 'Supprimer un utilisateur par son identifiant.',
+    description:
+      'Supprime toutes les informations d’un utilisateur à partir de son identifiant unique. Cette opération est réservée à un administrateur uniquement.',
   })
   @ApiParam({
     name: 'id',
@@ -215,14 +221,12 @@ export class UserController {
     description: "Identifiant unique de l'utilisateur",
   })
   @ApiMessageResponse(null, {
-    description: "Utilisateur supprimé avec succès.",
-    messageExemple: "La suppression de votre compte utilisateur est un succès !",
-    status: 204
+    description: 'Utilisateur supprimé avec succès.',
+    messageExemple:
+      'La suppression de votre compte utilisateur est un succès !',
+    status: 204,
   })
-  @ApiExceptionsResponse([
-    UserNotHaveAuthorisation,
-    UserNotFoundException
-  ])
+  @ApiExceptionsResponse([UserNotHaveAuthorisation, UserNotFoundException])
   @UseGuards(createAuthGuardSession(), RolesGuard)
   @Roles(Role.Admin)
   @HttpCode(204)
@@ -236,10 +240,12 @@ export class UserController {
     );
   }
 
-@ApiCookieAuth()
+  @ApiCookieAuth()
   @ApiOperation({
-    summary: "Récupérer tous les brouillons d'un utilisateur par son identifiant.",
-    description: "Récupère tous les brouillon d'un utilisateur. Il faut être connecter pour effectué cette action."
+    summary:
+      "Récupérer tous les brouillons d'un utilisateur par son identifiant.",
+    description:
+      "Récupère tous les brouillon d'un utilisateur. Il faut être connecter pour effectué cette action.",
   })
   @ApiParam({
     name: 'id',
@@ -248,13 +254,14 @@ export class UserController {
     description: "Identifiant unique de l'utilisateur",
   })
   @ApiMessageResponse(PostSummaryDto, {
-    description: "Afficher la liste de tous les brouillons de l'utilisateur johndoe42.",
-    messageExemple: "Liste de tous les brouillon de johndoe42.",
+    description:
+      "Afficher la liste de tous les brouillons de l'utilisateur johndoe42.",
+    messageExemple: 'Liste de tous les brouillon de johndoe42.',
     isArray: true,
   })
   @ApiExceptionsResponse([UserNotFoundException])
   @HttpCode(200)
-  @UseGuards(createAuthGuardSession())
+  @UseGuards(createAuthGuardSession(), UserOwnerOrAdminGuard)
   @Get('/:id/drafts')
   async getAllDraftsOfUser(
     @Param('id', ParseIntPipe) id: number,
@@ -267,23 +274,25 @@ export class UserController {
     });
     return drafts.length === 0
       ? makeMessage(
-        `List of all draft posts of ${user.pseudo} is empty.`,
-        `La liste des brouillons de l'utilisateur ${user.pseudo} est vide.`,
-        [],
-      )
+          `List of all draft posts of ${user.pseudo} is empty.`,
+          `La liste des brouillons de l'utilisateur ${user.pseudo} est vide.`,
+          [],
+        )
       : makeMessage(
-        `List of all draft posts of user ${user.pseudo}`,
-        `Liste de tous les brouillons de ${user.pseudo}.`,
-        drafts,
-      );
+          `List of all draft posts of user ${user.pseudo}`,
+          `Liste de tous les brouillons de ${user.pseudo}.`,
+          drafts,
+        );
   }
 
   @UseGuards(createAuthGuardSession(), RolesGuard)
   @Roles(Role.Admin)
   @ApiCookieAuth()
   @ApiOperation({
-    summary: "Récupérer toutes les publications d'un utilisateur par son identifiant.",
-    description: "Récupère toutes les publications d'un utilisateur. Il faut avoir le rôle d'administrateur."
+    summary:
+      "Récupérer toutes les publications d'un utilisateur par son identifiant.",
+    description:
+      "Récupère toutes les publications d'un utilisateur. Il faut avoir le rôle d'administrateur.",
   })
   @ApiParam({
     name: 'id',
@@ -292,14 +301,12 @@ export class UserController {
     description: "Identifiant unique de l'utilisateur.",
   })
   @ApiMessageResponse(PostSummaryDto, {
-    description: "Afficher la liste de tous les brouillons de l'utilisateur johndoe42.",
-    messageExemple: "Liste de tous les brouillon de johndoe42.",
+    description:
+      "Afficher la liste de tous les brouillons de l'utilisateur johndoe42.",
+    messageExemple: 'Liste de tous les brouillon de johndoe42.',
     isArray: true,
   })
-  @ApiExceptionsResponse([
-    UserNotHaveAuthorisation,
-    UserNotFoundException
-  ])
+  @ApiExceptionsResponse([UserNotHaveAuthorisation, UserNotFoundException])
   @HttpCode(200)
   @Get('/:id/posts')
   async getAllPostsOfUser(
@@ -312,14 +319,14 @@ export class UserController {
     });
     return drafts.length === 0
       ? makeMessage(
-        `List of all posts of ${user.pseudo} is empty.`,
-        `La liste des publications de l'utilisateur ${user.pseudo} est vide.`,
-        [],
-      )
+          `List of all posts of ${user.pseudo} is empty.`,
+          `La liste des publications de l'utilisateur ${user.pseudo} est vide.`,
+          [],
+        )
       : makeMessage(
-        `List of all posts of user ${user.pseudo}`,
-        `Liste de toute les publications de ${user.pseudo}.`,
-        drafts,
-      );
+          `List of all posts of user ${user.pseudo}`,
+          `Liste de toute les publications de ${user.pseudo}.`,
+          drafts,
+        );
   }
 }

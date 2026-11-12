@@ -1,18 +1,21 @@
 import { HttpStatus } from '@nestjs/common';
-import { ApiExceptionDocumentation, AppException } from 'src/commons/app.exception';
+import {
+  ApiExceptionDocumentation,
+  AppException,
+} from 'src/commons/app.exception';
 
 export class PasswordNotMatchException extends AppException {
-  
-  static readonly status = HttpStatus.UNAUTHORIZED
+  static readonly status = HttpStatus.UNAUTHORIZED;
 
   static readonly documentation = {
-    description: "L'utilisateur a saisi le mot de passe et le mot de passe de confirmation qui ne correspondent pas.",
-    messageExample: `Les deux mots de passe doivent correspondre...`
-  } satisfies ApiExceptionDocumentation
+    description:
+      "L'utilisateur a saisi le mot de passe et le mot de passe de confirmation qui ne correspondent pas.",
+    messageExample: `Les deux mots de passe doivent correspondre...`,
+  } satisfies ApiExceptionDocumentation;
   constructor() {
     super(
       `Les deux mots de passe doivent correspondre...`,
-      PasswordNotMatchException.status
+      PasswordNotMatchException.status,
     );
   }
 }

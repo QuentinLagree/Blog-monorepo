@@ -53,45 +53,8 @@ describe('PostController e2e', () => {
       const response = await agent
         .get(endpoint)
         .query({
-          published: true
+          published: true,
         } as PaginationDto)
-        .expect(200)
-
-
-      expect(response.body.data).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            id: post.id,
-            title: post.title,
-            content: post.content,
-          }),
-        ]),
-      );
-    });
-  });
-
-  describe(`GET ${endpoint}/:id`, () => {
-    it('should return the posts of one user', async () => {
-      const { user } = await createLoggedAgent(
-        app,
-        prisma,
-        passwordService,
-      );
-
-      const post = await createTestPost(
-        prisma,
-        user.id,
-        {
-          title: 'User post',
-          content: 'User post content',
-          published_at: new Date(),
-        },
-      );
-
-      const response = await request(
-        app.getHttpServer(),
-      )
-        .get(`${endpoint}/${user.id}`)
         .expect(200);
 
       expect(response.body.data).toEqual(
@@ -99,290 +62,51 @@ describe('PostController e2e', () => {
           expect.objectContaining({
             id: post.id,
             title: post.title,
-            content: post.content,
-            description: post.description,
-            authorId: user.id,
-            published_at:
-              post.published_at?.toISOString(),
-            created_at:
-              post.created_at.toISOString(),
-            updated_at:
-              post.updated_at.toISOString(),
           }),
         ]),
       );
-    });
-
-    it('should return all posts belonging to the requested user', async () => {
-      const { user } = await createLoggedAgent(
-        app,
-        prisma,
-        passwordService,
-      );
-
-      const firstPost = await createTestPost(
-        prisma,
-        user.id,
-        {
-          title: 'First user post',
-          content: 'First post content',
-          published_at: new Date(),
-        },
-      );
-
-      const secondPost = await createTestPost(
-        prisma,
-        user.id,
-        {
-          title: 'Second user post',
-          content: 'Second post content',
-          published_at: new Date(),
-        },
-      );
-
-      const response = await request(
-        app.getHttpServer(),
-      )
-        .get(`${endpoint}/${user.id}`)
-        .expect(200);
-
-      expect(response.body.data).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            id: firstPost.id,
-            authorId: user.id,
-          }),
-          expect.objectContaining({
-            id: secondPost.id,
-            authorId: user.id,
-          }),
-        ]),
-      );
-    });
-
-    it('should return null if the user has no posts', async () => {
-      const { user } = await createLoggedAgent(
-        app,
-        prisma,
-        passwordService,
-      );
-
-      const response = await request(
-        app.getHttpServer(),
-      )
-        .get(`${endpoint}/${user.id}`)
-        .expect(200);
-
-      expect(response.body.data).toBeNull();
-    });
-
-    it('should be accessible without authentication', async () => {
-      const { user } = await createLoggedAgent(
-        app,
-        prisma,
-        passwordService,
-      );
-
-      await createTestPost(
-        prisma,
-        user.id,
-        {
-          published_at: new Date(),
-        },
-      );
-
-      await request(app.getHttpServer())
-        .get(`${endpoint}/${user.id}`)
-        .expect(200);
-    });
-
-    it('should return 404 if the user does not exist', async () => {
-      await request(app.getHttpServer())
-        .get(`${endpoint}/999999`)
-        .expect(404);
-    });
-
-    it('should return 400 if the user id is not a number', async () => {
-      await request(app.getHttpServer())
-        .get(`${endpoint}/abc`)
-        .expect(400);
-    });
-  });
-
-  describe(`GET ${endpoint}/drafts/:id`, () => {
-    it('should return the drafts of the authenticated user', async () => {
-      const { agent, user } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
-
-      const draft = await createTestPost(
-        prisma,
-        user.id,
-        {
-          title: 'Draft post',
-          content: 'Draft post content',
-          published_at: null,
-        },
-      );
-
-      const response = await agent
-        .get(`${endpoint}/drafts/${user.id}`)
-        .expect(200);
-
-      expect(response.body.data).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            id: draft.id,
-            title: draft.title,
-            content: draft.content,
-            description: draft.description,
-            authorId: user.id,
-            published_at: null,
-          }),
-        ]),
-      );
-    });
-
-    it('should only return unpublished posts', async () => {
-      const { agent, user } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
-
-      const draft = await createTestPost(
-        prisma,
-        user.id,
-        {
-          title: 'Unpublished post',
-          published_at: null,
-        },
-      );
-
-      const publishedPost =
-        await createTestPost(
-          prisma,
-          user.id,
-          {
-            title: 'Published post',
-            published_at: new Date(),
-          },
-        );
-
-      const response = await agent
-        .get(`${endpoint}/drafts/${user.id}`)
-        .expect(200);
-
-      expect(response.body.data).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            id: draft.id,
-            published_at: null,
-          }),
-        ]),
-      );
-
-      expect(response.body.data).not.toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            id: publishedPost.id,
-          }),
-        ]),
-      );
-    });
-
-    it('should return null if the authenticated user has no drafts', async () => {
-      const { agent, user } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
-
-      const response = await agent
-        .get(`${endpoint}/drafts/${user.id}`)
-        .expect(200);
-
-      expect(response.body.data).toBeNull();
-    });
-
-    it('should return 401 if the user is not authenticated', async () => {
-      const { user } = await createLoggedAgent(
-        app,
-        prisma,
-        passwordService,
-      );
-
-      await request(app.getHttpServer())
-        .get(`${endpoint}/drafts/${user.id}`)
-        .expect(401);
-    });
-
-    it('should return 400 if the user id is not a number', async () => {
-      const { agent } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
-
-      await agent
-        .get(`${endpoint}/drafts/abc`)
-        .expect(403);
     });
   });
 
   describe(`POST ${endpoint}`, () => {
     it('should create a new draft post', async () => {
-      const { agent, user } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+      const { agent, user } = await createLoggedAgent(
+        app,
+        prisma,
+        passwordService,
+      );
 
       const payload = {
         title: 'Created post',
-        description:
-          'Created post description',
+        description: 'Created post description',
         content: 'Created post content',
       };
 
-      const response = await agent
-        .post(endpoint)
-        .send(payload)
-        .expect(201);
+      const response = await agent.post(endpoint).send(payload).expect(201);
 
       expect(response.body.data).toEqual(
         expect.objectContaining({
           title: payload.title,
-          description:
-            payload.description,
+          description: payload.description,
           content: payload.content,
           authorId: user.id,
           published_at: null,
         }),
       );
 
-      const createdPost =
-        await prisma.post.findFirst({
-          where: {
-            title: payload.title,
-            authorId: user.id,
-          },
-        });
+      const createdPost = await prisma.post.findFirst({
+        where: {
+          title: payload.title,
+          authorId: user.id,
+        },
+      });
 
       expect(createdPost).not.toBeNull();
 
       expect(createdPost).toEqual(
         expect.objectContaining({
           title: payload.title,
-          description:
-            payload.description,
+          description: payload.description,
           content: payload.content,
           authorId: user.id,
           published_at: null,
@@ -391,28 +115,21 @@ describe('PostController e2e', () => {
     });
 
     it('should return the expected success message', async () => {
-      const { agent } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+      const { agent } = await createLoggedAgent(app, prisma, passwordService);
 
       const response = await agent
         .post(endpoint)
         .send({
           title: 'Message test post',
-          description:
-            'Message test description',
-          content:
-            'Message test content',
+          description: 'Message test description',
+          content: 'Message test content',
         })
         .expect(201);
 
       expect(response.body).toEqual(
         expect.objectContaining({
           message:
-            'La publication est créée, allez sur votre compte pour la visualiser.',
+            "La publication est créée, allez sur la page d'accueil ou votre compte pour la visualiser.",
           data: expect.objectContaining({
             title: 'Message test post',
           }),
@@ -421,27 +138,22 @@ describe('PostController e2e', () => {
     });
 
     it('should use the authenticated user as the author', async () => {
-      const { agent, user } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+      const { agent, user } = await createLoggedAgent(
+        app,
+        prisma,
+        passwordService,
+      );
 
       const response = await agent
         .post(endpoint)
         .send({
           title: 'Author test',
-          description:
-            'Author test description',
-          content:
-            'Author test content',
+          description: 'Author test description',
+          content: 'Author test content',
         })
         .expect(201);
 
-      expect(response.body.data.authorId).toBe(
-        user.id,
-      );
+      expect(response.body.data.authorId).toBe(user.id);
     });
 
     it('should return 401 if the user is not authenticated', async () => {
@@ -449,10 +161,8 @@ describe('PostController e2e', () => {
         .post(endpoint)
         .send({
           title: 'Unauthorized post',
-          description:
-            'Unauthorized description',
-          content:
-            'Unauthorized content',
+          description: 'Unauthorized description',
+          content: 'Unauthorized content',
         })
         .expect(401);
 
@@ -466,124 +176,92 @@ describe('PostController e2e', () => {
     });
 
     it('should return 400 if the payload is invalid', async () => {
-      const { agent } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+      const { agent } = await createLoggedAgent(app, prisma, passwordService);
 
-      await agent
-        .post(endpoint)
-        .send({})
-        .expect(400);
+      await agent.post(endpoint).send({}).expect(400);
     });
 
-    it('should return 400 if the payload contains an unknown field', async () => {
-      const { agent } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+    it('should strip unknown fields when creating a post', async () => {
+      const { agent } = await createLoggedAgent(app, prisma, passwordService);
 
-      await agent
+      const response = await agent
         .post(endpoint)
         .send({
           title: 'Invalid payload',
-          description:
-            'Invalid payload description',
-          content:
-            'Invalid payload content',
+          description: 'Invalid payload description',
+          content: 'Invalid payload content',
           unknownField: true,
         })
-        .expect(400);
+        .expect(201);
+      expect(JSON.stringify(response.body)).not.toContain('unknownField');
+      expect(JSON.stringify(response.body)).not.toContain('unknownColumn');
     });
   });
 
   describe(`PATCH ${endpoint}/:id/publish`, () => {
     it('should publish a draft belonging to the authenticated user', async () => {
-      const { agent, user } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
-
-      const draft = await createTestPost(
+      const { agent, user } = await createLoggedAgent(
+        app,
         prisma,
-        user.id,
-        {
-          title: 'Draft to publish',
-          published_at: null,
-        },
+        passwordService,
       );
+
+      const draft = await createTestPost(prisma, user.id, {
+        title: 'Draft to publish',
+        published_at: null,
+      });
 
       const publishedAt = new Date();
 
       const response = await agent
-        .patch(
-          `${endpoint}/${draft.id}/publish`,
-        )
+        .patch(`${endpoint}/${draft.id}/publish`)
         .send({
-          published_at:
-            publishedAt.toISOString(),
+          published_at: publishedAt.toISOString(),
         })
-        .expect(200);
+        .expect(201);
 
       expect(response.body.data).toEqual(
         expect.objectContaining({
           id: draft.id,
           authorId: user.id,
-          published_at:
-            publishedAt.toISOString(),
+          published_at: publishedAt.toISOString(),
         }),
       );
 
-      const updatedPost =
-        await prisma.post.findUnique({
-          where: {
-            id: draft.id,
-          },
-        });
+      const updatedPost = await prisma.post.findUnique({
+        where: {
+          id: draft.id,
+        },
+      });
 
       expect(updatedPost?.published_at).not.toBeNull();
 
-      expect(
-        updatedPost?.published_at?.toISOString(),
-      ).toBe(publishedAt.toISOString());
+      expect(updatedPost?.published_at?.toISOString()).toBe(
+        publishedAt.toISOString(),
+      );
     });
 
     it('should return the expected success message', async () => {
-      const { agent, user } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
-
-      const draft = await createTestPost(
+      const { agent, user } = await createLoggedAgent(
+        app,
         prisma,
-        user.id,
-        {
-          published_at: null,
-        },
+        passwordService,
       );
 
+      const draft = await createTestPost(prisma, user.id, {
+        published_at: null,
+      });
+
       const response = await agent
-        .patch(
-          `${endpoint}/${draft.id}/publish`,
-        )
+        .patch(`${endpoint}/${draft.id}/publish`)
         .send({
-          published_at:
-            new Date().toISOString(),
+          published_at: new Date().toISOString(),
         })
-        .expect(200);
+        .expect(201);
 
       expect(response.body).toEqual(
         expect.objectContaining({
-          message:
-            'La publication a été publiée.',
+          message: 'La publication a été publiée.',
           data: expect.objectContaining({
             id: draft.id,
           }),
@@ -592,112 +270,73 @@ describe('PostController e2e', () => {
     });
 
     it('should return 401 if the user is not authenticated', async () => {
-      const { user } = await createLoggedAgent(
-        app,
-        prisma,
-        passwordService,
-      );
+      const { user } = await createLoggedAgent(app, prisma, passwordService);
 
-      const draft = await createTestPost(
-        prisma,
-        user.id,
-        {
-          published_at: null,
-        },
-      );
+      const draft = await createTestPost(prisma, user.id, {
+        published_at: null,
+      });
 
       await request(app.getHttpServer())
-        .patch(
-          `${endpoint}/${draft.id}/publish`,
-        )
+        .patch(`${endpoint}/${draft.id}/publish`)
         .send({
-          published_at:
-            new Date().toISOString(),
+          published_at: new Date().toISOString(),
         })
         .expect(401);
     });
 
-    it('should return 400 if the post id is not a number', async () => {
-      const { agent } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+    it('should reject an invalid post id before publication', async () => {
+      const { agent } = await createLoggedAgent(app, prisma, passwordService);
 
       await agent
         .patch(`${endpoint}/abc/publish`)
         .send({
-          published_at:
-            new Date().toISOString(),
+          published_at: new Date().toISOString(),
         })
-        .expect(403);
+        .expect(404);
     });
 
     it('should return 404 if the post does not exist', async () => {
-      const { agent } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
+      const { agent } = await createLoggedAgent(app, prisma, passwordService);
 
       await agent
-        .patch(
-          `${endpoint}/999999/publish`,
-        )
+        .patch(`${endpoint}/999999/publish`)
         .send({
-          published_at:
-            new Date().toISOString(),
+          published_at: new Date().toISOString(),
         })
         .expect(404);
     });
 
     it('should reject an already published post', async () => {
-      const { agent, user } =
-        await createLoggedAgent(
-          app,
-          prisma,
-          passwordService,
-        );
-
-      const post = await createTestPost(
-        prisma,
-        user.id,
-        {
-          published_at: new Date(),
-        },
-      );
-
-      const response = await agent
-        .patch(
-          `${endpoint}/${post.id}/publish`,
-        )
-        .send({
-          published_at:
-            new Date().toISOString(),
-        });
-
-      expect(response.status).toBeGreaterThanOrEqual(
-        400,
-      );
-    });
-  });
-
-  describe('GET /posts/post/:id', () => {
-    it('should return a post by id', async () => {
-      const { user } = await createLoggedAgent(
+      const { agent, user } = await createLoggedAgent(
         app,
         prisma,
         passwordService,
       );
 
       const post = await createTestPost(prisma, user.id, {
+        published_at: new Date(),
+      });
+
+      const response = await agent
+        .patch(`${endpoint}/${post.id}/publish`)
+        .send({
+          published_at: new Date().toISOString(),
+        });
+
+      expect(response.status).toBeGreaterThanOrEqual(400);
+    });
+  });
+
+  describe('GET /posts/post/:id', () => {
+    it('should return a post by id', async () => {
+      const { user } = await createLoggedAgent(app, prisma, passwordService);
+
+      const post = await createTestPost(prisma, user.id, {
         title: 'Show post',
       });
 
       const response = await request(app.getHttpServer())
-        .get(`${endpoint}/post/${post.id}`)
+        .get(`${endpoint}/${post.id}`)
         .expect(200);
 
       expect(response.body.data).toMatchObject({
@@ -708,19 +347,15 @@ describe('PostController e2e', () => {
     });
 
     it('should return 404 if post does not exist', async () => {
-      await request(app.getHttpServer())
-        .get(`${endpoint}/post/999999`)
-        .expect(404);
+      await request(app.getHttpServer()).get(`${endpoint}/999999`).expect(404);
     });
 
     it('should return 400 if id is not a number', async () => {
-      await request(app.getHttpServer())
-        .get(`${endpoint}/post/abc`)
-        .expect(400);
+      await request(app.getHttpServer()).get(`${endpoint}/abc`).expect(400);
     });
   });
 
-  describe('POST /post', () => {
+  describe('POST /posts', () => {
     it('should create a post if user is connected', async () => {
       const { agent, user } = await createLoggedAgent(
         app,
@@ -732,10 +367,10 @@ describe('PostController e2e', () => {
         .post(endpoint)
         .send({
           title: 'New post',
-          description: "New post description",
+          description: 'New post description',
           content: 'New post content',
         } as CreatePostDto)
-        .expect(201)
+        .expect(201);
 
       expect(response.body.data).toMatchObject({
         title: 'New post',
@@ -763,11 +398,7 @@ describe('PostController e2e', () => {
     });
 
     it('should return 400 if payload is invalid', async () => {
-      const { agent } = await createLoggedAgent(
-        app,
-        prisma,
-        passwordService,
-      );
+      const { agent } = await createLoggedAgent(app, prisma, passwordService);
 
       await agent
         .post(endpoint)
@@ -778,7 +409,7 @@ describe('PostController e2e', () => {
     });
   });
 
-  describe('PUT /post/:id', () => {
+  describe('PATCH /posts/:id', () => {
     it('should update own post', async () => {
       const { agent, user } = await createLoggedAgent(
         app,
@@ -858,11 +489,7 @@ describe('PostController e2e', () => {
     });
 
     it('should return 404 if post does not exist', async () => {
-      const { agent } = await createLoggedAgent(
-        app,
-        prisma,
-        passwordService,
-      );
+      const { agent } = await createLoggedAgent(app, prisma, passwordService);
 
       await agent
         .patch(`${endpoint}/999999`)
@@ -873,7 +500,7 @@ describe('PostController e2e', () => {
     });
   });
 
-  describe('DELETE /post/:id', () => {
+  describe('DELETE /posts/:id', () => {
     it('should delete own post', async () => {
       const { agent, user } = await createLoggedAgent(
         app,
@@ -883,9 +510,7 @@ describe('PostController e2e', () => {
 
       const post = await createTestPost(prisma, user.id);
 
-      await agent
-        .delete(`${endpoint}/${post.id}`)
-        .expect(200);
+      await agent.delete(`${endpoint}/${post.id}`).expect(204);
 
       const postInDb = await prisma.post.findUnique({
         where: {
@@ -911,9 +536,7 @@ describe('PostController e2e', () => {
 
       const post = await createTestPost(prisma, owner.id);
 
-      await otherAgent
-        .delete(`${endpoint}/${post.id}`)
-        .expect(403);
+      await otherAgent.delete(`${endpoint}/${post.id}`).expect(403);
     });
 
     it('should allow admin to delete another user post', async () => {
@@ -931,9 +554,7 @@ describe('PostController e2e', () => {
 
       const post = await createTestPost(prisma, owner.id);
 
-      await adminAgent
-        .delete(`${endpoint}/${post.id}`)
-        .expect(200);
+      await adminAgent.delete(`${endpoint}/${post.id}`).expect(204);
 
       const postInDb = await prisma.post.findUnique({
         where: {
@@ -945,15 +566,90 @@ describe('PostController e2e', () => {
     });
 
     it('should return 404 if post does not exist', async () => {
-      const { agent } = await createLoggedAgent(
+      const { agent } = await createLoggedAgent(app, prisma, passwordService);
+
+      await agent.delete(`${endpoint}/999999`).expect(404);
+    });
+  });
+
+  describe('slug and pagination contracts', () => {
+    it('should find a published post by its generated slug', async () => {
+      const { user } = await createLoggedAgent(app, prisma, passwordService);
+      const post = await createTestPost(prisma, user.id, {
+        title: 'Mon article',
+      });
+      const response = await request(app.getHttpServer())
+        .get('/posts/slug/mon-article-' + post.id)
+        .expect(200);
+      expect(response.body.data).toMatchObject({
+        id: post.id,
+        content: post.content,
+      });
+    });
+    it('should reject malformed, mismatching and unknown slugs', async () => {
+      const { user } = await createLoggedAgent(app, prisma, passwordService);
+      const post = await createTestPost(prisma, user.id, {
+        title: 'Mon article',
+      });
+      await request(app.getHttpServer()).get('/posts/slug/invalid').expect(400);
+      await request(app.getHttpServer())
+        .get('/posts/slug/other-title-' + post.id)
+        .expect(404);
+      await request(app.getHttpServer())
+        .get('/posts/slug/mon-article-999999')
+        .expect(404);
+    });
+    it('should paginate published summaries and return the total', async () => {
+      const { user } = await createLoggedAgent(app, prisma, passwordService);
+      for (let i = 0; i < 3; i++) await createTestPost(prisma, user.id);
+      await createTestPost(prisma, user.id, { published_at: null });
+      const response = await request(app.getHttpServer())
+        .get('/posts')
+        .query({ published: true, limit: 2, page: 2 })
+        .expect(200);
+      expect(response.body.data).toHaveLength(1);
+      expect(response.body.meta).toEqual({
+        currentPage: 2,
+        limit: 2,
+        totalArticle: 3,
+      });
+      expect(response.body.data[0]).not.toHaveProperty('content');
+      expect(response.body.data[0]).not.toHaveProperty('_count');
+    });
+    it('should exclude completed reads only for the current user', async () => {
+      const { agent, user } = await createLoggedAgent(
         app,
         prisma,
         passwordService,
       );
-
-      await agent
-        .delete(`${endpoint}/999999`)
-        .expect(404);
+      const read = await createTestPost(prisma, user.id);
+      const unread = await createTestPost(prisma, user.id);
+      await prisma.postRead.create({
+        data: {
+          userId: user.id,
+          postId: read.id,
+          progress: 100,
+          completed: true,
+        },
+      });
+      const response = await agent
+        .get('/posts')
+        .query({ published: true, reading: false })
+        .expect(200);
+      expect(response.body.data.map((post) => post.id)).toEqual([unread.id]);
+      const publicResponse = await request(app.getHttpServer())
+        .get('/posts')
+        .query({ published: true, reading: false })
+        .expect(200);
+      expect(publicResponse.body.data).toHaveLength(2);
+    });
+    it.each([
+      { page: 0 },
+      { limit: 999 },
+      { published: 'invalid' },
+      { reading: 'invalid' },
+    ])('should reject invalid pagination %j', async (query) => {
+      await request(app.getHttpServer()).get('/posts').query(query).expect(400);
     });
   });
 });

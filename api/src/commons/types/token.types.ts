@@ -1,4 +1,4 @@
-import { TokenInvalidFormat } from "src/modules/handle-password/exceptions/token-invalid-format.exception";
+import { TokenInvalidFormat } from 'src/modules/handle-password/exceptions/token-invalid-format.exception';
 
 export class TOKEN {
   private token: string;
@@ -10,7 +10,11 @@ export class TOKEN {
   }
 
   public static add(token: string) {
-    if (!new RegExp('[0-9a-fA-F]{32}').test(token)) {
+    if (
+      typeof token !== 'string' ||
+      token.length !== 32 ||
+      !/^[0-9a-fA-F]{32}$/.test(token)
+    ) {
       throw new TokenInvalidFormat();
     }
     return new TOKEN(token);
@@ -20,7 +24,7 @@ export class TOKEN {
     return this.token;
   }
 
-  public static hasValid(token: string): Boolean {
+  public static hasValid(token: string): boolean {
     try {
       TOKEN.add(token);
       return true;

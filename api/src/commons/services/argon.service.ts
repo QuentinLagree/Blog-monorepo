@@ -1,47 +1,49 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 import argon2, { argon2id } from 'argon2';
-import { PEPPER } from "../prisma/prisma.service";
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PasswordService {
-
-    constructor() { 
-
-        this.getOptions()
+  private readonly pepper: string;
+  constructor(config: ConfigService = new ConfigService()) {
+    this.pepper = config.get<string>('ARGON2_PEPPER') ?? '';
+    if (config.get<string>('NODE_ENV') === 'production' && !this.pepper) {
+      throw new Error('ARGON2_PEPPER is required in production.');
     }
-
-    private getOptions() {
-        const memoryCost = Number(process.env['ARGON2_MEMORY_KIB']) || 64 * 1024
-        const timeCost = Number(process.env["ARGON2_TIME"]) || 3
-        const parallelism = Number(process.env["ARGON2_PARALLELISM"]) || 1
-        const hashLength = Number(process.env["ARGON2_HASHLEN"]) || 32
-        const saltLength = Number(process.env["ARGON2_SALTLEN"]) || 16
-        return {
-            type: argon2id,
-            memoryCost,
-            timeCost,
-            parallelism,
-            hashLength,
-            saltLength,
-        } as const;
-
-    }
-
-    async hashPassword(plainPassword: string): Promise<string> {
-        return argon2.hash(plainPassword + PEPPER, this.getOptions())
-    }
-
-    async verifyPassword(storedHash: string, candidate: string): Promise<boolean> {
-        try {
-            return await argon2.verify(storedHash, candidate + PEPPER);
-        } catch {
-            return false;
-        }
-    }
-
-    async needsRehash(storedHash: string): Promise<boolean> {
-    
-    return await (argon2 as any).needsRehash(storedHash, this.getOptions());
   }
 
+  private getOptions() {
+    const memoryCost = Number(process.env['ARGON2_MEMORY_KIB']) || 64 * 1024;
+    const timeCost = Number(process.env['ARGON2_TIME']) || 3;
+    const parallelism = Number(process.env['ARGON2_PARALLELISM']) || 1;
+    const hashLength = Number(process.env['ARGON2_HASHLEN']) || 32;
+    const saltLength = Number(process.env['ARGON2_SALTLEN']) || 16;
+    return {
+      type: argon2id,
+      memoryCost,
+      timeCost,
+      parallelism,
+      hashLength,
+      saltLength,
+    } as const;
+  }
+
+  async hashPassword(plainPassword: string): Promise<string> {
+    return argon2.hash(plainPassword + this.pepper, this.getOptions());
+  }
+
+  async verifyPassword(
+    storedHash: string,
+    candidate: string,
+  ): Promise<boolean> {
+    try {
+      return await argon2.verify(storedHash, candidate + this.pepper);
+    } catch {
+      return false;
+    }
+  }
+
+  async needsRehash(storedHash: string): Promise<boolean> {
+    return await (argon2 as any).needsRehash(storedHash, this.getOptions());
+  }
 }

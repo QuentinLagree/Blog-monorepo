@@ -1,6 +1,6 @@
-import { Queue } from "bullmq"
+import { Queue } from 'bullmq';
 
 export type QueueItem = {
-    uniqueName: string,
-    queue: Queue;
-}
+  uniqueName: string;
+  queue: Queue;
+};

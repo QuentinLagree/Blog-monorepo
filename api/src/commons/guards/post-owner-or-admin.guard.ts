@@ -1,18 +1,18 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { FastifyRequest } from 'fastify';
 import { ArticleService } from 'src/modules/post/posts.service';
 import { Role } from 'src/commons/roles/role.enum';
+import { UserService } from 'src/modules/user/user.service';
 import { UserNotHaveAuthorisation } from 'src/modules/user/exceptions/user-not-have-authorization';
 import { PostNotFoundException } from 'src/modules/post/exceptions/post-not-found.exception';
 import { UserSessionInvalidException } from 'src/modules/user/exceptions/user-session-invalid-expired.exception';
 
 @Injectable()
 export class PostOwnerOrAdminGuard implements CanActivate {
-  constructor(private readonly articlesService: ArticleService) {}
+  constructor(
+    private readonly articlesService: ArticleService,
+    private readonly users: UserService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: FastifyRequest = context.switchToHttp().getRequest();
@@ -20,8 +20,8 @@ export class PostOwnerOrAdminGuard implements CanActivate {
     const sessionUser = request.session['user'];
     const postId = Number(request.params['id']);
 
-    if (!postId) throw new PostNotFoundException(postId)
-    
+    if (!postId) throw new PostNotFoundException(postId);
+
     if (!sessionUser) {
       throw new UserSessionInvalidException();
     }
@@ -29,14 +29,15 @@ export class PostOwnerOrAdminGuard implements CanActivate {
     const post = await this.articlesService.indexOneWhere({ id: postId });
 
     if (!post) {
-      throw new PostNotFoundException(postId)
+      throw new PostNotFoundException(postId);
     }
 
-    const isAdmin = sessionUser.role === Role.Admin;
+    const isAdmin =
+      (await this.users.show({ id: sessionUser.id })).role === Role.Admin;
     const isAuthor = post.authorId === sessionUser.id;
 
     if (!isAdmin && !isAuthor) {
-      throw new UserNotHaveAuthorisation()
+      throw new UserNotHaveAuthorisation();
     }
 
     return true;

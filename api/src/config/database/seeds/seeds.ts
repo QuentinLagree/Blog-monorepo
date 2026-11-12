@@ -31,7 +31,6 @@ async function seedUsers(): Promise<void> {
         pseudo: userData.pseudo,
         password: hashedPassword,
         role: userData.role ?? 'user',
-
       },
     });
   }

@@ -1,6 +1,4 @@
-import {
-  ExecutionContext,
-  } from '@nestjs/common';
+import { ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { RolesGuard } from 'src/commons/guards/role.guard';
 import { Role } from 'src/commons/roles/role.enum';
@@ -32,7 +30,7 @@ describe('RolesGuard', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
 
     rolesGuard = new RolesGuard(
       reflectorMock as unknown as Reflector,
@@ -147,5 +145,17 @@ describe('RolesGuard', () => {
     });
 
     await expect(rolesGuard.canActivate(context)).rejects.toThrow(error);
+  });
+
+  it('should use the database role even when the session claims admin privileges', async () => {
+    reflectorMock.getAllAndOverride.mockReturnValue([Role.Admin]);
+    userServiceMock.show.mockResolvedValue({ id: 42, role: Role.User });
+    const context = createExecutionContextMock({
+      user: { id: 42, role: Role.Admin },
+    });
+    await expect(rolesGuard.canActivate(context)).rejects.toThrow(
+      UserNotHaveAuthorisation,
+    );
+    expect(userServiceMock.show).toHaveBeenCalledWith({ id: 42 });
   });
 });

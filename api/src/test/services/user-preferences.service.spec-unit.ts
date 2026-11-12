@@ -37,24 +37,18 @@ describe('UserPreferenceService', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
 
-    service = new UserPreferenceService(
-      prismaMock as unknown as PrismaService,
-    );
+    service = new UserPreferenceService(prismaMock as unknown as PrismaService);
   });
 
   describe('getPreferences', () => {
     it('should return all user preferences', async () => {
-      prismaMock.userPreference.upsert.mockResolvedValue(
-        preferencesMock,
-      );
+      prismaMock.userPreference.upsert.mockResolvedValue(preferencesMock);
 
       const result = await service.getPreferences(userId);
 
-      expect(
-        prismaMock.userPreference.upsert,
-      ).toHaveBeenCalledWith({
+      expect(prismaMock.userPreference.upsert).toHaveBeenCalledWith({
         where: {
           userId,
         },
@@ -69,15 +63,11 @@ describe('UserPreferenceService', () => {
     });
 
     it('should create default preferences if user preferences do not exist', async () => {
-      prismaMock.userPreference.upsert.mockResolvedValue(
-        preferencesMock,
-      );
+      prismaMock.userPreference.upsert.mockResolvedValue(preferencesMock);
 
       await service.getPreferences(userId);
 
-      expect(
-        prismaMock.userPreference.upsert,
-      ).toHaveBeenCalledWith(
+      expect(prismaMock.userPreference.upsert).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
             userId,
@@ -95,14 +85,9 @@ describe('UserPreferenceService', () => {
         theme: 'dark',
       });
 
-      const result = await service.getPreferences(
-        userId,
-        ["theme"],
-      );
+      const result = await service.getPreferences(userId, ['theme']);
 
-      expect(
-        prismaMock.userPreference.upsert,
-      ).toHaveBeenCalledWith({
+      expect(prismaMock.userPreference.upsert).toHaveBeenCalledWith({
         where: {
           userId,
         },
@@ -127,14 +112,13 @@ describe('UserPreferenceService', () => {
         notifyOnLike: false,
       });
 
-      const result = await service.getPreferences(
-        userId,
-        ["theme","language","notifyOnLike"],
-      );
+      const result = await service.getPreferences(userId, [
+        'theme',
+        'language',
+        'notifyOnLike',
+      ]);
 
-      expect(
-        prismaMock.userPreference.upsert,
-      ).toHaveBeenCalledWith({
+      expect(prismaMock.userPreference.upsert).toHaveBeenCalledWith({
         where: {
           userId,
         },
@@ -156,81 +140,27 @@ describe('UserPreferenceService', () => {
       });
     });
 
-    it('should trim spaces around requested fields', async () => {
-      prismaMock.userPreference.upsert.mockResolvedValue({
-        theme: 'system',
-        language: 'fr',
-      });
-
-      await service.getPreferences(
-        userId,
-        ["theme", "language"],
-      );
-
-      expect(
-        prismaMock.userPreference.upsert,
-      ).toHaveBeenCalledWith(
-        expect.objectContaining({
-          select: {
-            theme: true,
-            language: true,
-          },
-        }),
-      );
-    });
-
-    it('should ignore empty values between commas', async () => {
-      prismaMock.userPreference.upsert.mockResolvedValue({
-        theme: 'system',
-        language: 'fr',
-      });
-
-      await service.getPreferences(
-        userId,
-        ["theme", "language"],
-      );
-
-      expect(
-        prismaMock.userPreference.upsert,
-      ).toHaveBeenCalledWith(
-        expect.objectContaining({
-          select: {
-            theme: true,
-            language: true,
-          },
-        }),
-      );
-    });
-
     it('should throw InvalidPreferenceFieldException for one invalid field', async () => {
       await expect(
-        service.getPreferences(
-          userId,
-          ['unknownColumn'] as unknown as UserPreferenceField[],
-        ),
-      ).rejects.toThrow(
-        InvalidPreferenceFieldException,
-      );
+        service.getPreferences(userId, [
+          'unknownColumn',
+        ] as unknown as UserPreferenceField[]),
+      ).rejects.toThrow(InvalidPreferenceFieldException);
 
-      expect(
-        prismaMock.userPreference.upsert,
-      ).not.toHaveBeenCalled();
+      expect(prismaMock.userPreference.upsert).not.toHaveBeenCalled();
     });
 
     it('should expose one invalid field in the exception response', async () => {
       expect.assertions(3);
 
       try {
-        await service.getPreferences(
-          userId,
-          ["unknownColumn"] as unknown as UserPreferenceField[]
-        );
+        await service.getPreferences(userId, [
+          'unknownColumn',
+        ] as unknown as UserPreferenceField[]);
 
-          throw new InvalidPreferenceFieldException(["unknownColumn"])
+        throw new Error('Expected the service to reject invalid fields');
       } catch (error: unknown) {
-        expect(error).toBeInstanceOf(
-          InvalidPreferenceFieldException,
-        );
+        expect(error).toBeInstanceOf(InvalidPreferenceFieldException);
 
         const response = (
           error as InvalidPreferenceFieldException
@@ -240,45 +170,37 @@ describe('UserPreferenceService', () => {
           meta?: unknown;
         };
 
-        expect(response.data).toEqual([
-          'unknownColumn',
-        ]);
+        expect(response.data).toEqual(['unknownColumn']);
       }
 
-      expect(
-        prismaMock.userPreference.upsert,
-      ).not.toHaveBeenCalled();
+      expect(prismaMock.userPreference.upsert).not.toHaveBeenCalled();
     });
 
     it('should throw InvalidPreferenceFieldException when one field among valid fields is invalid', async () => {
       await expect(
-        service.getPreferences(
-          userId,
-          ["theme", "unknownColumn", "language"] as unknown as UserPreferenceField[]
-        ),
-      ).rejects.toThrow(
-        InvalidPreferenceFieldException,
-      );
+        service.getPreferences(userId, [
+          'theme',
+          'unknownColumn',
+          'language',
+        ] as unknown as UserPreferenceField[]),
+      ).rejects.toThrow(InvalidPreferenceFieldException);
 
-      expect(
-        prismaMock.userPreference.upsert,
-      ).not.toHaveBeenCalled();
+      expect(prismaMock.userPreference.upsert).not.toHaveBeenCalled();
     });
 
     it('should expose every invalid field in the exception', async () => {
       expect.assertions(4);
 
       try {
-        await service.getPreferences(
-          userId,
-          ["unknownOne","theme","unknownTwo"] as unknown as UserPreferenceField[],
-        );
+        await service.getPreferences(userId, [
+          'unknownOne',
+          'theme',
+          'unknownTwo',
+        ] as unknown as UserPreferenceField[]);
 
-        throw new InvalidPreferenceFieldException(["unknownTwo", "unknownOne"])
+        throw new Error('Expected the service to reject invalid fields');
       } catch (error: unknown) {
-        expect(error).toBeInstanceOf(
-          InvalidPreferenceFieldException,
-        );
+        expect(error).toBeInstanceOf(InvalidPreferenceFieldException);
 
         const response = (
           error as InvalidPreferenceFieldException
@@ -288,55 +210,39 @@ describe('UserPreferenceService', () => {
           meta?: unknown;
         };
 
-        expect(response.data).toEqual([
-          'unknownOne',
-          'unknownTwo',
-        ]);
+        expect(response.data).toEqual(['unknownOne', 'unknownTwo']);
 
         expect(response.message).toBe(
           "Les préférences suivantes n'existent pas : unknownOne, unknownTwo. Contactez un administrateur pour obtenir de l'aide.",
         );
       }
 
-      expect(
-        prismaMock.userPreference.upsert,
-      ).not.toHaveBeenCalled();
+      expect(prismaMock.userPreference.upsert).not.toHaveBeenCalled();
     });
 
     it('should not query Prisma if at least one field is invalid', async () => {
       await expect(
-        service.getPreferences(
-          userId,
-          ["theme","unknownOne","language","unknownTwo"] as unknown as UserPreferenceField[],
-        ),
-      ).rejects.toThrow(
-        InvalidPreferenceFieldException,
-      );
+        service.getPreferences(userId, [
+          'theme',
+          'unknownOne',
+          'language',
+          'unknownTwo',
+        ] as unknown as UserPreferenceField[]),
+      ).rejects.toThrow(InvalidPreferenceFieldException);
 
-      expect(
-        prismaMock.userPreference.upsert,
-      ).not.toHaveBeenCalled();
+      expect(prismaMock.userPreference.upsert).not.toHaveBeenCalled();
     });
 
     it('should propagate Prisma errors', async () => {
-      const error = new Error(
-        'Database unavailable',
-      );
+      const error = new Error('Database unavailable');
 
-      prismaMock.userPreference.upsert.mockRejectedValue(
-        error,
-      );
+      prismaMock.userPreference.upsert.mockRejectedValue(error);
 
-      await expect(
-        service.getPreferences(userId),
-      ).rejects.toThrow(error);
+      await expect(service.getPreferences(userId)).rejects.toThrow(error);
 
-      expect(
-        prismaMock.userPreference.upsert,
-      ).toHaveBeenCalledTimes(1);
+      expect(prismaMock.userPreference.upsert).toHaveBeenCalledTimes(1);
     });
   });
-
 
   describe('isProfileVisible', () => {
     it('should return true when the profile is visible', async () => {
@@ -344,18 +250,11 @@ describe('UserPreferenceService', () => {
         profileVisible: true,
       });
 
-      const result =
-        await service.isProfileVisible(
-          userId,
-        );
+      const result = await service.isProfileVisible(userId);
 
-      expect(
-        prismaMock.userPreference.findUnique,
-      ).toHaveBeenCalledTimes(1);
+      expect(prismaMock.userPreference.findUnique).toHaveBeenCalledTimes(1);
 
-      expect(
-        prismaMock.userPreference.findUnique,
-      ).toHaveBeenCalledWith({
+      expect(prismaMock.userPreference.findUnique).toHaveBeenCalledWith({
         where: {
           userId,
         },
@@ -372,14 +271,9 @@ describe('UserPreferenceService', () => {
         profileVisible: false,
       });
 
-      const result =
-        await service.isProfileVisible(
-          userId,
-        );
+      const result = await service.isProfileVisible(userId);
 
-      expect(
-        prismaMock.userPreference.findUnique,
-      ).toHaveBeenCalledWith({
+      expect(prismaMock.userPreference.findUnique).toHaveBeenCalledWith({
         where: {
           userId,
         },
@@ -392,14 +286,9 @@ describe('UserPreferenceService', () => {
     });
 
     it('should return true when the user has no preference row', async () => {
-      prismaMock.userPreference.findUnique.mockResolvedValue(
-        null,
-      );
+      prismaMock.userPreference.findUnique.mockResolvedValue(null);
 
-      const result =
-        await service.isProfileVisible(
-          userId,
-        );
+      const result = await service.isProfileVisible(userId);
 
       expect(result).toBe(true);
     });
@@ -411,13 +300,9 @@ describe('UserPreferenceService', () => {
         profileVisible: true,
       });
 
-      await service.isProfileVisible(
-        anotherUserId,
-      );
+      await service.isProfileVisible(anotherUserId);
 
-      expect(
-        prismaMock.userPreference.findUnique,
-      ).toHaveBeenCalledWith({
+      expect(prismaMock.userPreference.findUnique).toHaveBeenCalledWith({
         where: {
           userId: anotherUserId,
         },
@@ -428,23 +313,13 @@ describe('UserPreferenceService', () => {
     });
 
     it('should propagate Prisma errors', async () => {
-      const error = new Error(
-        'Profile visibility lookup failed',
-      );
+      const error = new Error('Profile visibility lookup failed');
 
-      prismaMock.userPreference.findUnique.mockRejectedValue(
-        error,
-      );
+      prismaMock.userPreference.findUnique.mockRejectedValue(error);
 
-      await expect(
-        service.isProfileVisible(
-          userId,
-        ),
-      ).rejects.toThrow(error);
+      await expect(service.isProfileVisible(userId)).rejects.toThrow(error);
 
-      expect(
-        prismaMock.userPreference.findUnique,
-      ).toHaveBeenCalledWith({
+      expect(prismaMock.userPreference.findUnique).toHaveBeenCalledWith({
         where: {
           userId,
         },
@@ -467,19 +342,11 @@ describe('UserPreferenceService', () => {
         ...payload,
       };
 
-      prismaMock.userPreference.upsert.mockResolvedValue(
-        updatedPreferences,
-      );
+      prismaMock.userPreference.upsert.mockResolvedValue(updatedPreferences);
 
-      const result =
-        await service.updatePreferences(
-          userId,
-          payload,
-        );
+      const result = await service.updatePreferences(userId, payload);
 
-      expect(
-        prismaMock.userPreference.upsert,
-      ).toHaveBeenCalledWith({
+      expect(prismaMock.userPreference.upsert).toHaveBeenCalledWith({
         where: {
           userId,
         },
@@ -490,9 +357,7 @@ describe('UserPreferenceService', () => {
         update: payload,
       });
 
-      expect(result).toEqual(
-        updatedPreferences,
-      );
+      expect(result).toEqual(updatedPreferences);
     });
 
     it('should create preferences if they do not exist', async () => {
@@ -506,15 +371,9 @@ describe('UserPreferenceService', () => {
         ...payload,
       });
 
-      const result =
-        await service.updatePreferences(
-          userId,
-          payload,
-        );
+      const result = await service.updatePreferences(userId, payload);
 
-      expect(
-        prismaMock.userPreference.upsert,
-      ).toHaveBeenCalledWith({
+      expect(prismaMock.userPreference.upsert).toHaveBeenCalledWith({
         where: {
           userId,
         },
@@ -545,19 +404,11 @@ describe('UserPreferenceService', () => {
         newsletter: true,
       };
 
-      prismaMock.userPreference.upsert.mockResolvedValue(
-        updatedPreferences,
-      );
+      prismaMock.userPreference.upsert.mockResolvedValue(updatedPreferences);
 
-      const result =
-        await service.updatePreferences(
-          userId,
-          payload,
-        );
+      const result = await service.updatePreferences(userId, payload);
 
-      expect(
-        prismaMock.userPreference.upsert,
-      ).toHaveBeenCalledWith({
+      expect(prismaMock.userPreference.upsert).toHaveBeenCalledWith({
         where: {
           userId,
         },
@@ -570,9 +421,7 @@ describe('UserPreferenceService', () => {
         },
       });
 
-      expect(result).toEqual(
-        updatedPreferences,
-      );
+      expect(result).toEqual(updatedPreferences);
     });
 
     it('should update several boolean preferences', async () => {
@@ -589,19 +438,11 @@ describe('UserPreferenceService', () => {
         ...payload,
       };
 
-      prismaMock.userPreference.upsert.mockResolvedValue(
-        updatedPreferences,
-      );
+      prismaMock.userPreference.upsert.mockResolvedValue(updatedPreferences);
 
-      const result =
-        await service.updatePreferences(
-          userId,
-          payload,
-        );
+      const result = await service.updatePreferences(userId, payload);
 
-      expect(
-        prismaMock.userPreference.upsert,
-      ).toHaveBeenCalledWith({
+      expect(prismaMock.userPreference.upsert).toHaveBeenCalledWith({
         where: {
           userId,
         },
@@ -612,27 +453,17 @@ describe('UserPreferenceService', () => {
         update: payload,
       });
 
-      expect(result).toEqual(
-        updatedPreferences,
-      );
+      expect(result).toEqual(updatedPreferences);
     });
 
     it('should accept an empty update payload', async () => {
       const payload = {};
 
-      prismaMock.userPreference.upsert.mockResolvedValue(
-        preferencesMock,
-      );
+      prismaMock.userPreference.upsert.mockResolvedValue(preferencesMock);
 
-      const result =
-        await service.updatePreferences(
-          userId,
-          payload,
-        );
+      const result = await service.updatePreferences(userId, payload);
 
-      expect(
-        prismaMock.userPreference.upsert,
-      ).toHaveBeenCalledWith({
+      expect(prismaMock.userPreference.upsert).toHaveBeenCalledWith({
         where: {
           userId,
         },
@@ -658,14 +489,9 @@ describe('UserPreferenceService', () => {
         theme: 'dark',
       });
 
-      await service.updatePreferences(
-        anotherUserId,
-        payload,
-      );
+      await service.updatePreferences(anotherUserId, payload);
 
-      expect(
-        prismaMock.userPreference.upsert,
-      ).toHaveBeenCalledWith({
+      expect(prismaMock.userPreference.upsert).toHaveBeenCalledWith({
         where: {
           userId: anotherUserId,
         },
@@ -680,13 +506,9 @@ describe('UserPreferenceService', () => {
     });
 
     it('should propagate Prisma errors during update', async () => {
-      const error = new Error(
-        'Preference update failed',
-      );
+      const error = new Error('Preference update failed');
 
-      prismaMock.userPreference.upsert.mockRejectedValue(
-        error,
-      );
+      prismaMock.userPreference.upsert.mockRejectedValue(error);
 
       await expect(
         service.updatePreferences(userId, {
@@ -694,9 +516,7 @@ describe('UserPreferenceService', () => {
         }),
       ).rejects.toThrow(error);
 
-      expect(
-        prismaMock.userPreference.upsert,
-      ).toHaveBeenCalledWith({
+      expect(prismaMock.userPreference.upsert).toHaveBeenCalledWith({
         where: {
           userId,
         },

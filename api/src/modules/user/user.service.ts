@@ -8,7 +8,6 @@ import { UserAlreadyExistException } from './exceptions/user-already-exist.excep
 import { Role } from 'src/commons/roles/role.enum';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LikedPostDto } from '../user-activities/dto/liked-post.dto';
-import { PublicUserDto } from './dto/public-user.dto';
 
 export const userSelect = {
   id: true,
@@ -22,30 +21,32 @@ export const userSelectExistingUser = {
   pseudo: true,
 } satisfies Prisma.UserSelect;
 
-export type userSelectPayload = Prisma.UserGetPayload<{ select: typeof userSelect }>
+export type userSelectPayload = Prisma.UserGetPayload<{
+  select: typeof userSelect;
+}>;
 
 @Injectable()
 export class UserService {
-
   constructor(
     private readonly _prisma: PrismaService,
-    private readonly _passwordManager: PasswordService) {
-
-  }
+    private readonly _passwordManager: PasswordService,
+  ) {}
   async index(): Promise<userSelectPayload[]> {
-
     return this._prisma.user.findMany({
-      select: userSelect
+      select: userSelect,
     });
   }
-  async show(uniqueProperties: Prisma.UserWhereUniqueInput): Promise<userSelectPayload> {
+  async show(
+    uniqueProperties: Prisma.UserWhereUniqueInput,
+  ): Promise<userSelectPayload> {
     const user = await this._prisma.user.findUnique({
       where: uniqueProperties,
-      select: userSelect
+      select: userSelect,
     });
 
     const userIdentifier =
-      typeof uniqueProperties.id === 'string' || typeof uniqueProperties.id === 'number'
+      typeof uniqueProperties.id === 'string' ||
+      typeof uniqueProperties.id === 'number'
         ? uniqueProperties.id
         : typeof uniqueProperties.email === 'string'
           ? uniqueProperties.email
@@ -56,7 +57,9 @@ export class UserService {
     if (!user) throw new UserNotFoundException(userIdentifier);
     return user;
   }
-  async create(data: CreateUserDto & { posts?: Prisma.PostCreateWithoutAuthorInput[] }): Promise<Promise<userSelectPayload>> {
+  async create(
+    data: CreateUserDto & { posts?: Prisma.PostCreateWithoutAuthorInput[] },
+  ): Promise<Promise<userSelectPayload>> {
     const { email, pseudo, posts, password, ...userData } = data;
 
     const existingUser = await this._prisma.user.findFirst({
@@ -65,7 +68,8 @@ export class UserService {
       },
       select: {
         ...userSelectExistingUser,
-    }});
+      },
+    });
     if (existingUser?.email === email) {
       throw new UserAlreadyExistException('email');
     }
@@ -86,33 +90,38 @@ export class UserService {
         posts: posts && posts.length > 0 ? { create: posts } : undefined,
       },
       select: {
-        ...userSelect
-      }
+        ...userSelect,
+      },
     });
   }
 
   async update(
-    where: Prisma.UserWhereUniqueInput, 
+    where: Prisma.UserWhereUniqueInput,
     data: UserUpdateDto,
   ): Promise<userSelectPayload> {
-    const { posts, ...userData } = data as UserUpdateDto & { posts?: unknown };
+    const { posts: _posts, ...userData } = data as UserUpdateDto & {
+      posts?: unknown;
+    };
     await this.show(where);
 
-
-
     if (userData.password) {
-      userData.password = await this._passwordManager.hashPassword(userData.password);
+      userData.password = await this._passwordManager.hashPassword(
+        userData.password,
+      );
     }
 
-    return this._prisma.user.update({
-      where,
-      data: {
-        ...userData,
-      },
-      select: {
-        ...userSelect,
-        posts: true
+    return this._prisma.$transaction(async (tx) => {
+      const updated = await tx.user.update({
+        where,
+        data: { ...userData },
+        select: { ...userSelect, posts: true },
+      });
+      if (userData.email !== undefined || userData.password !== undefined) {
+        await tx.verificationTokens.deleteMany({
+          where: { userId: updated.id },
+        });
       }
+      return updated;
     });
   }
 
@@ -141,9 +150,7 @@ export class UserService {
     });
   }
 
-  async checkIfUserLikedPost(
-    payload: LikedPostDto,
-  ): Promise<boolean> {
+  async checkIfUserLikedPost(payload: LikedPostDto): Promise<boolean> {
     const like = await this._prisma.like.findUnique({
       where: {
         userId_postId: {

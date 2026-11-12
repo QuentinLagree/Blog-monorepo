@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { VerificationTokens } from '@prisma/client';
+import { Prisma, VerificationTokens } from '@prisma/client';
 import { randomBytes } from 'node:crypto';
 import { TOKEN } from 'src/commons/types/token.types';
 import { VerificationEmailDto } from 'src/modules/handle-password/verifications_email/dto/verification_email.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { ResetTokenAlreadyActiveException } from 'src/modules/handle-password/exceptions/reset-token-already-active.exception';
 import { TokenExpiredOrInvalidException } from 'src/modules/handle-password/exceptions/token-expired-or-invalid.exception';
+import { UserNotFoundException } from 'src/modules/user/exceptions/user-not-found.exception';
 
 @Injectable()
 export class TokenService {
@@ -26,26 +27,42 @@ export class TokenService {
   }
 
   async set(tokenDto: VerificationEmailDto): Promise<VerificationTokens> {
-    const existingToken = await this._prisma.verificationTokens.findFirst({
-      where: { email: tokenDto.email },
-    });
-
-    if (existingToken) {
-      if (!this.tokenIsExpired(existingToken)) {
-        throw new ResetTokenAlreadyActiveException();
+    for (let attempt = 0; ; attempt++) {
+      try {
+        return await this._prisma.$transaction(async (tx) => {
+          // Serialize issuance with account updates and deletion before touching tokens.
+          const [user] = await tx.$queryRaw<
+            { id: number }[]
+          >`SELECT id FROM user WHERE email = ${tokenDto.email} FOR UPDATE`;
+          if (!user) throw new UserNotFoundException(tokenDto.email);
+          // Never delete a new active token created by a competing request.
+          await tx.verificationTokens.deleteMany({
+            where: { userId: user.id, expired_at: { lt: new Date() } },
+          });
+          return tx.verificationTokens.create({
+            data: { ...tokenDto, userId: user.id },
+          });
+        });
+      } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          if (error.code === 'P2002')
+            throw new ResetTokenAlreadyActiveException();
+          if (error.code === 'P2034' && attempt < 2) continue;
+        }
+        throw error;
       }
-
-      await this.delete(tokenDto.email);
     }
-
-    return this._prisma.verificationTokens.create({
-      data: tokenDto,
-    });
   }
 
   async delete(email: string): Promise<void> {
     await this._prisma.verificationTokens.deleteMany({
       where: { email },
+    });
+  }
+
+  async deleteMatching(email: string, code: TOKEN): Promise<void> {
+    await this._prisma.verificationTokens.deleteMany({
+      where: { email, code: code.getToken },
     });
   }
 
@@ -57,6 +74,7 @@ export class TokenService {
       where: {
         email,
         code: code.getToken,
+        user: { email },
       },
     });
 

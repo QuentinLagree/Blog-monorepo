@@ -132,7 +132,7 @@ export const usersSeedData: UserSeedData[] = [
     email: 'raphael.michel@example.com',
     pseudo: 'RaphaelMichel',
     password: 'Raphael1234!',
-    role: "admin"
+    role: 'admin',
   },
   {
     nom: 'Garcia',

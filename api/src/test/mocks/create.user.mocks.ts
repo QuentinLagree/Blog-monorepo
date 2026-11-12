@@ -34,9 +34,9 @@ export const createUserCreateDto = (overrides: Partial<User> = {}) => {
     nom: 'john',
     prenom: 'doe',
     pseudo: 'johndoe',
-    email: "johndoe@gmail.com",
+    email: 'johndoe@gmail.com',
     password: '',
     role: Role.User,
-    ...overrides
-  }
+    ...overrides,
+  };
 };

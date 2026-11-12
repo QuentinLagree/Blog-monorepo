@@ -1,18 +1,10 @@
-import {
-  applyDecorators,
-  Type,
-} from '@nestjs/common';
+import { applyDecorators, Type } from '@nestjs/common';
 
-import {
-  ApiExtraModels,
-  ApiResponse,
-  getSchemaPath,
-} from '@nestjs/swagger';
+import { ApiExtraModels, ApiResponse, getSchemaPath } from '@nestjs/swagger';
 import { ApiResponseDto } from '../types/dto/message/message';
 
-
 type ApiMessageResponseOptions = {
-  messageExemple?: string,
+  messageExemple?: string;
   status?: number;
   description?: string;
   isArray?: boolean;
@@ -23,12 +15,7 @@ export function ApiMessageResponse(
   model: Type<unknown> | null | [],
   options: ApiMessageResponseOptions = {},
 ) {
-  const {
-    status = 200,
-    description,
-    isArray = false,
-    meta,
-  } = options;
+  const { status = 200, description, isArray = false, meta } = options;
 
   const extraModels: Type<unknown>[] = [ApiResponseDto];
 
@@ -45,18 +32,31 @@ export function ApiMessageResponse(
         type: 'object',
         example: model,
         nullable: true,
-        description: "Données ou message d'erreur envoyé avec la réponse de l'API."
+        description:
+          "Données ou message d'erreur envoyé avec la réponse de l'API.",
       }
     : isArray
       ? {
           type: 'array',
-        
+
           items: {
-            $ref: getSchemaPath((model instanceof Array) ? () => {return []} : model),
+            $ref: getSchemaPath(
+              model instanceof Array
+                ? () => {
+                    return [];
+                  }
+                : model,
+            ),
           },
         }
       : {
-          $ref: getSchemaPath((model instanceof Array) ? () => {return []} : model),
+          $ref: getSchemaPath(
+            model instanceof Array
+              ? () => {
+                  return [];
+                }
+              : model,
+          ),
         };
 
   return applyDecorators(
@@ -73,14 +73,14 @@ export function ApiMessageResponse(
           {
             properties: {
               message: {
-                type: "string",
+                type: 'string',
                 example: options.messageExemple,
               },
               data: dataSchema,
 
               ...(meta && {
                 meta: {
-                  description: "Salut je suis une description",
+                  description: 'Salut je suis une description',
                   $ref: getSchemaPath(meta),
                 },
               }),

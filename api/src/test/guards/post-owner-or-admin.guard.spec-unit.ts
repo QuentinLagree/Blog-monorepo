@@ -1,9 +1,5 @@
-import {
-  ExecutionContext,
-  ForbiddenException,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { UserService } from 'src/modules/user/user.service';
+import { ExecutionContext } from '@nestjs/common';
 import { PostOwnerOrAdminGuard } from 'src/commons/guards/post-owner-or-admin.guard';
 import { Role } from 'src/commons/roles/role.enum';
 import { PostNotFoundException } from 'src/modules/post/exceptions/post-not-found.exception';
@@ -11,7 +7,7 @@ import { ArticleService } from 'src/modules/post/posts.service';
 import { UserNotHaveAuthorisation } from 'src/modules/user/exceptions/user-not-have-authorization';
 import { UserSessionInvalidException } from 'src/modules/user/exceptions/user-session-invalid-expired.exception';
 
-describe.only('PostOwnerOrAdminGuard', () => {
+describe('PostOwnerOrAdminGuard', () => {
   let guard: PostOwnerOrAdminGuard;
 
   const articleServiceMock = {
@@ -44,10 +40,13 @@ describe.only('PostOwnerOrAdminGuard', () => {
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
 
     guard = new PostOwnerOrAdminGuard(
       articleServiceMock as unknown as ArticleService,
+      {
+        show: jest.fn().mockResolvedValue({ role: Role.Admin }),
+      } as unknown as UserService,
     );
   });
 
@@ -164,6 +163,12 @@ describe.only('PostOwnerOrAdminGuard', () => {
   });
 
   it('should throw UserNotHaveAuthorisation if user is not author and not admin', async () => {
+    guard = new PostOwnerOrAdminGuard(
+      articleServiceMock as unknown as ArticleService,
+      {
+        show: jest.fn().mockResolvedValue({ role: Role.User }),
+      } as unknown as UserService,
+    );
     const post = createPostMock({
       id: 1,
       authorId: 1,
@@ -190,5 +195,35 @@ describe.only('PostOwnerOrAdminGuard', () => {
     expect(articleServiceMock.indexOneWhere).toHaveBeenCalledWith({
       id: 1,
     });
+  });
+
+  it('should propagate an article lookup failure', async () => {
+    const error = new Error('Article lookup failed');
+    articleServiceMock.indexOneWhere.mockRejectedValue(error);
+    const context = createExecutionContextMock(
+      { user: { id: 10, role: Role.User } },
+      { id: '42' },
+    );
+    await expect(guard.canActivate(context)).rejects.toBe(error);
+  });
+
+  it('should refuse an administrator cookie after the role is revoked in the database', async () => {
+    articleServiceMock.indexOneWhere.mockResolvedValue(
+      createPostMock({ authorId: 1 }),
+    );
+    const users = { show: jest.fn().mockResolvedValue({ role: Role.User }) };
+    guard = new PostOwnerOrAdminGuard(
+      articleServiceMock as unknown as ArticleService,
+      users as unknown as UserService,
+    );
+    await expect(
+      guard.canActivate(
+        createExecutionContextMock(
+          { user: { id: 99, role: Role.Admin } },
+          { id: '1' },
+        ),
+      ),
+    ).rejects.toThrow(UserNotHaveAuthorisation);
+    expect(users.show).toHaveBeenCalledWith({ id: 99 });
   });
 });

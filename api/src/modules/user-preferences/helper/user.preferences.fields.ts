@@ -15,5 +15,4 @@ export const USER_PREFERENCE_FIELDS = [
   'showContributions',
 ] as const;
 
-export type UserPreferenceField =
-  (typeof USER_PREFERENCE_FIELDS)[number];
+export type UserPreferenceField = (typeof USER_PREFERENCE_FIELDS)[number];

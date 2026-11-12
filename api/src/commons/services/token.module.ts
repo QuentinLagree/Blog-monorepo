@@ -5,11 +5,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
   imports: [PrismaModule],
-  providers: [
-    TokenService,
-  ],
-  exports: [
-    TokenService,
-  ],
+  providers: [TokenService],
+  exports: [TokenService],
 })
 export class TokenModule {}

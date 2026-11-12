@@ -1,207 +1,235 @@
-import { UserController } from "src/modules/user/user.controller";
-import { makeMessage } from "src/commons/logger/logger.helper";
-import { createUserCreateDto, createUserMock } from "../mocks/create.user.mocks";
-import { UserNotFoundException } from "src/modules/user/exceptions/user-not-found.exception";
-import { UserAlreadyExistException } from "src/modules/user/exceptions/user-already-exist.exception";
-import { UserUpdateDto } from "src/modules/user/dto/update-user.dto";
-import { userServiceMock } from "../mocks/mocks";
-import { CreateUserDto } from "src/modules/user/dto/create-user.dto";
-import { UserService } from "src/modules/user/user.service";
-import { ArticleService } from "src/modules/post/posts.service";
+import { UserController } from 'src/modules/user/user.controller';
+import { createUserCreateDto } from '../mocks/create.user.mocks';
+import { UserNotFoundException } from 'src/modules/user/exceptions/user-not-found.exception';
+import { UserAlreadyExistException } from 'src/modules/user/exceptions/user-already-exist.exception';
+import { UserUpdateDto } from 'src/modules/user/dto/update-user.dto';
+import { userServiceMock } from '../mocks/mocks';
+import { CreateUserDto } from 'src/modules/user/dto/create-user.dto';
+import { UserService } from 'src/modules/user/user.service';
+import { ArticleService } from 'src/modules/post/posts.service';
 
 describe('UserController', () => {
-    let userController: UserController;
-    let articleService: ArticleService
+  let userController: UserController;
+  const articleServiceMock = { indexWhere: jest.fn() };
+  const createUserMock = (
+    overrides: Partial<
+      import('src/modules/user/user.service').userSelectPayload
+    > = {},
+  ) => ({
+    id: 1,
+    pseudo: 'testuser',
+    role: 'user',
+    created_at: new Date('2026-01-01T00:00:00Z'),
+    ...overrides,
+  });
 
-    beforeEach(() => {
-        jest.clearAllMocks();
+  beforeEach(() => {
+    jest.resetAllMocks();
 
-        userController = new UserController(
-            userServiceMock as unknown as UserService,
-            articleService as unknown as ArticleService
-        );
+    userController = new UserController(
+      userServiceMock as unknown as UserService,
+      articleServiceMock as unknown as ArticleService,
+    );
+  });
 
+  describe('index', () => {
+    it('should return an empty array', async () => {
+      userServiceMock.index.mockResolvedValue([]);
+
+      const response = await userController.index();
+
+      expect(response).toEqual({
+        message: 'La liste des utilisateurs est vide',
+        data: [],
+        meta: undefined,
+      });
+
+      expect(userServiceMock.index).toHaveBeenCalledTimes(1);
     });
 
-    describe('index', () => {
-        it('should return an empty array', async () => {
-            userServiceMock.index.mockResolvedValue([]);
+    it('should return an user array', async () => {
+      const result = [createUserMock()];
+      userServiceMock.index.mockResolvedValue(result);
+      const response = await userController.index();
 
-            const response = await userController.index();
+      expect(response).toEqual({
+        message: 'Liste de tous les utilisateurs',
+        data: result,
+        meta: undefined,
+      });
+    });
+  });
 
-            expect(response).toEqual(
-                makeMessage(
-                    'List of all users is empty.',
-                    'La liste des utilisateurs est vide',
-                    [],
-                ),
-            );
+  describe('show', () => {
+    it('should return a success if user is found', async () => {
+      const result = createUserMock();
 
-            expect(userServiceMock.index).toHaveBeenCalledTimes(1);
-        });
+      userServiceMock.show.mockResolvedValue(result);
 
-        it('should return an user array', async () => {
-            let result = createUserMock()
-            userServiceMock.index.mockResolvedValue(result);
-            const response = await userController.index();
+      const response = await userController.show(1);
 
-            expect(response).toEqual(
-                makeMessage(
-                    'List of all users',
-                    'Liste de tous les utilisateurs',
-                    result,
-                )
-            )
-        })
+      expect(userServiceMock.show).toHaveBeenCalledWith({ id: 1 });
+
+      expect(response).toEqual({
+        message: `L'utilisateur ${result.id} a bien été trouvé.`,
+        data: result,
+        meta: undefined,
+      });
     });
 
-    describe('show', () => {
-        it('should return a success if user is found', async () => {
-            const result = createUserMock();
+    it('should throw UserNotFoundException if user is not found', async () => {
+      const id = 1;
 
-            userServiceMock.show.mockResolvedValue(result);
+      userServiceMock.show.mockRejectedValue(new UserNotFoundException(id));
 
-            const response = await userController.show(1);
+      await expect(userController.show(id)).rejects.toThrow(
+        UserNotFoundException,
+      );
 
-            expect(userServiceMock.show).toHaveBeenCalledWith({ id: 1 });
+      expect(userServiceMock.show).toHaveBeenCalledWith({ id });
+    });
+  });
 
-            expect(response).toEqual(
-                makeMessage(
-                    `User found with ID: ${result.id}!`,
-                    `L'utilisateur ${result.id} a bien été trouvé.`,
-                    result,
-                ),
-            );
-        });
+  describe('store', () => {
+    it('should return a success if user is created', async () => {
+      let new_user = createUserMock({ id: 1 });
+      let dto = createUserCreateDto();
 
-        it('should throw UserNotFoundException if user is not found', async () => {
-            const id = 1;
+      userServiceMock.create.mockResolvedValue(new_user);
 
-            userServiceMock.show.mockRejectedValue(
-                new UserNotFoundException(id),
-            );
+      const response = await userController.store(dto as CreateUserDto);
 
-            await expect(userController.show(id)).rejects.toThrow(UserNotFoundException);
-
-            expect(userServiceMock.show).toHaveBeenCalledWith({ id });
-        });
+      expect(response).toEqual({
+        message: "L'utilisateur est bien enregistré !",
+        data: new_user,
+        meta: undefined,
+      });
+      expect(userServiceMock.create).toHaveBeenCalledWith(dto);
     });
 
-    describe('store', () => {
-        it('should return a success if user is created', async () => {
-            let new_user = createUserMock({ id: 1 })
-            let dto = createUserCreateDto();
+    it('should throw UserAlreadyExistException if email or pseudo are already used', async () => {
+      let dto = createUserCreateDto({ email: 'existing@gmail.com' });
 
-            userServiceMock.create.mockResolvedValue(new_user);
+      userServiceMock.create.mockRejectedValue(
+        new UserAlreadyExistException('email'),
+      );
 
-            const response = await userController.store(dto as CreateUserDto);
+      await expect(userController.store(dto as CreateUserDto)).rejects.toThrow(
+        UserAlreadyExistException,
+      );
 
-            expect(response).toEqual(
-                makeMessage(
-                    'User created !',
-                    "L'utilisateur est bien enregistré !",
-                    new_user,
-                )
-            )
-            expect(userServiceMock.create).toHaveBeenCalledWith(dto);
-        })
+      expect(userServiceMock.create).toHaveBeenCalledWith(dto);
+    });
+  });
 
-        it('should throw UserAlreadyExistException if email or pseudo are already used', async () => {
-            let dto = createUserCreateDto({ email: 'existing@gmail.com' });
+  describe('update', () => {
+    it('should return a success if user is updated', async () => {
+      const id = 1;
+      const dto: UserUpdateDto = { prenom: 'Jean' };
 
-            userServiceMock.create.mockRejectedValue(
-                new UserAlreadyExistException('email'),
-            );
+      const updatedUser = createUserMock({ id });
 
-            await expect(userController.store(dto as CreateUserDto)).rejects.toThrow(UserAlreadyExistException);
+      userServiceMock.update.mockResolvedValue(updatedUser);
 
-            expect(userServiceMock.create).toHaveBeenCalledWith(dto);
-        })
-    })
+      const response = await userController.update(id, dto as UserUpdateDto);
 
-    describe('update', () => {
-        it('should return a success if user is updated', async () => {
-            const id = 1;
-            const dto = createUserMock({
-                prenom: 'Jean',
-            });
+      expect(userServiceMock.update).toHaveBeenCalledWith({ id }, dto);
 
-            const updatedUser = createUserMock({
-                id,
-                prenom: 'Jean',
-            });
-
-            userServiceMock.update.mockResolvedValue(updatedUser);
-
-            const response = await userController.update(id, dto as UserUpdateDto);
-
-            expect(userServiceMock.update).toHaveBeenCalledWith(
-                { id },
-                dto,
-            );
-
-            expect(response).toEqual(
-                makeMessage(
-                    'User updated !',
-                    'La modification de vos informations est bien sauvegardée !',
-                    updatedUser,
-                ),
-            );
-        });
-
-        it('should throw UserNotFoundException if user is not found', async () => {
-            const id = 1;
-            const dto = createUserMock({
-                prenom: 'Jean',
-            });
-
-            userServiceMock.update.mockRejectedValue(
-                new UserNotFoundException(id),
-            );
-
-            await expect(
-                userController.update(id, dto as UserUpdateDto),
-            ).rejects.toThrow(UserNotFoundException);
-
-            expect(userServiceMock.update).toHaveBeenCalledWith(
-                { id },
-                dto,
-            );
-        });
+      expect(response).toEqual({
+        message: 'La modification de vos informations est bien sauvegardée !',
+        data: updatedUser,
+        meta: undefined,
+      });
     });
 
-    describe('destroy', () => {
-        it('should return a success message if user is deleted', async () => {
-            let id = 1;
-            userServiceMock.destroy.mockResolvedValue(undefined);
-            const response = await userController.destroy(id);
+    it('should throw UserNotFoundException if user is not found', async () => {
+      const id = 1;
+      const dto: UserUpdateDto = { prenom: 'Jean' };
 
-            expect(response).toEqual(
-                makeMessage(
-                    'User deleted !',
-                    'La suppression de votre compte utilisateur est un succès !',
-                    null,
-                )
-            )
+      userServiceMock.update.mockRejectedValue(new UserNotFoundException(id));
 
-            expect(userServiceMock.destroy).toHaveBeenCalledWith({id});
-        })
+      await expect(
+        userController.update(id, dto as UserUpdateDto),
+      ).rejects.toThrow(UserNotFoundException);
 
-        it('should throw UserNotFoundException if user is not found', async () => {
-            const id = 1;
+      expect(userServiceMock.update).toHaveBeenCalledWith({ id }, dto);
+    });
+  });
 
-            userServiceMock.destroy.mockRejectedValue(
-                new UserNotFoundException(id),
-            );
+  describe('destroy', () => {
+    it('should return a success message if user is deleted', async () => {
+      let id = 1;
+      userServiceMock.destroy.mockResolvedValue(undefined);
+      const response = await userController.destroy(id);
 
-            await expect(
-                userController.destroy(id),
-            ).rejects.toThrow(UserNotFoundException);
+      expect(response).toEqual({
+        message: 'La suppression de votre compte utilisateur est un succès !',
+        data: null,
+        meta: undefined,
+      });
 
-            expect(userServiceMock.destroy).toHaveBeenCalledWith(
-                { id }
-            );
-        });
-    })
+      expect(userServiceMock.destroy).toHaveBeenCalledWith({ id });
+    });
+
+    it('should throw UserNotFoundException if user is not found', async () => {
+      const id = 1;
+
+      userServiceMock.destroy.mockRejectedValue(new UserNotFoundException(id));
+
+      await expect(userController.destroy(id)).rejects.toThrow(
+        UserNotFoundException,
+      );
+
+      expect(userServiceMock.destroy).toHaveBeenCalledWith({ id });
+    });
+  });
+
+  describe.each([
+    ['getAllDraftsOfUser', true],
+    ['getAllPostsOfUser', false],
+  ] as const)('%s', (method, draftsOnly) => {
+    const id = 42;
+    const user = createUserMock({ id, pseudo: 'testauthor' });
+    const where = draftsOnly
+      ? { authorId: id, published_at: null }
+      : { authorId: id };
+
+    it('should return an empty list when the user has no matching posts', async () => {
+      userServiceMock.show.mockResolvedValue(user);
+      articleServiceMock.indexWhere.mockResolvedValue([]);
+      const response = await userController[method](id);
+      expect(userServiceMock.show).toHaveBeenCalledWith({ id });
+      expect(articleServiceMock.indexWhere).toHaveBeenCalledWith(where);
+      expect(response.data).toEqual([]);
+      expect(response.message).toContain(user.pseudo);
+    });
+
+    it('should return matching posts for the requested user', async () => {
+      const posts = [
+        { id: 75, authorId: id, title: 'Test', published_at: null },
+      ];
+      userServiceMock.show.mockResolvedValue(user);
+      articleServiceMock.indexWhere.mockResolvedValue(posts);
+      const response = await userController[method](id);
+      expect(userServiceMock.show).toHaveBeenCalledWith({ id });
+      expect(articleServiceMock.indexWhere).toHaveBeenCalledWith(where);
+      expect(response.data).toEqual(posts);
+      expect(response.message).toContain(user.pseudo);
+    });
+
+    it('should not search posts when the user cannot be found', async () => {
+      const error = new UserNotFoundException(id);
+      userServiceMock.show.mockRejectedValue(error);
+      await expect(userController[method](id)).rejects.toBe(error);
+      expect(articleServiceMock.indexWhere).not.toHaveBeenCalled();
+    });
+
+    it('should propagate a post lookup failure', async () => {
+      const error = new Error('Post lookup failed');
+      userServiceMock.show.mockResolvedValue(user);
+      articleServiceMock.indexWhere.mockRejectedValue(error);
+      await expect(userController[method](id)).rejects.toBe(error);
+      expect(articleServiceMock.indexWhere).toHaveBeenCalledWith(where);
+    });
+  });
 });
-

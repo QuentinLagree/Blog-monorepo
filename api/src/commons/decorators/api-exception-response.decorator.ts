@@ -1,10 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 
-import {
-  ApiExtraModels,
-  ApiResponse,
-  getSchemaPath,
-} from '@nestjs/swagger';
+import { ApiExtraModels, ApiResponse, getSchemaPath } from '@nestjs/swagger';
 
 import { ApiMessageResponse } from './api-message-response.decorator';
 
@@ -16,7 +12,6 @@ import { StatusCodeDescriptionEnum } from '../utils/status_code-description.enum
 
 import { ApiResponseDto } from '../types/dto/message/message';
 
-
 import { getDtoPropertyPriority } from '../types/dto/temp/metadata';
 
 import { UnauthorizedSessionInactive } from 'src/modules/auth/exceptions/unautorisation-session-inactive.exception';
@@ -24,15 +19,12 @@ import { InternalServerException } from '../exceptions/internal-server.exception
 import { MessageValidationError } from '../types/dto/message/validation-error-message';
 import { buildValidationMessages } from '../types/dto/temp/message-validator-builder';
 
-
 type DtoClass = new (...args: any[]) => object;
-
 
 type ExceptionsDecoratorOptions = {
   isPublic?: boolean;
   dto?: DtoClass;
 };
-
 
 type ExceptionExample = {
   description: string;
@@ -43,11 +35,10 @@ type ExceptionExample = {
   };
 };
 
-
 export function ApiExceptionsResponse(
   exceptions: DocumentedAppExceptionClass[],
   options: ExceptionsDecoratorOptions = {
-    isPublic: false
+    isPublic: false,
   },
 ) {
   /*
@@ -56,11 +47,13 @@ export function ApiExceptionsResponse(
   let validationProperties: MessageValidationError = null;
 
   if (options.dto) {
-    const properties = getDtoPropertyPriority(options.dto) as Record<string, any>;
+    const properties = getDtoPropertyPriority(options.dto) as Record<
+      string,
+      any
+    >;
 
     validationProperties = buildValidationMessages(properties as any);
   }
-
 
   const globalExceptions: Array<{
     status: number;
@@ -78,21 +71,18 @@ export function ApiExceptionsResponse(
             status: 400,
 
             documentation: {
-              description:
-                'Un ou plusieurs paramètres ne sont pas valides.',
+              description: 'Un ou plusieurs paramètres ne sont pas valides.',
 
-              messageExample:
-                'Un ou plusieurs paramètres ne sont pas valides.',
+              messageExample: 'Un ou plusieurs paramètres ne sont pas valides.',
             },
 
             data: validationProperties,
           },
         ]
       : []),
-      ...(!options.isPublic ? [UnauthorizedSessionInactive]  : []),
-      InternalServerException
+    ...(!options.isPublic ? [UnauthorizedSessionInactive] : []),
+    InternalServerException,
   ];
-
 
   /**
    * Récupérer les erreurs en fonction de leur status (Fait)
@@ -107,17 +97,14 @@ export function ApiExceptionsResponse(
    * et mettre chaque erreur dans un example.
    */
 
-
   const allExceptions = Array.from(exceptions).concat(
     globalExceptions as unknown as DocumentedAppExceptionClass[],
   );
-
 
   const responseDecorators = Object.entries(
     groupExceptionsByStatus(allExceptions, 'status'),
   ).map(([statusValue, exceptionClasses]) => {
     const status = Number(statusValue);
-
 
     /*
      * Si une seule exception existe pour ce status
@@ -125,20 +112,15 @@ export function ApiExceptionsResponse(
     if (exceptionClasses.length === 1) {
       const exceptionClass = exceptionClasses[0];
 
-
       /*
        * Cas particulier :
        * ValidationError générée depuis le DTO
        */
-      if (
-        status === 400 &&
-        options.dto
-      ) {
+      if (status === 400 && options.dto) {
         return ApiResponse({
           status,
 
-          description:
-            exceptionClass.documentation.description,
+          description: exceptionClass.documentation.description,
 
           content: {
             'application/json': {
@@ -147,8 +129,7 @@ export function ApiExceptionsResponse(
               },
 
               example: {
-                message:
-                  exceptionClass.documentation.messageExample,
+                message: exceptionClass.documentation.messageExample,
 
                 data: validationProperties,
               },
@@ -157,27 +138,22 @@ export function ApiExceptionsResponse(
         });
       }
 
-
       /*
        * Réponse classique
        */
       return ApiMessageResponse(null, {
         status,
 
-        description:
-          exceptionClass.documentation.description,
+        description: exceptionClass.documentation.description,
 
-        messageExemple:
-          exceptionClass.documentation.messageExample,
+        messageExemple: exceptionClass.documentation.messageExample,
       });
     }
-
 
     /*
      * Plusieurs exceptions possèdent le même status
      */
     const examples: Record<string, ExceptionExample> = {};
-
 
     exceptionClasses.forEach((exceptionClass) => {
       const isValidationException =
@@ -185,30 +161,21 @@ export function ApiExceptionsResponse(
         exceptionClass.documentation.description ===
           'Un ou plusieurs paramètres ne sont pas valides.';
 
-
-      examples[
-        exceptionClass.documentation.description
-      ] = {
-        description:
-          exceptionClass.documentation.description,
+      examples[exceptionClass.documentation.description] = {
+        description: exceptionClass.documentation.description,
 
         value: {
-          message:
-            exceptionClass.documentation.messageExample,
+          message: exceptionClass.documentation.messageExample,
 
-          data: isValidationException
-            ? validationProperties
-            : null,
+          data: isValidationException ? validationProperties : null,
         },
       };
     });
 
-
     return ApiResponse({
       status,
 
-      description:
-        StatusCodeDescriptionEnum[status],
+      description: StatusCodeDescriptionEnum[status],
 
       content: {
         'application/json': {
@@ -222,12 +189,8 @@ export function ApiExceptionsResponse(
     });
   });
 
-
   return applyDecorators(
-    ApiExtraModels(
-      ApiResponseDto,
-      MessageValidationError,
-    ),
+    ApiExtraModels(ApiResponseDto, MessageValidationError),
     ...responseDecorators,
   );
 }

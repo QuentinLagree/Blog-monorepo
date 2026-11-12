@@ -3,13 +3,12 @@ import {
   Controller,
   Get,
   HttpCode,
-  HttpStatus,
   Post,
   Query,
   Req,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { VerificationTokens } from '@prisma/client';
 import { FastifyRequest } from 'fastify';
 
@@ -36,6 +35,8 @@ import { TokenInvalidFormat } from './exceptions/token-invalid-format.exception'
 import { TokenExpiredOrInvalidException } from './exceptions/token-expired-or-invalid.exception';
 import { UserNotFoundException } from '../user/exceptions/user-not-found.exception';
 import { FailSendingMailException } from 'src/commons/mailing/exceptions/fail-sending-mail.exception';
+import { PasswordRecoveryService } from './password-recovery.service';
+import { ResetTokenAlreadyActiveException } from './exceptions/reset-token-already-active.exception';
 
 @ApiTags('Mot de passe')
 @UseInterceptors(new TransformDataMessageIntoObjectSerialization([UserEntity]))
@@ -46,20 +47,21 @@ export class PasswordRecoveryController {
     private readonly _user: UserService,
     private readonly _token: TokenService,
     private readonly _mailer: MailingService,
+    private readonly _recovery: PasswordRecoveryService,
   ) {}
 
   @ApiOperation({
-    summary: "Demander la réinitialisation de son mot de passe.",
-    description: "Demande la réinitialisation de son mot de passe grâce à un email valide associé au compte. Il faut déjà être inscrit pour effectuer cette action."
+    summary: 'Demander la réinitialisation de son mot de passe.',
+    description:
+      'Demande la réinitialisation de son mot de passe grâce à un email valide associé au compte. Il faut déjà être inscrit pour effectuer cette action.',
   })
   @ApiMessageResponse(RequestResetPasswordDto, {
-    description: "Succès lors de la récupération de la page avec un token et email valide et associé dans le système.",
-    messageExemple: "Succès lors du chargement de la page, veuillez entrer votre ancien mot de passe puis votre nouveau mot de passe."
+    description:
+      'Succès lors de la récupération de la page avec un token et email valide et associé dans le système.',
+    messageExemple:
+      'Succès lors du chargement de la page, veuillez entrer votre ancien mot de passe puis votre nouveau mot de passe.',
   })
-  @ApiExceptionsResponse([
-    TokenInvalidFormat,
-    TokenExpiredOrInvalidException
-  ])
+  @ApiExceptionsResponse([TokenInvalidFormat, TokenExpiredOrInvalidException])
   @Get('reset')
   async confirmResetToken(
     @Query('token') token: string,
@@ -82,119 +84,152 @@ export class PasswordRecoveryController {
   }
 
   @ApiOperation({
-    summary: "Modifier le mot de passe de son compte récupérer grâce à l'envoi d'un mail avec un token unique.",
-    description: "Demande la réinitialisation de son mot de passe grâce à un email valide associé au compte. Il faut déjà être inscrit pour effectuer cette action."
+    summary: 'Réinitialiser le mot de passe avec le token reçu par email.',
+    description:
+      "Vérifie le format du token, son association à l'email et son expiration avant de modifier le mot de passe. Les deux mots de passe doivent correspondre. Le token est supprimé après la modification.",
   })
   @ApiBody({
-    description: "Données représentant les informations que l'utilisateur doit fournir pour changer son mot de passe, le token est lui déjà inséré lors de cette opération.",
+    description:
+      'Email du compte, token reçu dans le lien de récupération, nouveau mot de passe et confirmation. Le token doit être transmis dans le corps de cette requête.',
     type: ResetPasswordDto,
     required: true,
     examples: {
       Default: {
-        summary: "Information pour réinitialiser son mot de passe.",
-        description: "Données représentant les informations pour réinitialiser son mot de passe.",
+        summary: 'Information pour réinitialiser son mot de passe.',
+        description:
+          'Données représentant les informations pour réinitialiser son mot de passe.',
         value: {
-          email: "johndoe42@gmail.com",
-          password: "password",
-          confirm_password: "password"
-        }
-      }
-    }
+          email: 'johndoe42@gmail.com',
+          token: '1234567890abcdef1234567890abcdef',
+          password: 'password',
+          confirm_password: 'password',
+        },
+      },
+    },
   })
   @ApiMessageResponse(null, {
-    description: "Réinitialiser son mot de passe grâce aux informations.",
-    messageExemple: "La modification de votre mot de passe est un succès, vous pouvez désormais vous connecter.",
-    status: 201
+    description: 'Réinitialiser son mot de passe grâce aux informations.',
+    messageExemple:
+      'La modification de votre mot de passe est un succès, vous pouvez désormais vous connecter.',
+    status: 201,
   })
-  @ApiExceptionsResponse([
-    UserNotFoundException,
-    PasswordNotMatchException,
-  ])
+  @ApiExceptionsResponse(
+    [
+      UserNotFoundException,
+      PasswordNotMatchException,
+      TokenInvalidFormat,
+      TokenExpiredOrInvalidException,
+    ],
+    { isPublic: true, dto: ResetPasswordDto },
+  )
   @HttpCode(201)
   @Post('reset')
-async changePassword(
-  @Body() payload: ResetPasswordDto,
-): Promise<Message<null>> {
-  
-  if (payload.password !== payload.confirm_password) {
+  async changePassword(
+    @Body() payload: ResetPasswordDto,
+  ): Promise<Message<null>> {
+    if (payload.password !== payload.confirm_password) {
       throw new PasswordNotMatchException();
     }
 
-  await this._user.update(
-    { email: payload.email },
-    {
-      password: payload.confirm_password,
-    }
-  );
+    const token = TOKEN.add(payload.token);
 
-  await this._token.delete(payload.email);
+    await this._recovery.reset(payload.email, token, payload.confirm_password);
 
-  return makeMessage(
-    'updated user password',
-    'La modification de votre mot de passe est un succès, vous pouvez désormais vous connecter.',
-    null,
-  );
-}
+    return makeMessage(
+      'updated user password',
+      'La modification de votre mot de passe est un succès, vous pouvez désormais vous connecter.',
+      null,
+    );
+  }
 
-
-@ApiOperation({
-    summary: "Envoyer un email.",
-    description: "Envoie un email de récupération de mot de passe grâce à un email enregistrer dans le système et unb token unique générer pour effectuer le changement de mot de passe."
+  @ApiOperation({
+    summary: 'Envoyer un email.',
+    description:
+      'Envoie un email de récupération de mot de passe grâce à un email enregistrer dans le système et unb token unique générer pour effectuer le changement de mot de passe.',
   })
   @ApiBody({
-    description: "Email de l'utilisateur pour effectuer l'envoi de l'email pour réinitialiser son mot de passe.",
+    description:
+      "Email de l'utilisateur pour effectuer l'envoi de l'email pour réinitialiser son mot de passe.",
     type: ResetEmailDto,
     required: true,
     examples: {
       Default: {
-        summary: "Information pour envoyer un email pour réinitialiser son mot de passe.",
-        description: "Information (email) pour réinitialiser son mot de passe.",
+        summary:
+          'Information pour envoyer un email pour réinitialiser son mot de passe.',
+        description: 'Information (email) pour réinitialiser son mot de passe.',
         value: {
-          email: "johndoe42@gmail.com",
-        }
-      }
-    }
+          email: 'johndoe42@gmail.com',
+        },
+      },
+    },
   })
   @ApiMessageResponse(null, {
-    description: "Succès lors de l'envoi de l'email avec un email valide et un email correspondant à un utilisateur enregistré dans le système.",
-    messageExemple: "Vous allez recevoir un email sur johndoe42@gmail.com pour réinitialiser votre mot de passe.",
+    description:
+      "Succès lors de l'envoi de l'email avec un email valide et un email correspondant à un utilisateur enregistré dans le système.",
+    messageExemple:
+      'Si un compte correspond à cette adresse, un email de récupération sera envoyé.',
   })
-  @ApiExceptionsResponse([
-    UserNotFoundException,
-    FailSendingMailException
-  ])
+  @ApiExceptionsResponse([UserNotFoundException, FailSendingMailException])
   @HttpCode(200)
   @Post('forgot')
   async requestPasswordReset(
     @Body() payload: ResetEmailDto,
-    @Req() request: FastifyRequest,
+    @Req() _request: FastifyRequest,
   ): Promise<Message<null>> {
     const { email } = payload;
 
-    await this._user.show({ email });
+    const accepted = () =>
+      makeMessage(
+        'Password recovery request accepted',
+        'Si un compte correspond à cette adresse, un email de récupération sera envoyé.',
+        null,
+      );
+    try {
+      await this._user.show({ email });
+    } catch (error) {
+      if (error instanceof UserNotFoundException) return accepted();
+      throw error;
+    }
 
     const generatedToken = await this._token.generate();
     const token = TOKEN.add(generatedToken);
 
-    const verificationToken: VerificationTokens = await this._token.set({
-      email,
-      code: token.getToken,
-      expired_at: new Date(Date.now() + TOKEN.EXPIRED_TOKEN),
-    });
+    let verificationToken: VerificationTokens;
+    try {
+      verificationToken = await this._token.set({
+        email,
+        code: token.getToken,
+        expired_at: new Date(Date.now() + TOKEN.EXPIRED_TOKEN),
+      });
+    } catch (error) {
+      if (error instanceof ResetTokenAlreadyActiveException) return accepted();
+      throw error;
+    }
 
-    const origin = request.raw.headers.origin || 'http://localhost:3000';
-
-    const resetUrl = `${origin}/auth/reset?token=${token.getToken}&email=${email}`;
-
-    await this.__mails_queue.add(
-      'mail',
-      await this._mailer.getOptionRecoveryEmail(verificationToken, resetUrl),
+    const resetUrl = new URL(
+      '/auth/reset',
+      process.env['FRONTEND_URL'] ?? 'http://localhost:4200',
     );
+    resetUrl.searchParams.set('token', token.getToken);
+    resetUrl.searchParams.set('email', email);
 
-    return makeMessage(
-      'Generate token and Send email successful',
-      `Vous allez recevoir un email sur ${email} pour réinitialiser votre mot de passe.`,
-      null,
-    );
+    try {
+      await this.__mails_queue.add(
+        'mail',
+        {
+          ...(await this._mailer.getOptionRecoveryEmail(
+            verificationToken,
+            resetUrl.toString(),
+          )),
+          recovery: { email, code: token.getToken },
+        },
+        { jobId: `recovery-${verificationToken.id}` },
+      );
+    } catch (error) {
+      await this._token.deleteMatching(email, token);
+      throw error;
+    }
+
+    return accepted();
   }
 }

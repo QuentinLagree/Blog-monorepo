@@ -2,6 +2,8 @@ model VerificationTokens {
   id    Int    @id @default(autoincrement())
   email String @unique
   code  String
+  userId Int @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   expired_at DateTime
   created_at DateTime @default(now())

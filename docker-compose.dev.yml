@@ -1,4 +1,16 @@
 services:
+  redis-test:
+    image: redis:7-alpine
+    container_name: blog-test-redis
+    ports:
+      - "127.0.0.1:6380:6379"
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
   mysql-test:
     image: mysql:8
     container_name: blog-test-mysql

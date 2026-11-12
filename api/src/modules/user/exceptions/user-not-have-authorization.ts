@@ -1,18 +1,22 @@
 import { HttpStatus } from '@nestjs/common';
-import { ApiExceptionDocumentation, AppException } from 'src/commons/app.exception';
+import {
+  ApiExceptionDocumentation,
+  AppException,
+} from 'src/commons/app.exception';
 
 export class UserNotHaveAuthorisation extends AppException {
-
-  static readonly status = HttpStatus.FORBIDDEN
+  static readonly status = HttpStatus.FORBIDDEN;
 
   static readonly documentation = {
-    description: "L'utilisateur n'a pas l'autorisation d'accéder à la ressource.",
-    messageExample: "Vous n'avez pas l'autorisation d'accéder à cette ressource."
-  } satisfies ApiExceptionDocumentation
+    description:
+      "L'utilisateur n'a pas l'autorisation d'accéder à la ressource.",
+    messageExample:
+      "Vous n'avez pas l'autorisation d'accéder à cette ressource.",
+  } satisfies ApiExceptionDocumentation;
   constructor() {
     super(
       `Vous n'avez pas l'autorisation d'accéder à cette ressource.`,
-      UserNotHaveAuthorisation.status
+      UserNotHaveAuthorisation.status,
     );
   }
 }

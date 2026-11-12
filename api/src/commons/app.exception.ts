@@ -15,7 +15,7 @@ export type DocumentedAppExceptionClass = {
 
 export class AppException extends HttpException {
   public readonly data: null | ValidationError[] = null;
-  
+
   constructor(
     public readonly userMessage: string,
     status: HttpStatus,
@@ -24,14 +24,13 @@ export class AppException extends HttpException {
     super(
       {
         message: userMessage,
-        data
+        data,
       },
       status,
     );
-
   }
 
-  static getStatus () {
+  static getStatus() {
     return status;
   }
 }

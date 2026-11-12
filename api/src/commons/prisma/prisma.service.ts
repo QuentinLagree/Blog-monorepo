@@ -3,8 +3,6 @@ import chalk from 'chalk';
 
 import { PrismaClient } from '@prisma/client';
 
-export const PEPPER = process.env["ARGON2_PEPPER"]
-
 @Injectable()
 export class PrismaService
   extends PrismaClient
@@ -13,7 +11,6 @@ export class PrismaService
   private static isInitiated: boolean = false;
 
   async onModuleInit() {
-    
     if (!PrismaService.isInitiated)
       try {
         await this.$connect();
@@ -36,7 +33,6 @@ export class PrismaService
   async onModuleDestroy() {
     await this.$disconnect();
     if (process.env['NODE_ENV'] == 'dev') {
-
       console.log(
         `${chalk.blue('> ')} ${chalk.bold.bgBlue(' INFO ')} ${chalk.white('La déconnection de la base de donnée est un succée.')}`,
       );

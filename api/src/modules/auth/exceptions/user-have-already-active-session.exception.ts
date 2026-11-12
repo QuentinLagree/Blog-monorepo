@@ -1,15 +1,18 @@
 import { HttpStatus } from '@nestjs/common';
-import { ApiExceptionDocumentation, AppException } from 'src/commons/app.exception';
+import {
+  ApiExceptionDocumentation,
+  AppException,
+} from 'src/commons/app.exception';
 
 export class UserHaveAlreadyActiveSessionException extends AppException {
+  static readonly status = HttpStatus.UNAUTHORIZED;
 
-  static readonly status = HttpStatus.UNAUTHORIZED
-  
   static readonly documentation = {
-    description: "L'utilisateur essaie de se connecter mais, celui ci est déjà connecté.",
-    messageExample:"Tu es déjà connecté..."
-  } satisfies ApiExceptionDocumentation
-  
+    description:
+      "L'utilisateur essaie de se connecter mais, celui ci est déjà connecté.",
+    messageExample: 'Tu es déjà connecté...',
+  } satisfies ApiExceptionDocumentation;
+
   constructor() {
     super(
       `Tu es déjà connecté...`,

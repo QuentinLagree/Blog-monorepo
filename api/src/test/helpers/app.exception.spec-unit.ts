@@ -1,8 +1,8 @@
 import { HttpStatus } from '@nestjs/common';
 import { AppException } from 'src/commons/app.exception';
 
-describe.only('AppException', () => {
-  it('should create an AppException with default BAD_REQUEST status', () => {
+describe('AppException', () => {
+  it('should create an AppException with BAD_REQUEST status', () => {
     const exception = new AppException(
       'Message utilisateur',
       HttpStatus.BAD_REQUEST,
@@ -29,5 +29,4 @@ describe.only('AppException', () => {
       data: null,
     });
   });
-
 });

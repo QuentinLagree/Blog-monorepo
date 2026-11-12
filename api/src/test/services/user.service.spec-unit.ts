@@ -11,6 +11,9 @@ describe('UserService', () => {
   let userService: UserService;
 
   const prismaMock = {
+    $transaction: jest.fn(),
+    verificationTokens: { deleteMany: jest.fn() },
+    like: { upsert: jest.fn(), deleteMany: jest.fn(), findUnique: jest.fn() },
     user: {
       findMany: jest.fn(),
       findUnique: jest.fn(),
@@ -48,8 +51,19 @@ describe('UserService', () => {
     ...override,
   });
 
+  const createPublicUserMock = (overrides = {}) => {
+    const user = createUserMock(overrides);
+    return {
+      id: user.id,
+      pseudo: user.pseudo,
+      role: user.role,
+      created_at: user.created_at,
+    };
+  };
+
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
+    prismaMock.$transaction.mockImplementation((fn) => fn(prismaMock));
 
     userService = new UserService(
       prismaMock as unknown as PrismaService,
@@ -60,8 +74,12 @@ describe('UserService', () => {
   describe('index', () => {
     it('should return all users', async () => {
       const users = [
-        createUserMock({ id: 1 }),
-        createUserMock({ id: 2, email: 'test2@test.com', pseudo: 'testuser2' }),
+        createPublicUserMock({ id: 1 }),
+        createPublicUserMock({
+          id: 2,
+          email: 'test2@test.com',
+          pseudo: 'testuser2',
+        }),
       ];
 
       prismaMock.user.findMany.mockResolvedValue(users);
@@ -69,13 +87,16 @@ describe('UserService', () => {
       const response = await userService.index();
 
       expect(prismaMock.user.findMany).toHaveBeenCalledTimes(1);
+      expect(prismaMock.user.findMany).toHaveBeenCalledWith({
+        select: userSelect,
+      });
       expect(response).toEqual(users);
     });
   });
 
   describe('show', () => {
     it('should return one user by id', async () => {
-      const user = createUserMock({ id: 1 });
+      const user = createPublicUserMock({ id: 1 });
 
       prismaMock.user.findUnique.mockResolvedValue(user);
 
@@ -91,7 +112,7 @@ describe('UserService', () => {
     });
 
     it('should return one user by email', async () => {
-      const user = createUserMock({ email: 'test@test.com' });
+      const user = createPublicUserMock({ email: 'test@test.com' });
 
       prismaMock.user.findUnique.mockResolvedValue(user);
 
@@ -125,7 +146,7 @@ describe('UserService', () => {
     it('should create a user', async () => {
       const dto = createUserDtoMock() as CreateUserDto;
       const hashedPassword = 'hashed-password';
-      const createdUser = createUserMock({
+      const createdUser = createPublicUserMock({
         email: dto.email,
         pseudo: dto.pseudo,
         password: hashedPassword,
@@ -144,8 +165,10 @@ describe('UserService', () => {
         select: expect.any(Object),
       });
 
-      expect(passwordServiceMock.hashPassword).toHaveBeenCalledWith(dto.password);
-      
+      expect(passwordServiceMock.hashPassword).toHaveBeenCalledWith(
+        dto.password,
+      );
+
       expect(prismaMock.user.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           email: dto.email,
@@ -155,7 +178,7 @@ describe('UserService', () => {
         }),
         select: {
           ...userSelect,
-        }
+        },
       });
 
       expect(response).toEqual(createdUser);
@@ -211,10 +234,10 @@ describe('UserService', () => {
             description: 'Description 1',
           },
         ],
-      } as any;
+      };
 
       const hashedPassword = 'hashed-password';
-      const createdUser = createUserMock({
+      const createdUser = createPublicUserMock({
         posts: dto.posts,
       });
 
@@ -232,7 +255,7 @@ describe('UserService', () => {
         }),
         select: {
           ...userSelect,
-        }
+        },
       });
 
       expect(response).toEqual(createdUser);
@@ -246,11 +269,8 @@ describe('UserService', () => {
         nom: 'Updated',
       } as UserUpdateDto;
 
-      const existingUser = createUserMock({ id: 1 });
-      const updatedUser = createUserMock({
-        id: 1,
-        nom: 'Updated',
-      });
+      const existingUser = createPublicUserMock({ id: 1 });
+      const updatedUser = { ...createPublicUserMock({ id: 1 }), posts: [] };
 
       prismaMock.user.findUnique.mockResolvedValue(existingUser);
       prismaMock.user.update.mockResolvedValue(updatedUser);
@@ -273,7 +293,7 @@ describe('UserService', () => {
         select: {
           ...userSelect,
           posts: true,
-        }
+        },
       });
 
       expect(response).toEqual(updatedUser);
@@ -285,11 +305,8 @@ describe('UserService', () => {
         password: 'new-password',
       } as UserUpdateDto;
 
-      const existingUser = createUserMock({ id: 1 });
-      const updatedUser = createUserMock({
-        id: 1,
-        password: 'new-hashed-password',
-      });
+      const existingUser = createPublicUserMock({ id: 1 });
+      const updatedUser = { ...createPublicUserMock({ id: 1 }), posts: [] };
 
       prismaMock.user.findUnique.mockResolvedValue(existingUser);
       passwordServiceMock.hashPassword.mockResolvedValue('new-hashed-password');
@@ -309,7 +326,7 @@ describe('UserService', () => {
         select: {
           ...userSelect,
           posts: true,
-        }
+        },
       });
 
       expect(response).toEqual(updatedUser);
@@ -334,7 +351,7 @@ describe('UserService', () => {
   describe('destroy', () => {
     it('should delete a user', async () => {
       const where = { id: 1 };
-      const existingUser = createUserMock({ id: 1 });
+      const existingUser = createPublicUserMock({ id: 1 });
 
       prismaMock.user.findUnique.mockResolvedValue(existingUser);
       prismaMock.user.delete.mockResolvedValue(existingUser);
@@ -362,6 +379,95 @@ describe('UserService', () => {
       );
 
       expect(prismaMock.user.delete).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('likes', () => {
+    const payload = { user_id: 10, post_id: 42 };
+    it('should add a like idempotently using the user and post ids', async () => {
+      prismaMock.like.upsert.mockResolvedValue({ userId: 10, postId: 42 });
+      await expect(userService.addLike(payload)).resolves.toBeUndefined();
+      expect(prismaMock.like.upsert).toHaveBeenCalledWith({
+        where: { userId_postId: { userId: 10, postId: 42 } },
+        create: { userId: 10, postId: 42 },
+        update: {},
+      });
+    });
+    it('should remove likes matching the supplied user and post', async () => {
+      prismaMock.like.deleteMany.mockResolvedValue({ count: 1 });
+      await expect(userService.unlikePost(payload)).resolves.toBeUndefined();
+      expect(prismaMock.like.deleteMany).toHaveBeenCalledWith({
+        where: { userId: 10, postId: 42 },
+      });
+    });
+    it.each([0, 1])(
+      'should resolve when deleting %i matching likes',
+      async (count) => {
+        prismaMock.like.deleteMany.mockResolvedValue({ count });
+        await expect(userService.unlikePost(payload)).resolves.toBeUndefined();
+      },
+    );
+    it.each([
+      [null, false],
+      [{ userId: 10, postId: 42 }, true],
+    ])(
+      'should report whether a matching like exists: %p',
+      async (like, expected) => {
+        prismaMock.like.findUnique.mockResolvedValue(like);
+        await expect(userService.checkIfUserLikedPost(payload)).resolves.toBe(
+          expected,
+        );
+        expect(prismaMock.like.findUnique).toHaveBeenCalledWith({
+          where: { userId_postId: { userId: 10, postId: 42 } },
+        });
+      },
+    );
+    it.each(['addLike', 'unlikePost', 'checkIfUserLikedPost'] as const)(
+      'should propagate a Prisma error from %s',
+      async (method) => {
+        const error = new Error('Like query failed');
+        const mock =
+          method === 'addLike'
+            ? prismaMock.like.upsert
+            : method === 'unlikePost'
+              ? prismaMock.like.deleteMany
+              : prismaMock.like.findUnique;
+        mock.mockRejectedValue(error);
+        await expect(userService[method](payload)).rejects.toBe(error);
+      },
+    );
+  });
+
+  describe('dependency failures', () => {
+    it('should propagate a listing error', async () => {
+      const error = new Error('List failed');
+      prismaMock.user.findMany.mockRejectedValue(error);
+      await expect(userService.index()).rejects.toBe(error);
+      expect(prismaMock.user.findMany).toHaveBeenCalledWith({
+        select: userSelect,
+      });
+    });
+    it('should stop creation when password hashing fails', async () => {
+      const error = new Error('Hash failed');
+      prismaMock.user.findFirst.mockResolvedValue(null);
+      passwordServiceMock.hashPassword.mockRejectedValue(error);
+      await expect(userService.create(createUserDtoMock())).rejects.toBe(error);
+      expect(prismaMock.user.create).not.toHaveBeenCalled();
+    });
+    it('should stop updating when password hashing fails', async () => {
+      const error = new Error('Hash failed');
+      prismaMock.user.findUnique.mockResolvedValue(createPublicUserMock());
+      passwordServiceMock.hashPassword.mockRejectedValue(error);
+      await expect(
+        userService.update({ id: 1 }, { password: 'new-password' }),
+      ).rejects.toBe(error);
+      expect(prismaMock.user.update).not.toHaveBeenCalled();
+    });
+    it('should propagate an error from deletion', async () => {
+      const error = new Error('Delete failed');
+      prismaMock.user.findUnique.mockResolvedValue(createPublicUserMock());
+      prismaMock.user.delete.mockRejectedValue(error);
+      await expect(userService.destroy({ id: 1 })).rejects.toBe(error);
     });
   });
 });

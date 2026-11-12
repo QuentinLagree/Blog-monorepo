@@ -8,20 +8,9 @@ import { UserService } from '../user/user.service';
 import { ArticleService } from '../post/posts.service';
 
 @Module({
-  imports: [
-    PasswordModule,
-    PrismaModule
-  ],
-  controllers: [
-    MeController,
-  ],
-  providers: [
-    UserService,
-    ArticleService
-  ],
-  exports: [
-    UserService,
-    ArticleService
-  ],
+  imports: [PasswordModule, PrismaModule],
+  controllers: [MeController],
+  providers: [UserService, ArticleService],
+  exports: [UserService, ArticleService],
 })
 export class MeModule {}

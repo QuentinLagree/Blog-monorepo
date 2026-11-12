@@ -1,23 +1,32 @@
-version: '3.9'
-
 services:
   db:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: blog
-    command: [
-      "mysqld",
-      "--character-set-server=utf8mb4",
-      "--collation-server=utf8mb4_unicode_ci"
-    ]
+      MYSQL_USER: blog
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD}
+    command: ["mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
     volumes:
       - mysqldata:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p${MYSQL_ROOT_PASSWORD:-root} || exit 1"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p\"$$MYSQL_ROOT_PASSWORD\""]
       interval: 5s
       timeout: 3s
       retries: 20
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
 
   api:
     build:
@@ -26,27 +35,22 @@ services:
     env_file:
       - ./api/.env
     environment:
-      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-root}@db:3306/blog
+      DATABASE_URL: mysql://blog:${MYSQL_PASSWORD:?Set MYSQL_PASSWORD}@db:3306/blog
+      REDIS_URL: redis://redis:6379/0
       NODE_ENV: production
+      FRONTEND_URL: ${FRONTEND_URL:?Set the public HTTPS frontend URL}
+      SECRET_KEY: ${SECRET_KEY:?Set the base64 session key}
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     ports:
-      - "3000:3000"
-    command: >
-      sh -c "
-        node ./node_modules/.bin/prisma migrate deploy &&
-        node dist/main.js
-      "
-
-  web:
-    build:
-      context: ./web
-    dockerfile: Dockerfile
-    ports:
-      - "8080:80"
-    depends_on:
-      - api
+      - "127.0.0.1:3000:3000"
+    init: true
+    stop_grace_period: 30s
+    restart: unless-stopped
 
 volumes:
   mysqldata:
+  redisdata:

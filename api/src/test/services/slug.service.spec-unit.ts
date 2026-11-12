@@ -8,7 +8,7 @@ describe('SlugService', () => {
   let slugService: SlugService;
 
   const articleServiceMock = {
-    indexOneWhere: jest.fn(),
+    showForReader: jest.fn(),
   };
 
   const createPostMock = (override = {}) => ({
@@ -24,7 +24,7 @@ describe('SlugService', () => {
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
 
     slugService = new SlugService(
       articleServiceMock as unknown as ArticleService,
@@ -73,13 +73,14 @@ describe('SlugService', () => {
         published_at: new Date(),
       });
 
-      articleServiceMock.indexOneWhere.mockResolvedValue(post);
+      articleServiceMock.showForReader.mockResolvedValue(post);
 
       const response = await slugService.getPostWithSlug('mon-super-article-1');
 
-      expect(articleServiceMock.indexOneWhere).toHaveBeenCalledWith({
-        id: 1,
-      });
+      expect(articleServiceMock.showForReader).toHaveBeenCalledWith(
+        { id: 1 },
+        undefined,
+      );
 
       expect(response).toEqual(post);
     });
@@ -89,31 +90,32 @@ describe('SlugService', () => {
         slugService.getPostWithSlug('mon-super-article-abc'),
       ).rejects.toThrow(SlugInvalidFormat);
 
-      expect(articleServiceMock.indexOneWhere).not.toHaveBeenCalled();
+      expect(articleServiceMock.showForReader).not.toHaveBeenCalled();
     });
 
     it('should throw NotFoundException if post does not exist', async () => {
-      articleServiceMock.indexOneWhere.mockResolvedValue(null);
+      articleServiceMock.showForReader.mockResolvedValue(null);
 
       await expect(
         slugService.getPostWithSlug('mon-super-article-1'),
       ).rejects.toThrow(PostNotFoundException);
     });
 
-    it('should return post even if post is not published', async () => {
+    it('should return the draft supplied by the access-controlled reader', async () => {
       const post = createPostMock({
         id: 1,
         title: 'Mon Super Article',
         published_at: null,
       });
 
-      articleServiceMock.indexOneWhere.mockResolvedValue(post);
+      articleServiceMock.showForReader.mockResolvedValue(post);
 
       const response = await slugService.getPostWithSlug('mon-super-article-1');
 
-      expect(articleServiceMock.indexOneWhere).toHaveBeenCalledWith({
-        id: 1,
-      });
+      expect(articleServiceMock.showForReader).toHaveBeenCalledWith(
+        { id: 1 },
+        undefined,
+      );
 
       expect(response).toEqual(post);
     });
@@ -125,11 +127,46 @@ describe('SlugService', () => {
         published_at: new Date(),
       });
 
-      articleServiceMock.indexOneWhere.mockResolvedValue(post);
+      articleServiceMock.showForReader.mockResolvedValue(post);
 
       await expect(
         slugService.getPostWithSlug('mon-super-article-1'),
       ).rejects.toThrow(PostNotFoundWithSlugException);
+    });
+  });
+
+  describe('slug boundaries', () => {
+    it.each(['article-0', 'article-9007199254740992'])(
+      'should reject an invalid article id in %s before querying',
+      async (slug) => {
+        await expect(slugService.getPostWithSlug(slug)).rejects.toThrow(
+          SlugInvalidFormat,
+        );
+        expect(articleServiceMock.showForReader).not.toHaveBeenCalled();
+      },
+    );
+    it('should normalize case, surrounding whitespace and Unicode accents', async () => {
+      const post = createPostMock({ id: 42, title: 'Été test' });
+      articleServiceMock.showForReader.mockResolvedValue(post);
+      await expect(
+        slugService.getPostWithSlug('  ÉTÉ-TEST-42  '),
+      ).resolves.toEqual(post);
+      expect(articleServiceMock.showForReader).toHaveBeenCalledWith(
+        { id: 42 },
+        undefined,
+      );
+    });
+    it('should reject a title with no letters or numbers', () => {
+      expect(() =>
+        slugService.generateSlugFromArticleTitle(' !!! ', 42),
+      ).toThrow(SlugInvalidFormat);
+    });
+    it('should propagate an article lookup failure', async () => {
+      const error = new Error('Article lookup failed');
+      articleServiceMock.showForReader.mockRejectedValue(error);
+      await expect(slugService.getPostWithSlug('article-42')).rejects.toBe(
+        error,
+      );
     });
   });
 });

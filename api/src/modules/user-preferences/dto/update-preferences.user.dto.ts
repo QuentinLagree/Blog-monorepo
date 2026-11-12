@@ -1,11 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-import {
-  IsBoolean,
-  IsIn,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsBoolean, IsIn, IsOptional, IsString } from 'class-validator';
 
 export class UpdateUserPreferenceDto {
   @ApiPropertyOptional({
@@ -149,8 +144,7 @@ export class UpdateUserPreferenceDto {
 
   @IsOptional()
   @IsBoolean({
-    message:
-      'La visibilité du profil doit être un booléen (true ou false).',
+    message: 'La visibilité du profil doit être un booléen (true ou false).',
   })
   @ApiPropertyOptional({
     description: 'Masquer le profil utilisateur aux autres utilisateurs',
@@ -177,8 +171,7 @@ export class UpdateUserPreferenceDto {
       "L'affichage des contributions doit être un booléen (true ou false).",
   })
   @ApiPropertyOptional({
-    description:
-      'Afficher les contributions sur la page du profil utilisateur',
+    description: 'Afficher les contributions sur la page du profil utilisateur',
     type: 'boolean',
     example: true,
   })

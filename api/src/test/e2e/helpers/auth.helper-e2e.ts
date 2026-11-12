@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { PasswordService } from 'src/commons/services/argon.service';
@@ -20,7 +20,7 @@ export async function createLoggedAgent(
   passwordService: PasswordService,
   options: CreateLoggedAgentOptions = {},
 ) {
-  const password = options.password ?? 'password123';
+  const password = options.password ?? 'password12345';
 
   const user = await createTestUser(prisma, passwordService, {
     ...options,
@@ -36,7 +36,7 @@ export async function createLoggedAgent(
       email: user.email,
       password,
     })
-    .expect(201);
+    .expect(200);
 
   return {
     agent,

@@ -1,13 +1,17 @@
+import { Prisma } from '@prisma/client';
 import { TokenService } from 'src/commons/services/token.service';
 import { PrismaService } from 'src/commons/prisma/prisma.service';
 import { TOKEN } from 'src/commons/types/token.types';
 import { ResetTokenAlreadyActiveException } from 'src/modules/handle-password/exceptions/reset-token-already-active.exception';
 import { TokenExpiredOrInvalidException } from 'src/modules/handle-password/exceptions/token-expired-or-invalid.exception';
+import { UserNotFoundException } from 'src/modules/user/exceptions/user-not-found.exception';
 
 describe('TokenService', () => {
   let tokenService: TokenService;
 
   const prismaMock = {
+    $transaction: jest.fn(),
+    $queryRaw: jest.fn(),
     verificationTokens: {
       count: jest.fn(),
       findFirst: jest.fn(),
@@ -29,11 +33,11 @@ describe('TokenService', () => {
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
+    prismaMock.$queryRaw.mockResolvedValue([{ id: 1 }]);
+    prismaMock.$transaction.mockImplementation((fn) => fn(prismaMock));
 
-    tokenService = new TokenService(
-      prismaMock as unknown as PrismaService,
-    );
+    tokenService = new TokenService(prismaMock as unknown as PrismaService);
   });
 
   describe('generate', () => {
@@ -63,86 +67,63 @@ describe('TokenService', () => {
   });
 
   describe('set', () => {
-    it('should create a verification token if no active token exists', async () => {
-      const tokenDto = {
-        email: 'test@test.com',
-        code: VALID_TOKEN,
-        expired_at: new Date(Date.now() + TOKEN.EXPIRED_TOKEN),
-      };
-
-      const createdToken = createVerificationTokenMock(tokenDto);
-
-      prismaMock.verificationTokens.findFirst.mockResolvedValue(null);
-      prismaMock.verificationTokens.create.mockResolvedValue(createdToken);
-
-      const response = await tokenService.set(tokenDto);
-
-      expect(prismaMock.verificationTokens.findFirst).toHaveBeenCalledWith({
-        where: {
-          email: tokenDto.email,
-        },
-      });
-
-      expect(prismaMock.verificationTokens.create).toHaveBeenCalledWith({
-        data: tokenDto,
-      });
-
-      expect(response).toEqual(createdToken);
+    const payload = {
+      email: 'test@test.com',
+      code: VALID_TOKEN,
+      expired_at: new Date(Date.now() + TOKEN.EXPIRED_TOKEN),
+    };
+    it('should not create an orphan token if the account disappeared', async () => {
+      prismaMock.$queryRaw.mockResolvedValue([]);
+      await expect(tokenService.set(payload)).rejects.toThrow(
+        UserNotFoundException,
+      );
+      expect(prismaMock.verificationTokens.create).not.toHaveBeenCalled();
+      expect(prismaMock.verificationTokens.deleteMany).not.toHaveBeenCalled();
     });
-
-    it('should throw ResetTokenAlreadyActiveException if token already exists and is not expired', async () => {
-      const tokenDto = {
-        email: 'test@test.com',
-        code: VALID_TOKEN,
-        expired_at: new Date(Date.now() + TOKEN.EXPIRED_TOKEN),
-      };
-
-      const existingToken = createVerificationTokenMock({
-        email: tokenDto.email,
-        expired_at: new Date(Date.now() + TOKEN.EXPIRED_TOKEN),
+    it('should replace only expired tokens inside one transaction', async () => {
+      const saved = createVerificationTokenMock(payload);
+      prismaMock.verificationTokens.create.mockResolvedValue(saved);
+      await expect(tokenService.set(payload)).resolves.toEqual(saved);
+      expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
+      expect(prismaMock.verificationTokens.deleteMany).toHaveBeenCalledWith({
+        where: { userId: 1, expired_at: { lt: expect.any(Date) } },
       });
-
-      prismaMock.verificationTokens.findFirst.mockResolvedValue(existingToken);
-
-      await expect(tokenService.set(tokenDto)).rejects.toThrow(
+      expect(prismaMock.verificationTokens.create).toHaveBeenCalledWith({
+        data: { ...payload, userId: 1 },
+      });
+    });
+    it('should map an existing active token conflict to a business error', async () => {
+      prismaMock.verificationTokens.create.mockRejectedValue(
+        new Prisma.PrismaClientKnownRequestError('Duplicate', {
+          code: 'P2002',
+          clientVersion: '6',
+        }),
+      );
+      await expect(tokenService.set(payload)).rejects.toThrow(
         ResetTokenAlreadyActiveException,
       );
-
-      expect(prismaMock.verificationTokens.deleteMany).not.toHaveBeenCalled();
-      expect(prismaMock.verificationTokens.create).not.toHaveBeenCalled();
     });
-
-    it('should delete expired token and create a new one', async () => {
-      const tokenDto = {
-        email: 'test@test.com',
-        code: VALID_TOKEN,
-        expired_at: new Date(Date.now() + TOKEN.EXPIRED_TOKEN),
-      };
-
-      const expiredToken = createVerificationTokenMock({
-        email: tokenDto.email,
-        expired_at: new Date(Date.now() - 1000),
+    it('should retry a transaction deadlock', async () => {
+      prismaMock.$transaction.mockRejectedValueOnce(
+        new Prisma.PrismaClientKnownRequestError('Deadlock', {
+          code: 'P2034',
+          clientVersion: '6',
+        }),
+      );
+      prismaMock.verificationTokens.create.mockResolvedValue(
+        createVerificationTokenMock(payload),
+      );
+      await tokenService.set(payload);
+      expect(prismaMock.$transaction).toHaveBeenCalledTimes(2);
+    });
+    it('should stop after three transaction deadlocks', async () => {
+      const error = new Prisma.PrismaClientKnownRequestError('Deadlock', {
+        code: 'P2034',
+        clientVersion: '6',
       });
-
-      const createdToken = createVerificationTokenMock(tokenDto);
-
-      prismaMock.verificationTokens.findFirst.mockResolvedValue(expiredToken);
-      prismaMock.verificationTokens.deleteMany.mockResolvedValue({ count: 1 });
-      prismaMock.verificationTokens.create.mockResolvedValue(createdToken);
-
-      const response = await tokenService.set(tokenDto);
-
-      expect(prismaMock.verificationTokens.deleteMany).toHaveBeenCalledWith({
-        where: {
-          email: tokenDto.email,
-        },
-      });
-
-      expect(prismaMock.verificationTokens.create).toHaveBeenCalledWith({
-        data: tokenDto,
-      });
-
-      expect(response).toEqual(createdToken);
+      prismaMock.$transaction.mockRejectedValue(error);
+      await expect(tokenService.set(payload)).rejects.toBe(error);
+      expect(prismaMock.$transaction).toHaveBeenCalledTimes(3);
     });
   });
 
@@ -173,7 +154,9 @@ describe('TokenService', () => {
         expired_at: new Date(Date.now() + TOKEN.EXPIRED_TOKEN),
       });
 
-      prismaMock.verificationTokens.findFirst.mockResolvedValue(verificationToken);
+      prismaMock.verificationTokens.findFirst.mockResolvedValue(
+        verificationToken,
+      );
 
       await expect(
         tokenService.assertVerificationTokenIsValid(email, token),
@@ -183,6 +166,7 @@ describe('TokenService', () => {
         where: {
           email,
           code: token.getToken,
+          user: { email },
         },
       });
     });
@@ -213,6 +197,67 @@ describe('TokenService', () => {
       await expect(
         tokenService.assertVerificationTokenIsValid(email, token),
       ).rejects.toThrow(TokenExpiredOrInvalidException);
+    });
+  });
+
+  describe('expiration boundary', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2026-01-01T00:00:00Z'));
+    });
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+    it.each([-1, 0, 1])(
+      'should evaluate expiration %i ms from now consistently',
+      async (delta) => {
+        prismaMock.verificationTokens.findFirst.mockResolvedValue(
+          createVerificationTokenMock({
+            expired_at: new Date(Date.now() + delta),
+          }),
+        );
+        const result = tokenService.assertVerificationTokenIsValid(
+          'test@test.com',
+          TOKEN.add(VALID_TOKEN),
+        );
+        if (delta < 0)
+          await expect(result).rejects.toThrow(TokenExpiredOrInvalidException);
+        else await expect(result).resolves.toBeUndefined();
+      },
+    );
+  });
+  describe('Prisma failures', () => {
+    it('should propagate a token generation query failure', async () => {
+      const error = new Error('Count failed');
+      prismaMock.verificationTokens.count.mockRejectedValue(error);
+      await expect(tokenService.generate()).rejects.toBe(error);
+    });
+    it('should stop token creation if deleting an expired token fails', async () => {
+      const error = new Error('Delete failed');
+      prismaMock.verificationTokens.findFirst.mockResolvedValue(
+        createVerificationTokenMock({
+          expired_at: new Date(Date.now() - 1000),
+        }),
+      );
+      prismaMock.verificationTokens.deleteMany.mockRejectedValue(error);
+      await expect(
+        tokenService.set({
+          email: 'test@test.com',
+          code: VALID_TOKEN,
+          expired_at: new Date(Date.now() + TOKEN.EXPIRED_TOKEN),
+        }),
+      ).rejects.toBe(error);
+      expect(prismaMock.verificationTokens.create).not.toHaveBeenCalled();
+    });
+    it('should propagate a token validation query failure', async () => {
+      const error = new Error('Lookup failed');
+      prismaMock.verificationTokens.findFirst.mockRejectedValue(error);
+      await expect(
+        tokenService.assertVerificationTokenIsValid(
+          'test@test.com',
+          TOKEN.add(VALID_TOKEN),
+        ),
+      ).rejects.toBe(error);
     });
   });
 });

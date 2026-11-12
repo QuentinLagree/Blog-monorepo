@@ -5,6 +5,7 @@ import { EmailOrPasswordNotMatchException } from 'src/modules/auth/exceptions/em
 import { Role } from 'src/commons/roles/role.enum';
 import { UserLoginCredentials } from 'src/modules/auth/dto/user-login-credentials.dto';
 import { UserHaveAlreadyActiveSessionException } from 'src/modules/auth/exceptions/user-have-already-active-session.exception';
+import { PasswordNotMatchException } from 'src/modules/auth/exceptions/password-not-same.exception';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -33,7 +34,7 @@ describe('AuthService', () => {
   });
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
 
     authService = new AuthService(
       prismaMock as unknown as PrismaService,
@@ -127,10 +128,7 @@ describe('AuthService', () => {
 
       expect(sessionMock.get).toHaveBeenCalledWith('user');
 
-      expect(sessionMock.set).toHaveBeenCalledWith(
-        'user',
-        sessionUser,
-      );
+      expect(sessionMock.set).toHaveBeenCalledWith('user', sessionUser);
     });
 
     it('should throw UserAlreadySessionActive if session is already active', () => {
@@ -154,13 +152,37 @@ describe('AuthService', () => {
   });
 
   describe('throwAnNotSamePasswordExceptionIfNotSame', () => {
-    it('should currently resolve without throwing', async () => {
+    it('should resolve when passwords match', async () => {
+      await expect(
+        authService.throwAnNotSamePasswordExceptionIfNotSame(
+          'password',
+          'password',
+        ),
+      ).resolves.toBeUndefined();
+    });
+    it('should reject with PasswordNotMatchException when passwords differ', async () => {
       await expect(
         authService.throwAnNotSamePasswordExceptionIfNotSame(
           'password',
           'different-password',
         ),
-      ).resolves.toBeUndefined();
+      ).rejects.toThrow(PasswordNotMatchException);
+    });
+  });
+
+  describe('dependency failures', () => {
+    const credentials = { email: 'test@test.com', password: 'password' };
+    it('should propagate a user lookup failure without verifying a password', async () => {
+      const error = new Error('User lookup failed');
+      prismaMock.user.findUnique.mockRejectedValue(error);
+      await expect(authService.login(credentials)).rejects.toBe(error);
+      expect(passwordServiceMock.verifyPassword).not.toHaveBeenCalled();
+    });
+    it('should propagate an unexpected password verification failure', async () => {
+      const error = new Error('Verification failed');
+      prismaMock.user.findUnique.mockResolvedValue(createUserMock());
+      passwordServiceMock.verifyPassword.mockRejectedValue(error);
+      await expect(authService.login(credentials)).rejects.toBe(error);
     });
   });
 });

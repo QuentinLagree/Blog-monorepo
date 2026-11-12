@@ -7,7 +7,7 @@ import {
   SerializeOptions,
   Session,
   UseGuards,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiBody, ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiExceptionsResponse } from 'src/commons/decorators/api-exception-response.decorator';
@@ -28,6 +28,7 @@ import { EmailOrPasswordNotMatchException } from './exceptions/email-or-password
 import { UnauthorizedSessionInactive } from './exceptions/unautorisation-session-inactive.exception';
 import { UserHaveAlreadyActiveSessionException } from './exceptions/user-have-already-active-session.exception';
 import { Role } from 'src/commons/roles/role.enum';
+import { sessionVersion } from 'src/commons/services/session-version';
 
 @ApiTags('Authentification')
 @Controller('auth')
@@ -36,21 +37,20 @@ export class AuthController {
   constructor(
     private readonly _auth: AuthService,
     private readonly _user: UserService,
-  ) { }
+  ) {}
 
   @ApiCookieAuth()
   @ApiOperation({
     summary: "Déconnection d'un utilisateur.",
-    description: "Déconnecte-toi de ton compte. Il faut être connecté pour effectuer cette action."
+    description:
+      'Déconnecte-toi de ton compte. Il faut être connecté pour effectuer cette action.',
   })
   @ApiMessageResponse(null, {
-    description: "Effectue la déconnection du compte utilisateur.",
+    description: 'Effectue la déconnection du compte utilisateur.',
     messageExemple: "La déconnection de ton compte s'est effectué avec succès",
-    status: 204
+    status: 204,
   })
-  @ApiExceptionsResponse([
-    UnauthorizedSessionInactive
-  ])
+  @ApiExceptionsResponse([UnauthorizedSessionInactive])
   @UseGuards(createAuthGuardSession())
   @HttpCode(204)
   @Post('/logout')
@@ -65,35 +65,35 @@ export class AuthController {
 
   @ApiOperation({
     summary: "Connection d'un utilisateur.",
-    description: "Connecte-toi à ton compte avec tes identifiants."
+    description: 'Connecte-toi à ton compte avec tes identifiants.',
   })
-  @ApiMessageResponse(UserSessionDto,
+  @ApiMessageResponse(UserSessionDto, {
+    description: 'Succès lors de la connection.',
+    messageExemple: 'La connection est un succès.',
+  })
+  @ApiExceptionsResponse(
+    [EmailOrPasswordNotMatchException, UserHaveAlreadyActiveSessionException],
     {
-      description: "Succès lors de la connection.",
-      messageExemple: "La connection est un succès."
-    }
+      isPublic: true,
+    },
   )
-  @ApiExceptionsResponse([
-    EmailOrPasswordNotMatchException,
-    UserHaveAlreadyActiveSessionException,
-  ], {
-    isPublic: true
-  })
   @ApiBody({
     type: UserLoginCredentials,
     description: "Le format de donnée pour la connection d'un utilisateur",
     examples: {
       default: {
         summary: "Données de connection d'exemple pour un utilisateur",
-        description: "Données représentant les informations de connection d'un utilisateur",
-        value: { email: "johndoe42@gmail.com", password: "Salut1234!"}
+        description:
+          "Données représentant les informations de connection d'un utilisateur",
+        value: { email: 'johndoe42@gmail.com', password: 'Salut1234!' },
       },
       test: {
         summary: "Données de connection d'exemple pour un utilisateur autre",
-        description: "Données représentant les informations de connection d'un utilisateur",
-        value: { email: "johndoe42@gmail.com", password: "Salut1234!"}
-      }
-    }
+        description:
+          "Données représentant les informations de connection d'un utilisateur",
+        value: { email: 'johndoe42@gmail.com', password: 'Salut1234!' },
+      },
+    },
   })
   @HttpCode(200)
   @Post('/login')
@@ -102,13 +102,16 @@ export class AuthController {
     @Session() session: secureSession.Session,
   ): Promise<Message<UserSessionDto>> {
     const logged_user = await this._auth.login(payload);
-    
-    const userRole = Object.values(Role).find((role) => role == logged_user.role.toLowerCase())
+
+    const userRole = Object.values(Role).find(
+      (role) => role == logged_user.role.toLowerCase(),
+    );
 
     this._auth.setUserSession(session, {
       id: logged_user.id,
       email: logged_user.email,
       role: userRole,
+      credentialVersion: sessionVersion(logged_user.password),
     });
 
     return makeMessage(
@@ -124,27 +127,26 @@ export class AuthController {
 
   @ApiOperation({
     summary: "Enregistrement d'un utilisateur.",
-    description: "Inscris-toi avec tes informations."
+    description: 'Inscris-toi avec tes informations.',
   })
-  @ApiMessageResponse(PublicUserDto,
-    {
-      description: "Succès lors de l'enregistrement.",
-      messageExemple: "L'enregistrement est un succès.",
-      status: 201
-    }
-  )
-  @ApiExceptionsResponse([
-    UserAlreadyExistException,
-  ], { isPublic: true,
+  @ApiMessageResponse(PublicUserDto, {
+    description: "Succès lors de l'enregistrement.",
+    messageExemple: "L'enregistrement est un succès.",
+    status: 201,
+  })
+  @ApiExceptionsResponse([UserAlreadyExistException], {
+    isPublic: true,
     dto: CreateUserDto,
-   })
+  })
   @SerializeOptions({
     ignoreDecorators: true,
   })
   @HttpCode(201)
   @Post('/register')
-  async register(@Body() payload: CreateUserDto): Promise<Message<PublicUserDto>> {
-      return makeMessage(
+  async register(
+    @Body() payload: CreateUserDto,
+  ): Promise<Message<PublicUserDto>> {
+    return makeMessage(
       'User register !',
       "L'enregistrement de ton compte s'est déroulé avec succès. Maintenant tu peux te connecter.",
       await this._user.create(payload),
