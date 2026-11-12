@@ -365,7 +365,7 @@ Lance :
 pnpm docker:prod
 ```
 
-Lance l'environnement de production.
+Lance l'API, MySQL et Redis de production. Le frontend Angular se d?ploie s?par?ment. Consulter [la documentation API](api/README.md) pour les variables, migrations et le reverse proxy HTTPS.
 
 ---
 
@@ -532,3 +532,8 @@ GitHub :
 
 LinkedIn :
 <https://www.linkedin.com/in/quentin-lagree>
+
+
+## Exploitation et validation de l'API
+
+La [documentation API](api/README.md) décrit la configuration, les permissions sur les brouillons, la récupération de mot de passe, les migrations, les tests et le démarrage Docker de production. La composition de production lance l'API, MySQL et Redis ; le frontend Angular se déploie séparément.

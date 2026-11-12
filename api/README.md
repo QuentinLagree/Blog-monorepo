@@ -1,233 +1,130 @@
-# 🧭 Blog Project – Progress Tracker
+# API du blog
 
-**Objectif :**
-120 jours pour terminer et déployer un blog complet (NestJS + Angular 20), sans le laisser rejoindre les repos GitHub oubliés.
+NestJS, Fastify, Prisma/MySQL, sessions chiffrées, Argon2, Redis et BullMQ.
 
----
+## Installation
 
-## 📦 Stack technique
+Node.js 22 ou ultérieur et pnpm 10 sont nécessaires. Depuis api :
 
-| Composant            | Technologie             | Statut |
-| -------------------- | ----------------------- | ------ |
-| **Backend**          | NestJS (Fastify)        | ☐      |
-| **Base de données**  | Prisma + PostgreSQL     | ☐      |
-| **Authentification** | Sessions + Argon2id     | ☐      |
-| **Envoi d’emails**   | Nodemailer + BullMQ     | ☐      |
-| **Frontend**         | Angular 20              | ☐      |
-| **Langage**          | TypeScript              | ☐      |
-| **ORM**              | Prisma                  | ☐      |
-| **Queue / Cache**    | Redis (BullMQ, caching) | ☐      |
+```sh
+pnpm install --frozen-lockfile
+cp .env.example .env
+pnpm prisma:build
+pnpm prisma:generate
+pnpm prisma:deploy
+pnpm start:dev
+```
 
----
+Configurer MySQL, Redis et SMTP avant le démarrage. SECRET_KEY contient 32 octets aléatoires encodés en base64. Garder ARGON2_PEPPER secret et stable après la création des comptes.
 
-## 📅 Roadmap & Suivi
+## Permissions des articles
 
----
+Les listes publiques affichent les publications par défaut. published=false exige une session. Les brouillons sont accessibles uniquement à leur auteur ou à un administrateur actuel en base : listes, détail par identifiant ou slug, brouillons utilisateur, likes et suivi de lecture.
 
-### **M0 – Socle du projet**
->
-> Mise en place des bases backend & frontend
+Un détail interdit répond 404 ; les listes ne comptent pas les brouillons interdits. Les méthodes internes non filtrées du service sont réservées aux traitements déjà autorisés.
 
-- [x] NestJS (Fastify) configuré
-- [x] Prisma initialisé
-- [x] Authentification (sessions, cookies sécurisés)
-- [x] DTOs avec validation (class-validator)
-- [x] Base Angular 20 + routing
-- [x] CORS + Helmet activés
-- [x] Variables d’environnement `.env` propres et centralisées
-- [X] Logger personnalisé (NestJS Custom)
+## Récupération du mot de passe
 
----
+FRONTEND_URL détermine le lien /auth/reset, avec email et token encodés. L'en-tête Origin ne détermine jamais cette URL.
 
-### **M1 – Gestion des articles (backend + admin)**
+Une transaction MySQL supprime le token sous condition (email, code, expiration), puis modifie le mot de passe. Deux requêtes concurrentes ne peuvent pas consommer le même token. Une erreur de modification du compte annule aussi sa consommation.
 
-- [x] Modèle `Article` (Prisma)
-- [x] Endpoints CRUD `/articles`
-- [x] Slug unique et publication `draft/published`
-- [ ] Sanitization Markdown (DOMPurify / marked)
-- [ ] Pagination et filtres (tags, date, auteur)
-- [x] Test E2E création + publication article
+BullMQ effectue cinq tentatives avec un délai exponentiel initial d'une seconde. Un échec de rendu ou de mise en file supprime le token correspondant. Après un échec définitif du worker, seul le token associé au job est supprimé, sans toucher à un nouveau token.
 
----
+Une réponse positive de /password/forgot confirme la mise en file, pas la livraison SMTP. Une interruption peut entraîner un nouvel envoi : aucune garantie d'envoi exactement une fois. MySQL et Redis ne partagent pas de transaction distribuée ; l'expiration protège les tokens abandonnés après une interruption brutale entre ces opérations.
 
-### **M2 – Éditeur Markdown (frontend)**
+## Migrations et pseudos
 
-- [x] Formulaire de rédaction d’article (simple)
-- [x] Éditeur Markdown split-view (rédaction + preview)
-- [x] Raccourcis Markdown (bold, italic, code, titres)
-- [x] Auto-save (localStorage)
-- [x] Upload image + insertion automatique dans le contenu
-- [x] Sauvegarde article via API `/articles`
+Modifier les fragments dans src/config/database/models, puis lancer prisma:build et prisma:generate.
 
----
+La migration 20261112000100_unique_user_pseudo crée un index unique. Les conflits concurrents produisent une réponse 409. L'unicité respecte la collation MySQL de la colonne, notamment sa sensibilité à la casse.
 
-### **M3 – Lecture publique**
+```sh
+pnpm prisma:check-duplicates
+pnpm prisma:deploy
+```
 
-- [x] Page `/` : liste des articles
-- [x] Page `/article/:slug` : affichage d’un article
-- [ ] Calcul du temps de lecture
-- [ ] Styles Markdown pour lecture agréable
-- [ ] Meta dynamique (title, description)
-- [ ] Navigation mobile fluide
+Le déploiement contrôle les doublons et s'arrête s'il en trouve. Résoudre manuellement ces comptes avant de relancer ; aucun utilisateur n'est supprimé automatiquement.
 
----
+La chaîne de migrations a été validée sur une base de test dédiée. La nouvelle migration n'a pas été appliquée à une base de développement ou de production pendant cette correction.
 
-### **M4 – Préférences utilisateur**
+## Qualité et tests
 
-- [ ] Modèle `Preference { theme, fontSize, readingMode, locale, ... }`
-- [ ] API `GET/PUT /users/:id/preferences`
-- [ ] Application front des préférences
-- [ ] Persistance locale (localStorage)
-- [ ] Hydratation au login
+```sh
+pnpm lint
+pnpm typecheck
+pnpm build
+pnpm test:unit --runInBand
+pnpm test:e2e
+pnpm test:all
+```
 
----
+lint ne modifie rien ; lint:fix applique les corrections automatiques. Les types any et variables inutilisées hérités produisent des avertissements ; les erreurs ESLint font échouer la commande.
 
-### **M5 – Emailing & Notifications**
+`test:all` exécute les tests unitaires puis les E2E et affiche un récapitulatif avec icônes : tests réussis, échoués, ignorés, à écrire, nombre de suites et durée totale. Les deux phases sont exécutées même si la première échoue ; la commande conserve un code de sortie en échec si une phase échoue ou reste incomplète. Les nombres proviennent des rapports Jest.
 
-- [x] Installer et configurer BullMQ (Redis)
-- [x] Créer `MailService` et `MailProcessor`
-- [ ] Envoyer un mail de bienvenue / publication
-- [x] Gérer les erreurs d’envoi (retry, backoff)
-- [ ] Ajouter provider (Postmark / Resend)
-- [ ] Ajouter DKIM/SPF/DMARC en prod
+Le build produit dist/main.js et copie les templates d'emails. Les tests sont exclus du livrable. Voir [la préparation des tests HTTP et intégration](src/test/e2e/README.md) : ils nettoient exclusivement une base dédiée.
 
----
+## Production Docker
 
-### **M6 – Sécurité et Authentification avancée**
+Renseigner api/.env pour SMTP et Argon2. Fournir à Compose MYSQL_ROOT_PASSWORD, MYSQL_PASSWORD, SECRET_KEY et FRONTEND_URL (HTTPS) dans l'environnement ou via --env-file.
 
-- [x] Bcrypt en place
-- [x] Migration vers **Argon2id**
-- [x] Rehash automatique au login si ancien hash
-- [ ] Rate-limit sur `/auth/login`
-- [ ] Captcha ou double validation (si besoin)
-- [x] Rotation de session au login / logout
+Le mot de passe MySQL est incorporé à DATABASE_URL : utiliser un secret aléatoire compatible URL, par exemple hexadécimal, sans caractères réservés.
 
----
+Depuis la racine :
 
-### **M7 – Optimisation Prisma & Base de données**
+```sh
+docker compose -f docker-compose.prod.yml config --quiet
+docker compose -f docker-compose.prod.yml up --build -d
+```
 
-- [ ] Indices (`User.email`, `Article.slug`, `publishedAt`)
-- [ ] Transactions atomiques
-- [ ] Pooling (pgBouncer / Neon / RDS Proxy)
-- [ ] Soft-delete (`deletedAt`)
-- [x] Seed automatique (users + articles tests)
+La composition déploie l'API, MySQL et Redis. Le frontend Angular se déploie séparément. L'API est exposée sur 127.0.0.1:3000 et nécessite un reverse proxy HTTPS. Le frontend et l'API doivent être sur le même site pour les cookies SameSite=Lax. CORS accepte l'origine FRONTEND_URL avec credentials.
 
----
+Les cookies sont HttpOnly et Secure en production. Le démarrage refuse les variables obligatoires manquantes et un FRONTEND_URL sans HTTPS.
 
-### **M8 – Caching & Performance**
+L'image Node 22 s'exécute avec l'utilisateur node. Son démarrage vérifie les doublons, applique les migrations puis lance node dist/main.js. Une base existante doit disposer d'un historique Prisma cohérent ; ne pas baseliner automatiquement une base remplie.
 
-- [ ] Redis cache pour `/articles` (TTL 120s)
-- [ ] Purge cache à la publication
-- [ ] Lazy loading Angular + code splitting
-- [ ] Compression Gzip / Brotli (Fastify plugin)
+## Logs et arrêt
 
----
+Un logger partagé réutilise ses transports. Les écritures fichiers sont séquencées et attendues avant la fermeture des flux. LOG_DIR remplace le dossier logs_files par défaut.
 
-### **M9 – Observabilité & Monitoring**
+SIGTERM et SIGINT déclenchent l'arrêt NestJS et la fermeture du worker, de Redis et du logger. Prévoir un volume ou une collecte externe pour conserver les logs au-delà de la durée de vie du conteneur.
 
-- [x] Logs structurés
-- [ ] Health checks `/health`
-- [ ] Metrics basiques (Fastify metrics / Prometheus)
-- [ ] Traces OpenTelemetry (optionnel)
-- [ ] Alertes mail / Slack sur erreur critique
+## Durcissement des accès et des comptes
 
----
+Chaque requête portant une session vérifie l'existence du compte, son rôle actuel et une empreinte du hash de son mot de passe. Un changement ou une réinitialisation du mot de passe invalide tous les cookies précédents. Les cookies créés avant cette protection nécessitent une nouvelle connexion. Aucune migration de schéma supplémentaire n'est nécessaire pour cette vérification.
 
-### **M10 – Tests, CI/CD et Qualité**
+La suppression d'un article revérifie également le rôle en base. La pagination trie par date de création décroissante puis par identifiant décroissant, afin de départager les dates identiques.
 
-- [x] Tests unitaires (Nest + Jest)
-- [ ] Tests E2E (auth + CRUD article)
-- [x] Lint et format (ESLint + Prettier)
-- [ ] CI GitHub Actions : lint + test + build
-- [ ] Déploiement auto (Vercel / Render / Docker)
+L'inscription, la modification et la réinitialisation acceptent des nouveaux mots de passe d'au moins 12 caractères. Les anciens mots de passe plus courts restent utilisables pour se connecter.
 
----
+Le pepper est lu par injection de ConfigService et devient obligatoire en production. Si des anciens hashes ont été produits avec la chaîne littérale `undefined` à cause du précédent chargement prématuré, ces comptes nécessitent une récupération de mot de passe. Ne pas remplacer un pepper existant valide.
 
-### **M11 – SEO & Production**
+Le renouvellement d'un token expiré utilise une transaction avec suppression conditionnelle. Une demande concurrente ne peut pas supprimer un nouveau token actif. Les conflits de transaction sont retentés au maximum trois fois.
 
-- [ ] Sitemap.xml & robots.txt
-- [ ] RSS feed (optionnel)
-- [ ] Canonical URLs
-- [ ] OG/Twitter meta tags
-- [ ] Vérification Lighthouse
+La récupération retourne la même réponse HTTP 200 et le même message pour un compte inconnu, un compte existant et un token déjà actif. Un token actif ne déclenche pas un deuxième email. Cela masque la différence fonctionnelle ; les temps de réponse et les erreurs d'infrastructure ne sont pas rendus indistinguables.
 
----
+### Limitation partagée des requêtes
 
-### **M12 – Lancement officiel**
+Les compteurs Redis sont atomiques et communs aux instances de production. Ils sont appliqués avant les traitements de hachage et d'envoi. Une réponse 429 fournit Retry-After ; une panne Redis ne désactive pas silencieusement la protection.
 
-- [ ] Page “À propos”
-- [ ] Publication d’au moins **2 articles réels**
-- [ ] Vérification des performances et analytics
-- [ ] Mise en production finale 🎉
+| Route POST | Limite par IP | Limite par email | Fenêtre |
+| --- | --- | --- | --- |
+| /auth/login | 20 | 10 | 1 minute |
+| /auth/register et /users | 5 par route | — | 1 minute |
+| /password/forgot | 5 | 3 | 15 minutes |
+| /password/reset | 10 | 5 | 1 minute |
 
----
+Par défaut, l'IP provient de la connexion directe. Derrière un reverse proxy, renseigner TRUSTED_PROXY avec ses seules adresses ou plages CIDR, séparées par des virgules. Ne pas accepter arbitrairement X-Forwarded-For depuis Internet. Sans cette configuration, les utilisateurs derrière le même proxy partagent la limite par IP.
 
-## 🧠 Notes & Idées futures
+Les suites fonctionnelles augmentent ces plafonds uniquement avec NODE_ENV=test et isolent leurs compteurs par application. Un test dédié active E2E_REAL_RATE_LIMITS=true pour vérifier les seuils de production.
 
-- [ ] Historique de révisions d’article
-- [ ] Multi-utilisateurs / rôles (éditeur, admin)
-- [ ] Commentaires sur article
-- [ ] Thèmes personnalisés
-- [ ] PWA / offline mode
-- [ ] Intégration newsletter
+## Liaison des tokens et disponibilité Redis
 
----
+La migration `20261112000200_bind_recovery_token_to_user` invalide les liens de récupération existants, puis rattache chaque nouveau token à un compte avec une clé étrangère et une contrainte unique sur `userId`. Elle ne modifie ni ne supprime les utilisateurs. Les personnes ayant un ancien lien doivent refaire une demande après le déploiement.
 
-## 🧰 Scripts utiles
+La suppression d'un utilisateur supprime automatiquement son token. Une modification d'email ou de mot de passe révoque les tokens dans la même transaction que la modification du compte. L'émission et la consommation verrouillent d'abord le compte concerné, afin de se synchroniser avec ces opérations. La réinitialisation vérifie l'identifiant du compte et l'email du lien : une adresse réattribuée à un autre compte ne transfère pas les anciens droits de récupération.
 
-| Commande             | Description                        |
-| -------------------- | ---------------------------------- |
-| `pnpm run start:dev` | Démarrage backend en développement |
-| `npx prisma studio`  | Interface DB                       |
-| `pnpm run test`      | Tests unitaires                    |
-| `pnpm run lint`      | Vérification du code               |
+Le limiteur utilise une connexion Redis dédiée aux requêtes HTTP, avec une attente maximale de 1 500 ms par commande, une file hors connexion désactivée et des tentatives bornées. Une échéance applicative couvre aussi une commande qui ne se termine pas. Une indisponibilité produit une réponse 503 avec Retry-After, sans exécuter l'action protégée. La connexion persistante du worker conserve sa configuration distincte.
 
----
-
-## 🧰 Scripts utiles PRISMA
-
-| Commande                   | Description                                                                                                      |
-| -------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `pnpm run start:prod`      | Lancement backend build                                                                                          |
-| `pnpm run prisma:build`    | Merger tous les fichiers .prisma en un seul pour la migration                                                    |
-| `pnpm run prisma:validate` | Vérifie si les models sont bien conforme et valide avant migration                                               |
-| `pnpm run prisma:generate` | Génère un nouveau client Prisma afin d'avoir les modification des schema en codebase                             |
-| `pnpm run prisma:migrate`  | Effectue la migration des models Prisma                                                                          |
-| `pnpm run prisma:deploy`   | Déploie les migrations sur la Base de donnée courante (actuellement Localhost MySQL)                             |
-| `pnpm run prisma:studio`   | Permet la visualisation de la base donnée dans l'éditeur Prisma Studio                                           |
-| `pnpm run prisma:seed`     | Permet la création d'utilisateur et articles de testes, afin d'avoir des data dans la base de donnée au démarrage|
-
----
-
-## 📊 Statut général du projet
-
-| Domaine                | Progression |
-| ---------------------- | ----------- |
-| **Backend (NestJS)**   | ☐           |
-| **Frontend (Angular)** | ☐           |
-| **DB & Prisma**        | ☐           |
-| **Sécurité & Auth**    | ☐           |
-| **Emailing & Queue**   | ☐           |
-| **UX / UI**            | ☐           |
-| **CI/CD & tests**      | ☐           |
-
----
-
-## 🧭 TL;DR (priorités immédiates)
-
-1
-
-1. [x] Passer **bcrypt → Argon2id**
-2. [x] Mettre en place **BullMQ + Nodemailer provider**
-3. [x] Intégrer **éditeur Markdown complet** (split-view + preview)
-4. [ ] Ajouter **cache Redis** sur les routes publiques
-5. [ ] Finaliser **workflow de publication** côté admin
-6. [ ] Mettre en place **tests E2E + CI/CD**
-
----
-
-## 💬 Auteur
-
-Projet développé par **Lagree Quentin**
-
-> Défi: “120 jours pour terminer un projet, et ne pas le laisser partir dans le cimetière de mes repos github...”
+Les champs utilisateur omis restent optionnels ; les valeurs explicitement `null` sont rejetées en HTTP 400 avant tout accès d'écriture à Prisma.
