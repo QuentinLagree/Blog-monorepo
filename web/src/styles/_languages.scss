@@ -155,7 +155,7 @@ markdown.markdown-content h2,
 
 markdown.markdown-content h2::before,
 .markdown-content h2::before {
-  content: "";
+  content: '';
 
   position: absolute;
   inset: 0 auto auto 0;
@@ -245,7 +245,7 @@ markdown.markdown-content ul > li,
 
 markdown.markdown-content ul > li::before,
 .markdown-content ul > li::before {
-  content: "";
+  content: '';
 
   position: absolute;
   top: 0.78em;
@@ -413,9 +413,7 @@ markdown.markdown-content blockquote,
   margin: 1.7rem 0;
   padding: 1.15rem 1.25rem 1.15rem 1.4rem;
 
-  background:
-    linear-gradient(135deg, rgba($primary, 0.055), transparent 72%),
-    $surface-soft;
+  background: linear-gradient(135deg, rgba($primary, 0.055), transparent 72%), $surface-soft;
 
   border: 1px solid $border;
   border-left: 0.24rem solid $primary;
@@ -424,7 +422,7 @@ markdown.markdown-content blockquote,
 
 markdown.markdown-content blockquote::before,
 .markdown-content blockquote::before {
-  content: "“";
+  content: '“';
 
   position: absolute;
   top: 0.3rem;
@@ -454,20 +452,22 @@ markdown.markdown-content blockquote p,
    CALLOUTS
 ========================================================= */
 
-markdown.markdown-content :is(
-  .md-callout,
-  blockquote.md-success,
-  blockquote.md-error,
-  blockquote.md-warning,
-  blockquote.md-info
-),
-.markdown-content :is(
-  .md-callout,
-  blockquote.md-success,
-  blockquote.md-error,
-  blockquote.md-warning,
-  blockquote.md-info
-) {
+markdown.markdown-content
+  :is(
+    .md-callout,
+    blockquote.md-success,
+    blockquote.md-error,
+    blockquote.md-warning,
+    blockquote.md-info
+  ),
+.markdown-content
+  :is(
+    .md-callout,
+    blockquote.md-success,
+    blockquote.md-error,
+    blockquote.md-warning,
+    blockquote.md-info
+  ) {
   margin: 1.7rem 0;
   padding: 1rem 1.15rem;
 
@@ -586,12 +586,7 @@ markdown.markdown-content tbody tr:hover,
 
 markdown.markdown-content code,
 .markdown-content code {
-  font-family:
-    "Geist Mono",
-    "Cascadia Code",
-    "SFMono-Regular",
-    Consolas,
-    monospace;
+  font-family: 'Geist Mono', 'Cascadia Code', 'SFMono-Regular', Consolas, monospace;
 }
 
 markdown.markdown-content :not(pre) > code,
@@ -631,12 +626,7 @@ markdown.markdown-content pre,
   border: 1px solid var(--md-code-border);
   border-radius: $radius-md;
 
-  font-family:
-    "Geist Mono",
-    "Cascadia Code",
-    "SFMono-Regular",
-    Consolas,
-    monospace;
+  font-family: 'Geist Mono', 'Cascadia Code', 'SFMono-Regular', Consolas, monospace;
   font-size: 0.9rem;
   font-weight: 400;
   line-height: 1.75;
@@ -696,7 +686,7 @@ markdown.markdown-content pre[class*='language-'],
 
 markdown.markdown-content pre[class*='language-']::before,
 .markdown-content pre[class*='language-']::before {
-  content: "Code";
+  content: 'Code';
 
   position: absolute;
   top: 0.72rem;
@@ -725,84 +715,84 @@ markdown.markdown-content pre:is(.language-ts, .language-typescript)::before,
 markdown.markdown-content pre:has(code:is(.language-ts, .language-typescript))::before,
 .markdown-content pre:is(.language-ts, .language-typescript)::before,
 .markdown-content pre:has(code:is(.language-ts, .language-typescript))::before {
-  content: "TypeScript";
+  content: 'TypeScript';
 }
 
 markdown.markdown-content pre:is(.language-js, .language-javascript)::before,
 markdown.markdown-content pre:has(code:is(.language-js, .language-javascript))::before,
 .markdown-content pre:is(.language-js, .language-javascript)::before,
 .markdown-content pre:has(code:is(.language-js, .language-javascript))::before {
-  content: "JavaScript";
+  content: 'JavaScript';
 }
 
 markdown.markdown-content pre:is(.language-html, .language-markup)::before,
 markdown.markdown-content pre:has(code:is(.language-html, .language-markup))::before,
 .markdown-content pre:is(.language-html, .language-markup)::before,
 .markdown-content pre:has(code:is(.language-html, .language-markup))::before {
-  content: "HTML";
+  content: 'HTML';
 }
 
 markdown.markdown-content pre.language-css::before,
 markdown.markdown-content pre:has(code.language-css)::before,
 .markdown-content pre.language-css::before,
 .markdown-content pre:has(code.language-css)::before {
-  content: "CSS";
+  content: 'CSS';
 }
 
 markdown.markdown-content pre.language-scss::before,
 markdown.markdown-content pre:has(code.language-scss)::before,
 .markdown-content pre.language-scss::before,
 .markdown-content pre:has(code.language-scss)::before {
-  content: "SCSS";
+  content: 'SCSS';
 }
 
 markdown.markdown-content pre.language-json::before,
 markdown.markdown-content pre:has(code.language-json)::before,
 .markdown-content pre.language-json::before,
 .markdown-content pre:has(code.language-json)::before {
-  content: "JSON";
+  content: 'JSON';
 }
 
 markdown.markdown-content pre:is(.language-bash, .language-shell)::before,
 markdown.markdown-content pre:has(code:is(.language-bash, .language-shell))::before,
 .markdown-content pre:is(.language-bash, .language-shell)::before,
 .markdown-content pre:has(code:is(.language-bash, .language-shell))::before {
-  content: "Shell";
+  content: 'Shell';
 }
 
 markdown.markdown-content pre:is(.language-md, .language-markdown)::before,
 markdown.markdown-content pre:has(code:is(.language-md, .language-markdown))::before,
 .markdown-content pre:is(.language-md, .language-markdown)::before,
 .markdown-content pre:has(code:is(.language-md, .language-markdown))::before {
-  content: "Markdown";
+  content: 'Markdown';
 }
 
 markdown.markdown-content pre:is(.language-py, .language-python)::before,
 markdown.markdown-content pre:has(code:is(.language-py, .language-python))::before,
 .markdown-content pre:is(.language-py, .language-python)::before,
 .markdown-content pre:has(code:is(.language-py, .language-python))::before {
-  content: "Python";
+  content: 'Python';
 }
 
 markdown.markdown-content pre.language-sql::before,
 markdown.markdown-content pre:has(code.language-sql)::before,
 .markdown-content pre.language-sql::before,
 .markdown-content pre:has(code.language-sql)::before {
-  content: "SQL";
+  content: 'SQL';
 }
 
 markdown.markdown-content pre.language-prisma::before,
 markdown.markdown-content pre:has(code.language-prisma)::before,
 .markdown-content pre.language-prisma::before,
 .markdown-content pre:has(code.language-prisma)::before {
-  content: "Prisma";
+  content: 'Prisma';
 }
 
 markdown.markdown-content pre.language-dockerfile::before,
 markdown.markdown-content pre:has(code.language-dockerfile)::before,
 .markdown-content pre.language-dockerfile::before,
 .markdown-content pre:has(code.language-dockerfile)::before {
-  content: "Dockerfile";
+  content: 'Dockerfile';
 }
 
 /* =========================================================
@@ -820,7 +810,8 @@ markdown.markdown-content .token.punctuation,
   color: #d7cfdf;
 }
 
-markdown.markdown-content :is(.token.property, .token.tag, .token.constant, .token.symbol, .token.deleted),
+markdown.markdown-content
+  :is(.token.property, .token.tag, .token.constant, .token.symbol, .token.deleted),
 .markdown-content :is(.token.property, .token.tag, .token.constant, .token.symbol, .token.deleted) {
   color: #f29a87;
 }
@@ -830,8 +821,24 @@ markdown.markdown-content :is(.token.boolean, .token.number),
   color: #d7a8ff;
 }
 
-markdown.markdown-content :is(.token.selector, .token.attr-name, .token.string, .token.char, .token.builtin, .token.inserted),
-.markdown-content :is(.token.selector, .token.attr-name, .token.string, .token.char, .token.builtin, .token.inserted) {
+markdown.markdown-content
+  :is(
+    .token.selector,
+    .token.attr-name,
+    .token.string,
+    .token.char,
+    .token.builtin,
+    .token.inserted
+  ),
+.markdown-content
+  :is(
+    .token.selector,
+    .token.attr-name,
+    .token.string,
+    .token.char,
+    .token.builtin,
+    .token.inserted
+  ) {
   color: #9ed8b5;
 }
 
@@ -975,14 +982,13 @@ markdown.markdown-content hr,
   height: 1px;
   margin: 2.7rem 0;
 
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      $border-strong 18%,
-      $border-strong 82%,
-      transparent
-    );
+  background: linear-gradient(
+    90deg,
+    transparent,
+    $border-strong 18%,
+    $border-strong 82%,
+    transparent
+  );
 
   border: none;
 }

@@ -19,10 +19,9 @@ export class FlashInterceptor implements HttpInterceptor {
 
   /* eslint-disable  @typescript-eslint/no-explicit-any */
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-
     const wantSuccess = req.context.get(SUCCESS_MESSAGE);
     const wantError = req.context.get(ERROR_MESSAGE);
-    
+
     return next.handle(req).pipe(
       tap((event) => {
         if (!wantSuccess) return;

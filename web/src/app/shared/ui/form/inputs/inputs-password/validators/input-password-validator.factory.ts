@@ -12,7 +12,7 @@ export function PasswordInputValidatorFactory(
       validate: true,
       required: true,
       value: (control.value || '').toString(),
-      options: {  
+      options: {
         useStrengthCheck: true,
         acceptSpecialCaracters: true
       },

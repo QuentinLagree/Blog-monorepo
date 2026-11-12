@@ -1,11 +1,10 @@
-import { Component, input, InputSignal, output, OutputEmitterRef } from "@angular/core";
-import { BaseButtonComponent, ButtonData } from "../../../form/buttons/base-button";
+import { Component, input, InputSignal } from '@angular/core';
 
 @Component({
   selector: 'app-state-loading',
   templateUrl: './loading-state.html',
-  styleUrls: ['./loading-state.scss'],
+  styleUrls: ['./loading-state.scss']
 })
 export class LoadingStateComponent {
-  title: InputSignal<string> = input.required()
+  title: InputSignal<string> = input.required();
 }

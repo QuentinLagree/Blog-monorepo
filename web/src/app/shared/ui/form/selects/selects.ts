@@ -191,14 +191,14 @@ export class SelectComponent extends BaseFormElementComponent<SelectConfig> impl
     if (n) this.focusOption(n - 1);
   }
   private focusNext() {
-    if ((this.activeIndex) == (this.optionRefs.length - 1)) {
+    if (this.activeIndex == this.optionRefs.length - 1) {
       this.focusFirst();
       return;
     }
     this.focusOption(this.activeIndex + 1);
   }
   private focusPrev() {
-    if ((this.activeIndex) == 0) {
+    if (this.activeIndex == 0) {
       this.focusLast();
       return;
     }
@@ -210,7 +210,7 @@ export class SelectComponent extends BaseFormElementComponent<SelectConfig> impl
 
     switch (e.key) {
       case 'ArrowDown':
-        if (document.activeElement?.localName != "li") {
+        if (document.activeElement?.localName != 'li') {
           this.focusFirst();
           return;
         }

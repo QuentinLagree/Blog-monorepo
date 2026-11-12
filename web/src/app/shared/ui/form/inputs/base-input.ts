@@ -13,7 +13,9 @@ import { InputConfig } from './models/input-config.model';
 import { TextAreaConfig } from '../text-area/models/textarea-validation-context';
 
 @Directive()
-export abstract class BaseFormElementComponent<TConfig extends InputConfig | TextAreaConfig = InputConfig> {
+export abstract class BaseFormElementComponent<
+  TConfig extends InputConfig | TextAreaConfig = InputConfig
+> {
   @Input() control!: FormControl;
   abstract defaultConfiguration: TConfig;
   configuration: InputSignal<Partial<TConfig>> = input.required<Partial<TConfig>>();

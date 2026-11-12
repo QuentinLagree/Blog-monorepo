@@ -10,9 +10,8 @@ export const landingGuard: CanActivateFn = () => {
 
   return session.fetchSession().pipe(
     take(1),
-    map(s => s?.loggedIn
-      ? router.createUrlTree(['/home'])
-      : router.createUrlTree(['/auth/login']) // ⬅️ redirige si non connecté
+    map(
+      (s) => (s?.loggedIn ? router.createUrlTree(['/home']) : router.createUrlTree(['/auth/login'])) // ⬅️ redirige si non connecté
     )
   );
 };

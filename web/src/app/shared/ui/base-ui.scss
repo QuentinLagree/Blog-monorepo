@@ -40,12 +40,11 @@
 ========================= */
 
 .ui-state-preview--loading {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
   background:
     radial-gradient(circle at top left, rgb(49 92 73 / 10%), transparent 18rem),
-    radial-gradient(circle at bottom right, rgb(196 122 53 / 8%), transparent 16rem),
-    $background;
+    radial-gradient(circle at bottom right, rgb(196 122 53 / 8%), transparent 16rem), $background;
 }
 
 .ui-state-preview--loading .session-loading-card {

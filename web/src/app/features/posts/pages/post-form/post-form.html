@@ -2,34 +2,26 @@
   <div class="article-editor-container page-container page-container--wide">
     <header class="article-editor-header page-header">
       <div>
-        <p class="page-header__eyebrow">
-          {{ post() ? 'Modification' : 'Nouvelle contribution' }}
-        </p>
+        <p class="page-header__eyebrow">{{ post() ? 'Modification' : 'Nouvelle contribution' }}</p>
 
         <h1 class="page-header__title">
           {{ post() ? 'Modifier ton article' : 'Rédige une découverte' }}
         </h1>
 
         <p class="page-header__description">
-          Structure ton idée, ajoute du contexte et partage une connaissance utile avec la communauté.
+          Structure ton idée, ajoute du contexte et partage une connaissance utile avec la
+          communauté.
         </p>
       </div>
     </header>
 
-    <form
-      [formGroup]="form"
-      class="article-editor-form form">
-
+    <form [formGroup]="form" class="article-editor-form form">
       <section class="article-editor-section page-section">
         <header class="article-editor-section__header">
           <div>
-            <p class="text-eyebrow">
-              Article
-            </p>
+            <p class="text-eyebrow">Article</p>
 
-            <h2 class="content-title">
-              Informations principales
-            </h2>
+            <h2 class="content-title">Informations principales</h2>
 
             <p class="content-description">
               Ces informations aideront les lecteurs à comprendre rapidement le sujet.
@@ -45,7 +37,8 @@
               placeholder: 'Ex : Pourquoi les arbres communiquent entre eux ?',
               required: true,
               type: 'text'
-            }">
+            }"
+          >
           </app-input>
 
           <app-textarea
@@ -54,7 +47,8 @@
               label: 'Description',
               placeholder: 'Résume ton article en quelques lignes.',
               required: true
-            }">
+            }"
+          >
           </app-textarea>
         </div>
       </section>
@@ -62,13 +56,9 @@
       <section class="article-editor-section article-editor-section--content page-section">
         <header class="article-editor-section__header">
           <div>
-            <p class="text-eyebrow">
-              Rédaction
-            </p>
+            <p class="text-eyebrow">Rédaction</p>
 
-            <h2 class="content-title">
-              Contenu
-            </h2>
+            <h2 class="content-title">Contenu</h2>
 
             <p class="content-description">
               Rédige ton article en Markdown. Tu peux ajouter des images et prévisualiser le rendu.
@@ -81,7 +71,8 @@
               size="sm"
               label="Aperçu"
               type="secondary"
-              (clicked)="togglePreview()">
+              (clicked)="togglePreview()"
+            >
             </app-button>
 
             <input
@@ -89,14 +80,16 @@
               type="file"
               accept="image/*"
               hidden
-              (change)="onPickImage($event)" />
+              (change)="onPickImage($event)"
+            />
 
             <app-button
               icon="icon-image-picker"
               size="sm"
               label="Image"
               type="secondary"
-              (clicked)="imagePicker.click()">
+              (clicked)="imagePicker.click()"
+            >
             </app-button>
 
             <app-button
@@ -104,16 +97,15 @@
               size="sm"
               label="Sauvegarder"
               type="secondary"
-              (clicked)="saveManual()">
+              (clicked)="saveManual()"
+            >
             </app-button>
           </div>
         </header>
 
         <div class="fullscreen-editor card">
           <section class="editor-pane">
-            <div class="editor-pane__label">
-              Markdown
-            </div>
+            <div class="editor-pane__label">Markdown</div>
 
             <app-textarea
               [noShadow]="true"
@@ -128,7 +120,8 @@
                 label: '',
                 required: false,
                 placeholder: 'Commence à écrire ton article...'
-              }">
+              }"
+            >
             </app-textarea>
           </section>
 
@@ -137,19 +130,16 @@
           <section
             #preview
             class="preview"
+            tabindex="-1"
+            (keydown.enter)="onPreviewKeydown($event)"
+            (keydown.space)="onPreviewKeydown($event)"
             [class.hide]="showPreview()"
             (wheel)="blockScroll($event)"
-            (click)="onPreviewClick($event)">
+            (click)="onPreviewClick($event)"
+          >
+            <div class="preview__header">Aperçu</div>
 
-            <div class="preview__header">
-              Aperçu
-            </div>
-
-            <markdown
-              class="markdown-content"
-              [data]="resolvedMarkdown()"
-              katex>
-            </markdown>
+            <markdown class="markdown-content" [data]="resolvedMarkdown()" katex> </markdown>
           </section>
 
           <input
@@ -157,29 +147,26 @@
             type="file"
             accept="image/*"
             hidden
-            (change)="onRelinkPicked($event)" />
+            (change)="onRelinkPicked($event)"
+          />
         </div>
       </section>
     </form>
 
     <footer class="actionbar card card--md">
       <div class="actionbar__left">
-        <app-button
-          (clicked)="goBack()"
-          size="sm"
-          type="ghost"
-          label="Annuler">
-        </app-button>
+        <app-button (clicked)="goBack()" size="sm" type="ghost" label="Annuler"> </app-button>
       </div>
 
       <div class="actionbar__right btn-group btn-group--wrap">
         @if (!post()) {
-          <app-button
-            size="sm"
-            type="outlined"
-            label="Enregistrer en brouillon"
-            (clicked)="submit('draft')">
-          </app-button>
+        <app-button
+          size="sm"
+          type="outlined"
+          label="Enregistrer en brouillon"
+          (clicked)="submit('draft')"
+        >
+        </app-button>
         }
 
         <app-button
@@ -187,7 +174,8 @@
           [loading]="loading()"
           size="sm"
           type="primary"
-          [label]="post() ? 'Enregistrer les modifications' : 'Publier l’article'">
+          [label]="post() ? 'Enregistrer les modifications' : 'Publier l’article'"
+        >
         </app-button>
       </div>
     </footer>

@@ -1,26 +1,24 @@
 import { Injectable, signal } from '@angular/core';
 
-
-export type BreadcrumbItem = {
+export interface BreadcrumbItem {
   label: string;
   url?: string;
-};
+}
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class BreadcrumbService {
   private readonly _items = signal<BreadcrumbItem[]>([]);
 
-
   private readonly homeItem: BreadcrumbItem = {
     label: 'Accueil',
-    url: '/home',
+    url: '/home'
   };
 
   private readonly articleItem: BreadcrumbItem = {
     label: 'Articles',
-    url: '/',
+    url: '/'
   };
 
   items = this._items.asReadonly();
@@ -34,17 +32,10 @@ export class BreadcrumbService {
   }
 
   setWithHome(items: BreadcrumbItem[]): void {
-    this._items.set([
-      this.homeItem,
-      ...items,
-    ]);
+    this._items.set([this.homeItem, ...items]);
   }
 
   setWithArticle(items: BreadcrumbItem[]): void {
-    this._items.set([
-      this.homeItem,
-      this.articleItem,
-      ...items,
-    ]);
+    this._items.set([this.homeItem, this.articleItem, ...items]);
   }
 }

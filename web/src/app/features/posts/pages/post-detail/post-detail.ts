@@ -29,7 +29,7 @@ import { PostReadingPanelService } from './services/post-reading-panel.service';
 import { PostReadingProgressService } from '../../../../shared/services/post-reading-progress.service';
 import { PostDetailHeaderComponent } from './post-detail-header/post-detail-header';
 import { PostDetailContentComponent } from './post-detail-content/post-detail-content';
-import { ForgetPasswordComponent } from 'src/app/core/auth/pages/forget-password/forget-password';
+
 import { LoginModalComponent } from 'src/app/shared/helpers/modal/login-modal/login-modal';
 
 const SILENT_CONTEXT = new HttpContext().set(SUCCESS_MESSAGE, false);

@@ -10,13 +10,12 @@ import { ToastService } from 'src/app/shared/helpers/toasts/toaster.service';
 import { User, UserService } from 'src/app/shared/services/user.service';
 import { BreadcrumbService } from 'src/app/shared/services/breadcrumb.service';
 
-
 @Component({
   selector: 'app-users',
   standalone: true,
   templateUrl: './accounts.html',
   styleUrls: ['./accounts.scss'],
-  imports: [DatePipe, BaseButtonComponent],
+  imports: [DatePipe, BaseButtonComponent]
 })
 export class AccountsComponent {
   private readonly _user = inject(UserService);
@@ -26,11 +25,13 @@ export class AccountsComponent {
 
   search = signal('');
 
-  constructor () {
-    this._breadCrumb.setWithHome([{
-      label: 'Contributeurs',
-      url: '/accounts'
-    }])
+  constructor() {
+    this._breadCrumb.setWithHome([
+      {
+        label: 'Contributeurs',
+        url: '/accounts'
+      }
+    ]);
   }
 
   users = resource<User[], void>({
@@ -38,9 +39,7 @@ export class AccountsComponent {
       try {
         const context = new HttpContext().set(SUCCESS_MESSAGE, false);
 
-        const res = await firstValueFrom(
-          this._user.getAllUsers({ context })
-        );
+        const res = await firstValueFrom(this._user.getAllUsers({ context }));
 
         return res.data ?? [];
       } catch (error) {
@@ -53,7 +52,7 @@ export class AccountsComponent {
 
         return [];
       }
-    },
+    }
   });
 
   filteredUsers = computed(() => {
@@ -97,11 +96,7 @@ export class AccountsComponent {
   }
 
   userDisplayName(user: User): string {
-    return (
-      user.pseudo ||
-      `${user.prenom ?? ''} ${user.nom ?? ''}`.trim() ||
-      'Utilisateur'
-    );
+    return user.pseudo || `${user.prenom ?? ''} ${user.nom ?? ''}`.trim() || 'Utilisateur';
   }
 
   goToUser(userId: string): void {

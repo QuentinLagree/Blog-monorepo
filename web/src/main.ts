@@ -7,8 +7,11 @@ import { authRoutes } from './app/core/auth/auth.routes';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { inject, SecurityContext } from '@angular/core';
 import { FlashInterceptor } from './app/shared/helpers/toasts/toaster.interceptors';
-import { TOAST_CONFIG, DEFAULT_TOAST_CONFIG } from './app/shared/helpers/toasts/models/toasts.config';
-import { CLIPBOARD_OPTIONS, ClipboardButtonComponent, MARKED_OPTIONS, provideMarkdown, SANITIZE } from 'ngx-markdown';
+import {
+  TOAST_CONFIG,
+  DEFAULT_TOAST_CONFIG
+} from './app/shared/helpers/toasts/models/toasts.config';
+import { MARKED_OPTIONS, provideMarkdown, SANITIZE } from 'ngx-markdown';
 import { markedOptionsFactory } from './app/shared/helpers/markdown/markdown.factory';
 
 import '../prism';
@@ -27,17 +30,15 @@ bootstrapApplication(AppComponent, {
         useFactory: markedOptionsFactory
       },
       sanitize: {
-    provide: SANITIZE,
-    useValue: SecurityContext.NONE,
-  },
-}),
+        provide: SANITIZE,
+        useValue: SecurityContext.NONE
+      }
+    }),
     provideAnimations(),
     provideHttpClient(
-      withInterceptors([
-        (req, next) => inject(FlashInterceptor).intercept(req, {handle: next}),
-      ]),
+      withInterceptors([(req, next) => inject(FlashInterceptor).intercept(req, { handle: next })]),
       withFetch()
     ),
-    { provide: TOAST_CONFIG, useValue: DEFAULT_TOAST_CONFIG },
+    { provide: TOAST_CONFIG, useValue: DEFAULT_TOAST_CONFIG }
   ]
 });

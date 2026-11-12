@@ -75,7 +75,7 @@
 
 .post-detail__date::before,
 .post-detail__reading-time::before {
-  content: "•";
+  content: '•';
   margin-right: 0.65em;
   color: $border-strong;
 }
@@ -248,8 +248,7 @@
   padding: 0.9rem;
 
   background:
-    radial-gradient(circle at top left, rgba($secondary, 0.12), transparent 12rem),
-    $surface-soft;
+    radial-gradient(circle at top left, rgba($secondary, 0.12), transparent 12rem), $surface-soft;
 
   border: 1px solid rgba($secondary, 0.2);
   border-radius: $radius-md;
@@ -288,8 +287,7 @@
 
 .post-detail__like-card.liked {
   background:
-    radial-gradient(circle at top left, rgba($secondary, 0.18), transparent 12rem),
-    $secondary-soft;
+    radial-gradient(circle at top left, rgba($secondary, 0.18), transparent 12rem), $secondary-soft;
 
   border-color: rgba($secondary, 0.28);
 }
@@ -517,8 +515,7 @@
 
   overflow: visible;
 
-  transition:
-    grid-template-columns 180ms ease;
+  transition: grid-template-columns 180ms ease;
 }
 
 .post-detail__reading-layout--panel-opened {
@@ -563,12 +560,7 @@
   overflow: hidden;
 
   background:
-    radial-gradient(
-      circle at top,
-      rgba($primary, 0.08),
-      transparent 7rem
-    ),
-    rgba($surface, 0.96);
+    radial-gradient(circle at top, rgba($primary, 0.08), transparent 7rem), rgba($surface, 0.96);
 
   color: $text-primary;
 
@@ -626,7 +618,7 @@
 }
 
 .reading-panel-trigger__progress::after {
-  content: "";
+  content: '';
 
   position: absolute;
   inset: 0;
@@ -645,12 +637,7 @@
 
   height: 0;
 
-  background:
-    linear-gradient(
-      180deg,
-      $secondary,
-      $primary
-    );
+  background: linear-gradient(180deg, $secondary, $primary);
 
   border-radius: inherit;
 
@@ -689,8 +676,7 @@
     transform 160ms ease;
 }
 
-.reading-panel-trigger:hover
-.reading-panel-trigger__icon {
+.reading-panel-trigger:hover .reading-panel-trigger__icon {
   background: rgba($primary, 0.14);
 
   transform: scale(1.04);
@@ -746,11 +732,7 @@
   isolation: isolate;
 
   background:
-    radial-gradient(
-      circle at top right,
-      rgba($primary, 0.08),
-      transparent 11rem
-    ),
+    radial-gradient(circle at top right, rgba($primary, 0.08), transparent 11rem),
     rgba($surface, 0.94);
 
   border: 1px solid $border;
@@ -779,8 +761,7 @@
   border: 1px solid $border;
   border-radius: $radius-full;
 
-  box-shadow:
-    0 0.3rem 0.8rem rgba($black, 0.05);
+  box-shadow: 0 0.3rem 0.8rem rgba($black, 0.05);
 
   font: inherit;
 
@@ -801,8 +782,7 @@
 
   border-color: rgba($primary, 0.22);
 
-  box-shadow:
-    0 0.4rem 1rem rgba($primary, 0.08);
+  box-shadow: 0 0.4rem 1rem rgba($primary, 0.08);
 
   transform: translateY(-0.08rem);
 }
@@ -814,8 +794,7 @@
 .reading-panel__close:focus-visible {
   outline: none;
 
-  box-shadow:
-    0 0 0 4px $focus-ring;
+  box-shadow: 0 0 0 4px $focus-ring;
 }
 
 .reading-panel__close span {
@@ -832,7 +811,7 @@
 
 .reading-panel__close span::before,
 .reading-panel__close span::after {
-  content: "";
+  content: '';
 
   position: absolute;
   top: 50%;
@@ -850,15 +829,11 @@
 }
 
 .reading-panel__close span::before {
-  transform:
-    translate(-50%, -50%)
-    rotate(45deg);
+  transform: translate(-50%, -50%) rotate(45deg);
 }
 
 .reading-panel__close span::after {
-  transform:
-    translate(-50%, -50%)
-    rotate(-45deg);
+  transform: translate(-50%, -50%) rotate(-45deg);
 }
 
 .reading-panel__close:hover span::before,
@@ -934,12 +909,7 @@
   width: 0;
   height: 100%;
 
-  background:
-    linear-gradient(
-      90deg,
-      $primary,
-      $secondary
-    );
+  background: linear-gradient(90deg, $primary, $secondary);
 
   border-radius: inherit;
 
@@ -1064,8 +1034,7 @@
 .reading-panel__toc-link:focus-visible {
   outline: none;
 
-  box-shadow:
-    0 0 0 4px $focus-ring;
+  box-shadow: 0 0 0 4px $focus-ring;
 }
 
 .reading-panel__toc-marker {
@@ -1095,19 +1064,16 @@
   padding-left: 0.75rem;
 }
 
-.reading-panel__toc-item--sub
-.reading-panel__toc-label {
+.reading-panel__toc-item--sub .reading-panel__toc-label {
   font-size: 0.76rem;
 }
 
-.reading-panel__toc-item--active
-.reading-panel__toc-link {
+.reading-panel__toc-item--active .reading-panel__toc-link {
   background: $primary-soft;
   color: $text-primary;
 }
 
-.reading-panel__toc-item--active
-.reading-panel__toc-marker {
+.reading-panel__toc-item--active .reading-panel__toc-marker {
   background: $primary;
 
   transform: scale(1.2);
@@ -1180,9 +1146,7 @@
     border: 1px solid $border;
     border-radius: $radius-lg;
 
-    box-shadow:
-      0 1rem 2.5rem rgba($black, 0.16);
-
+    box-shadow: 0 1rem 2.5rem rgba($black, 0.16);
   }
 
   .reading-mobile-bar__progress {
@@ -1203,12 +1167,7 @@
     display: block;
     height: 100%;
 
-    background:
-      linear-gradient(
-        90deg,
-        $primary,
-        $secondary
-      );
+    background: linear-gradient(90deg, $primary, $secondary);
 
     border-radius: inherit;
   }
@@ -1285,14 +1244,9 @@
 
     background: $surface;
     border: 1px solid $border;
-    border-radius:
-      $radius-lg
-      $radius-lg
-      0
-      0;
+    border-radius: $radius-lg $radius-lg 0 0;
 
-    box-shadow:
-      0 -1rem 3rem rgba($black, 0.16);
+    box-shadow: 0 -1rem 3rem rgba($black, 0.16);
   }
 
   .reading-mobile-summary__header {

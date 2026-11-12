@@ -6,7 +6,6 @@ import { PostDraftStorage } from '../pages/post-form/post-draft.storage';
 import { ToastService } from 'src/app/shared/helpers/toasts/toaster.service';
 import { Post } from '../model/post.model';
 
-
 @Injectable()
 export class PostDraftManager {
   private readonly destroyRef = inject(DestroyRef);
@@ -27,7 +26,7 @@ export class PostDraftManager {
       .pipe(
         throttleTime(this.ACTION_COOLDOWN_MS, undefined, {
           leading: true,
-          trailing: false,
+          trailing: false
         }),
         takeUntilDestroyed(this.destroyRef)
       )
@@ -36,11 +35,7 @@ export class PostDraftManager {
       });
   }
 
-  init(params: {
-    post: Post | undefined;
-    form: FormGroup;
-    onContentChange: () => void;
-  }): void {
+  init(params: { post: Post | undefined; form: FormGroup; onContentChange: () => void }): void {
     const { post, form, onContentChange } = params;
 
     if (post) {
@@ -63,11 +58,7 @@ export class PostDraftManager {
     this.draft.destroy();
   }
 
-  private applyPostInput(
-    post: Post,
-    form: FormGroup,
-    onContentChange: () => void
-  ): void {
+  private applyPostInput(post: Post, form: FormGroup, onContentChange: () => void): void {
     if (this.hasInitializedFromInput) return;
 
     this.hasInitializedFromInput = true;
@@ -77,7 +68,7 @@ export class PostDraftManager {
       {
         title: post.title ?? '',
         description: post.description ?? '',
-        content: post.content ?? '',
+        content: post.content ?? ''
       },
       { emitEvent: true }
     );
@@ -86,17 +77,14 @@ export class PostDraftManager {
     onContentChange();
   }
 
-  private restoreDraftOnce(
-    form: FormGroup,
-    onContentChange: () => void
-  ): void {
+  private restoreDraftOnce(form: FormGroup, onContentChange: () => void): void {
     if (this.hasRestoredDraft) return;
 
     this.hasRestoredDraft = true;
 
     if (this.draft.restore(form)) {
       this.toast.info('Récupération du brouillon', {
-        duration: 2000,
+        duration: 2000
       });
     }
 

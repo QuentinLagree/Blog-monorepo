@@ -3,7 +3,6 @@ import { CanActivateFn, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../data-access/auth.service';
 
-
 export const resetPasswordGuard: CanActivateFn = async (route) => {
   const router = inject(Router);
   const _auth = inject(AuthService);
@@ -16,7 +15,7 @@ export const resetPasswordGuard: CanActivateFn = async (route) => {
   }
 
   try {
-    await firstValueFrom(_auth.checkResetToken({email, token}));
+    await firstValueFrom(_auth.checkResetToken({ email, token }));
 
     return true;
   } catch {

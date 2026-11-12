@@ -953,7 +953,7 @@ select.form-control:disabled,
 }
 
 .switch__track::before {
-  content: "";
+  content: '';
 
   position: absolute;
   top: 0.18rem;
@@ -1089,7 +1089,7 @@ select.form-control:disabled,
   gap: 0.75em;
 
   width: 50px;
-  
+
   max-width: 100%;
 
   color: $text-primary;
@@ -1137,12 +1137,7 @@ select.form-control:disabled,
 
   padding: 0.18rem;
 
-  background:
-    linear-gradient(
-      145deg,
-      $surface-soft 0%,
-      $surface 100%
-    );
+  background: linear-gradient(145deg, $surface-soft 0%, $surface 100%);
 
   border: 1px solid $border-strong;
   border-radius: $radius-full;
@@ -1201,17 +1196,14 @@ select.form-control:disabled,
 
   overflow-wrap: anywhere;
 
-  transition:
-    color 160ms ease;
+  transition: color 160ms ease;
 }
 
 /* =========================
    HOVER
 ========================= */
 
-.switch-button:hover:not(
-  .switch-button--disabled
-) {
+.switch-button:hover:not(.switch-button--disabled) {
   .switch-button__track {
     border-color: rgba($primary, 0.34);
 
@@ -1232,9 +1224,8 @@ select.form-control:disabled,
    CHECKED
 ========================= */
 
-.switch-button__input:checked
-  + .switch-button__track {
-  background:$primary;
+.switch-button__input:checked + .switch-button__track {
+  background: $primary;
 
   border-color: $primary;
 
@@ -1244,9 +1235,7 @@ select.form-control:disabled,
     0 5px 14px rgba($primary, 0.18);
 }
 
-.switch-button__input:checked
-  + .switch-button__track
-  .switch-button__thumb {
+.switch-button__input:checked + .switch-button__track .switch-button__thumb {
   background: $surface;
   border-color: rgba($surface, 0.8);
 
@@ -1257,15 +1246,13 @@ select.form-control:disabled,
     0 1px 2px rgba($text-primary, 0.1);
 }
 
-.switch-button--checked
-  .switch-button__track {
-  background:$primary;
+.switch-button--checked .switch-button__track {
+  background: $primary;
 
   border-color: $primary;
 }
 
-.switch-button--checked
-  .switch-button__thumb {
+.switch-button--checked .switch-button__thumb {
   transform: translateX(1.24rem);
 }
 
@@ -1273,16 +1260,13 @@ select.form-control:disabled,
    ACTIVE
 ========================= */
 
-.switch-button:active:not(
-  .switch-button--disabled
-) {
+.switch-button:active:not(.switch-button--disabled) {
   .switch-button__track {
     transform: translateY(0) scale(0.97);
   }
 
   .switch-button__thumb {
-    box-shadow:
-      0 1px 3px rgba($text-primary, 0.16);
+    box-shadow: 0 1px 3px rgba($text-primary, 0.16);
   }
 }
 
@@ -1290,8 +1274,7 @@ select.form-control:disabled,
    FOCUS
 ========================= */
 
-.switch-button__input:focus-visible
-  + .switch-button__track {
+.switch-button__input:focus-visible + .switch-button__track {
   border-color: $primary;
 
   outline: none;
@@ -1310,8 +1293,7 @@ select.form-control:disabled,
   opacity: 0.55;
 }
 
-.switch-button--disabled
-  .switch-button__track {
+.switch-button--disabled .switch-button__track {
   background: $surface-soft;
 
   border-color: $border;
@@ -1321,8 +1303,7 @@ select.form-control:disabled,
   transform: none;
 }
 
-.switch-button__input:disabled
-  + .switch-button__track {
+.switch-button__input:disabled + .switch-button__track {
   cursor: not-allowed;
 }
 
@@ -1330,13 +1311,11 @@ select.form-control:disabled,
    PROFILE CARD INTEGRATION
 ========================= */
 
-:host-context(.profile-preference-card)
-  .switch-button {
+:host-context(.profile-preference-card) .switch-button {
   flex-shrink: 0;
 }
 
-:host-context(.profile-preference-card:hover)
-  .switch-button__track {
+:host-context(.profile-preference-card:hover) .switch-button__track {
   border-color: rgba($primary, 0.32);
 }
 
@@ -1353,12 +1332,9 @@ select.form-control:disabled,
    REDUCED MOTION
 ========================= */
 
-:host-context(.profile-page--reduce-motion)
-  .switch-button__track,
-:host-context(.profile-page--reduce-motion)
-  .switch-button__thumb,
-:host-context(.profile-page--reduce-motion)
-  .switch-button__label {
+:host-context(.profile-page--reduce-motion) .switch-button__track,
+:host-context(.profile-page--reduce-motion) .switch-button__thumb,
+:host-context(.profile-page--reduce-motion) .switch-button__label {
   transition-duration: 1ms;
 }
 
@@ -1389,15 +1365,12 @@ select.form-control:disabled,
     height: 1.15rem;
   }
 
-  .switch-button__input:checked
-    + .switch-button__track
-    .switch-button__thumb,
-  .switch-button--checked
-    .switch-button__thumb {
+  .switch-button__input:checked + .switch-button__track .switch-button__thumb,
+  .switch-button--checked .switch-button__thumb {
     transform: translateX(1.16rem);
   }
 
   .switch-button__label {
     font-size: 0.85rem;
   }
-} 
+}

@@ -1,27 +1,19 @@
 @if (this.visible) {
-  <div
-    class="context-menu"
-    #menu
-    [style.left.px]="pos.x"
-    [style.top.px]="pos.y"
-    role="menu">
-
-    <ul class="context-menu__list">
-      @for (syntax of this.data; track $index) {
-        <li
-          class="context-menu__item"
-          role="menuitem"
-          tabindex="0"
-          #optionRef
-          #optionselectother
-          (click)="onSelect(syntax.name)"
-          (keyup.enter)="onSelect(syntax.name)">
-
-          <span class="context-menu__label">
-            {{ syntax.display }}
-          </span>
-        </li>
-      }
-    </ul>
-  </div>
+<div class="context-menu" #menu [style.left.px]="pos.x" [style.top.px]="pos.y" role="menu">
+  <ul class="context-menu__list">
+    @for (syntax of this.data; track $index) {
+    <li
+      class="context-menu__item"
+      role="menuitem"
+      tabindex="0"
+      #optionRef
+      #optionselectother
+      (click)="onSelect(syntax.name)"
+      (keyup.enter)="onSelect(syntax.name)"
+    >
+      <span class="context-menu__label"> {{ syntax.display }} </span>
+    </li>
+    }
+  </ul>
+</div>
 }

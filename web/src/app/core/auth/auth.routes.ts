@@ -5,22 +5,20 @@ export const authRoutes: Routes = [
   {
     path: 'login',
     title: 'Connexion',
-    loadComponent: () =>
-      import('./pages/login/login').then((m) => m.LoginPageComponent),
-    data: { type: 'Login', breadcrumb: 'Connexion' },
+    loadComponent: () => import('./pages/login/login').then((m) => m.LoginPageComponent),
+    data: { type: 'Login', breadcrumb: 'Connexion' }
   },
   {
     path: 'register',
     title: 'Inscription',
-    loadComponent: () =>
-      import('./pages/register/register').then((m) => m.RegisterPageComponent),
-    data: { type: 'Register', breadcrumb: 'Inscription' },
+    loadComponent: () => import('./pages/register/register').then((m) => m.RegisterPageComponent),
+    data: { type: 'Register', breadcrumb: 'Inscription' }
   },
   {
     path: 'forget-password',
     title: 'Mot de passe oublié',
     loadComponent: () =>
-      import('./pages/forget-password/forget-password').then((m) => m.ForgetPasswordComponent),
+      import('./pages/forget-password/forget-password').then((m) => m.ForgetPasswordComponent)
   },
   {
     path: 'reset',
@@ -29,12 +27,12 @@ export const authRoutes: Routes = [
       import('./pages/new-password/new-password').then((m) => m.NewPasswordComponent),
     canActivate: [resetPasswordGuard],
     data: {
-      breadcrumb: 'Modification de mot de passe',
-    },
+      breadcrumb: 'Modification de mot de passe'
+    }
   },
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'login',       
-  },
+    redirectTo: 'login'
+  }
 ];

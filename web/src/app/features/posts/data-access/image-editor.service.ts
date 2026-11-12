@@ -3,7 +3,7 @@ import { LocalImageStore } from 'src/app/shared/services/storage.image';
 import { MarkdownEditorService } from './markdow.service';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ImageEditorService {
   private readonly localImages = inject(LocalImageStore);
@@ -28,16 +28,15 @@ export class ImageEditorService {
   }
 
   resolveLocalImages(markdown: string): string {
-    return markdown.replace(
-      /!\[([^\]]*)\]\(localimg:([a-zA-Z0-9_-]+)\)/g,
-      (_match, alt, id) => this.createImageHtml(String(alt), String(id))
+    return markdown.replace(/!\[([^\]]*)\]\(localimg:([a-zA-Z0-9_-]+)\)/g, (_match, alt, id) =>
+      this.createImageHtml(String(alt), String(id))
     );
   }
 
   private createImageHtml(alt: string, id: string): string {
     const src = this.localImages.get(id) || this.markdown.createMissingImagePlaceholder(id);
 
-    return `<img src="${this.markdown.escapeHtml(src)}" alt="${this.markdown.escapeHtml(alt || 'image')}" title="localimg:${this.markdown.escapeHtml(id)}" style="cursor:pointer" />`;
+    return `<img src="${this.markdown.escapeHtml(src)}" alt="${this.markdown.escapeHtml(alt || 'image')}" title="localimg:${this.markdown.escapeHtml(id)}" role="button" tabindex="0" style="cursor:pointer" />`;
   }
 
   private getAltFromFilename(filename: string): string {

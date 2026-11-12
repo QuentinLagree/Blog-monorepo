@@ -2,5 +2,5 @@
 export interface Message<T = any, K = any> {
   message: string;
   data: T;
-  meta: K
+  meta: K;
 }

@@ -1,29 +1,27 @@
-import {
-  Component,
-  ElementRef,
-  HostListener,
-  ViewChild,
-} from '@angular/core';
+import { ContextMenuOption } from './types/context-menu-option';
+import { Component, ElementRef, HostListener, ViewChild, inject } from '@angular/core';
 import { ContextMenuService } from './services/context-menu.service';
 
 @Component({
   selector: 'app-context-menu',
   templateUrl: 'context-menu.html',
-  styleUrls: ['context-menu.scss'],
+  styleUrls: ['context-menu.scss']
 })
 export class ContextMenuComponent {
   @ViewChild('menu') menuRef?: ElementRef<HTMLElement>;
 
-  mode: 'markdown' | 'admin' = 'markdown'
+  mode: 'markdown' | 'admin' = 'markdown';
 
   visible = false;
   pos = { x: 0, y: 0 };
-  data: any;
-  action: Function = () => { }
+  data: ContextMenuOption[] = [];
+  action?: (data: ContextMenuOption[], optionName: string) => void;
 
   private clickPoint = { x: 0, y: 0 };
 
-  constructor(private _contextmenu: ContextMenuService) {
+  private readonly _contextmenu = inject(ContextMenuService);
+
+  constructor() {
     this._contextmenu.open$.subscribe(({ x, y, data, action }) => {
       this.clickPoint = { x, y };
       this.pos = { x, y };
@@ -71,8 +69,7 @@ export class ContextMenuComponent {
   }
 
   onSelect(optionName: string) {
-    this.action(this.data, optionName)
-    this.visible = false
+    this.action?.(this.data, optionName);
+    this.visible = false;
   }
-
 }

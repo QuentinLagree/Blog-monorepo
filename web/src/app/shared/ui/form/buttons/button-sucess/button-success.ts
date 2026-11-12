@@ -3,7 +3,7 @@ import { BaseButtonComponent, ButtonSize, ButtonType } from '../base-button';
 
 @Component({
   selector: 'app-button-success',
-  templateUrl: '../base-button.html',
+  templateUrl: '../base-button.html'
 })
 export class SuccessButtonComponent extends BaseButtonComponent {
   override type: InputSignal<ButtonType> = input<ButtonType>('success');

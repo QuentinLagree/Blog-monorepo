@@ -1,67 +1,54 @@
 @if (open) {
-  <div
-    class="confirm-modal-backdrop"
-    (click)="onBackdropClick($event)">
+<div
+  class="confirm-modal-backdrop"
+  tabindex="-1"
+  (keydown.escape)="cancel()"
+  (click)="onBackdropClick($event)"
+>
+  <section
+    class="confirm-modal card card--md"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="title"
+  >
+    <div
+      class="confirm-modal__icon"
+      [class.confirm-modal__icon--danger]="variant === 'danger'"
+      [class.confirm-modal__icon--warning]="variant === 'warning'"
+      [class.confirm-modal__icon--primary]="variant === 'primary'"
+      aria-hidden="true"
+    >
+      <span class="confirm-modal__icon-mark">
+        @if (variant === 'danger' || variant === 'warning') { ! } @else { ✓ }
+      </span>
+    </div>
 
-    <section
-      class="confirm-modal card card--md"
-      role="dialog"
-      aria-modal="true"
-      [attr.aria-label]="title">
+    <div class="confirm-modal__content">
+      <h2 class="confirm-modal__title">{{ title }}</h2>
 
-      <div
-        class="confirm-modal__icon"
-        [class.confirm-modal__icon--danger]="variant === 'danger'"
-        [class.confirm-modal__icon--warning]="variant === 'warning'"
-        [class.confirm-modal__icon--primary]="variant === 'primary'"
-        aria-hidden="true">
+      <p class="confirm-modal__message">{{ message }}</p>
+    </div>
+    @if (showNote) {
+    <div class="confirm-modal__notice card card--sm card--soft">
+      <strong> À vérifier avant de continuer. </strong>
 
-        <span class="confirm-modal__icon-mark">
-          @if (variant === 'danger' || variant === 'warning') {
-            !
-          } @else {
-            ✓
-          }
-        </span>
-      </div>
+      <span> Cette action peut modifier l’état de ton espace ou de tes contenus. </span>
+    </div>
+    }
 
-      <div class="confirm-modal__content">
-        <h2 class="confirm-modal__title">
-          {{ title }}
-        </h2>
+    <footer class="confirm-modal__actions btn-group btn-group--wrap">
+      <app-button size="sm" type="secondary" [label]="cancelLabel" (clicked)="cancel()">
+      </app-button>
 
-        <p class="confirm-modal__message">
-          {{ message }}
-        </p>
-      </div>
-      @if (showNote) {
-        <div class="confirm-modal__notice card card--sm card--soft">
-          <strong>
-            À vérifier avant de continuer.
-          </strong>
-  
-          <span>
-            Cette action peut modifier l’état de ton espace ou de tes contenus.
-          </span>
-        </div>
-      }
-
-      <footer class="confirm-modal__actions btn-group btn-group--wrap">
-        <app-button
-          size="sm"
-          type="secondary"
-          [label]="cancelLabel"
-          (clicked)="cancel()">
-        </app-button>
-
-        <app-button
-          size="sm"
-          [type]="variant === 'danger' ? 'danger' : 'primary'"
-          [label]="confirmLabel"
-          [loading]="loading"
-          (clicked)="confirm()">
-        </app-button>
-      </footer>
-    </section>
-  </div>
+      <app-button
+        size="sm"
+        [type]="variant === 'danger' ? 'danger' : 'primary'"
+        [label]="confirmLabel"
+        [loading]="loading"
+        (clicked)="confirm()"
+      >
+      </app-button>
+    </footer>
+  </section>
+</div>
 }

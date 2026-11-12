@@ -10,41 +10,37 @@
   </div>
 
   <nav class="header-nav">
-    @let userId = this._session.getUserIdSync();
-    @let role = this._session.getUserRoleSync();
+    @let userId = this._session.getUserIdSync(); @let role = this._session.getUserRoleSync(); @if
+    (userId !== undefined) { @if (role === "admin") {
+    <span class="header-badge">Admin</span>
+    }
 
-    @if (userId != undefined) {
-      @if (role == "admin") {
-        <span class="header-badge">Admin</span>
-      }
+    <app-button
+      type="secondary"
+      label="Mon profil"
+      size="sm"
+      (clicked)="this._router.navigate(['/account/profil'])"
+    >
+    </app-button>
 
-      <app-button
-        type="secondary"
-        label="Mon profil"
-        size="sm"
-        (clicked)="this._router.navigate(['/account/profil'])">
-      </app-button>
-
-      <app-button
-        type="danger"
-        size="sm"
-        label="Se déconnecter"
-        (clicked)="openModal()">
-      </app-button>
+    <app-button type="danger" size="sm" label="Se déconnecter" (clicked)="openModal()">
+    </app-button>
     } @else {
-<app-button
-        type="primary"
-        label="Connection"
-        size="sm"
-        (clicked)="this._router.navigate(['/auth/login'])">
-      </app-button>
+    <app-button
+      type="primary"
+      label="Connection"
+      size="sm"
+      (clicked)="this._router.navigate(['/auth/login'])"
+    >
+    </app-button>
 
-      <app-button
-        type="secondary"
-        label="Inscription"
-        size="sm"
-        (clicked)="this._router.navigate(['/auth/register'])">
-      </app-button>
+    <app-button
+      type="secondary"
+      label="Inscription"
+      size="sm"
+      (clicked)="this._router.navigate(['/auth/register'])"
+    >
+    </app-button>
     }
   </nav>
 </header>
@@ -58,5 +54,6 @@
   variant="danger"
   [loading]="loading"
   (cancelled)="modalOpen = false"
-  (confirmed)="logout()">
+  (confirmed)="logout()"
+>
 </app-confirm-modal>

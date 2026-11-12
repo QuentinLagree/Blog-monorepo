@@ -1,105 +1,94 @@
-<app-modal-login  [showModal]="this.showModal()"></app-modal-login>
+<app-modal-login [showModal]="this.showModal()"></app-modal-login>
 <section class="post-detail-page page">
-  <div
-    class="page-container page-container--wide"
-  >
+  <div class="page-container page-container--wide">
     @if (post.isLoading()) {
-      <app-landing-loading
-        eyebrow="Recherche de l'article"
-        title="Récupération de l'article"
-        description="Nous récupérons l'article depuis le serveur. Bonne découverte et bonne lecture."
-      />
+    <app-landing-loading
+      eyebrow="Recherche de l'article"
+      title="Récupération de l'article"
+      description="Nous récupérons l'article depuis le serveur. Bonne découverte et bonne lecture."
+    />
     } @else if (post.error()) {
-      <app-state-empty
-        title="Impossible de charger l’article"
-        description="Une erreur est survenue pendant le chargement du contenu."
-      >
-        <app-button
-          type="secondary"
-          label="Retour aux articles"
-          (clicked)="goBack()"
-        />
-      </app-state-empty>
-    } @else if (post.hasValue()) {
-      @let currentPost = post.value();
+    <app-state-empty
+      title="Impossible de charger l’article"
+      description="Une erreur est survenue pendant le chargement du contenu."
+    >
+      <app-button type="secondary" label="Retour aux articles" (clicked)="goBack()" />
+    </app-state-empty>
+    } @else if (post.hasValue()) { @let currentPost = post.value();
 
-      <article class="post-detail">
-        <app-post-detail-header
+    <article class="post-detail">
+      <app-post-detail-header
         [auth]="
           this._session
             .getUserIdSync() !== null"
-          [post]="currentPost"
-          [author]="author()"
-          [readingTime]="readingTime()"
-          [isPostRead]="isPostRead()"
-          [hasStartedReading]="
+        [post]="currentPost"
+        [author]="author()"
+        [readingTime]="readingTime()"
+        [isPostRead]="isPostRead()"
+        [hasStartedReading]="
             hasStartedReading()
           "
-          [savedReadingProgress]="
+        [savedReadingProgress]="
             savedReadingProgress()
           "
-          [likesCount]="likesCount()"
-          [hasLiked]="hasLiked()"
-          [likeLoading]="likeLoading()"
-          [isAuthor]="isAuthor()"
-          (likeToggled)="toggleLike()"
-          (contributionRequested)="
+        [likesCount]="likesCount()"
+        [hasLiked]="hasLiked()"
+        [likeLoading]="likeLoading()"
+        [isAuthor]="isAuthor()"
+        (likeToggled)="toggleLike()"
+        (contributionRequested)="
             contribute()
           "
-          (shareRequested)="sharePost()"
-        />
+        (shareRequested)="sharePost()"
+      />
 
-        <app-post-detail-content
-          [content]="currentPost.content"
-          [progress]="readingProgress()"
-          [headings]="tableOfContents()"
-          [activeHeadingIndex]="
+      <app-post-detail-content
+        [content]="currentPost.content"
+        [progress]="readingProgress()"
+        [headings]="tableOfContents()"
+        [activeHeadingIndex]="
             activeHeadingIndex()
           "
-          [activeHeading]="activeHeading()"
-          [mobileSummaryOpened]="
+        [activeHeading]="activeHeading()"
+        [mobileSummaryOpened]="
             mobileSummaryOpened()
           "
-          [readingPanelOpened]="
+        [readingPanelOpened]="
             readingPanelOpened()
           "
-          (markdownReady)="
+        (markdownReady)="
             initializeReadingNavigation(
               $event
             )
           "
-          (mobileSummaryToggled)="
+        (mobileSummaryToggled)="
             toggleMobileSummary()
           "
-          (mobileSummaryClosed)="
+        (mobileSummaryClosed)="
             closeMobileSummary()
           "
-          (readingPanelClosed)="
+        (readingPanelClosed)="
             closeReadingPanel()
           "
-          (readingPanelOpenedRequested)="
+        (readingPanelOpenedRequested)="
             openReadingPanel()
           "
-          (headingSelected)="
+        (headingSelected)="
             scrollToHeading($event)
           "
-          (contributionRequested)="
+        (contributionRequested)="
             contribute()
           "
-          (backRequested)="goBack()"
-        />
-      </article>
+        (backRequested)="goBack()"
+      />
+    </article>
     } @else {
-      <app-state-empty
-        title="Article introuvable"
-        description="Ce contenu n’existe pas ou n’est plus disponible."
-      >
-        <app-button
-          type="secondary"
-          label="Retour aux articles"
-          (clicked)="goBack()"
-        />
-      </app-state-empty>
+    <app-state-empty
+      title="Article introuvable"
+      description="Ce contenu n’existe pas ou n’est plus disponible."
+    >
+      <app-button type="secondary" label="Retour aux articles" (clicked)="goBack()" />
+    </app-state-empty>
     }
   </div>
 </section>

@@ -20,9 +20,9 @@
       [disabled]="control.disabled"
       required="{{ mergeConfigs().required }}"
     />
-  <div class="input-informations row">
-    <app-input-error [attr.aria-hidden]="null" [control]="control"></app-input-error>
-    <ng-content></ng-content>
-    
+    <div class="input-informations row">
+      <app-input-error [attr.aria-hidden]="null" [control]="control"></app-input-error>
+      <ng-content></ng-content>
+    </div>
   </div>
 </div>

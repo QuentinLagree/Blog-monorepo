@@ -1,27 +1,12 @@
 <div class="reading-mobile-bar">
-  <div
-    class="reading-mobile-bar__progress"
-  >
-    <span
-      [style.width.%]="progress()"
-    ></span>
+  <div class="reading-mobile-bar__progress">
+    <span [style.width.%]="progress()"></span>
   </div>
 
-  <button
-    type="button"
-    class="reading-mobile-bar__summary"
-    (click)="mobileSummaryToggled.emit()"
-  >
-    <span>
-      {{ progress() }} %
-    </span>
+  <button type="button" class="reading-mobile-bar__summary" (click)="mobileSummaryToggled.emit()">
+    <span> {{ progress() }} % </span>
 
-    <strong>
-      {{
-        activeHeading()?.label ||
-          'Sommaire'
-      }}
-    </strong>
+    <strong> {{ activeHeading()?.label || 'Sommaire' }} </strong>
   </button>
 
   <app-button
@@ -36,81 +21,67 @@
 </div>
 
 @if (mobileSummaryOpened()) {
-  <div
-    class="reading-mobile-summary"
-    role="dialog"
-    aria-modal="true"
-    aria-label="Sommaire de l’article"
-  >
-    <button
-      type="button"
-      class="reading-mobile-summary__backdrop"
-      aria-label="Fermer le sommaire"
-      (click)="
+<div
+  class="reading-mobile-summary"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Sommaire de l’article"
+>
+  <button
+    type="button"
+    class="reading-mobile-summary__backdrop"
+    aria-label="Fermer le sommaire"
+    (click)="
         mobileSummaryClosed.emit()
       "
-    ></button>
+  ></button>
 
-    <section
-      class="reading-mobile-summary__panel"
-    >
-      <header
-        class="reading-mobile-summary__header"
-      >
-        <div>
-          <p class="card__eyebrow">
-            Navigation
-          </p>
+  <section class="reading-mobile-summary__panel">
+    <header class="reading-mobile-summary__header">
+      <div>
+        <p class="card__eyebrow">Navigation</p>
 
-          <h2>
-            Sommaire
-          </h2>
-        </div>
+        <h2>Sommaire</h2>
+      </div>
 
-        <button
-          type="button"
-          class="reading-mobile-summary__close"
-          aria-label="Fermer le sommaire"
-          (click)="
+      <button
+        type="button"
+        class="reading-mobile-summary__close"
+        aria-label="Fermer le sommaire"
+        (click)="
             mobileSummaryClosed.emit()
           "
-        >
-          ×
-        </button>
-      </header>
-
-      <ol
-        class="reading-mobile-summary__list"
       >
-        @for (
-          heading of headings();
-          track heading.id;
-          let index = $index
-        ) {
-          <li
-            [class.reading-mobile-summary__item--sub]="
+        ×
+      </button>
+    </header>
+
+    <ol class="reading-mobile-summary__list">
+      @for ( heading of headings(); track heading.id; let index = $index ) {
+      <li
+        [class.reading-mobile-summary__item--sub]="
               heading.level === 3
             "
-            [class.reading-mobile-summary__item--active]="
+        [class.reading-mobile-summary__item--active]="
               index ===
               activeHeadingIndex()
             "
-          >
-            <button
-              type="button"
-              (click)="
+      >
+        <button
+          type="button"
+          (click)="
                 headingSelected.emit(
                   heading.id
                 )
               "
-            >
-              {{ heading.label }}
-            </button>
-          </li>
-        }
-      </ol>
-    </section>
-  </div>
+        >
+          {{ heading.label }}
+        </button>
+      </li>
+      }
+    </ol>
+  </section>
+</div>
 }
 
 <div
@@ -119,9 +90,7 @@
     readingPanelOpened()
   "
 >
-  <main
-    class="post-detail__content page-section"
-  >
+  <main class="post-detail__content page-section">
     <markdown
       #markdownContent
       class="markdown-content"

@@ -1,5 +1,5 @@
 import { HttpContextToken } from '@angular/common/http';
-import { Inject, InjectionToken } from '@angular/core';
+import { InjectionToken } from '@angular/core';
 
 export type ToastPosition = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
 

@@ -1,8 +1,6 @@
 <aside class="post-detail__aside card card--md">
   <section class="post-detail__aside-section">
-    <p class="card__eyebrow">
-      À propos
-    </p>
+    <p class="card__eyebrow">À propos</p>
 
     <div class="post-detail__aside-row">
       <span>Format</span>
@@ -10,67 +8,50 @@
     </div>
 
     @if (showReadingTime()) {
-      <div class="post-detail__aside-row">
-        <span>Lecture</span>
-        <strong>
-          {{ readingTime() }} min
-        </strong>
-      </div>
+    <div class="post-detail__aside-row">
+      <span>Lecture</span>
+      <strong> {{ readingTime() }} min </strong>
+    </div>
     }
 
     <div class="post-detail__aside-row">
       <span>Auteur</span>
-      <strong>
-        {{ author()?.pseudo || 'Inconnu' }}
-      </strong>
+      <strong> {{ author()?.pseudo || 'Inconnu' }} </strong>
     </div>
   </section>
 
-  <section
-    class="post-detail__like-card card card--sm card--soft"
-  >
+  <section class="post-detail__like-card card card--sm card--soft">
     <div class="post-detail__like-content">
-      <span class="post-detail__like-label">
-        Appréciation
-      </span>
+      <span class="post-detail__like-label"> Appréciation </span>
 
-      <strong>
-        {{ likesCount() }}
-        {{
-          likesCount() > 1
-            ? 'J’aimes'
-            : 'J’aime'
-        }}
-      </strong>
+      <strong> {{ likesCount() }} {{ likesCount() > 1 ? 'J’aimes' : 'J’aime' }} </strong>
     </div>
 
     @if (!isAuthor() && authenticated()) {
-      <app-button
-        size="sm"
-        [type]="
+    <app-button
+      size="sm"
+      [type]="
           hasLiked()
             ? 'primary'
             : 'secondary'
         "
-        [icon]="
+      [icon]="
           hasLiked()
             ? 'icon-full-heart'
             : 'icon-heart'
         "
-        [label]="
+      [label]="
           hasLiked()
             ? 'Aimé'
             : 'J’aime'
         "
-        [loading]="likeLoading()"
-        (clicked)="likeToggled.emit()"
-      />
+      [loading]="likeLoading()"
+      (clicked)="likeToggled.emit()"
+    />
     }
   </section>
 
-  <div
-    class="post-detail__aside-actions btn-group btn-group--wrap"
-  >
+  <div class="post-detail__aside-actions btn-group btn-group--wrap">
     <app-button
       size="sm"
       type="primary"

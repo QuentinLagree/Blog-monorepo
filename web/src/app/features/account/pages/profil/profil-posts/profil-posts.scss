@@ -94,8 +94,7 @@
   line-height: $leading-none;
 }
 
-.profile-posts__filter--active
-.profile-posts__filter-count {
+.profile-posts__filter--active .profile-posts__filter-count {
   background: rgb(49 92 73 / 14%);
 }
 
@@ -111,12 +110,7 @@
   grid-template-columns: 2.75rem minmax(0, 1fr) 2.5rem;
   align-items: center;
 
-  background:
-    linear-gradient(
-      180deg,
-      rgb(255 255 255 / 98%),
-      rgb(248 250 249 / 98%)
-    );
+  background: linear-gradient(180deg, rgb(255 255 255 / 98%), rgb(248 250 249 / 98%));
 
   border: 1px solid $border-light;
   border-radius: $radius-sm;
@@ -173,8 +167,7 @@
     border-color 0.2s ease;
 }
 
-.profile-posts__search:focus-within
-.profile-posts__search-icon {
+.profile-posts__search:focus-within .profile-posts__search-icon {
   color: $primary;
 
   border-right-color: rgb(49 92 73 / 10%);
@@ -389,8 +382,7 @@
   color: $success;
 }
 
-.profile-posts__status--published
-.profile-posts__status-dot {
+.profile-posts__status--published .profile-posts__status-dot {
   background: $success;
 }
 
@@ -398,8 +390,7 @@
   color: $warning;
 }
 
-.profile-posts__status--draft
-.profile-posts__status-dot {
+.profile-posts__status--draft .profile-posts__status-dot {
   background: $warning;
 }
 
@@ -528,7 +519,6 @@
   }
 }
 
-
 @media (max-width: $breakpoint-lg) {
   .profile-posts__toolbar {
     grid-template-columns: 1fr;
@@ -542,7 +532,6 @@
 }
 
 @media (max-width: $breakpoint-md) {
-
   .profile-posts__summary {
     align-items: flex-start;
     flex-direction: column;

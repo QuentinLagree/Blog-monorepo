@@ -15,7 +15,7 @@ export function EmailInputValidatorFactory(
       options: {
         hasValidEmail: true
       },
-      ...config,
+      ...config
     };
     return validateInput(context);
   };

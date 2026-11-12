@@ -1,9 +1,9 @@
-import { FormControl } from "@angular/forms";
-import { TextAreaComponent } from "src/app/shared/ui/form/text-area/text-area";
-import { ImageEditorService } from "./image-editor.service";
-import { MarkdownEditorService } from "./markdow.service";
-import { inject, Injectable } from "@angular/core";
-import { ToastService } from "src/app/shared/helpers/toasts/toaster.service";
+import { FormControl } from '@angular/forms';
+import { TextAreaComponent } from 'src/app/shared/ui/form/text-area/text-area';
+import { ImageEditorService } from './image-editor.service';
+import { MarkdownEditorService } from './markdow.service';
+import { inject, Injectable } from '@angular/core';
+import { ToastService } from 'src/app/shared/helpers/toasts/toaster.service';
 
 @Injectable({ providedIn: 'root' })
 export class PostEditorImageService {
@@ -13,27 +13,20 @@ export class PostEditorImageService {
 
   private relinkTargetId: string | null = null;
 
-  pickImage(
-  event: Event,
-  editor: TextAreaComponent,
-  control: FormControl<string | null>
-): void {
-  const input = event.target as HTMLInputElement;
-  const file = input.files?.[0];
+  pickImage(event: Event, editor: TextAreaComponent, control: FormControl<string | null>): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
 
-  if (!file) return;
+    if (!file) return;
 
-  input.value = '';
+    input.value = '';
 
-  const syntax = this.imageEditor.createLocalImageSyntax(file);
+    const syntax = this.imageEditor.createLocalImageSyntax(file);
 
-  this.markdown.insertAtCursor(syntax, editor, control);
-}
+    this.markdown.insertAtCursor(syntax, editor, control);
+  }
 
-  handlePreviewClick(
-    event: MouseEvent,
-    picker?: HTMLInputElement
-  ): void {
+  handlePreviewClick(event: MouseEvent, picker?: HTMLInputElement): void {
     const id = this.getLocalImageIdFromEvent(event);
 
     if (!id) return;
@@ -42,10 +35,7 @@ export class PostEditorImageService {
     picker?.click();
   }
 
-  relinkPicked(
-    event: Event,
-    control: FormControl<string | null>
-  ): void {
+  relinkPicked(event: Event, control: FormControl<string | null>): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
 

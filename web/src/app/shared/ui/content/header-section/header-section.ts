@@ -1,4 +1,4 @@
-import { Component, input, InputSignal, signal } from "@angular/core";
+import { Component, input, InputSignal } from '@angular/core';
 
 @Component({
   selector: 'app-header-section',
@@ -11,9 +11,9 @@ import { Component, input, InputSignal, signal } from "@angular/core";
       </div>
     </div>
   `,
-  styleUrls: ['./header-section.scss'],
+  styleUrls: ['./header-section.scss']
 })
 export class HeaderSectionComponent {
-  eyebrow: InputSignal<String> = input.required()
-  title: InputSignal<String> = input.required()
+  eyebrow: InputSignal<string> = input.required();
+  title: InputSignal<string> = input.required();
 }

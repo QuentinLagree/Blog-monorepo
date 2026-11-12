@@ -1,54 +1,34 @@
-import {
-  Component,
-  input,
-  output,
-} from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
-import { User } from
-  'src/app/shared/services/user.service';
-import { BaseButtonComponent } from
-  'src/app/shared/ui/form/buttons/base-button';
+import { User } from 'src/app/shared/services/user.service';
+import { BaseButtonComponent } from 'src/app/shared/ui/form/buttons/base-button';
 
 @Component({
   selector: 'app-post-detail-aside',
   standalone: true,
-  imports: [
-    BaseButtonComponent,
-  ],
-  templateUrl:
-    './post-detail-aside.html',
+  imports: [BaseButtonComponent],
+  templateUrl: './post-detail-aside.html'
 })
 export class PostDetailAsideComponent {
-  readonly authenticated =
-    input<boolean>(false)
-  
-  readonly author =
-    input<User | undefined>();
+  readonly authenticated = input<boolean>(false);
 
-  readonly readingTime =
-    input.required<number>();
+  readonly author = input<User | undefined>();
 
-  readonly showReadingTime =
-    input.required<boolean>();
+  readonly readingTime = input.required<number>();
 
-  readonly likesCount =
-    input.required<number>();
+  readonly showReadingTime = input.required<boolean>();
 
-  readonly hasLiked =
-    input.required<boolean>();
+  readonly likesCount = input.required<number>();
 
-  readonly likeLoading =
-    input.required<boolean>();
+  readonly hasLiked = input.required<boolean>();
 
-  readonly isAuthor =
-    input.required<boolean>();
+  readonly likeLoading = input.required<boolean>();
 
-  readonly likeToggled =
-    output<void>();
+  readonly isAuthor = input.required<boolean>();
 
-  readonly contributionRequested =
-    output<void>();
+  readonly likeToggled = output<void>();
 
-  readonly shareRequested =
-    output<void>();
+  readonly contributionRequested = output<void>();
+
+  readonly shareRequested = output<void>();
 }

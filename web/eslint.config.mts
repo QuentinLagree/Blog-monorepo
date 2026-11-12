@@ -2,10 +2,10 @@ import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import angular from 'angular-eslint';
 import prettierPlugin from 'eslint-plugin-prettier';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import prettierConfig from 'eslint-config-prettier';
 
 export default tseslint.config(
+  { ignores: ['.angular/**', 'dist/**', 'coverage/**', '**/*.scss'] },
   {
     plugins: {
       prettier: prettierPlugin
@@ -49,9 +49,5 @@ export default tseslint.config(
     files: ['**/*.html'],
     extends: [...angular.configs.templateRecommended, ...angular.configs.templateAccessibility],
     rules: {}
-  },
-  {
-    files: ['**/*.scss'],
-    extends: [eslintPluginPrettierRecommended]
   }
 );

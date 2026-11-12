@@ -2,19 +2,15 @@
   class="form-field input-field"
   [class.form-field--error]="errorMessages"
   [class.form-field--success]="!errorMessages && control.value?.length > 1"
-  [class.form-field--disabled]="control.disabled">
-
+  [class.form-field--disabled]="control.disabled"
+>
   <div class="form-field__header">
-    <label
-      class="form-field__label"
-      [for]="mergeConfigs().label.trim()">
+    <label class="form-field__label" [for]="mergeConfigs().label.trim()">
       {{ mergeConfigs().label }}
     </label>
 
     @if (!mergeConfigs().required) {
-      <span class="form-field__optional">
-        Optionnel
-      </span>
+    <span class="form-field__optional"> Optionnel </span>
     }
   </div>
 
@@ -29,9 +25,9 @@
     (blur)="control.markAsTouched()"
   />
 
-  @if (this.control.errors != null) {
-    <div class="form-field__message form-field__message--error">
-      <app-input-error [control]="control"></app-input-error>
-    </div>
+  @if (this.control.errors !== null) {
+  <div class="form-field__message form-field__message--error">
+    <app-input-error [control]="control"></app-input-error>
+  </div>
   }
 </div>

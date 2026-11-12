@@ -17,23 +17,17 @@
   [disabled]="disabled() || loading()"
   [attr.aria-label]="label() || 'Bouton'"
   type="button"
-  (click)="onClick($event)">
-  
+  (click)="onClick($event)"
+>
   @if (loading()) {
-    <span class="btn__spinner" aria-hidden="true"></span>
-  }
-
-  @if (icon()) {
-    <i class="btn__icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24">
-        <use [attr.href]="`#${icon()}`" />
-      </svg>
-    </i>
-  }
-
-  @if (label()) {
-    <span class="btn__label">
-      {{ label() }}
-    </span>
+  <span class="btn__spinner" aria-hidden="true"></span>
+  } @if (icon()) {
+  <i class="btn__icon" aria-hidden="true">
+    <svg viewBox="0 0 24 24">
+      <use [attr.href]="`#${icon()}`" />
+    </svg>
+  </i>
+  } @if (label()) {
+  <span class="btn__label"> {{ label() }} </span>
   }
 </button>

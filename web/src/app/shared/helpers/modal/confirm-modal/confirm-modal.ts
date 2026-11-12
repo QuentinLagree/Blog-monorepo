@@ -8,7 +8,7 @@ export type ConfirmModalVariant = 'primary' | 'danger' | 'warning';
   standalone: true,
   imports: [BaseButtonComponent],
   templateUrl: './confirm-modal.html',
-  styleUrls: ['./confirm-modal.scss'],
+  styleUrls: ['./confirm-modal.scss']
 })
 export class ConfirmModalComponent {
   @Input() showNote = true;

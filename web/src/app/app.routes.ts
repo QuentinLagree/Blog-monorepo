@@ -9,39 +9,37 @@ export const appRoutes: Routes = [
   {
     path: 'account',
     canActivate: [authGuard],
-    loadChildren: () =>
-      import('./features/account/account.routes').then((m) => m.accountRoutes),
+    loadChildren: () => import('./features/account/account.routes').then((m) => m.accountRoutes)
   },
 
   {
     path: 'auth',
     canActivate: [loginGuard],
-    loadChildren: () =>
-      import('./core/auth/auth.routes').then((m) => m.authRoutes),
+    loadChildren: () => import('./core/auth/auth.routes').then((m) => m.authRoutes),
     data: {
       breadcrumb: 'Authentification'
     }
   },
   {
     path: 'post',
-    loadChildren: () =>
-      import('./features/posts/posts.routes').then((m) => m.postsRoutes),
+    loadChildren: () => import('./features/posts/posts.routes').then((m) => m.postsRoutes),
     data: {
       breadcrumb: 'Articles'
     }
   },
   {
     path: 'home',
-    loadComponent: () =>
-      import('./features/home/home').then((m) => m.HomeComponent),
+    loadComponent: () => import('./features/home/home').then((m) => m.HomeComponent),
     data: {
       breadcrumb: 'Accueil'
-    },
+    }
   },
-  { path: 'ui', loadComponent: () => import('./shared/ui/base-ui').then((m) => m.UIComponent),
+  {
+    path: 'ui',
+    loadComponent: () => import('./shared/ui/base-ui').then((m) => m.UIComponent),
     data: {
       breadcrumb: 'UI Elements'
     }
-   },
-  { path: '**', redirectTo: '' },
+  },
+  { path: '**', redirectTo: '' }
 ];

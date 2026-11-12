@@ -7,62 +7,60 @@ import { environment } from 'src/environments/environment';
 const API_URL = environment.apiUrl;
 
 export interface HttpOptions {
-  credentials?: boolean,
-  context?: HttpContext
+  credentials?: boolean;
+  context?: HttpContext;
 }
-
-
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 @Injectable({ providedIn: 'root' })
 export class HttpRequestService {
   private http: HttpClient = inject(HttpClient);
 
-  getData(url: string, optionsParam?: HttpOptions): Observable<Message> {
-    let options = {}
+  getData<T = Message['data']>(url: string, optionsParam?: HttpOptions): Observable<Message<T>> {
+    let options = {};
 
     options = {
       withCredentials: true,
-      ...optionsParam,
+      ...optionsParam
     };
-    return this.http.get<Message>(API_URL + url, options ?? null);
+    return this.http.get<Message<T>>(API_URL + url, options ?? null);
   }
 
   postData(url: string, data: any, optionsParam?: HttpOptions): Observable<Message> {
-    let options = {}
+    let options = {};
 
     options = {
       withCredentials: true,
-      ...optionsParam,
+      ...optionsParam
     };
     return this.http.post<Message>(API_URL + url, data, options);
   }
 
   updateData(url: string, data: any, optionsParam?: HttpOptions): Observable<Message> {
-    let options = {}
+    let options = {};
 
     options = {
       withCredentials: true,
-      ...optionsParam,
+      ...optionsParam
     };
     return this.http.put<Message>(API_URL + url, data, options);
   }
   deleteData(url: string, optionsParam?: HttpOptions): Observable<Message> {
-    let options = {}
+    let options = {};
 
     options = {
       withCredentials: true,
-      ...optionsParam,
+      ...optionsParam
     };
-    
+
     return this.http.delete<Message>(API_URL + url, options);
   }
   patchData(url: string, data: any, optionsParam?: HttpOptions): Observable<Message> {
-    let options = {}
+    let options = {};
 
     options = {
       withCredentials: true,
-      ...optionsParam,
+      ...optionsParam
     };
     return this.http.patch<Message>(API_URL + url, data, options);
   }

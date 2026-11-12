@@ -3,19 +3,13 @@
   [class.switch-button--checked]="control.value"
   [class.switch-button--disabled]="control.disabled"
 >
-  <input
-    class="switch-button__input"
-    type="checkbox"
-    [formControl]="control"
-  />
+  <input class="switch-button__input" type="checkbox" [formControl]="control" />
 
   <span class="switch-button__track">
     <span class="switch-button__thumb"></span>
   </span>
 
   @if (mergeConfigs().label) {
-    <span class="switch-button__label">
-      {{ mergeConfigs().label }}
-    </span>
+  <span class="switch-button__label"> {{ mergeConfigs().label }} </span>
   }
 </label>

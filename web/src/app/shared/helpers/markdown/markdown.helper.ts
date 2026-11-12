@@ -1,43 +1,39 @@
-import { Component, ElementRef } from "@angular/core";
-import { MarkdownSyntax } from "../../ui/context-menu/types/markdownOptions.interface";
-import { TextAreaComponent } from "../../ui/form/text-area/text-area";
-import { MarkdownSyntaxOptions } from "../../ui/context-menu/config/context-menu-options";
+import { MarkdownSyntax } from '../../ui/context-menu/types/markdownOptions.interface';
+import { TextAreaComponent } from '../../ui/form/text-area/text-area';
+import { MarkdownSyntaxOptions } from '../../ui/context-menu/config/context-menu-options';
 
-type MarkdownLineType = "blocquote" | "list" | "number-list" | "tasklist"
+type MarkdownLineType = 'blocquote' | 'list' | 'number-list' | 'tasklist';
 
-export const getSyntaxSelection = (syntax: string, caraceter: string = '$'): number => {
-    return syntax.indexOf(caraceter) + 1;
-}
+export const getSyntaxSelection = (syntax: string, caraceter = '$'): number => {
+  return syntax.indexOf(caraceter) + 1;
+};
 
 function getEndOfSelectedLine(textarea: HTMLTextAreaElement) {
-    const value = textarea.value;
-    const pos = textarea.selectionStart;
+  const value = textarea.value;
+  const pos = textarea.selectionStart;
 
-    const lineStart = value.lastIndexOf("\n", pos - 1) + 1;
+  const lineStart = value.lastIndexOf('\n', pos - 1) + 1;
 
-    let lineEnd = value.indexOf("\n", pos);
-    console.log("LIgne : " + textarea.value.substring(lineStart, lineEnd))
-    if (lineEnd === -1) lineEnd = value.length;
+  let lineEnd = value.indexOf('\n', pos);
+  console.log('LIgne : ' + textarea.value.substring(lineStart, lineEnd));
+  if (lineEnd === -1) lineEnd = value.length;
 
-    return lineEnd - 1;
+  return lineEnd - 1;
 }
 
 export const getSelectedLine = (textarea: HTMLTextAreaElement): string => {
   const value = textarea.value;
   const pos = textarea.selectionStart;
 
-  const lineStart = value.lastIndexOf("\n", pos - 2) + 1;
+  const lineStart = value.lastIndexOf('\n', pos - 2) + 1;
 
-  let lineEnd = value.indexOf("\n", pos - 1);
+  let lineEnd = value.indexOf('\n', pos - 1);
   if (lineEnd === -1) lineEnd = value.length;
 
   return value.substring(lineStart, lineEnd);
-}
+};
 
-export const applyMarkdownSyntax = (
-  item: MarkdownSyntax,
-  component: TextAreaComponent
-) => {
+export const applyMarkdownSyntax = (item: MarkdownSyntax, component: TextAreaComponent) => {
   const textarea = component.textareaComponent()?.nativeElement;
 
   if (!textarea) {
@@ -57,22 +53,15 @@ export const applyMarkdownSyntax = (
   const hasSelection = start !== end;
 
   const placeholderIndex = item.syntax.indexOf('$');
-  const syntaxWithoutPlaceholder = item.syntax.replace('$', '');
 
-  const selectedText = hasSelection
-    ? textarea.value.slice(start, end)
-    : '';
+  const selectedText = hasSelection ? textarea.value.slice(start, end) : '';
 
   const insertedSyntax = item.syntax.replace('$', selectedText);
 
   const prefix = textarea.value.slice(0, start);
   const suffix = textarea.value.slice(end);
 
-  const nextValue =
-    prefix +
-    (item.bloc ? '\n' : '') +
-    insertedSyntax +
-    suffix;
+  const nextValue = prefix + (item.bloc ? '\n' : '') + insertedSyntax + suffix;
 
   component.control.setValue(nextValue);
 
@@ -90,7 +79,6 @@ export const applyMarkdownSyntax = (
   component.control.markAsDirty();
 };
 
-
 export const setNewLineWithSyntax = (
   textarea: HTMLTextAreaElement,
   component: TextAreaComponent
@@ -105,7 +93,7 @@ export const setNewLineWithSyntax = (
   const detected = detectMarkdownLineType(selectedLine);
   if (!detected) return;
 
-  const syntaxDef = MarkdownSyntaxOptions.find(o => o.name === detected.type);
+  const syntaxDef = MarkdownSyntaxOptions.find((o) => o.name === detected.type);
   if (!syntaxDef) return;
 
   // Si la ligne contient déjà uniquement la syntaxe (ex: "# "), on ne fait rien
@@ -116,9 +104,7 @@ export const setNewLineWithSyntax = (
   const insertAt = textarea.selectionStart;
 
   const nextValue =
-    textarea.value.slice(0, insertAt) +
-    syntaxWithoutPlaceholder +
-    textarea.value.slice(insertAt);
+    textarea.value.slice(0, insertAt) + syntaxWithoutPlaceholder + textarea.value.slice(insertAt);
 
   component.control.setValue(nextValue);
 
@@ -135,29 +121,29 @@ export const setNewLineWithSyntax = (
   component.control.markAsDirty(); // markAllAsDirty() est souvent trop agressif
 };
 
-  function detectMarkdownLineType(line: string): { type: MarkdownLineType; text: string } | null {
+function detectMarkdownLineType(line: string): { type: MarkdownLineType; text: string } | null {
   const regex = /^(?<marker>>|- \[\s*\]|-|1\.)\s+(?<text>.+)$/;
   const match = line.match(regex);
 
   if (!match || !match.groups) return null;
 
-  const marker = match.groups["marker"];
-  const text   = match.groups["text"];
+  const marker = match.groups['marker'];
+  const text = match.groups['text'];
 
   let type: MarkdownLineType;
 
   switch (true) {
-    case marker === ">":
-      type = "blocquote";
+    case marker === '>':
+      type = 'blocquote';
       break;
-    case marker === "-":
-      type = "list";
+    case marker === '-':
+      type = 'list';
       break;
-    case marker === "1.":
-      type = "number-list";
+    case marker === '1.':
+      type = 'number-list';
       break;
-    case marker.startsWith("- ["):
-      type = "tasklist";
+    case marker.startsWith('- ['):
+      type = 'tasklist';
       break;
     default:
       return null;

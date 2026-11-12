@@ -1,9 +1,3 @@
-type ThemePreference =
-  | 'system'
-  | 'light'
-  | 'dark';
+export type ThemePreference = 'system' | 'light' | 'dark';
 
-type FontSizePreference =
-  | 'small'
-  | 'medium'
-  | 'large';
+export type FontSizePreference = 'small' | 'medium' | 'large';

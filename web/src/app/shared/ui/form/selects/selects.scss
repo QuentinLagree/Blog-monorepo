@@ -182,7 +182,7 @@ button.btn-select {
   }
 
   &.selected::before {
-    content: "✓";
+    content: '✓';
     color: $primary;
     font-weight: 700;
     line-height: 1;

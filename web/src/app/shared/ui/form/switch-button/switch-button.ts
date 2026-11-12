@@ -5,12 +5,9 @@ import {
   input,
   InputSignal,
   signal,
-  WritableSignal,
+  WritableSignal
 } from '@angular/core';
-import {
-  FormControl,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 import { CheckboxConfig } from './models/checkbox-config';
 
@@ -19,40 +16,29 @@ import { CheckboxConfig } from './models/checkbox-config';
   standalone: true,
   templateUrl: './switch-button.html',
   styles: "@use 'base' as *;",
-  imports: [
-    ReactiveFormsModule,
-  ],
+  imports: [ReactiveFormsModule]
 })
 export class SwitchButtonComponent {
   @Input({
-    required: true,
+    required: true
   })
-  control: FormControl<boolean> = new FormControl(true, {
-      nonNullable: true,
-    });
-;
+  control = new FormControl<boolean>(true, {
+    nonNullable: true
+  });
+  readonly configuration: InputSignal<Partial<CheckboxConfig>> =
+    input.required<Partial<CheckboxConfig>>();
 
-  readonly configuration:
-    InputSignal<Partial<CheckboxConfig>> =
-      input.required<
-        Partial<CheckboxConfig>
-      >();
+  readonly localOverrides: WritableSignal<Partial<CheckboxConfig>> = signal({});
 
-  readonly localOverrides:
-    WritableSignal<Partial<CheckboxConfig>> =
-      signal({});
+  readonly defaultConfiguration: CheckboxConfig = {
+    label: '',
+    required: true,
+    type: 'checkbox'
+  };
 
-  readonly defaultConfiguration:
-    CheckboxConfig = {
-      label: '',
-      required: true,
-      type: 'checkbox',
-    };
-
-  readonly mergeConfigs =
-    computed<CheckboxConfig>(() => ({
-      ...this.defaultConfiguration,
-      ...(this.configuration() ?? {}),
-      ...(this.localOverrides() ?? {}),
-    }));
+  readonly mergeConfigs = computed<CheckboxConfig>(() => ({
+    ...this.defaultConfiguration,
+    ...(this.configuration() ?? {}),
+    ...(this.localOverrides() ?? {})
+  }));
 }

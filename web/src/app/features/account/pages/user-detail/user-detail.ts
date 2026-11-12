@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { HttpContext } from '@angular/common/http';
-import { Component, computed, inject, resource, signal } from '@angular/core';
+import { Component, computed, inject, resource } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BaseButtonComponent } from '@src/app/shared/ui/form/buttons/base-button';
 import { PostCard } from 'src/app/shared/ui/card/post-card/post-card';
@@ -20,7 +20,7 @@ import { UserPreferencesService } from '../profil/preferences.service';
   standalone: true,
   templateUrl: './user-detail.html',
   styleUrls: ['./user-detail.scss'],
-  imports: [DatePipe, BaseButtonComponent, PostCard],
+  imports: [DatePipe, BaseButtonComponent, PostCard]
 })
 export class UserDetailComponent {
   private readonly _route = inject(ActivatedRoute);
@@ -28,16 +28,14 @@ export class UserDetailComponent {
   private readonly _user = inject(UserService);
   private readonly _post = inject(PostService);
   private readonly _toastService = inject(ToastService);
-  private _breadCrumb = inject(BreadcrumbService)
+  private _breadCrumb = inject(BreadcrumbService);
 
   userId = computed(() => this._route.snapshot.params['id']);
 
   role = Role;
-  private readonly _preferences =
-    inject(UserPreferencesService);
+  private readonly _preferences = inject(UserPreferencesService);
 
-  readonly showProfil =
-    this._preferences.visibleProfil;
+  readonly showProfil = this._preferences.visibleProfil;
 
   user = resource<User, number>({
     params: () => +this.userId(),
@@ -46,9 +44,7 @@ export class UserDetailComponent {
       try {
         const context = new HttpContext().set(SUCCESS_MESSAGE, false);
 
-        const res = await firstValueFrom(
-          this._user.findUserWithId(params, { context })
-        );
+        const res = await firstValueFrom(this._user.findUserWithId(params, { context }));
 
         if (!res.data) {
           throw new Error('Utilisateur introuvable.');
@@ -56,15 +52,14 @@ export class UserDetailComponent {
         this._breadCrumb.setWithHome([
           {
             label: 'Contributeurs',
-            url: '/account/users',
+            url: '/account/users'
           },
           {
-            label: res.data.pseudo,
-          },
+            label: res.data.pseudo
+          }
         ]);
 
         return res.data;
-
       } catch (error) {
         const message =
           error instanceof Error
@@ -73,13 +68,10 @@ export class UserDetailComponent {
 
         this._toastService.error(message, { duration: 5000 });
 
-        throw error instanceof Error
-          ? error
-          : new Error(message, { cause: error });
+        throw error instanceof Error ? error : new Error(message, { cause: error });
       }
-    },
+    }
   });
-
 
   posts = resource<Post[], number>({
     params: () => +this.userId(),
@@ -88,15 +80,13 @@ export class UserDetailComponent {
       try {
         const context = new HttpContext().set(SUCCESS_MESSAGE, false);
 
-        const res = await firstValueFrom(
-          this._post.getAllPostOfUser(params, { context })
-        );
+        const res = await firstValueFrom(this._post.getAllPostOfUser(params, { context }));
 
         return res.data ?? [];
       } catch {
         return [];
       }
-    },
+    }
   });
 
   userInitial(user: User | undefined): string {
@@ -111,11 +101,7 @@ export class UserDetailComponent {
   userDisplayName(user: User | undefined): string {
     if (!user) return 'Utilisateur';
 
-    return (
-      user.pseudo ||
-      `${user.prenom ?? ''} ${user.nom ?? ''}`.trim() ||
-      'Utilisateur'
-    );
+    return user.pseudo || `${user.prenom ?? ''} ${user.nom ?? ''}`.trim() || 'Utilisateur';
   }
 
   goBack(): void {

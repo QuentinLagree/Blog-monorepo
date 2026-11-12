@@ -120,8 +120,7 @@
   flex: 0 0 auto;
 
   background:
-    radial-gradient(circle at 30% 25%, rgba($secondary, 0.18), transparent 44%),
-    $primary-soft;
+    radial-gradient(circle at 30% 25%, rgba($secondary, 0.18), transparent 44%), $primary-soft;
 
   color: $primary;
 

@@ -2,22 +2,18 @@
   class="form-field textarea-field"
   [class.form-field--error]="errorMessages"
   [class.form-field--success]="!errorMessages && control.value?.length > 1"
-  [class.form-field--disabled]="control.disabled">
-
+  [class.form-field--disabled]="control.disabled"
+>
   @if (mergeConfigs().label.length !== 0) {
-    <div class="form-field__header">
-      <label
-        class="form-field__label"
-        [for]="mergeConfigs().label.trim()">
-        {{ mergeConfigs().label }}
-      </label>
+  <div class="form-field__header">
+    <label class="form-field__label" [for]="mergeConfigs().label.trim()">
+      {{ mergeConfigs().label }}
+    </label>
 
-      @if (!mergeConfigs().required) {
-        <span class="form-field__optional">
-          Optionnel
-        </span>
-      }
-    </div>
+    @if (!mergeConfigs().required) {
+    <span class="form-field__optional"> Optionnel </span>
+    }
+  </div>
   }
 
   <textarea
@@ -31,13 +27,14 @@
     autocomplete="off"
     (blur)="control.markAsTouched()"
     (keyup.enter)="markdownSetNewLine()"
-    (scroll)="onScroll()">
+    (scroll)="onScroll()"
+  >
   </textarea>
 
-  @if (this.control.errors != null) {
-    <div class="form-field__message form-field__message--error">
-      <app-input-error [control]="control"></app-input-error>
-    </div>
+  @if (this.control.errors !== null) {
+  <div class="form-field__message form-field__message--error">
+    <app-input-error [control]="control"></app-input-error>
+  </div>
   }
 </div>
 

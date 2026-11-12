@@ -4,26 +4,19 @@
       eyebrow="Encyclopédie communautaire"
       title="Découvre, partage et enrichis les savoirs."
       baseline="Explore des articles, des idées et des découvertes publiés par la communauté. Contribue à une base de connaissances claire, utile et vivante."
-
       [primaryButton]="{
         label: 'Créer un article',
         icon: 'icon-plus'
       }"
-
       [secondaryButton]="{ label: 'Voir les contributeurs' }"
-      
       (primaryAction)="_router.navigate(['/post/add'])"
       (secondaryAction)="_router.navigate(['/account/users'])"
-      />
-
+    />
 
     <section class="home-section page-section">
-      <app-header-section
-        eyebrow="Dernières contributions"
-        title="Articles récents">
+      <app-header-section eyebrow="Dernières contributions" title="Articles récents">
       </app-header-section>
       <app-home-articles></app-home-articles>
-      
     </section>
   </div>
 </section>

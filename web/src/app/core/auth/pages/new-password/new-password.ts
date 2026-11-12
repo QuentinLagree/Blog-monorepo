@@ -18,36 +18,39 @@ import { BreadcrumbService } from 'src/app/shared/services/breadcrumb.service';
 })
 export class NewPasswordComponent {
   private _formBuilder: FormBuilder = inject(FormBuilder);
-  private _activatedRoute = inject(ActivatedRoute)
-  private _router = inject(Router)
-  private _auth: AuthService = inject(AuthService)
-  private _breadCrumb: BreadcrumbService = inject(BreadcrumbService)
+  private _activatedRoute = inject(ActivatedRoute);
+  private _router = inject(Router);
+  private _auth: AuthService = inject(AuthService);
+  private _breadCrumb: BreadcrumbService = inject(BreadcrumbService);
 
-      private queryParamsMap = toSignal(this._activatedRoute.queryParamMap, {
-        initialValue: this._activatedRoute.snapshot.queryParamMap    })
-    token = computed(() =>this.queryParamsMap()?.get('token') ?? 0);
-    email = computed(() =>this.queryParamsMap()?.get('email') ?? "");
+  private queryParamsMap = toSignal(this._activatedRoute.queryParamMap, {
+    initialValue: this._activatedRoute.snapshot.queryParamMap
+  });
+  token = computed(() => this.queryParamsMap()?.get('token') ?? 0);
+  email = computed(() => this.queryParamsMap()?.get('email') ?? '');
 
   loading = false;
-  constructor () {
+  constructor() {
     this._breadCrumb.set([
       {
-        label: 'Authentification',
+        label: 'Authentification'
       },
       {
         label: 'Modification de mot de passe'
       }
-    ])
+    ]);
   }
 
   passwordControl = new FormControl('Salut1234!', [PasswordInputValidatorFactory()]);
-  
-    confirmPasswordControl = new FormControl('Salut1234!', [PasswordInputValidatorFactory({
+
+  confirmPasswordControl = new FormControl('Salut1234!', [
+    PasswordInputValidatorFactory({
       required: true,
       options: {
         hasSameValueOf: this.passwordControl
       }
-    })]);
+    })
+  ]);
 
   form = this._formBuilder.group({
     password: this.passwordControl,
@@ -67,12 +70,16 @@ export class NewPasswordComponent {
 
     if (password === null || confirm_password === null) return;
 
-    
-    console.log(this.token().toString())
-    
+    console.log(this.token().toString());
+
     setTimeout(() => {
       this._auth
-        .changePassword({ email: this.email(), password, confirm_password, token: this.token().toString() })
+        .changePassword({
+          email: this.email(),
+          password,
+          confirm_password,
+          token: this.token().toString()
+        })
         .pipe(
           finalize(() => {
             this.loading = false;
@@ -80,11 +87,9 @@ export class NewPasswordComponent {
         )
         .subscribe({
           next: () => {
-            this._router.navigate([''])
+            this._router.navigate(['']);
           }
         });
     }, 2000);
-    
-      
   };
 }

@@ -2,34 +2,40 @@
    FONT FAMILIES
 ========================= */
 
-$font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-$font-mono: "Geist Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-$font-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+$font-sans:
+  'Inter',
+  system-ui,
+  -apple-system,
+  BlinkMacSystemFont,
+  'Segoe UI',
+  sans-serif;
+$font-mono: 'Geist Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+$font-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
 
 /* =========================
    FONT SIZES
 ========================= */
 
 $text-2xs: var(--text-2xl); // 11px
-$text-xs: var(--text-xs);    // 12px
-$text-sm: var(--text-sm);   // 14px
-$text-md: var(--text-md);       // 16px
-$text-lg: var(--text-lg);   // 18px
-$text-xl: var(--text-xl);    // 20px
-$text-2xl: var(--text-2xl);    // 24px
-$text-3xl: var(--text-3xl);      // 32px
-$text-4xl: var(--text-4xl);    // 40px
-$text-5xl: var(--text-5xl);      // 48px
-$text-6xl: var(--text-6xl);      // 64px
+$text-xs: var(--text-xs); // 12px
+$text-sm: var(--text-sm); // 14px
+$text-md: var(--text-md); // 16px
+$text-lg: var(--text-lg); // 18px
+$text-xl: var(--text-xl); // 20px
+$text-2xl: var(--text-2xl); // 24px
+$text-3xl: var(--text-3xl); // 32px
+$text-4xl: var(--text-4xl); // 40px
+$text-5xl: var(--text-5xl); // 48px
+$text-6xl: var(--text-6xl); // 64px
 
 /* =========================
    RESPONSIVE FONT SIZES
 ========================= */
 
 $title-xl: var(--title-xl);
-$title-lg: var(--title-lg);;
-$title-md: var(--title-md);;
-$title-sm: var(--title-sm);;
+$title-lg: var(--title-lg);
+$title-md: var(--title-md);
+$title-sm: var(--title-sm);
 
 $body-lg: var(--body-lg);
 $body-md: var(--body-md);

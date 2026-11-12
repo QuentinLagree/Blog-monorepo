@@ -15,7 +15,13 @@ import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-login-page',
-  imports: [ReactiveFormsModule, EmailInputComponent, InputPassswordComponent, BaseButtonComponent, RouterLink],
+  imports: [
+    ReactiveFormsModule,
+    EmailInputComponent,
+    InputPassswordComponent,
+    BaseButtonComponent,
+    RouterLink
+  ],
   standalone: true,
   templateUrl: './login.html',
   styleUrls: ['./login.scss']
@@ -24,23 +30,23 @@ export class LoginPageComponent {
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
   private _user: UserService = inject(UserService);
-  private _session: SessionService = inject(SessionService)
-  private _breadCrumb = inject(BreadcrumbService)
-  private _location = inject(Location)
+  private _session: SessionService = inject(SessionService);
+  private _breadCrumb = inject(BreadcrumbService);
+  private _location = inject(Location);
 
   loading = false;
 
   readonly prod: boolean = environment.production;
 
-  constructor () {
+  constructor() {
     this._breadCrumb.set([
       {
-        label: 'Authentification',
+        label: 'Authentification'
       },
       {
         label: 'Connection'
       }
-    ])
+    ]);
   }
 
   emailControl = new FormControl('', [
@@ -84,11 +90,11 @@ export class LoginPageComponent {
         )
         .subscribe({
           next: (response) => {
-            this._session.setSession(response.data)
+            this._session.setSession(response.data);
             try {
-              this._location.back()
+              this._location.back();
             } catch {
-              this._router.navigate([''])
+              this._router.navigate(['']);
             }
           }
         });
@@ -96,13 +102,12 @@ export class LoginPageComponent {
   };
 
   setFormWithMode(mode: 'admin' | 'user') {
-    let data = {
+    const data = {
       admin: ['lagreequentindev21@gmail.com', 'Salut1234!'],
       user: ['johndoe@gmail.com', 'Salut1234!']
-    }
+    };
 
-    this.emailControl.setValue(data[mode][0])
-    this.passwordControl.setValue(data[mode][1])
-    
+    this.emailControl.setValue(data[mode][0]);
+    this.passwordControl.setValue(data[mode][1]);
   }
 }

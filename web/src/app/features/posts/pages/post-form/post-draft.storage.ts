@@ -8,16 +8,16 @@ export interface PostDraft {
   updatedAt: number;
 }
 
-type PostDraftFormValue = {
+interface PostDraftFormValue {
   title?: string | null;
   description?: string | null;
   content?: string | null;
-};
+}
 
 export class PostDraftStorage {
   private subscription?: Subscription;
   private pendingIdleId: number | null = null;
-private pendingTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private pendingTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private lastSerializedDraft = '';
 
   private readonly savedSubject = new Subject<PostDraft>();
@@ -34,7 +34,7 @@ private pendingTimeoutId: ReturnType<typeof setTimeout> | null = null;
       {
         title: draft.title,
         description: draft.description,
-        content: draft.content,
+        content: draft.content
       },
       { emitEvent: false }
     );
@@ -47,11 +47,9 @@ private pendingTimeoutId: ReturnType<typeof setTimeout> | null = null;
   watch(form: FormGroup): void {
     this.subscription?.unsubscribe();
 
-    this.subscription = form.valueChanges
-      .pipe(debounceTime(700))
-      .subscribe(() => {
-        this.saveLater(this.createDraftFromForm(form));
-      });
+    this.subscription = form.valueChanges.pipe(debounceTime(700)).subscribe(() => {
+      this.saveLater(this.createDraftFromForm(form));
+    });
   }
 
   flush(form: FormGroup): void {
@@ -86,31 +84,31 @@ private pendingTimeoutId: ReturnType<typeof setTimeout> | null = null;
   }
 
   private saveLater(draft: PostDraft): void {
-  if (!this.shouldSave(draft)) return;
+    if (!this.shouldSave(draft)) return;
 
-  this.cancelPendingSave();
+    this.cancelPendingSave();
 
-  const save = () => this.saveNow(draft);
+    const save = () => this.saveNow(draft);
 
-  if ('requestIdleCallback' in globalThis) {
-    this.pendingIdleId = globalThis.requestIdleCallback(save, { timeout: 1500 });
-    return;
+    if ('requestIdleCallback' in globalThis) {
+      this.pendingIdleId = globalThis.requestIdleCallback(save, { timeout: 1500 });
+      return;
+    }
+
+    this.pendingTimeoutId = setTimeout(save, 250);
   }
 
-  this.pendingTimeoutId = setTimeout(save, 250);
-}
+  private cancelPendingSave(): void {
+    if (this.pendingIdleId !== null) {
+      globalThis.cancelIdleCallback?.(this.pendingIdleId);
+      this.pendingIdleId = null;
+    }
 
-private cancelPendingSave(): void {
-  if (this.pendingIdleId !== null) {
-    globalThis.cancelIdleCallback?.(this.pendingIdleId);
-    this.pendingIdleId = null;
+    if (this.pendingTimeoutId !== null) {
+      clearTimeout(this.pendingTimeoutId);
+      this.pendingTimeoutId = null;
+    }
   }
-
-  if (this.pendingTimeoutId !== null) {
-    clearTimeout(this.pendingTimeoutId);
-    this.pendingTimeoutId = null;
-  }
-}
 
   private saveNow(draft: PostDraft): void {
     if (!this.shouldSave(draft)) return;
@@ -138,7 +136,7 @@ private cancelPendingSave(): void {
       title: value.title ?? '',
       description: value.description ?? '',
       content: value.content ?? '',
-      updatedAt: Date.now(),
+      updatedAt: Date.now()
     };
   }
 
@@ -147,7 +145,7 @@ private cancelPendingSave(): void {
       title: value.title ?? '',
       description: value.description ?? '',
       content: value.content ?? '',
-      updatedAt: value.updatedAt ?? Date.now(),
+      updatedAt: value.updatedAt ?? Date.now()
     };
   }
 
@@ -155,7 +153,7 @@ private cancelPendingSave(): void {
     return JSON.stringify({
       title: draft.title,
       description: draft.description,
-      content: draft.content,
+      content: draft.content
     });
   }
 

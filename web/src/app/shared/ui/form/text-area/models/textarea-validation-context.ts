@@ -4,5 +4,5 @@ export interface TextAreaConfig {
   required: boolean;
   minLength?: number;
   maxLength?: number;
-  size?: 'full'
+  size?: 'full';
 }

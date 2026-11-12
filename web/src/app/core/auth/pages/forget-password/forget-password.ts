@@ -17,19 +17,19 @@ import { BreadcrumbService } from 'src/app/shared/services/breadcrumb.service';
 export class ForgetPasswordComponent {
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _auth: AuthService = inject(AuthService);
-  private _breadCrumb: BreadcrumbService = inject(BreadcrumbService)
+  private _breadCrumb: BreadcrumbService = inject(BreadcrumbService);
 
   loading = false;
 
-  constructor () {
+  constructor() {
     this._breadCrumb.set([
       {
-        label: 'Authentification',
+        label: 'Authentification'
       },
       {
         label: 'Mot de passe oublié'
       }
-    ])
+    ]);
   }
 
   emailControl = new FormControl('', [
@@ -39,7 +39,7 @@ export class ForgetPasswordComponent {
   ]);
 
   form = this._formBuilder.group({
-    email: this.emailControl,
+    email: this.emailControl
   });
 
   submit = () => {
@@ -52,15 +52,16 @@ export class ForgetPasswordComponent {
     this.loading = true;
 
     const { email } = this.form.getRawValue();
-    
-      this._auth
+
+    this._auth
       .getEmailForgetPassword({
-        email: email ?? ""
+        email: email ?? ''
       })
       .pipe(
         finalize(() => {
-          this.loading = false
+          this.loading = false;
         })
-      ).subscribe()
+      )
+      .subscribe();
   };
 }

@@ -1,7 +1,10 @@
 // core/http/interceptors/safe-session.interceptor.ts
 import { Injectable } from '@angular/core';
 import {
-  HttpEvent, HttpHandler, HttpInterceptor, HttpRequest,
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
   HttpResponse
 } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
@@ -12,7 +15,7 @@ export class SafeSessionInterceptor implements HttpInterceptor {
   private readonly SESSION_PATH = '/auth/session';
   private readonly TIMEOUT_MS = 6000;
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const isSession = req.url.includes(this.SESSION_PATH);
 
     return next.handle(req).pipe(

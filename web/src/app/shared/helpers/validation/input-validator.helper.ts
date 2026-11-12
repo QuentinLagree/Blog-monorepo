@@ -3,17 +3,16 @@ import { OptionalValideInput } from './optional-validator.helper';
 import { InputValidationContext } from '../../ui/form/inputs/models/input-validation-context.interface';
 import { TextAreaValidationContext } from '../../ui/form/text-area/models/textarea-validation-context.interface';
 
-export function validateInput(context: InputValidationContext | TextAreaValidationContext): ValidationErrors | null {
+export function validateInput(
+  context: InputValidationContext | TextAreaValidationContext
+): ValidationErrors | null {
   let errors: ValidationErrors = {};
 
   const value = context.value.trim() || '';
 
-
   if (!context.validate) return [];
 
-
   if (context.required && value === '') {
-
     if (context.type === 'select') {
       errors['required-select'] = true;
     } else if (context.type === 'multi-select') {

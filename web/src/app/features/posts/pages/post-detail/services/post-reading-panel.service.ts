@@ -1,21 +1,13 @@
-import {
-  Injectable,
-  signal,
-} from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
-const STORAGE_KEY =
-  'post-detail-reading-panel-opened';
+const STORAGE_KEY = 'post-detail-reading-panel-opened';
 
 @Injectable()
 export class PostReadingPanelService {
-  readonly opened = signal(
-    this.readInitialState(),
-  );
+  readonly opened = signal(this.readInitialState());
 
   toggle(): void {
-    this.setOpened(
-      !this.opened(),
-    );
+    this.setOpened(!this.opened());
   }
 
   open(): void {
@@ -26,37 +18,23 @@ export class PostReadingPanelService {
     this.setOpened(false);
   }
 
-  private setOpened(
-    opened: boolean,
-  ): void {
+  private setOpened(opened: boolean): void {
     this.opened.set(opened);
 
-    if (
-      typeof window === 'undefined'
-    ) {
+    if (typeof window === 'undefined') {
       return;
     }
 
-    window.localStorage.setItem(
-      STORAGE_KEY,
-      String(opened),
-    );
+    window.localStorage.setItem(STORAGE_KEY, String(opened));
   }
 
   private readInitialState(): boolean {
-    if (
-      typeof window === 'undefined'
-    ) {
+    if (typeof window === 'undefined') {
       return true;
     }
 
-    const stored =
-      window.localStorage.getItem(
-        STORAGE_KEY,
-      );
+    const stored = window.localStorage.getItem(STORAGE_KEY);
 
-    return stored === null
-      ? true
-      : stored === 'true';
+    return stored === null ? true : stored === 'true';
   }
 }

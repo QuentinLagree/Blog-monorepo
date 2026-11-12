@@ -1,35 +1,44 @@
-import { Component, ElementRef, EventEmitter, input, Input, InputSignal, Output, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  input,
+  InputSignal,
+  Output,
+  viewChild
+} from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TextAreaConfig } from './models/textarea-validation-context';
 import { InputErrorComponent } from '../inputs/inputs-error/inputs-error';
 import { BaseFormElementComponent } from '../inputs/base-input';
 import { MarkdownSyntax } from '../../context-menu/types/markdownOptions.interface';
-import { applyMarkdownSyntax, getSelectedLine, getSyntaxSelection, setNewLineWithSyntax } from '@src/app/shared/helpers/markdown/markdown.helper';
-import { MarkdownSyntaxOptions } from '../../context-menu/config/context-menu-options';
+import {
+  applyMarkdownSyntax,
+  setNewLineWithSyntax
+} from '@src/app/shared/helpers/markdown/markdown.helper';
 
 @Component({
   selector: 'app-textarea',
   imports: [ReactiveFormsModule, InputErrorComponent],
   templateUrl: './text-area.html',
   styles: `
-  @use 'variables' as *;
+    @use 'variables' as *;
 
-  .textarea-field {
-    height: 100%;
-  }
+    .textarea-field {
+      height: 100%;
+    }
 
-  .textarea-field__control {
-    height: 100%;
-  }
+    .textarea-field__control {
+      height: 100%;
+    }
 
-  .form-control--flat {
-    box-shadow: none;
-  }
+    .form-control--flat {
+      box-shadow: none;
+    }
   `,
   standalone: true
 })
 export class TextAreaComponent extends BaseFormElementComponent<TextAreaConfig> {
-
   textareaComponent = viewChild<ElementRef<HTMLTextAreaElement>>('textarea');
   @Output()
   scrolled = new EventEmitter<number>();
@@ -37,19 +46,19 @@ export class TextAreaComponent extends BaseFormElementComponent<TextAreaConfig> 
   override defaultConfiguration: TextAreaConfig = {
     label: 'Text',
     placeholder: 'placeholder : text',
-    required: true,
+    required: true
   };
 
-  noShadow: InputSignal<boolean> = input(false)
+  noShadow: InputSignal<boolean> = input(false);
 
-  markdownSetNewLine () {
+  markdownSetNewLine() {
     const textarea = this.textareaComponent()?.nativeElement;
-    if (!textarea) throw new Error("Erreur: Le champs 'textarea' est introuvable ou n'existe pas!")
-    setNewLineWithSyntax(textarea, this)
-  } 
+    if (!textarea) throw new Error("Erreur: Le champs 'textarea' est introuvable ou n'existe pas!");
+    setNewLineWithSyntax(textarea, this);
+  }
 
   applySyntax(item: MarkdownSyntax) {
-    applyMarkdownSyntax(item, this)
+    applyMarkdownSyntax(item, this);
   }
 
   onScroll() {
@@ -58,7 +67,7 @@ export class TextAreaComponent extends BaseFormElementComponent<TextAreaConfig> 
     this.scrolled.emit(el.scrollTop);
   }
 
-  getElement (): ElementRef<HTMLTextAreaElement> | null {
+  getElement(): ElementRef<HTMLTextAreaElement> | null {
     return this.textareaComponent() ?? null;
   }
 }

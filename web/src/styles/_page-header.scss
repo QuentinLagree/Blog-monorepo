@@ -7,8 +7,7 @@
 .page-header {
   padding: $space-8;
 
-  background:
-    $surface;
+  background: $surface;
 
   border: 1px solid $border;
   border-radius: $radius-lg;
@@ -17,8 +16,7 @@
 
 .page-header--soft {
   background:
-    radial-gradient(circle at top left, rgba($primary, 0.06), transparent 24rem),
-    $surface-soft;
+    radial-gradient(circle at top left, rgba($primary, 0.06), transparent 24rem), $surface-soft;
 }
 
 .page-header--flat {

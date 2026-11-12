@@ -6,63 +6,66 @@ import {
   Output,
   Signal,
   computed,
-  signal,
+  signal
 } from '@angular/core';
 import { BaseButtonComponent } from '../form/buttons/base-button';
 import { FormControl } from '@angular/forms';
 import { SelectValidatorFactory } from '../form/selects/models/select-validator.factory';
 
-
 @Component({
   standalone: true,
-  selector: 'ng-paginator',
+  selector: 'app-paginator',
   styleUrl: './paginator.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [BaseButtonComponent],
   template: `
     @if (pageCount() > 1) {
-  <nav class="paginator" aria-label="Pagination">
-    <div class="paginator__pages">
-      @for (page of pages(); track page) {
-        <app-button
-          size="sm"
-          [type]="page === currentPage() ? 'secondary' : 'ghost'"
-          [label]="page.toString()"
-          (click)="goToPage(page)">
-        </app-button>
-      }
-    </div>
-    <div class="paginator__controls">
-      Limite:
-      <div class="paginator__pages">
-      @for (limit of limits(); track limit) {
-        <app-button
-          size="sm"
-          [type]="limit === pageSize() ? 'secondary' : 'ghost'"
-          [label]="limit.toString()"
-          (click)="changeSize(limit)">
-        </app-button>
-      }
-    </div>
-      <app-button
-        size="sm"
-        type="secondary"
-        label="Précédent"
-        (click)="previous()"
-        [disabled]="currentPage() === 1">
-      </app-button>
+      <nav class="paginator" aria-label="Pagination">
+        <div class="paginator__pages">
+          @for (page of pages(); track page) {
+            <app-button
+              size="sm"
+              [type]="page === currentPage() ? 'secondary' : 'ghost'"
+              [label]="page.toString()"
+              (click)="goToPage(page)"
+            >
+            </app-button>
+          }
+        </div>
+        <div class="paginator__controls">
+          Limite:
+          <div class="paginator__pages">
+            @for (limit of limits(); track limit) {
+              <app-button
+                size="sm"
+                [type]="limit === pageSize() ? 'secondary' : 'ghost'"
+                [label]="limit.toString()"
+                (click)="changeSize(limit)"
+              >
+              </app-button>
+            }
+          </div>
+          <app-button
+            size="sm"
+            type="secondary"
+            label="Précédent"
+            (click)="previous()"
+            [disabled]="currentPage() === 1"
+          >
+          </app-button>
 
-      <app-button
-        size="sm"
-        type="secondary"
-        label="Suivant"
-        (click)="next()"
-        [disabled]="currentPage() === pageCount()">
-      </app-button>
-    </div>
-  </nav>
-}
-  `,
+          <app-button
+            size="sm"
+            type="secondary"
+            label="Suivant"
+            (click)="next()"
+            [disabled]="currentPage() === pageCount()"
+          >
+          </app-button>
+        </div>
+      </nav>
+    }
+  `
 })
 export class PaginatorComponent {
   @Output() pageChange = new EventEmitter<number>();
@@ -87,23 +90,19 @@ export class PaginatorComponent {
   selectControl = new FormControl('', [
     SelectValidatorFactory({
       validate: false,
-      required: false,
+      required: false
     })
   ]);
 
-  limits: Signal<number[]> = signal([2, 5, 10])
+  limits: Signal<number[]> = signal([2, 5, 10]);
 
   currentPage = this._currentPage.asReadonly();
   pageSize = this._pageSize.asReadonly();
   totalItems = this._totalItems.asReadonly();
 
-  pageCount = computed(() =>
-    Math.ceil(this.totalItems() / this.pageSize())
-  );
+  pageCount = computed(() => Math.ceil(this.totalItems() / this.pageSize()));
 
-  pages = computed(() =>
-    Array.from({ length: this.pageCount() }, (_, index) => index + 1)
-  );
+  pages = computed(() => Array.from({ length: this.pageCount() }, (_, index) => index + 1));
 
   goToPage(page: number): void {
     if (page < 1 || page > this.pageCount()) return;

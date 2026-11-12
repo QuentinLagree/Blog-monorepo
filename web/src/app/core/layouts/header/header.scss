@@ -64,15 +64,14 @@
   flex: 0 0 auto;
 
   background:
-    radial-gradient(circle at 35% 30%, rgba($secondary, 0.28), transparent 42%),
-    $primary-soft;
+    radial-gradient(circle at 35% 30%, rgba($secondary, 0.28), transparent 42%), $primary-soft;
 
   border: 1px solid rgba($primary, 0.16);
   border-radius: $radius-sm;
 }
 
 .header-logo::before {
-  content: "";
+  content: '';
 
   width: 0.72rem;
   height: 0.72rem;
@@ -88,7 +87,7 @@
 }
 
 .header-logo::after {
-  content: "";
+  content: '';
 
   position: absolute;
   inset: 0.45rem;

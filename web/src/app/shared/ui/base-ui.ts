@@ -1,4 +1,12 @@
-import { AfterViewInit, Component, HostListener, inject, signal, Signal, WritableSignal } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  HostListener,
+  inject,
+  signal,
+  Signal,
+  WritableSignal
+} from '@angular/core';
 import { BaseButtonComponent } from './form/buttons/base-button';
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { TextInputValidatorFactory } from './form/inputs/input/validators/input-text-validator.factory';
@@ -7,18 +15,18 @@ import { MutliSelectValidatorFactory } from './form/selects/models/multi-select-
 import { SwitchButtonComponent } from './form/switch-button/switch-button';
 import { InputPassswordComponent } from './form/inputs/inputs-password/inputs-password';
 import { ToastService } from 'src/app/shared/helpers/toasts/toaster.service';
-import { SubmitButtonComponent } from "./form/buttons/button-submit/button-submit";
+import { SubmitButtonComponent } from './form/buttons/button-submit/button-submit';
 import { SelectValidatorFactory } from './form/selects/models/select-validator.factory';
 import { TextAreaValidatorFactory } from './form/text-area/validators/textarea-validator.factory';
-import { TextAreaComponent } from "./form/text-area/text-area";
+import { TextAreaComponent } from './form/text-area/text-area';
 import { MarkdownSyntaxOptions } from './context-menu/config/context-menu-options';
-import { EditButtonComponent } from "./form/buttons/button-edit/button-edit";
-import { DangerButtonComponent } from "./form/buttons/button-danger/button-danger";
-import { ButtonAddComponent } from "./form/buttons/button-add/button-add";
+import { EditButtonComponent } from './form/buttons/button-edit/button-edit';
+import { DangerButtonComponent } from './form/buttons/button-danger/button-danger';
+import { ButtonAddComponent } from './form/buttons/button-add/button-add';
 import { Post } from 'src/app/features/posts/model/post.model';
-import { HeaderComponent } from "src/app/core/layouts/header/header";
-import { HeaderContentComponent } from "./content/header-content/header-content";
-import { HeaderSectionComponent } from "./content/header-section/header-section";
+
+import { HeaderContentComponent } from './content/header-content/header-content';
+import { HeaderSectionComponent } from './content/header-section/header-section';
 
 @Component({
   selector: 'app-generic-ui',
@@ -37,25 +45,24 @@ import { HeaderSectionComponent } from "./content/header-section/header-section"
     ButtonAddComponent,
     HeaderContentComponent,
     HeaderSectionComponent
-]
+  ]
 })
 export class UIComponent implements AfterViewInit {
   private readonly _formBuilder: FormBuilder = inject(FormBuilder);
   private readonly _toastService: ToastService = inject(ToastService);
-  syntaxChoice: WritableSignal<string> = signal("Aucun choix")
-  options = MarkdownSyntaxOptions
+  syntaxChoice: WritableSignal<string> = signal('Aucun choix');
+  options = MarkdownSyntaxOptions;
 
-  
   exemplePost: Signal<Post> = signal({
     id: 1,
     authorId: 1,
     title: 'Premier post',
     content: 'Ceci est le contenu de mon premier post.',
-    description: "Ceci est une description de la publication",
+    description: 'Ceci est une description de la publication',
     published_at: new Date(Date.now()).toISOString().toString(),
     created_at: new Date(Date.now())
   });
-  
+
   textControl = new FormControl('', [
     TextInputValidatorFactory({
       validate: false,
@@ -65,7 +72,7 @@ export class UIComponent implements AfterViewInit {
   selectControl = new FormControl('', [
     SelectValidatorFactory({
       validate: false,
-      required: false,
+      required: false
     })
   ]);
   selectMultipleControl = new FormControl('', [
@@ -75,14 +82,16 @@ export class UIComponent implements AfterViewInit {
       maxlength: 2
     })
   ]);
-  checkboxControl: FormControl<boolean> = new FormControl(true, {
-      nonNullable: true,
-    });
+  checkboxControl = new FormControl<boolean>(true, {
+    nonNullable: true
+  });
 
-  textareaControl = new FormControl('', [TextAreaValidatorFactory({
-    validate: false,
-    required: false
-  })])
+  textareaControl = new FormControl('', [
+    TextAreaValidatorFactory({
+      validate: false,
+      required: false
+    })
+  ]);
 
   form = this._formBuilder.group({
     text: this.textControl,
@@ -100,12 +109,12 @@ export class UIComponent implements AfterViewInit {
     localStorage.setItem('scrollY', window.scrollY.toString());
   }
 
-  actionHandle = (_data: any, syntaxName: string) => {
-  this.syntaxChoice.set(syntaxName);
-};
+  actionHandle = (_data: unknown, syntaxName: string) => {
+    this.syntaxChoice.set(syntaxName);
+  };
 
   ngAfterViewInit(): void {
-    this._toastService.info("Toast information", {
+    this._toastService.info('Toast information', {
       duration: 1000000
     });
     setTimeout(() => {

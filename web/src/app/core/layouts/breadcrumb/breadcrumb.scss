@@ -60,6 +60,10 @@ i:hover svg {
 }
 
 .breadcrumb__back {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
   cursor: pointer;
 }
 
@@ -77,7 +81,6 @@ i:hover svg {
   background: rgba($primary, 0.08);
   text-decoration: none;
 }
-
 
 .breadcrumb__link:active {
   transform: scale(0.98);
@@ -105,7 +108,7 @@ i:hover svg {
 }
 
 .breadcrumb__split {
-  content: "•";
+  content: '•';
   scale: 1.2;
   margin-right: 0.65em;
   color: $border-strong;

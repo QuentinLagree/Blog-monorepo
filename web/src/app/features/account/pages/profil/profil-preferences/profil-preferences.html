@@ -1,30 +1,23 @@
 <form class="profile-preferences form" [formGroup]="preferencesForm">
+  <section class="profile-preferences__group card card--md">
+    <header class="profile-preferences__group-header">
+      <div>
+        <p class="card__eyebrow">Personnalisation</p>
 
-              <section class="profile-preferences__group card card--md">
-                <header class="profile-preferences__group-header">
-                  <div>
-                    <p class="card__eyebrow">
-                      Personnalisation
-                    </p>
+        <h3 class="card__title">Apparence</h3>
 
-                    <h3 class="card__title">
-                      Apparence
-                    </h3>
+        <p class="card__description">Adapte l’interface à tes habitudes de navigation.</p>
+      </div>
+    </header>
 
-                    <p class="card__description">
-                      Adapte l’interface à tes habitudes de navigation.
-                    </p>
-                  </div>
-                </header>
+    <div class="profile-preferences__select-grid">
+      <article class="profile-preferences__select-card card card--sm card--soft">
+        <div class="profile-preferences__select-icon" aria-hidden="true">Aa</div>
 
-                <div class="profile-preferences__select-grid">
-                  <article class="profile-preferences__select-card card card--sm card--soft">
-                    <div class="profile-preferences__select-icon" aria-hidden="true">
-                      Aa
-                    </div>
-
-                    <div class="profile-preferences__select-content">
-                      <app-select [control]="themeControl" [configuration]="{
+        <div class="profile-preferences__select-content">
+          <app-select
+            [control]="themeControl"
+            [configuration]="{
                           label: 'Thème',
                           required: true,
                           placeholder: 'Sélectionne un thème',
@@ -35,18 +28,19 @@
                             'Crème',
                             'Sombre'
                           ]
-                        }">
-                      </app-select>
-                    </div>
-                  </article>
+                        }"
+          >
+          </app-select>
+        </div>
+      </article>
 
-                  <article class="profile-preferences__select-card card card--sm card--soft">
-                    <div class="profile-preferences__select-icon" aria-hidden="true">
-                      T
-                    </div>
+      <article class="profile-preferences__select-card card card--sm card--soft">
+        <div class="profile-preferences__select-icon" aria-hidden="true">T</div>
 
-                    <div class="profile-preferences__select-content">
-                      <app-select [control]="fontSizeControl" [configuration]="{
+        <div class="profile-preferences__select-content">
+          <app-select
+            [control]="fontSizeControl"
+            [configuration]="{
                           label: 'Taille du texte',
                           required: true,
                           placeholder: 'Sélectionne une taille',
@@ -56,355 +50,311 @@
                             'Moyenne',
                             'Grande'
                           ]
-                        }">
-                      </app-select>
-                    </div>
-                  </article>
-                </div>
+                        }"
+          >
+          </app-select>
+        </div>
+      </article>
+    </div>
 
-                <div class="profile-preferences__options-grid">
-                  <article class="profile-preference-card card card--sm">
-                    <div class="profile-preference-card__main">
-                      <div class="profile-preference-card__icon" aria-hidden="true">
-                        ✦
-                      </div>
+    <div class="profile-preferences__options-grid">
+      <article class="profile-preference-card card card--sm">
+        <div class="profile-preference-card__main">
+          <div class="profile-preference-card__icon" aria-hidden="true">✦</div>
 
-                      <div class="profile-preference-card__content">
-                        <span class="card__badge card__badge--primary">
-                          Confort
-                        </span>
+          <div class="profile-preference-card__content">
+            <span class="card__badge card__badge--primary"> Confort </span>
 
-                        <strong>
-                          Réduire les animations
-                        </strong>
-                      </div>
-                    </div>
+            <strong> Réduire les animations </strong>
+          </div>
+        </div>
 
-                    <app-switch-button [control]="reduceAnimationsControl" [configuration]="{
+        <app-switch-button
+          [control]="reduceAnimationsControl"
+          [configuration]="{
                         label: ' ',
                         required: false
-                      }">
-                    </app-switch-button>
-                  </article>
-                </div>
-              </section>
+                      }"
+        >
+        </app-switch-button>
+      </article>
+    </div>
+  </section>
 
-              <section class="profile-preferences__group card card--md">
-                <header class="profile-preferences__group-header">
-                  <div>
-                    <p class="card__eyebrow">
-                      Expérience
-                    </p>
+  <section class="profile-preferences__group card card--md">
+    <header class="profile-preferences__group-header">
+      <div>
+        <p class="card__eyebrow">Expérience</p>
 
-                    <h3 class="card__title">
-                      Lecture
-                    </h3>
+        <h3 class="card__title">Lecture</h3>
 
-                    <p class="card__description">
-                      Choisis les informations affichées autour des articles.
-                    </p>
-                  </div>
-                </header>
+        <p class="card__description">Choisis les informations affichées autour des articles.</p>
+      </div>
+    </header>
 
-                <div class="profile-preferences__options-grid">
-                  <article class="profile-preference-card card card--sm">
-                    <div class="profile-preference-card__main">
-                      <div class="profile-preference-card__icon" aria-hidden="true">
-                        ⏱
-                      </div>
+    <div class="profile-preferences__options-grid">
+      <article class="profile-preference-card card card--sm">
+        <div class="profile-preference-card__main">
+          <div class="profile-preference-card__icon" aria-hidden="true">⏱</div>
 
-                      <div class="profile-preference-card__content">
-                        <span class="card__badge card__badge--info">
-                          Articles
-                        </span>
+          <div class="profile-preference-card__content">
+            <span class="card__badge card__badge--info"> Articles </span>
 
-                        <strong>
-                          Afficher le temps de lecture
-                        </strong>
-                      </div>
-                    </div>
+            <strong> Afficher le temps de lecture </strong>
+          </div>
+        </div>
 
-                    <app-switch-button [control]="showReadingTimeControl" [configuration]="{
+        <app-switch-button
+          [control]="showReadingTimeControl"
+          [configuration]="{
                         label: ' ',
                         required: false
-                      }">
-                    </app-switch-button>
-                  </article>
+                      }"
+        >
+        </app-switch-button>
+      </article>
 
-                  <article class="profile-preference-card card card--sm">
-                    <div class="profile-preference-card__main">
-                      <div class="profile-preference-card__icon" aria-hidden="true">
-                        A
-                      </div>
+      <article class="profile-preference-card card card--sm">
+        <div class="profile-preference-card__main">
+          <div class="profile-preference-card__icon" aria-hidden="true">A</div>
 
-                      <div class="profile-preference-card__content">
-                        <span class="card__badge card__badge--secondary">
-                          Auteur
-                        </span>
+          <div class="profile-preference-card__content">
+            <span class="card__badge card__badge--secondary"> Auteur </span>
 
-                        <strong>
-                          Afficher les informations de l’auteur
-                        </strong>
-                      </div>
-                    </div>
+            <strong> Afficher les informations de l’auteur </strong>
+          </div>
+        </div>
 
-                    <app-switch-button [control]="showAuthorDetailsControl" [configuration]="{
+        <app-switch-button
+          [control]="showAuthorDetailsControl"
+          [configuration]="{
                         label: ' ',
                         required: false
-                      }">
-                    </app-switch-button>
-                  </article>
+                      }"
+        >
+        </app-switch-button>
+      </article>
 
-                  <article class="profile-preference-card card card--sm">
-                    <div class="profile-preference-card__main">
-                      <div class="profile-preference-card__icon" aria-hidden="true">
-                        ✓
-                      </div>
+      <article class="profile-preference-card card card--sm">
+        <div class="profile-preference-card__main">
+          <div class="profile-preference-card__icon" aria-hidden="true">✓</div>
 
-                      <div class="profile-preference-card__content">
-                        <span class="card__badge card__badge--success">
-                          Historique
-                        </span>
+          <div class="profile-preference-card__content">
+            <span class="card__badge card__badge--success"> Historique </span>
 
-                        <strong>
-                          Masquer les articles déjà lus
-                        </strong>
-                      </div>
-                    </div>
+            <strong> Masquer les articles déjà lus </strong>
+          </div>
+        </div>
 
-                    <app-switch-button [control]="hideReadPostsControl" [configuration]="{
+        <app-switch-button
+          [control]="hideReadPostsControl"
+          [configuration]="{
                         label: ' ',
                         required: false
-                      }">
-                    </app-switch-button>
-                  </article>
-                </div>
-              </section>
+                      }"
+        >
+        </app-switch-button>
+      </article>
+    </div>
+  </section>
 
-              <section class="profile-preferences__group card card--md">
-                <header class="profile-preferences__group-header">
-                  <div>
-                    <p class="card__eyebrow">
-                      Alertes
-                    </p>
+  <section class="profile-preferences__group card card--md">
+    <header class="profile-preferences__group-header">
+      <div>
+        <p class="card__eyebrow">Alertes</p>
 
-                    <h3 class="card__title">
-                      Notifications
-                    </h3>
+        <h3 class="card__title">Notifications</h3>
 
-                    <p class="card__description">
-                      Sélectionne les événements pour lesquels tu souhaites être prévenu.
-                    </p>
-                  </div>
-                </header>
+        <p class="card__description">
+          Sélectionne les événements pour lesquels tu souhaites être prévenu.
+        </p>
+      </div>
+    </header>
 
-                <div class="profile-preferences__options-grid">
-                  <article class="profile-preference-card card card--sm">
-                    <div class="profile-preference-card__main">
-                      <div class="profile-preference-card__icon" aria-hidden="true">
-                        ♥
-                      </div>
+    <div class="profile-preferences__options-grid">
+      <article class="profile-preference-card card card--sm">
+        <div class="profile-preference-card__main">
+          <div class="profile-preference-card__icon" aria-hidden="true">♥</div>
 
-                      <div class="profile-preference-card__content">
-                        <span class="card__badge card__badge--danger">
-                          Interactions
-                        </span>
+          <div class="profile-preference-card__content">
+            <span class="card__badge card__badge--danger"> Interactions </span>
 
-                        <strong>
-                          Nouveaux likes
-                        </strong>
-                      </div>
-                    </div>
+            <strong> Nouveaux likes </strong>
+          </div>
+        </div>
 
-                    <app-switch-button [control]="notifyOnLikeControl" [configuration]="{
+        <app-switch-button
+          [control]="notifyOnLikeControl"
+          [configuration]="{
                         label: ' ',
                         required: false
-                      }">
-                    </app-switch-button>
-                  </article>
+                      }"
+        >
+        </app-switch-button>
+      </article>
 
-                  <article class="profile-preference-card card card--sm">
-                    <div class="profile-preference-card__main">
-                      <div class="profile-preference-card__icon" aria-hidden="true">
-                        +
-                      </div>
+      <article class="profile-preference-card card card--sm">
+        <div class="profile-preference-card__main">
+          <div class="profile-preference-card__icon" aria-hidden="true">+</div>
 
-                      <div class="profile-preference-card__content">
-                        <span class="card__badge card__badge--primary">
-                          Collaboration
-                        </span>
+          <div class="profile-preference-card__content">
+            <span class="card__badge card__badge--primary"> Collaboration </span>
 
-                        <strong>
-                          Nouvelles contributions
-                        </strong>
-                      </div>
-                    </div>
+            <strong> Nouvelles contributions </strong>
+          </div>
+        </div>
 
-                    <app-switch-button [control]="notifyOnContributionControl" [configuration]="{
+        <app-switch-button
+          [control]="notifyOnContributionControl"
+          [configuration]="{
                         label: ' ',
                         required: false
-                      }">
-                    </app-switch-button>
-                  </article>
+                      }"
+        >
+        </app-switch-button>
+      </article>
 
-                  <article class="profile-preference-card card card--sm">
-                    <div class="profile-preference-card__main">
-                      <div class="profile-preference-card__icon" aria-hidden="true">
-                        @
-                      </div>
+      <article class="profile-preference-card card card--sm">
+        <div class="profile-preference-card__main">
+          <div class="profile-preference-card__icon" aria-hidden="true">@</div>
 
-                      <div class="profile-preference-card__content">
-                        <span class="card__badge card__badge--info">
-                          Communication
-                        </span>
+          <div class="profile-preference-card__content">
+            <span class="card__badge card__badge--info"> Communication </span>
 
-                        <strong>
-                          Notifications par e-mail
-                        </strong>
-                      </div>
-                    </div>
+            <strong> Notifications par e-mail </strong>
+          </div>
+        </div>
 
-                    <app-switch-button [control]="emailNotificationsControl" [configuration]="{
+        <app-switch-button
+          [control]="emailNotificationsControl"
+          [configuration]="{
                         label: ' ',
                         required: false
-                      }">
-                    </app-switch-button>
-                  </article>
+                      }"
+        >
+        </app-switch-button>
+      </article>
 
-                  <article class="profile-preference-card card card--sm">
-                    <div class="profile-preference-card__main">
-                      <div class="profile-preference-card__icon" aria-hidden="true">
-                        N
-                      </div>
+      <article class="profile-preference-card card card--sm">
+        <div class="profile-preference-card__main">
+          <div class="profile-preference-card__icon" aria-hidden="true">N</div>
 
-                      <div class="profile-preference-card__content">
-                        <span class="card__badge card__badge--warning">
-                          Actualités
-                        </span>
+          <div class="profile-preference-card__content">
+            <span class="card__badge card__badge--warning"> Actualités </span>
 
-                        <strong>
-                          Newsletter
-                        </strong>
-                      </div>
-                    </div>
+            <strong> Newsletter </strong>
+          </div>
+        </div>
 
-                    <app-switch-button [control]="newsletterControl" [configuration]="{
+        <app-switch-button
+          [control]="newsletterControl"
+          [configuration]="{
                         label: ' ',
                         required: false
-                      }">
-                    </app-switch-button>
-                  </article>
-                </div>
-              </section>
+                      }"
+        >
+        </app-switch-button>
+      </article>
+    </div>
+  </section>
 
-              <section class="profile-preferences__group card card--md">
-                <header class="profile-preferences__group-header">
-                  <div>
-                    <p class="card__eyebrow">
-                      Visibilité
-                    </p>
+  <section class="profile-preferences__group card card--md">
+    <header class="profile-preferences__group-header">
+      <div>
+        <p class="card__eyebrow">Visibilité</p>
 
-                    <h3 class="card__title">
-                      Confidentialité
-                    </h3>
+        <h3 class="card__title">Confidentialité</h3>
 
-                    <p class="card__description">
-                      Contrôle les informations affichées sur ton profil public.
-                    </p>
-                  </div>
-                </header>
+        <p class="card__description">Contrôle les informations affichées sur ton profil public.</p>
+      </div>
+    </header>
 
-                <div class="profile-preferences__options-grid">
-                  <article class="profile-preference-card card card--sm">
-                    <div class="profile-preference-card__main">
-                      <div class="profile-preference-card__icon" aria-hidden="true">
-                        P
-                      </div>
+    <div class="profile-preferences__options-grid">
+      <article class="profile-preference-card card card--sm">
+        <div class="profile-preference-card__main">
+          <div class="profile-preference-card__icon" aria-hidden="true">P</div>
 
-                      <div class="profile-preference-card__content">
-                        <span class="card__badge card__badge--primary">
-                          Profil
-                        </span>
+          <div class="profile-preference-card__content">
+            <span class="card__badge card__badge--primary"> Profil </span>
 
-                        <strong>
-                          Profil public
-                        </strong>
-                      </div>
-                    </div>
+            <strong> Profil public </strong>
+          </div>
+        </div>
 
-                    <app-switch-button [control]="profileVisibleControl" [configuration]="{
+        <app-switch-button
+          [control]="profileVisibleControl"
+          [configuration]="{
                         label: ' ',
                         required: false
-                      }">
-                    </app-switch-button>
-                  </article>
+                      }"
+        >
+        </app-switch-button>
+      </article>
 
-                  <article class="profile-preference-card card card--sm">
-                    <div class="profile-preference-card__main">
-                      <div class="profile-preference-card__icon" aria-hidden="true">
-                        ♥
-                      </div>
+      <article class="profile-preference-card card card--sm">
+        <div class="profile-preference-card__main">
+          <div class="profile-preference-card__icon" aria-hidden="true">♥</div>
 
-                      <div class="profile-preference-card__content">
-                        <span class="card__badge card__badge--danger">
-                          Activité
-                        </span>
+          <div class="profile-preference-card__content">
+            <span class="card__badge card__badge--danger"> Activité </span>
 
-                        <strong>
-                          Afficher mes articles aimés
-                        </strong>
-                      </div>
-                    </div>
+            <strong> Afficher mes articles aimés </strong>
+          </div>
+        </div>
 
-                    <app-switch-button [control]="showLikedPostsControl" [configuration]="{
+        <app-switch-button
+          [control]="showLikedPostsControl"
+          [configuration]="{
                         label: ' ',
                         required: false
-                      }">
-                    </app-switch-button>
-                  </article>
+                      }"
+        >
+        </app-switch-button>
+      </article>
 
-                  <article class="profile-preference-card card card--sm">
-                    <div class="profile-preference-card__main">
-                      <div class="profile-preference-card__icon" aria-hidden="true">
-                        C
-                      </div>
+      <article class="profile-preference-card card card--sm">
+        <div class="profile-preference-card__main">
+          <div class="profile-preference-card__icon" aria-hidden="true">C</div>
 
-                      <div class="profile-preference-card__content">
-                        <span class="card__badge card__badge--secondary">
-                          Collaboration
-                        </span>
+          <div class="profile-preference-card__content">
+            <span class="card__badge card__badge--secondary"> Collaboration </span>
 
-                        <strong>
-                          Afficher mes contributions
-                        </strong>
-                      </div>
-                    </div>
+            <strong> Afficher mes contributions </strong>
+          </div>
+        </div>
 
-                    <app-switch-button [control]="showContributionsControl" [configuration]="{
+        <app-switch-button
+          [control]="showContributionsControl"
+          [configuration]="{
                         label: ' ',
                         required: false
-                      }">
-                    </app-switch-button>
-                  </article>
-                </div>
-              </section>
+                      }"
+        >
+        </app-switch-button>
+      </article>
+    </div>
+  </section>
 
-              <footer class="profile-preferences__actions card card--md card--soft">
-                <div class="profile-preferences__actions-content">
-                  <strong>
-                    Enregistrer les modifications
-                  </strong>
+  <footer class="profile-preferences__actions card card--md card--soft">
+    <div class="profile-preferences__actions-content">
+      <strong> Enregistrer les modifications </strong>
 
-                  <span>
-                    Tes nouvelles préférences seront appliquées immédiatement.
-                  </span>
-                </div>
+      <span> Tes nouvelles préférences seront appliquées immédiatement. </span>
+    </div>
 
-                <app-button type="primary" size="sm" icon="icon-check" label="Enregistrer" nativeType="button"
-                  [disabled]="
+    <app-button
+      type="primary"
+      size="sm"
+      icon="icon-check"
+      label="Enregistrer"
+      nativeType="button"
+      [disabled]="
                     preferencesForm.invalid ||
                     preferencesSaving()
-                  " [loading]="preferencesSaving()" (clicked)="savePreferences()">
-                </app-button>
-              </footer>
-            </form>
+                  "
+      [loading]="preferencesSaving()"
+      (clicked)="savePreferences()"
+    >
+    </app-button>
+  </footer>
+</form>

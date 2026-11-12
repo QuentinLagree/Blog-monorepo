@@ -93,10 +93,8 @@
   overflow: visible;
 }
 
-.profile-preferences__select-card:focus-within
-.profile-preferences__select-content,
-.profile-preferences__select-card:focus-within
-.profile-preferences__select-content app-select {
+.profile-preferences__select-card:focus-within .profile-preferences__select-content,
+.profile-preferences__select-card:focus-within .profile-preferences__select-content app-select {
   z-index: 200;
 }
 
@@ -144,23 +142,17 @@
    SELECT STACKING
 ========================= */
 
-.profile-preferences__group:has(
-  .profile-preferences__select-card:focus-within
-) {
+.profile-preferences__group:has(.profile-preferences__select-card:focus-within) {
   z-index: 50;
 }
 
-.profile-preferences__group:has(
-  .profile-preferences__select-card:focus-within
-)
-.profile-preferences__select-grid {
+.profile-preferences__group:has(.profile-preferences__select-card:focus-within)
+  .profile-preferences__select-grid {
   z-index: 100;
 }
 
-.profile-preferences__group:has(
-  .profile-preferences__select-card:focus-within
-)
-.profile-preferences__options-grid {
+.profile-preferences__group:has(.profile-preferences__select-card:focus-within)
+  .profile-preferences__options-grid {
   z-index: 0;
 }
 

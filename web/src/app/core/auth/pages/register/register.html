@@ -2,23 +2,17 @@
   <div class="auth-page__container auth-page__container--wide">
     <div class="form-card auth-card register-card">
       <header class="form-card__header">
-        <p class="text-eyebrow">
-          Inscription
-        </p>
+        <p class="text-eyebrow">Inscription</p>
 
-        <h1 class="form-card__title">
-          Crée ton espace
-        </h1>
+        <h1 class="form-card__title">Crée ton espace</h1>
 
         <p class="form-card__description">
-          Rejoins la communauté pour publier tes articles, sauvegarder tes brouillons et personnaliser ton expérience.
+          Rejoins la communauté pour publier tes articles, sauvegarder tes brouillons et
+          personnaliser ton expérience.
         </p>
       </header>
 
-      <form
-        [formGroup]="form"
-        class="form register-card__form">
-
+      <form [formGroup]="form" class="form register-card__form">
         <div class="form-row">
           <app-input
             [control]="firstnameControl"
@@ -27,7 +21,8 @@
               placeholder: 'Entrez votre prénom',
               required: true,
               type: 'text'
-            }">
+            }"
+          >
           </app-input>
 
           <app-input
@@ -37,7 +32,8 @@
               placeholder: 'Entrez votre nom de famille',
               required: true,
               type: 'text'
-            }">
+            }"
+          >
           </app-input>
         </div>
 
@@ -48,7 +44,8 @@
             placeholder: 'Entrez votre pseudonyme',
             required: true,
             type: 'text'
-          }">
+          }"
+        >
         </app-input>
 
         <app-input-email
@@ -58,7 +55,8 @@
             placeholder: 'Entrez votre adresse email',
             required: true,
             type: 'email'
-          }">
+          }"
+        >
         </app-input-email>
 
         <app-input-password
@@ -70,7 +68,8 @@
             type: 'password',
             showPassword: true,
             displayStrenghMeterPassword: true
-          }">
+          }"
+        >
         </app-input-password>
 
         <app-input-password
@@ -80,7 +79,8 @@
             placeholder: 'Entrez de nouveau votre mot de passe.',
             required: true,
             type: 'password'
-          }">
+          }"
+        >
         </app-input-password>
 
         <div class="form-actions form-actions--full">
@@ -91,19 +91,16 @@
             type="primary"
             [loading]="loading"
             [label]="loading ? 'Inscription en cours...' : 'S’inscrire'"
-            [disabled]="!form.valid">
+            [disabled]="!form.valid"
+          >
           </app-button>
         </div>
       </form>
 
       <div class="auth-card__register">
-        <span>
-          Tu as déjà un compte ?
-        </span>
+        <span> Tu as déjà un compte ? </span>
 
-        <a routerLink="/auth/login">
-          Connecte-toi
-        </a>
+        <a routerLink="/auth/login"> Connecte-toi </a>
       </div>
     </div>
   </div>

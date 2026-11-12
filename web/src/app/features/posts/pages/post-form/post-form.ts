@@ -10,6 +10,7 @@ import {
   signal,
   ViewChild,
   WritableSignal,
+  OnDestroy
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -44,10 +45,10 @@ import { MarkdownSyntaxOptions } from 'src/app/shared/ui/context-menu/config/con
     TextAreaComponent,
     MarkdownComponent,
     ContextMenuTriggerDirective,
-    BaseButtonComponent,
-  ],
+    BaseButtonComponent
+  ]
 })
-export class PostFormComponent implements AfterViewInit {
+export class PostFormComponent implements AfterViewInit, OnDestroy {
   private _destroy_ref = inject(DestroyRef);
   private _form_builder = inject(FormBuilder);
   private _session = inject(SessionService);
@@ -58,8 +59,7 @@ export class PostFormComponent implements AfterViewInit {
   private _draft = inject(PostDraftManager);
   private _editor_images = inject(PostEditorImageService);
   private _images = inject(ImageEditorService);
-  private readonly _breadCrumb = inject(BreadcrumbService)
-
+  private readonly _breadCrumb = inject(BreadcrumbService);
 
   @ViewChild('markdownEditor') markdownEditorElement!: TextAreaComponent;
   @ViewChild('preview', { static: false }) preview?: ElementRef<HTMLElement>;
@@ -67,7 +67,7 @@ export class PostFormComponent implements AfterViewInit {
 
   post: InputSignal<Post | undefined> = input();
 
-  options = MarkdownSyntaxOptions
+  options = MarkdownSyntaxOptions;
 
   showPreview: WritableSignal<boolean> = signal(false);
   resolvedMarkdown = signal<string>('');
@@ -80,50 +80,47 @@ export class PostFormComponent implements AfterViewInit {
     TextInputValidatorFactory({
       minlength: 5,
       maxlength: 85,
-      options: { acceptSpecialCaracters: false },
-    }),
+      options: { acceptSpecialCaracters: false }
+    })
   ]);
 
   descriptionControl = new FormControl<string>('', [
     TextInputValidatorFactory({
       maxlength: 255,
-      options: { acceptSpecialCaracters: true },
-    }),
+      options: { acceptSpecialCaracters: true }
+    })
   ]);
 
   contentControl = new FormControl<string>('# Titre\n\n> Exemple', [
     TextInputValidatorFactory({
       validate: false,
-      required: false,
-    }),
+      required: false
+    })
   ]);
 
   form = this._form_builder.group({
     title: this.titleControl,
     description: this.descriptionControl,
-    content: this.contentControl,
+    content: this.contentControl
   });
 
   constructor() {
-   
     this.initPostOrDraft();
     this._draft.watch(this.form);
 
-    this.contentControl.valueChanges
-      .pipe(takeUntilDestroyed(this._destroy_ref))
-      .subscribe(() => {
-        this.updateResolvedMarkdown();
-        this._markdown.refreshPreview(this.preview?.nativeElement);
-      });
+    this.contentControl.valueChanges.pipe(takeUntilDestroyed(this._destroy_ref)).subscribe(() => {
+      this.updateResolvedMarkdown();
+      this._markdown.refreshPreview(this.preview?.nativeElement);
+    });
   }
 
   ngAfterViewInit(): void {
     this._markdown.refreshPreview(this.preview?.nativeElement);
-     this._breadCrumb.setWithArticle([
+    this._breadCrumb.setWithArticle([
       {
-        label: (this.post() === undefined ? 'Ajouter un article' : 'Modifier un article'),
+        label: this.post() === undefined ? 'Ajouter un article' : 'Modifier un article'
       }
-    ])
+    ]);
   }
 
   ngOnDestroy(): void {
@@ -172,7 +169,7 @@ export class PostFormComponent implements AfterViewInit {
       })
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-        next: () => this._router.navigate(['home']),
+        next: () => this._router.navigate(['home'])
       });
   };
 
@@ -202,18 +199,19 @@ export class PostFormComponent implements AfterViewInit {
   }
 
   onPickImage(event: Event): void {
-    this._editor_images.pickImage(
-      event,
-      this.markdownEditorElement,
-      this.contentControl
-    );
+    this._editor_images.pickImage(event, this.markdownEditorElement, this.contentControl);
+  }
+
+  onPreviewKeydown(event: Event): void {
+    const target = event.target;
+    if (target instanceof HTMLImageElement && target.title.startsWith('localimg:')) {
+      event.preventDefault();
+      target.click();
+    }
   }
 
   onPreviewClick(event: MouseEvent): void {
-    this._editor_images.handlePreviewClick(
-      event,
-      this.relinkPicker?.nativeElement
-    );
+    this._editor_images.handlePreviewClick(event, this.relinkPicker?.nativeElement);
   }
 
   onRelinkPicked(event: Event): void {
@@ -225,15 +223,13 @@ export class PostFormComponent implements AfterViewInit {
       this._draft.init({
         post: this.post(),
         form: this.form,
-        onContentChange: () => this.updateResolvedMarkdown(),
+        onContentChange: () => this.updateResolvedMarkdown()
       });
     });
   }
 
   private updateResolvedMarkdown(): void {
-    this.resolvedMarkdown.set(
-      this._images.resolveLocalImages(this.contentControl.value ?? '')
-    );
+    this.resolvedMarkdown.set(this._images.resolveLocalImages(this.contentControl.value ?? ''));
   }
 
   private isFormSubmittable(): boolean {
@@ -255,7 +251,7 @@ export class PostFormComponent implements AfterViewInit {
     return {
       title: title ?? '',
       description: description ?? '',
-      content: content ?? '',
+      content: content ?? ''
     };
   }
 }

@@ -10,7 +10,7 @@ export const canEditPostGuard: CanActivateFn = async (route) => {
   const router = inject(Router);
   const userService = inject(UserService);
   const postService = inject(PostService);
-  const context = new HttpContext().set(SUCCESS_MESSAGE, false)
+  const context = new HttpContext().set(SUCCESS_MESSAGE, false);
 
   const postId = Number(route.paramMap.get('id'));
 
@@ -18,9 +18,8 @@ export const canEditPostGuard: CanActivateFn = async (route) => {
     return router.createUrlTree(['/']);
   }
 
-  const user = await firstValueFrom(userService.checkSessionActive({context}));
-  const post = await firstValueFrom(postService.getPostWithID(postId, {context}));
-
+  const user = await firstValueFrom(userService.checkSessionActive({ context }));
+  const post = await firstValueFrom(postService.getPostWithID(postId, { context }));
 
   const isOwner = post.data.authorId === user.data.user.id;
   const isAdmin = user.data.user.role === 'admin';
