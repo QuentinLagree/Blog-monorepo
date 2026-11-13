@@ -8,6 +8,35 @@ import { UserUpdateDto } from 'src/modules/user/dto/update-user.dto';
 import { CreateUserDto } from 'src/modules/user/dto/create-user.dto';
 
 describe('UserService', () => {
+  describe('profile', () => {
+    it('selects private profile fields without passwords or relations', async () => {
+      prismaMock.user.findUnique.mockResolvedValue({
+        id: 1,
+        email: 'me@test.com',
+      });
+      await expect(userService.profile(1)).resolves.toEqual({
+        id: 1,
+        email: 'me@test.com',
+      });
+      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+        where: { id: 1 },
+        select: {
+          ...userSelect,
+          nom: true,
+          prenom: true,
+          email: true,
+          updated_at: true,
+        },
+      });
+    });
+
+    it('rejects a missing account', async () => {
+      prismaMock.user.findUnique.mockResolvedValue(null);
+      await expect(userService.profile(1)).rejects.toBeInstanceOf(
+        UserNotFoundException,
+      );
+    });
+  });
   let userService: UserService;
 
   const prismaMock = {

@@ -31,6 +31,20 @@ export class UserService {
     private readonly _prisma: PrismaService,
     private readonly _passwordManager: PasswordService,
   ) {}
+  async profile(id: number) {
+    const user = await this._prisma.user.findUnique({
+      where: { id },
+      select: {
+        ...userSelect,
+        nom: true,
+        prenom: true,
+        email: true,
+        updated_at: true,
+      },
+    });
+    if (!user) throw new UserNotFoundException(id);
+    return user;
+  }
   async index(): Promise<userSelectPayload[]> {
     return this._prisma.user.findMany({
       select: userSelect,
