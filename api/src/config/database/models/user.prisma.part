@@ -9,6 +9,7 @@ model User {
 
   posts   Post[]
   likes   Like[]
+  postReads PostRead[]
   preference UserPreference?
   recoveryToken VerificationTokens?
 

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Post, User } from '@prisma/client';
+import type { Post, User } from '@prisma/client';
 
 export class PostsEntity implements Post {
   @ApiProperty()

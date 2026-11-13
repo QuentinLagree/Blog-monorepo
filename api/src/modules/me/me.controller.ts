@@ -4,7 +4,7 @@ import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { makeMessage } from 'src/commons/logger/logger.helper';
 import { Message } from 'src/commons/types/dto/message/message';
 import { getDtoPropertyPriority } from 'src/commons/types/dto/temp/metadata';
-import { UserSession } from 'src/commons/types/session-user.type';
+import type { UserSession } from 'src/commons/types/session-user.type';
 import { SessionType } from 'src/commons/types/session.type';
 import { UnauthorizedSessionInactive } from '../auth/exceptions/unautorisation-session-inactive.exception';
 import { MetaPaginationDto } from '../pagination/meta.pagination.dto';

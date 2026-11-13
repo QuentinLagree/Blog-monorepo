@@ -23,7 +23,7 @@ import { USER_PREFERENCE_FIELDS } from './helper/user.preferences.fields';
 import { ApiMessageResponse } from 'src/commons/decorators/api-message-response.decorator';
 import { ApiExceptionsResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { UserNotHaveAuthorisation } from '../user/exceptions/user-not-have-authorization';
-import { UserSession } from 'src/commons/types/session-user.type';
+import type { UserSession } from 'src/commons/types/session-user.type';
 import { CurrentUser } from '../me/decorators/current.decorator';
 import { InvalidPreferenceFieldException } from './exceptions/invalid-preference-field.exception';
 

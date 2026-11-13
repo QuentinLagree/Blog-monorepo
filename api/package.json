@@ -6,6 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "format:check": "prettier --check \"src/**/*.ts\" \"scripts/*.{ts,cjs}\" \"*.{json,cjs,ts}\"",
+    "check:tests": "pnpm run format:check && pnpm run lint",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"scripts/*.{ts,cjs}\" \"*.{json,cjs,ts}\"",
     "start": "nest start -b swc -w --type-check",
@@ -13,15 +15,15 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main.js",
     "lint": "eslint src scripts --no-fix",
-    "test:unit": "dotenv -e .env.test -- jest",
-    "test:watch": "dotenv -e .env.test -- jest --watch",
-    "test:cov": "dotenv -e .env.test -- jest --coverage",
-    "test:e2e": "dotenv -e .env.test -- jest --config src/test/e2e/jest-e2e.json",
-    "test:e2e:watch": "dotenv -e .env.test -- jest --config src/test/e2e/jest-e2e.json --watch",
-    "test:e2e:cov": "dotenv -e .env.test -- jest --config src/test/e2e/jest-e2e.json --coverage",
+    "test:unit": "pnpm run check:tests && dotenv -e .env.test -- jest",
+    "test:watch": "pnpm run check:tests && dotenv -e .env.test -- jest --watch",
+    "test:cov": "pnpm run check:tests && dotenv -e .env.test -- jest --coverage",
+    "test:e2e": "pnpm run check:tests && dotenv -e .env.test -- jest --config src/test/e2e/jest-e2e.json",
+    "test:e2e:watch": "pnpm run check:tests && dotenv -e .env.test -- jest --config src/test/e2e/jest-e2e.json --watch",
+    "test:e2e:cov": "pnpm run check:tests && dotenv -e .env.test -- jest --config src/test/e2e/jest-e2e.json --coverage",
     "test:db:push": "dotenv -e .env.test -- prisma db push --schema src/config/database/schema.merged.prisma",
     "test:db:studio": "dotenv -e .env.test -- prisma studio --schema src/config/database/schema.merged.prisma",
-    "test:all": "dotenv -e .env.test -- node scripts/test-all.cjs",
+    "test:all": "pnpm run check:tests && dotenv -e .env.test -- node scripts/test-all.cjs",
     "prisma:build": "node scripts/merge-prisma.cjs && prisma format --schema src/config/database/schema.merged.prisma",
     "prisma:validate": "prisma validate --schema src/config/database/schema.merged.prisma",
     "prisma:generate": "prisma generate --schema src/config/database/schema.merged.prisma",
@@ -96,7 +98,7 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.20.6",
-    "typescript": "^5.7.3"
+    "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">=22"

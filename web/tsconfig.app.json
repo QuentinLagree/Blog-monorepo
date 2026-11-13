@@ -4,6 +4,7 @@
     "module": "es2020",
     "types": ["node"]
   },
-  "include": ["src/**/*.spec.ts", "src/**/*.ts"],
+  "files": ["src/main.ts"],
+  "include": ["src/**/*.d.ts"],
   "exclude": ["**/*.spec.ts"]
 }

@@ -46,19 +46,19 @@ model PostRead {
 
 // ----- models/post.prisma.part -----
 model Post {
-  id          Int    @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   authorId    Int
   title       String
   description String
-  content     String @db.Text
+  content     String     @db.Text
   likes       Like[]
+  postReads   PostRead[]
 
   created_at   DateTime  @default(now())
   updated_at   DateTime  @updatedAt
   published_at DateTime?
 
-  author    User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  postReads PostRead[]
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@map("post")
 }
@@ -101,12 +101,12 @@ model User {
 
   posts         Post[]
   likes         Like[]
+  postReads     PostRead[]
   preference    UserPreference?
   recoveryToken VerificationTokens?
 
-  created_at DateTime   @default(now())
-  updated_at DateTime   @updatedAt
-  postReads  PostRead[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@map("user")
 }

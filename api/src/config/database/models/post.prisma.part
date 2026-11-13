@@ -5,6 +5,7 @@ model Post {
   description String
   content     String @db.Text
   likes       Like[]
+  postReads   PostRead[]
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

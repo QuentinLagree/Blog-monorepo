@@ -27,7 +27,7 @@ import { TransformDataMessageIntoObjectSerialization } from 'src/commons/interce
 import { makeMessage } from 'src/commons/logger/logger.helper';
 import { SlugService } from 'src/commons/services/slug.service';
 import { Message } from 'src/commons/types/dto/message/message';
-import { UserSession } from 'src/commons/types/session-user.type';
+import type { UserSession } from 'src/commons/types/session-user.type';
 import { PostsEntity } from 'src/modules/post/entities/posts.entities';
 import { CurrentUser } from '../me/decorators/current.decorator';
 import { MetaPaginationDto } from '../pagination/meta.pagination.dto';

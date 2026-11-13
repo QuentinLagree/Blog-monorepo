@@ -34,7 +34,7 @@ import { UserService } from '../user/user.service';
 import { ApiMessageResponse } from 'src/commons/decorators/api-message-response.decorator';
 import { ApiExceptionsResponse } from 'src/commons/decorators/api-exception-response.decorator';
 import { CurrentUser } from '../me/decorators/current.decorator';
-import { UserSession } from 'src/commons/types/session-user.type';
+import type { UserSession } from 'src/commons/types/session-user.type';
 import { UserNotHaveAuthorisation } from '../user/exceptions/user-not-have-authorization';
 import { PostDoesntLikeOrUnlikeAlready } from '../user/exceptions/post-doesnt-like-unlike-already.exception';
 import { PostDoesntLikeOrUnlikeByAuthor } from '../user/exceptions/post-doesnt-like-unlike-same-author.exception';

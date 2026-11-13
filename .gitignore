@@ -1,2 +1,5 @@
 node_modules
+.pnpm-store/
+logs_files/
 doc.README.md
+AGENTS.md

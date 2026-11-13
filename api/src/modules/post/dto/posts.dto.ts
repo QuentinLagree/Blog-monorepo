@@ -1,5 +1,5 @@
 import { PartialType } from '@nestjs/swagger';
-import { User } from '@prisma/client';
+import type { User } from '@prisma/client';
 import { IsArray, IsNotEmpty } from 'class-validator';
 import { PostsEntity } from '../entities/posts.entities';
 

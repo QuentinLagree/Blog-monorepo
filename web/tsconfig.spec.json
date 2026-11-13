@@ -1,9 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["jest", "node"],
-    "module": "CommonJS",
-    "moduleResolution": "node"
+    "types": ["jasmine", "node"]
   },
-  "include": ["src/**/*.ts", "test/**/*.ts", "**/*.spec-unit.ts"]
+  "include": ["src/**/*.spec.ts", "src/**/*.d.ts", "src/test.ts", "src/polyfills.ts"]
 }

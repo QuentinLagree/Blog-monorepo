@@ -4,7 +4,7 @@ import {
   ExecutionContext,
   CallHandler,
 } from '@nestjs/common';
-import { ClassConstructor, plainToInstance } from 'class-transformer';
+import { type ClassConstructor, plainToInstance } from 'class-transformer';
 import { map } from 'rxjs';
 
 @Injectable()

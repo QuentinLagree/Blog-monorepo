@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { VerificationTokens } from '@prisma/client';
-import { FastifyRequest } from 'fastify';
+import type { FastifyRequest } from 'fastify';
 
 import { TransformDataMessageIntoObjectSerialization } from 'src/commons/interceptors/transform_data_message_into_object_serialization.interceptor';
 import { MailingService } from 'src/commons/mailing/mailing.service';
