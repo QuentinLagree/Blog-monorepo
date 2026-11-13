@@ -1,5 +1,7 @@
 # Blog-monorepo
 
+Le démarrage Docker de développement installe les dépendances verrouillées et génère le client Prisma. Les migrations et le seed se lancent séparément : le seed efface les données et n’est plus exécuté automatiquement au démarrage.
+
 # 📚 Table des matières
 
 - [📖 Présentation](#presentation)
