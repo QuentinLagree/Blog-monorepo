@@ -27,11 +27,11 @@ export class UserService {
   }
 
   getAllUsers(options?: HttpOptions) {
-    return this._http.getData('user', options);
+    return this._http.getData('users', options);
   }
 
   findUserWithId(id: number, options?: HttpOptions) {
-    return this._http.getData(`user/${id}`, options);
+    return this._http.getData(`users/${id}`, options);
   }
 
   registerUser(dto: userRegister, options?: HttpOptions) {

@@ -31,7 +31,7 @@ bootstrapApplication(AppComponent, {
       },
       sanitize: {
         provide: SANITIZE,
-        useValue: SecurityContext.NONE
+        useValue: SecurityContext.HTML
       }
     }),
     provideAnimations(),

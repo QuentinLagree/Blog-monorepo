@@ -84,7 +84,6 @@ export class HomeArticlesComponent {
               this.reading.destroy();
             }
           });
-          console.log(postsAll);
           return postsAll;
         }
 
@@ -92,7 +91,7 @@ export class HomeArticlesComponent {
       } catch (error) {
         const message =
           error instanceof Error ? error.message : 'Erreur lors de la récupération des articles.';
-
+        console.log(message);
         this._toastService.error(message, { duration: 5000 });
 
         return [];

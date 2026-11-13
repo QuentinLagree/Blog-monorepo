@@ -18,7 +18,7 @@ export class HomeComponent {
   constructor() {
     this._breadCrumb.set([
       {
-        label: 'Acceuil',
+        label: 'Accueil',
         url: '/home'
       }
     ]);
