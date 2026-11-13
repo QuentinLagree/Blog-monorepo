@@ -2,6 +2,7 @@
   "name": "blog-monorepo",
   "private": true,
   "scripts": {
+    "logs": "pnpm --dir api run logs",
     "docker:dev": "docker compose -f docker-compose.dev.yml up --build",
     "dev": "pnpm --parallel --filter ./api start:dev --filter ./web start",
     "build": "pnpm --filter ./api build && pnpm --filter ./web build",

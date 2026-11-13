@@ -88,6 +88,8 @@ L'image Node 22 s'exécute avec l'utilisateur node. Son démarrage vérifie les 
 
 Un logger partagé réutilise ses transports. Les écritures fichiers sont séquencées et attendues avant la fermeture des flux. LOG_DIR remplace le dossier logs_files par défaut.
 
+Les mois clos depuis 30 jours sont archivés automatiquement au format `.tar.gz`. Les commandes de consultation, recherche, export, épinglage et suppression sont décrites dans [LOGS.md](LOGS.md). Depuis la racine : `pnpm logs --help`.
+
 SIGTERM et SIGINT déclenchent l'arrêt NestJS et la fermeture du worker, de Redis et du logger. Prévoir un volume ou une collecte externe pour conserver les logs au-delà de la durée de vie du conteneur.
 
 ## Durcissement des accès et des comptes
@@ -108,12 +110,12 @@ La récupération retourne la même réponse HTTP 200 et le même message pour u
 
 Les compteurs Redis sont atomiques et communs aux instances de production. Ils sont appliqués avant les traitements de hachage et d'envoi. Une réponse 429 fournit Retry-After ; une panne Redis ne désactive pas silencieusement la protection.
 
-| Route POST | Limite par IP | Limite par email | Fenêtre |
-| --- | --- | --- | --- |
-| /auth/login | 20 | 10 | 1 minute |
-| /auth/register et /users | 5 par route | — | 1 minute |
-| /password/forgot | 5 | 3 | 15 minutes |
-| /password/reset | 10 | 5 | 1 minute |
+| Route POST               | Limite par IP | Limite par email | Fenêtre    |
+| ------------------------ | ------------- | ---------------- | ---------- |
+| /auth/login              | 20            | 10               | 1 minute   |
+| /auth/register et /users | 5 par route   | —                | 1 minute   |
+| /password/forgot         | 5             | 3                | 15 minutes |
+| /password/reset          | 10            | 5                | 1 minute   |
 
 Par défaut, l'IP provient de la connexion directe. Derrière un reverse proxy, renseigner TRUSTED_PROXY avec ses seules adresses ou plages CIDR, séparées par des virgules. Ne pas accepter arbitrairement X-Forwarded-For depuis Internet. Sans cette configuration, les utilisateurs derrière le même proxy partagent la limite par IP.
 

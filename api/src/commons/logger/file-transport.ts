@@ -40,7 +40,7 @@ export class FileTransport implements LogTransport {
 
     // (re)ouvrir si jour différent / autre fichier
     await this.closeStream();
-    this.stream = createWriteStream(filePath, { flags: 'a' });
+    this.stream = createWriteStream(filePath, { flags: 'a', mode: 0o600 });
     // write callbacks propagate the failure to the caller; prevent an additional
     // unhandled stream error event on open/write failures.
     this.stream.on('error', () => {});
