@@ -523,16 +523,62 @@ describe('UserToPostController e2e', () => {
       });
     });
 
-    it('should return 401 if the user is not authenticated', async () => {
+    it('should return the public count without a personal like for an anonymous reader', async () => {
       const { user } = await createLoggedAgent(app, prisma, passwordService);
+      const post = await createTestPost(prisma, user.id);
+      await prisma.like.create({ data: { userId: user.id, postId: post.id } });
 
-      const post = await createTestPost(prisma, user.id, {
-        published_at: new Date(),
+      const response = await request(app.getHttpServer())
+        .get(`${endpoint}/${post.id}/like-status`)
+        .expect(200);
+
+      expect(response.body.data).toEqual({ liked: false, likesCount: 1 });
+    });
+
+    it('should return zero likes for an anonymous reader when no one liked the article', async () => {
+      const { user } = await createLoggedAgent(app, prisma, passwordService);
+      const post = await createTestPost(prisma, user.id);
+      const response = await request(app.getHttpServer())
+        .get(`${endpoint}/${post.id}/like-status`)
+        .expect(200);
+      expect(response.body.data).toEqual({ liked: false, likesCount: 0 });
+    });
+
+    it('should hide draft likes from anonymous readers and other users', async () => {
+      const { agent, user } = await createLoggedAgent(
+        app,
+        prisma,
+        passwordService,
+      );
+      const draft = await createTestPost(prisma, user.id, {
+        published_at: null,
       });
+      const { agent: otherAgent } = await createLoggedAgent(
+        app,
+        prisma,
+        passwordService,
+      );
 
       await request(app.getHttpServer())
-        .get(`${endpoint}/${post.id}/like-status`)
-        .expect(401);
+        .get(`${endpoint}/${draft.id}/like-status`)
+        .expect(404);
+      await otherAgent.get(`${endpoint}/${draft.id}/like-status`).expect(404);
+      const response = await agent
+        .get(`${endpoint}/${draft.id}/like-status`)
+        .expect(200);
+      expect(response.body.data).toEqual({ liked: false, likesCount: 0 });
+    });
+
+    it('should return 404 for an anonymous reader when the article does not exist', async () => {
+      await request(app.getHttpServer())
+        .get(`${endpoint}/999999/like-status`)
+        .expect(404);
+    });
+
+    it('should reject an invalid article id for an anonymous reader', async () => {
+      await request(app.getHttpServer())
+        .get(`${endpoint}/abc/like-status`)
+        .expect(400);
     });
 
     it('should return 400 if the post id is not a number', async () => {

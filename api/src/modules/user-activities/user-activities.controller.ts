@@ -40,8 +40,6 @@ import { PostDoesntLikeOrUnlikeAlready } from '../user/exceptions/post-doesnt-li
 import { PostDoesntLikeOrUnlikeByAuthor } from '../user/exceptions/post-doesnt-like-unlike-same-author.exception';
 import { PostNotFoundException } from '../post/exceptions/post-not-found.exception';
 
-@UseGuards(createAuthGuardSession())
-@ApiCookieAuth()
 @ApiTags('Activités utilisateurs')
 @Controller('users/posts')
 export class UserActivityController {
@@ -73,6 +71,8 @@ export class UserActivityController {
     UserNotHaveAuthorisation,
   ])
   @HttpCode(201)
+  @UseGuards(createAuthGuardSession())
+  @ApiCookieAuth()
   @Post(':postId/add-like')
   async likePost(
     @Param('postId', ParseIntPipe) postId: number,
@@ -116,6 +116,8 @@ export class UserActivityController {
     UserNotHaveAuthorisation,
   ])
   @HttpCode(201)
+  @UseGuards(createAuthGuardSession())
+  @ApiCookieAuth()
   @Delete(':postId/unlike')
   async unlikePost(
     @Param('postId', ParseIntPipe) postId: number,
@@ -141,7 +143,7 @@ export class UserActivityController {
   @ApiOperation({
     summary: 'Récupérer le status du like',
     description:
-      "Récupère le status de like d'un article grâce à son id unique. Il faut être connecté.",
+      'Accessible sans connexion pour un article publié. Sans session, liked vaut false ; avec une session, il représente le statut personnel du lecteur.',
   })
   @ApiMessageResponse(StatusLikeDto, {
     description:
@@ -154,15 +156,15 @@ export class UserActivityController {
     required: true,
     type: 'number',
   })
-  @ApiExceptionsResponse([UserNotHaveAuthorisation])
+  @ApiExceptionsResponse([PostNotFoundException])
   @HttpCode(200)
   @Get(':postId/like-status')
   async getLikeStatus(
     @Param('postId', ParseIntPipe) postId: number,
-    @CurrentUser() user: UserSession,
+    @CurrentUser() user: UserSession | undefined,
   ): Promise<Message<StatusLikeDto>> {
     await this._posts.showForReader({ id: postId }, user);
-    const status = await this._posts.getLikeStatus(user.id, postId);
+    const status = await this._posts.getLikeStatus(user?.id, postId);
 
     return makeMessage(
       `Get like status ${postId}`,
@@ -189,6 +191,8 @@ export class UserActivityController {
     type: 'number',
   })
   @HttpCode(200)
+  @UseGuards(createAuthGuardSession())
+  @ApiCookieAuth()
   @Get(':postId/reading-status')
   async getReadingStatus(
     @Param('postId', ParseIntPipe)
@@ -250,6 +254,8 @@ export class UserActivityController {
     type: 'number',
   })
   @HttpCode(200)
+  @UseGuards(createAuthGuardSession())
+  @ApiCookieAuth()
   @Patch(':postId/reading-progress')
   async updateReadingProgress(
     @Param('postId', ParseIntPipe)

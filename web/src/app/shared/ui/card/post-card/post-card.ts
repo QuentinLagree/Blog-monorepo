@@ -197,7 +197,7 @@ export class PostCard {
   private async loadLikeStatusPublic(postId: number): Promise<void> {
     try {
       const response: Message<PostLikeStatus> = await firstValueFrom(
-        this._postService.getPublicCountLike(postId, {
+        this._postService.getStatusLike(postId, {
           context: SILENT_CONTEXT
         })
       );

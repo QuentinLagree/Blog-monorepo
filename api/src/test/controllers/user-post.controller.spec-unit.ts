@@ -259,6 +259,29 @@ describe('UserActivityController', () => {
   });
 
   describe('getLikeStatus', () => {
+    it('should return the public status after checking article visibility', async () => {
+      const status = { liked: false, likesCount: 4 };
+      postServiceMock.getLikeStatus.mockResolvedValue(status);
+
+      const response = await userToPostController.getLikeStatus(10, undefined);
+
+      expect(postServiceMock.showForReader).toHaveBeenCalledWith(
+        { id: 10 },
+        undefined,
+      );
+      expect(postServiceMock.getLikeStatus).toHaveBeenCalledWith(undefined, 10);
+      expect(response.data).toEqual(status);
+    });
+
+    it('should not retrieve likes when the article is inaccessible', async () => {
+      const error = new Error('Article inaccessible');
+      postServiceMock.showForReader.mockRejectedValue(error);
+      await expect(
+        userToPostController.getLikeStatus(10, undefined),
+      ).rejects.toThrow(error);
+      expect(postServiceMock.getLikeStatus).not.toHaveBeenCalled();
+    });
+
     it('should return liked true if connected user liked the post', async () => {
       const userId = 1;
       const postId = 10;

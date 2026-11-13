@@ -986,6 +986,30 @@ describe('ArticleService', () => {
   });
 
   describe('getLikeStatus', () => {
+    it('should return the public count without looking up a personal like', async () => {
+      prismaMock.like.count.mockResolvedValue(4);
+
+      await expect(articleService.getLikeStatus(undefined, 2)).resolves.toEqual(
+        {
+          liked: false,
+          likesCount: 4,
+        },
+      );
+      expect(prismaMock.like.count).toHaveBeenCalledWith({
+        where: { postId: 2 },
+      });
+      expect(prismaMock.like.findUnique).not.toHaveBeenCalled();
+      expect(prismaMock.$transaction).not.toHaveBeenCalled();
+    });
+
+    it('should propagate a public count failure', async () => {
+      const error = new Error('Count unavailable');
+      prismaMock.like.count.mockRejectedValue(error);
+      await expect(articleService.getLikeStatus(undefined, 2)).rejects.toThrow(
+        error,
+      );
+    });
+
     it('should return liked true when the user has liked the post', async () => {
       const userId = 1;
       const postId = 2;

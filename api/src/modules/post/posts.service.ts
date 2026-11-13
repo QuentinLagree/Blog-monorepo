@@ -267,7 +267,12 @@ export class ArticleService {
     };
   }
 
-  async getLikeStatus(userId: number, postId: number): Promise<StatusLikeDto> {
+  async getLikeStatus(
+    userId: number | undefined,
+    postId: number,
+  ): Promise<StatusLikeDto> {
+    if (userId === undefined) return this.getLikeCount(postId);
+
     const [like, likesCount] = await this._prisma.$transaction([
       this._prisma.like.findUnique({
         where: {

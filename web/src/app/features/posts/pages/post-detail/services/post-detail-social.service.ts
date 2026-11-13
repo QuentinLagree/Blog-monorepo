@@ -129,7 +129,7 @@ export class PostDetailSocialService {
         })
       ).finally(async () => {
         await firstValueFrom(
-          this._postService.getPublicCountLike(postId, {
+          this._postService.getStatusLike(postId, {
             context: SILENT_CONTEXT
           })
         );

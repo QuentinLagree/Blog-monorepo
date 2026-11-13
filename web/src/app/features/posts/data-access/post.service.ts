@@ -87,10 +87,6 @@ export class PostService {
     return this._http.getData(`users/posts/${postId}/like-status`, options);
   }
 
-  getPublicCountLike(postId: number, options?: HttpOptions): Observable<Message<PostLikeStatus>> {
-    return this._http.getData(`users/posts/profil/${postId}/like-count`, options);
-  }
-
   likePost(postId: number, options?: HttpOptions): Observable<Message<PostLikeStatus>> {
     return this._http.postData(`users/posts/${postId}/add-like`, {}, options);
   }
